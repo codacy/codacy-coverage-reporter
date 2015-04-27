@@ -25,6 +25,16 @@ libraryDependencies ++= Seq(
   scalaTest
 )
 
+assemblyMergeStrategy in assembly := {
+  case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
+  case m if m.toLowerCase.matches("meta-inf.*\\.sf$") => MergeStrategy.discard
+  case _ => MergeStrategy.first
+}
+
+assemblyOption in assembly := (assemblyOption in assembly).value.copy(prependShellScript = Some(AssemblyPlugin.defaultShellScript))
+
+assemblyJarName in assembly := s"${name.value}-${version.value}"
+
 organization := "com.codacy"
 
 organizationName := "Codacy"
