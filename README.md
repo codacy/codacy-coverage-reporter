@@ -1,5 +1,5 @@
-# sbt-codacy-coverage
-[![Codacy Badge](https://www.codacy.com/project/badge/1146fb14534e427493469ba4b0459430)](https://www.codacy.com)
+# codacy-coverage-reporter
+[![Codacy Badge](https://www.codacy.com/project/badge/1c524e61cd8640e79b80d406eda8754b)](https://www.codacy.com/app/mrfyda/codacy-coverage-reporter)
 
 sbt plugin for uploading Scala code coverage to Codacy https://www.codacy.com
 
