@@ -18,7 +18,6 @@ object CodacyCoverageReporter {
 
   private val logger = {
     val logger = LoggerFactory.getLogger("com.codacy.CodacyCoverageReporter").asInstanceOf[Logger]
-    logger.setLevel(Level.INFO)
     logger
   }
 
