@@ -2,18 +2,25 @@ package com.codacy
 
 import java.io.File
 
+import ch.qos.logback.classic.{Level, Logger}
 import com.codacy.api.Language
 import com.codacy.api.client.CodacyClient
 import com.codacy.api.helpers.FileHelper
 import com.codacy.api.service.CoverageServices
 import com.codacy.parsers._
-import play.api.Logger
+import org.slf4j.LoggerFactory
 import scopt.Read
 
 object CodacyCoverageReporter {
 
   private val publicApiBaseUrl = "https://www.codacy.com"
   private val rootProjectDir = new File(System.getProperty("user.dir"))
+
+  private val logger = {
+    val logger = LoggerFactory.getLogger("com.codacy.CodacyCoverageReporter").asInstanceOf[Logger]
+    logger.setLevel(Level.INFO)
+    logger
+  }
 
   case class Config(language: Language.Value = Language.Python,
                     projectToken: String = getProjectToken,
@@ -57,46 +64,56 @@ object CodacyCoverageReporter {
 
     parser.parse(args, Config()) match {
       case Some(config) if config.projectToken.trim.nonEmpty =>
-        Logger.info(config.toString)
+        if (config.debug) {
+          logger.setLevel(Level.DEBUG)
+        }
+        logger.debug(config.toString)
 
         codacyCoverage(config)
+      case Some(config) if config.projectToken.trim.isEmpty =>
+        logger.error("Error: Missing option --projectToken")
       case _ =>
-        System.exit(1)
     }
+
   }
 
   def codacyCoverage(config: Config): Unit = {
     FileHelper.withTokenAndCommit(Some(config.projectToken)) {
       case (projectToken, commitUUID) =>
 
+        logger.debug(s"Project token: $projectToken")
+        logger.info(s"Parsing coverage data...")
+
+        //TODO: Check if config.coverageReport exists
+
         CoverageParserFactory.withCoverageReport(config.language, rootProjectDir, config.coverageReport) {
           report =>
-            val codacyReportFile = new File(s"${config.coverageReport.getParent}${File.separator}codacy-coverage.json")
+            val codacyReportFilename = s"${config.coverageReport.getParent}${File.separator}codacy-coverage.json"
+            logger.debug(s"Saving parsed report to $codacyReportFilename")
+            val codacyReportFile = new File(codacyReportFilename)
 
+            logger.debug(report.toString)
             FileHelper.writeJsonToFile(codacyReportFile, report)
 
-            val codacyClient = new CodacyClient(Some(config.codacyApiBaseUrl), Some(projectToken))
+            val codacyClient = new CodacyClient(Some(config.codacyApiBaseUrl), projectToken = Some(projectToken))
             val coverageServices = new CoverageServices(codacyClient)
 
-            Logger.info(s"Uploading coverage data...")
+            logger.info(s"Uploading coverage data...")
 
-            coverageServices.sendReport(commitUUID, report) match {
+            coverageServices.sendReport(commitUUID, config.language, report) match {
               case requestResponse if requestResponse.hasError =>
-                Left(requestResponse.message)
+                Left(s"Failed to upload report: ${requestResponse.message}")
               case requestResponse =>
-                Right(requestResponse.message)
+                Right(s"Coverage data uploaded. ${requestResponse.message}")
             }
-
-        }.getOrElse {
-          Left(s"no parser for ${config.language}")
-        }
+        }.joinRight
 
     } match {
       case Left(error) =>
-        Logger.error(error)
+        logger.error(error)
         System.exit(1)
       case Right(message) =>
-        Logger.info(s"Coverage data uploaded. $message")
+        logger.info(message)
         System.exit(0)
     }
   }
