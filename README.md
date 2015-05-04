@@ -8,6 +8,7 @@ Multi-language coverage reporter for Codacy https://www.codacy.com
 codacy-coverage-reporter will only work with:
   * Java JRE 7 and higher
 ```
+THIS IS A TEST 
 
 ## Setup
 
