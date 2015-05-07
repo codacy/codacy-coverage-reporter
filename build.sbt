@@ -31,9 +31,14 @@ assemblyMergeStrategy in assembly := {
   case _ => MergeStrategy.first
 }
 
-assemblyOption in assembly := (assemblyOption in assembly).value.copy(prependShellScript = Some(AssemblyPlugin.defaultShellScript))
+crossPaths := false
 
-assemblyJarName in assembly := s"${name.value}-${version.value}"
+artifact in (Compile, assembly) := {
+  val art = (artifact in (Compile, assembly)).value
+  art.copy(`classifier` = Some("assembly"))
+}
+
+addArtifact(artifact in (Compile, assembly), assembly)
 
 organization := "com.codacy"
 
