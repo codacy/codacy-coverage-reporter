@@ -15,8 +15,14 @@ Codacy assumes that coverage is previously configured for your project.
 
 You can install the coverage reporter by running:
 
+### [Install jpm](https://www.jpm4j.org/#!/md/install)
 ```
-sudo wget codacy-coverage-reporter-1.0.0 -o /usr/local/bin/codacy-coverage-reporter
+curl http://www.jpm4j.org/install/global | sudo sh
+```
+
+### Install codacy-coverage-reporter
+```
+jpm install com.codacy:codacy-coverage-reporter
 ```
 
 ## Updating Codacy
