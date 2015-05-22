@@ -17,7 +17,7 @@ You can install the coverage reporter by running:
 
 ### [Install jpm](https://www.jpm4j.org/#!/md/install)
 ```
-curl http://www.jpm4j.org/install/global | sudo sh
+curl http://www.jpm4j.org/install/script | sh
 ```
 
 ### Install codacy-coverage-reporter
