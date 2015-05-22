@@ -87,7 +87,7 @@ object CodacyCoverageReporter {
 
         CoverageParserFactory.withCoverageReport(config.language, rootProjectDir, config.coverageReport) {
           report =>
-            val codacyReportFilename = s"${config.coverageReport.getParent}${File.separator}codacy-coverage.json"
+            val codacyReportFilename = s"${config.coverageReport.getAbsoluteFile.getParent}${File.separator}codacy-coverage.json"
             logger.debug(s"Saving parsed report to $codacyReportFilename")
             val codacyReportFile = new File(codacyReportFilename)
 
