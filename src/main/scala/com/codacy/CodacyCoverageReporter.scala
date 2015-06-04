@@ -3,11 +3,12 @@ package com.codacy
 import java.io.File
 
 import ch.qos.logback.classic.{Level, Logger}
-import com.codacy.api.Language
 import com.codacy.api.client.CodacyClient
 import com.codacy.api.helpers.FileHelper
 import com.codacy.api.service.CoverageServices
-import com.codacy.parsers._
+import com.codacy.api.{CoverageReport, Language}
+import com.codacy.parsers.CoverageParserFactory
+import com.codacy.transformation.PathPrefixer
 import org.slf4j.LoggerFactory
 import scopt.Read
 
@@ -25,6 +26,7 @@ object CodacyCoverageReporter {
                     projectToken: String = getProjectToken,
                     coverageReport: File = new File("coverage.xml"),
                     codacyApiBaseUrl: String = getApiBaseUrl,
+                    prefix: String = "",
                     debug: Boolean = false)
 
   implicit def languageRead: Read[Language.Value] = Read.reads { (s: String) =>
@@ -55,6 +57,9 @@ object CodacyCoverageReporter {
       opt[String]("codacyApiBaseUrl").optional().action { (x, c) =>
         c.copy(codacyApiBaseUrl = x)
       }.text("the base URL for the Codacy API")
+      opt[String]("prefix").optional().action { (x, c) =>
+        c.copy(prefix = x)
+      }.text("the project path prefix")
       opt[Unit]("debug").optional().hidden().action { (_, c) =>
         c.copy(debug = true)
       }
@@ -85,7 +90,7 @@ object CodacyCoverageReporter {
 
         //TODO: Check if config.coverageReport exists
 
-        CoverageParserFactory.withCoverageReport(config.language, rootProjectDir, config.coverageReport) {
+        CoverageParserFactory.withCoverageReport(config.language, rootProjectDir, config.coverageReport)(transform(_)(config) {
           report =>
             val codacyReportFilename = s"${config.coverageReport.getAbsoluteFile.getParent}${File.separator}codacy-coverage.json"
             logger.debug(s"Saving parsed report to $codacyReportFilename")
@@ -105,7 +110,7 @@ object CodacyCoverageReporter {
               case requestResponse =>
                 Right(s"Coverage data uploaded. ${requestResponse.message}")
             }
-        }.joinRight
+        }).joinRight
 
     } match {
       case Left(error) =>
@@ -115,6 +120,15 @@ object CodacyCoverageReporter {
         logger.info(message)
         System.exit(0)
     }
+  }
+
+  private def transform[A](report: CoverageReport)(config: Config)(f: CoverageReport => A): A = {
+    val transformations = Set(new PathPrefixer(config.prefix))
+    val transformedReport = transformations.foldLeft(report) {
+      (report, transformation) => transformation.execute(report)
+    }
+
+    f(transformedReport)
   }
 
 }
