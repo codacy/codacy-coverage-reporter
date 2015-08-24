@@ -1,5 +1,5 @@
 # codacy-coverage-reporter
-[![Build Status](https://travis-ci.org/codacy/codacy-coverage-reporter.svg?branch=master)](https://travis-ci.org/codacy/codacy-coverage-reporter)
+[![Build Status](https://circleci.com/gh/codacy/codacy-coverage-reporter.png?style=shield&circle-token=:circle-token)](https://circleci.com/gh/codacy/codacy-coverage-reporter)
 [![Codacy Badge](https://www.codacy.com/project/badge/1c524e61cd8640e79b80d406eda8754b)](https://www.codacy.com/app/Codacy/codacy-coverage-reporter)
 
 Multi-language coverage reporter for Codacy https://www.codacy.com

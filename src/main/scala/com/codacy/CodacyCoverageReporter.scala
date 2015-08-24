@@ -14,7 +14,7 @@ import scopt.Read
 
 object CodacyCoverageReporter {
 
-  private val publicApiBaseUrl = "https://www.codacy.com"
+  private val publicApiBaseUrl = "https://api.codacy.com"
   private val rootProjectDir = new File(System.getProperty("user.dir"))
 
   private val logger = {
