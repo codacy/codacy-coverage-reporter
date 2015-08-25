@@ -2,7 +2,7 @@ import Dependencies._
 
 name := "codacy-coverage-reporter"
 
-version := "1.0.2"
+version := "1.0.3"
 
 scalaVersion := "2.11.6"
 
