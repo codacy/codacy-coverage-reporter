@@ -38,7 +38,7 @@ export CODACY_PROJECT_TOKEN=%Project_Token%
 Next, simply run the Codacy reporter. It will find the current commit and send all details to your project dashboard:
 
 ```
-codacy-coverage-reporter -l Java -r coverage.xml
+codacy-coverage-reporter -l Python -r coverage.xml
 ```
 
 ## Java 6
