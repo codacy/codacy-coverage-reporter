@@ -22,7 +22,7 @@ curl http://www.jpm4j.org/install/script | sh
 
 ### Install codacy-coverage-reporter
 ```
-jpm install com.codacy:codacy-coverage-reporter
+jpm install com.codacy:codacy-coverage-reporter:assembly
 ```
 
 ## Updating Codacy
