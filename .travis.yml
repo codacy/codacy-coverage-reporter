@@ -1,8 +1,0 @@
-language: scala
-script:
-   - sbt +compile
-   - sbt +test
-jdk:
-   - oraclejdk8
-   - oraclejdk7
-   - openjdk6
