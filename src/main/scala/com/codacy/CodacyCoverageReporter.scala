@@ -43,28 +43,7 @@ object CodacyCoverageReporter {
 
   def main(args: Array[String]): Unit = {
 
-    val parser = new scopt.OptionParser[Config]("codacy-coverage-reporter") {
-      head("codacy-coverage-reporter", "1.0.0")
-      opt[Language.Value]('l', "language").required().action { (x, c) =>
-        c.copy(language = x)
-      }.text("foo is an integer property")
-      opt[String]('t', "projectToken").optional().action { (x, c) =>
-        c.copy(projectToken = x)
-      }.text("your project API token")
-      opt[File]('r', "coverageReport").required().action { (x, c) =>
-        c.copy(coverageReport = x)
-      }.text("your project API token")
-      opt[String]("codacyApiBaseUrl").optional().action { (x, c) =>
-        c.copy(codacyApiBaseUrl = x)
-      }.text("the base URL for the Codacy API")
-      opt[String]("prefix").optional().action { (x, c) =>
-        c.copy(prefix = x)
-      }.text("the project path prefix")
-      opt[Unit]("debug").optional().hidden().action { (_, c) =>
-        c.copy(debug = true)
-      }
-      help("help").text("prints this usage text")
-    }
+    val parser = buildParser
 
     parser.parse(args, Config()) match {
       case Some(config) if config.projectToken.trim.nonEmpty =>
@@ -81,7 +60,32 @@ object CodacyCoverageReporter {
 
   }
 
-  def codacyCoverage(config: Config): Unit = {
+  def buildParser = {
+    new scopt.OptionParser[Config]("codacy-coverage-reporter") {
+      head("codacy-coverage-reporter", "1.0.0")
+      opt[Language.Value]('l', "language").required().action { (x, c) =>
+        c.copy(language = x)
+      }.text("your project language")
+      opt[String]('t', "projectToken").optional().action { (x, c) =>
+        c.copy(projectToken = x)
+      }.text("your project API token")
+      opt[File]('r', "coverageReport").required().action { (x, c) =>
+        c.copy(coverageReport = x)
+      }.text("your project coverage file name")
+      opt[String]("codacyApiBaseUrl").optional().action { (x, c) =>
+        c.copy(codacyApiBaseUrl = x)
+      }.text("the base URL for the Codacy API")
+      opt[String]("prefix").optional().action { (x, c) =>
+        c.copy(prefix = x)
+      }.text("the project path prefix")
+      opt[Unit]("debug").optional().hidden().action { (_, c) =>
+        c.copy(debug = true)
+      }
+      help("help").text("prints this usage text")
+    }
+  }
+
+  def coverageWithTokenAndCommit(config: Config): Either[String, String] = {
     FileHelper.withTokenAndCommit(Some(config.projectToken)) {
       case (projectToken, commitUUID) =>
 
@@ -111,8 +115,11 @@ object CodacyCoverageReporter {
                 Right(s"Coverage data uploaded. ${requestResponse.message}")
             }
         }).joinRight
+    }
+  }
 
-    } match {
+  def codacyCoverage(config: Config): Unit = {
+    coverageWithTokenAndCommit(config) match {
       case Left(error) =>
         logger.error(error)
         System.exit(1)
