@@ -1,0 +1,10 @@
+machine:
+  java:
+    version: oraclejdk8
+
+test:
+  override:
+    - sbt clean coverage test
+    - sbt coverageReport
+    - sbt coverageAggregate
+    - sbt codacyCoverage

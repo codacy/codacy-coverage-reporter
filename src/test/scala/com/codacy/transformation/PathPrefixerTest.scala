@@ -5,7 +5,7 @@ import org.scalatest._
 
 import scala.collection.mutable.Stack
 
-class PathPrefixerSpec extends FlatSpec with Matchers {
+class PathPrefixerTest extends FlatSpec with Matchers {
 
   val report = CoverageReport(Language.Scala, 83, Seq(
     CoverageFileReport("Filename.scala", 24, Map()),
