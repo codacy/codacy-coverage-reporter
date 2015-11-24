@@ -46,3 +46,17 @@ codacy-coverage-reporter -l Java -r coverage.xml
 
 Due to a limitation in Java 6, the plugin is unable to establish a connection to codacy.com.
 You can run [this script](https://gist.github.com/mrfyda/51cdf48fa0722593db6a) after the execution to upload the generated report to Codacy.
+
+
+## Troubleshooting
+
+If you receive a `Failed to upload report: Not Found`error when running the command, then you'll probably have codacy-coverage-reporter 1.0.3 installed. Make sure you install version 1.0.4, that fixes that error.
+
+Example (issue: [#11](https://github.com/codacy/codacy-coverage-reporter/issues/11)) : 
+```
+codacy-coverage-reporter -l Java -r PATH_TO_COVERAGE/coverage.xml
+2015-11-20 04:06:58,887 [info]  com.codacy Parsing coverage data... 
+2015-11-20 04:06:59,506 [info]  com.codacy Uploading coverage data... 
+
+2015-11-20 04:07:00,639 [error] com.codacy Failed to upload report: Not Found
+```
