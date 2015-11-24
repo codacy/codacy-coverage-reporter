@@ -62,7 +62,7 @@ object CodacyCoverageReporter {
 
   def buildParser = {
     new scopt.OptionParser[Config]("codacy-coverage-reporter") {
-      head("codacy-coverage-reporter", "1.0.0")
+      head("codacy-coverage-reporter", getClass.getPackage.getImplementationVersion)
       opt[Language.Value]('l', "language").required().action { (x, c) =>
         c.copy(language = x)
       }.text("your project language")
