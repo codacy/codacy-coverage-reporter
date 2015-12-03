@@ -66,7 +66,7 @@ Even after doing all of the above troubleshooting steps in case you still encoun
 
 Please try running the command with a --prefix option with path to your code  as shown below , it helps to locate the files for which code coverage is desired
 
-<code> codacy-coverage-reporter -l Java -r PATH_TO_COVERAGE/coverage.xml --prefix PATH_TO_THE_DIRECTORY </code>
+``` codacy-coverage-reporter -l Java -r PATH_TO_COVERAGE/coverage.xml --prefix PATH_TO_THE_DIRECTORY ```
 
 Example
 
