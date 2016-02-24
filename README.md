@@ -42,7 +42,7 @@ Next, simply run the Codacy reporter. It will find the current commit and send a
 codacy-coverage-reporter -l Java -r coverage.xml
 ```
 
-Note: You should keep your API token well **protected**, as it grants owner permissions to your projects.
+> Note: You should keep your API token well **protected**, as it grants owner permissions to your projects.
 
 ## Java 6
 
