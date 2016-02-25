@@ -50,6 +50,20 @@ Due to a limitation in Java 6, the plugin is unable to establish a connection to
 You can run [this script](https://gist.github.com/mrfyda/51cdf48fa0722593db6a) after the execution to upload the generated report to Codacy.
 
 
+## Build from source
+
+If you are having any issues with your installation, you can also build the coverage reporter from source.
+
+1- Clone our repository https://github.com/codacy/codacy-coverage-reporter
+
+2- Run the command `sbt assembly`. This will produce a .jar that you can run in the `codacy-coverage-reporter/target/codacy-coverage-reporter-assembly-1.0.4.jar`
+
+3- In the project you want to send the coverage, use the jar. Example:
+
+```
+~/git/codacy/java-project$ java -cp ../codacy-coverage-reporter/target/codacy-coverage-reporter-assembly-1.0.4.jar com.codacy.CodacyCoverageReporter -l Java -r jacoco.xml
+```
+
 ## Troubleshooting
 
 If you receive a `Failed to upload report: Not Found`error when running the command, then you'll probably have codacy-coverage-reporter 1.0.3 installed. Make sure you install version 1.0.4, that fixes that error.
