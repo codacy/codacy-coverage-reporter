@@ -54,6 +54,11 @@ You can run [this script](https://gist.github.com/mrfyda/51cdf48fa0722593db6a) a
 
 If you are having any issues with your installation, you can also build the coverage reporter from source.
 
+To make sure you are using the version that you are building, you can remove your previously installed version:
+```
+[sudo] jpm remove codacy-coverage-reporter
+```
+
 1- Clone our repository https://github.com/codacy/codacy-coverage-reporter
 
 2- Run the command `sbt assembly`. This will produce a .jar that you can run in the `codacy-coverage-reporter/target/codacy-coverage-reporter-assembly-1.0.4.jar`
