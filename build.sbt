@@ -12,8 +12,9 @@ scalacOptions := Seq("-deprecation", "-feature", "-unchecked", "-Ywarn-adapted-a
 
 resolvers ++= Seq(
   DefaultMavenRepository,
-  "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
+  "Sonatype releases" at "https://oss.sonatype.org/content/repositories/releases/",
   "Sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/",
+  "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
   Classpaths.typesafeReleases,
   Classpaths.sbtPluginReleases
 )
@@ -33,12 +34,12 @@ assemblyMergeStrategy in assembly := {
 
 crossPaths := false
 
-artifact in (Compile, assembly) := {
-  val art = (artifact in (Compile, assembly)).value
+artifact in(Compile, assembly) := {
+  val art = (artifact in(Compile, assembly)).value
   art.copy(`classifier` = Some("assembly"))
 }
 
-addArtifact(artifact in (Compile, assembly), assembly)
+addArtifact(artifact in(Compile, assembly), assembly)
 
 organization := "com.codacy"
 
