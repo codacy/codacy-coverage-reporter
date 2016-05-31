@@ -1,6 +1,7 @@
 package com.codacy
 
 import java.io.File
+import java.net.URL
 
 import ch.qos.logback.classic.{Level, Logger}
 import com.codacy.api.client.CodacyClient
@@ -11,6 +12,8 @@ import com.codacy.parsers.CoverageParserFactory
 import com.codacy.transformation.PathPrefixer
 import org.slf4j.LoggerFactory
 import scopt.Read
+
+import scala.util.Try
 
 object CodacyCoverageReporter {
 
@@ -41,11 +44,21 @@ object CodacyCoverageReporter {
     sys.env.getOrElse("CODACY_PROJECT_TOKEN", "")
   }
 
+  private def validUrl(baseUrl: String) = {
+    Try(new URL(baseUrl)).toOption.isDefined
+  }
+
   def main(args: Array[String]): Unit = {
 
     val parser = buildParser
 
     parser.parse(args, Config()) match {
+      case Some(config) if !validUrl(config.codacyApiBaseUrl) =>
+        logger.error(s"Error: Invalid CODACY_API_BASE_URL: ${config.codacyApiBaseUrl}")
+        if(!config.codacyApiBaseUrl.startsWith("http")) {
+          logger.error("Maybe you forgot the http:// or https:// ?")
+        }
+
       case Some(config) if config.projectToken.trim.nonEmpty =>
         if (config.debug) {
           logger.setLevel(Level.DEBUG)
