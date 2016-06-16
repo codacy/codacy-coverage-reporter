@@ -13,6 +13,7 @@ codacy-coverage-reporter will only work with:
 ## Setup
 
 Codacy assumes that coverage is previously configured for your project.
+The official coverage tools we support for Java are JaCoCo and Cobertura.
 
 You can install the coverage reporter by running:
 
