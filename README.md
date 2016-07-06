@@ -70,6 +70,41 @@ To make sure you are using the version that you are building, you can remove you
 ~/git/codacy/java-project$ java -cp ../codacy-coverage-reporter/target/codacy-coverage-reporter-assembly-1.0.4.jar com.codacy.CodacyCoverageReporter -l Java -r jacoco.xml
 ```
 
+## Gradle task
+
+A big shout-out to [tompahoward](https://github.com/tompahoward), you can create a gradle task as suggested in https://github.com/mountain-pass/hyperstate/commit/857ca93e1c8484c14a5e2da9f0434d3daf3328ce
+
+```gradle
+task uploadCoverageToCodacy(type: JavaExec, dependsOn : jacocoTestReport) {
+   main = "com.codacy.CodacyCoverageReporter"
+   classpath = configurations.codacy
+   args = [
+            "-l",
+            "Java",
+            "-r",
+            "${buildDir}/test-results/jacoco/${archivesBaseName}.xml"
+           ]
+}
+
+task (codacyDepsize) << {
+def size = 0;
+configurations.codacy.collect { it.length() / (1024 * 1024) }.each { size += it }
+println "Total dependencies size: ${Math.round(size * 100) / 100} Mb"
+
+configurations
+        .codacy
+        .sort { -it.length() }
+        .each { println "${it.name} : ${Math.round(it.length() / (1024) * 100) / 100} kb" }
+}
+
+task (codacyLocs) << {
+    configurations.codacy.each {
+        String jarName = it
+        println jarName
+    }
+}
+```
+
 ## Troubleshooting
 
 If you receive a `Failed to upload report: Not Found`error when running the command, then you'll probably have codacy-coverage-reporter 1.0.3 installed. Make sure you install version 1.0.4, that fixes that error.
