@@ -114,6 +114,14 @@ task (codacyLocs) << {
 }
 ```
 
+## Community supported alternatives
+
+### Maven plugin
+
+Thanks to the amazing job of [halkeye](https://github.com/halkeye) you can now send your coverage to Codacy using a [maven plugin](https://github.com/halkeye/codacy-maven-plugin)!
+
+Just follow the [instructions on his repository](https://github.com/halkeye/codacy-maven-plugin/blob/master/README.md#usage).
+
 ## Troubleshooting
 
 If you receive a `Failed to upload report: Not Found`error when running the command, then you'll probably have codacy-coverage-reporter 1.0.3 installed. Make sure you install version 1.0.4, that fixes that error.
