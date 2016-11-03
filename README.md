@@ -71,12 +71,12 @@ To make sure you are using the version that you are building, you can remove you
 
 1- Clone our repository https://github.com/codacy/codacy-coverage-reporter
 
-2- Run the command `sbt assembly`. This will produce a .jar that you can run in the `codacy-coverage-reporter/target/codacy-coverage-reporter-assembly-1.0.4.jar`
+2- Run the command `sbt assembly`. This will produce a .jar that you can run in the `codacy-coverage-reporter/target/codacy-coverage-reporter-assembly-<version>.jar`
 
 3- In the project you want to send the coverage, use the jar. Example:
 
 ```
-~/git/codacy/java-project$ java -cp ../codacy-coverage-reporter/target/codacy-coverage-reporter-assembly-1.0.4.jar com.codacy.CodacyCoverageReporter -l Java -r jacoco.xml
+<path>/java-project$ java -cp ../codacy-coverage-reporter/target/codacy-coverage-reporter-assembly-<version>.jar com.codacy.CodacyCoverageReporter -l Java -r jacoco.xml
 ```
 
 ## Gradle task
