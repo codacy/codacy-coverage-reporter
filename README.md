@@ -114,6 +114,30 @@ task (codacyLocs) << {
 }
 ```
 
+___
+Gradle task by [Mr_ramych](https://github.com/MrRamych). Made up from solution above.
+
+```gradle
+configurations { codacy }
+repositories {
+    maven { url "https://jitpack.io" }
+    maven { url "http://dl.bintray.com/typesafe/maven-releases" }
+}
+dependencies {
+    codacy 'com.github.codacy:codacy-coverage-reporter:-SNAPSHOT'
+}
+task sendCoverageToCodacy(type: JavaExec, dependsOn: jacocoTestReport) {
+    main = "com.codacy.CodacyCoverageReporter"
+    classpath = configurations.codacy
+    args = [
+            "-l",
+            "Java",
+            "-r",
+            "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+    ]
+}
+```
+
 ## Community supported alternatives
 
 ### Maven plugin
