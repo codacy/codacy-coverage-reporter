@@ -100,13 +100,13 @@ object CodacyCoverageReporter {
 
   def coverageWithTokenAndCommit(config: Config): Either[String, String] = {
     val commitUUID =
-      sys.env.get("CI_COMMIT") orElse
-        sys.env.get("TRAVIS_PULL_REQUEST_SHA") orElse
-        sys.env.get("TRAVIS_COMMIT") orElse
-        sys.env.get("DRONE_COMMIT") orElse
-        sys.env.get("CIRCLE_SHA1") orElse
-        sys.env.get("CI_COMMIT_ID") orElse
-        sys.env.get("WERCKER_GIT_COMMIT")
+      getNonEmptyEnv("CI_COMMIT") orElse
+        getNonEmptyEnv("TRAVIS_PULL_REQUEST_SHA") orElse
+        getNonEmptyEnv("TRAVIS_COMMIT") orElse
+        getNonEmptyEnv("DRONE_COMMIT") orElse
+        getNonEmptyEnv("CIRCLE_SHA1") orElse
+        getNonEmptyEnv("CI_COMMIT_ID") orElse
+        getNonEmptyEnv("WERCKER_GIT_COMMIT")
           .filter(_.trim.nonEmpty)
 
     FileHelper.withTokenAndCommit(Some(config.projectToken), commitUUID) {
@@ -150,6 +150,10 @@ object CodacyCoverageReporter {
         logger.info(message)
         System.exit(0)
     }
+  }
+
+  private def getNonEmptyEnv(key: String): Option[String] = {
+    sys.env.get(key).filter(_.trim.nonEmpty)
   }
 
   private def transform[A](report: CoverageReport)(config: Config)(f: CoverageReport => A): A = {

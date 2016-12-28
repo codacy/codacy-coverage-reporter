@@ -37,12 +37,23 @@ Then set it in your terminal, replacing %Project_Token% with your own token:
 export CODACY_PROJECT_TOKEN=%Project_Token%
 ```
 
-**Enterprise**
+### CommitUUID Detection
 
-To send coverage in the enterprise version you should:
-```
-export CODACY_API_BASE_URL=<Codacy_instance_URL>:16006
-```
+Codacy automatically detects the CommitUUID from several sources:
+
+**Environment Variables**
+
+* CI_COMMIT
+* TRAVIS_PULL_REQUEST_SHA
+* TRAVIS_COMMIT
+* DRONE_COMMIT
+* CIRCLE_SHA1
+* CI_COMMIT_ID
+* WERCKER_GIT_COMMIT
+
+**Git directory**
+
+* If it finds a git directory it will get current commit.
 
 **Upload coverage**
 
@@ -53,6 +64,13 @@ codacy-coverage-reporter -l Java -r coverage.xml
 ```
 
 > Note: You should keep your API token well **protected**, as it grants owner permissions to your projects.
+
+###Enterprise
+
+To send coverage in the enterprise version you should:
+```
+export CODACY_API_BASE_URL=<Codacy_instance_URL>:16006
+```
 
 ## Java 6
 
