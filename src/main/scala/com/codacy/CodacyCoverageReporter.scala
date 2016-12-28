@@ -30,7 +30,8 @@ object CodacyCoverageReporter {
                     coverageReport: File = new File("coverage.xml"),
                     codacyApiBaseUrl: String = getApiBaseUrl,
                     prefix: String = "",
-                    debug: Boolean = false)
+                    debug: Boolean = false,
+                    commitUUID: Option[String] = commitUUIDOpt)
 
   implicit def languageRead: Read[Language.Value] = Read.reads { (s: String) =>
     Language.withName(s)
@@ -44,6 +45,17 @@ object CodacyCoverageReporter {
     sys.env.getOrElse("CODACY_PROJECT_TOKEN", "")
   }
 
+  lazy val commitUUIDOpt: Option[String] = {
+    getNonEmptyEnv("CI_COMMIT") orElse
+      getNonEmptyEnv("TRAVIS_PULL_REQUEST_SHA") orElse
+      getNonEmptyEnv("TRAVIS_COMMIT") orElse
+      getNonEmptyEnv("DRONE_COMMIT") orElse
+      getNonEmptyEnv("CIRCLE_SHA1") orElse
+      getNonEmptyEnv("CI_COMMIT_ID") orElse
+      getNonEmptyEnv("WERCKER_GIT_COMMIT")
+        .filter(_.trim.nonEmpty)
+  }
+
   private def validUrl(baseUrl: String) = {
     Try(new URL(baseUrl)).toOption.isDefined
   }
@@ -55,7 +67,7 @@ object CodacyCoverageReporter {
     parser.parse(args, Config()) match {
       case Some(config) if !validUrl(config.codacyApiBaseUrl) =>
         logger.error(s"Error: Invalid CODACY_API_BASE_URL: ${config.codacyApiBaseUrl}")
-        if(!config.codacyApiBaseUrl.startsWith("http")) {
+        if (!config.codacyApiBaseUrl.startsWith("http")) {
           logger.error("Maybe you forgot the http:// or https:// ?")
         }
 
@@ -90,6 +102,9 @@ object CodacyCoverageReporter {
       }.text("the base URL for the Codacy API")
       opt[String]("prefix").optional().action { (x, c) =>
         c.copy(prefix = x)
+      }.text("your commitUUID")
+      opt[String]("commitUUID").optional().action { (x, c) =>
+        c.copy(commitUUID = Some(x))
       }.text("the project path prefix")
       opt[Unit]("debug").optional().hidden().action { (_, c) =>
         c.copy(debug = true)
@@ -99,17 +114,7 @@ object CodacyCoverageReporter {
   }
 
   def coverageWithTokenAndCommit(config: Config): Either[String, String] = {
-    val commitUUID =
-      sys.env.get("CI_COMMIT") orElse
-        sys.env.get("TRAVIS_PULL_REQUEST_SHA") orElse
-        sys.env.get("TRAVIS_COMMIT") orElse
-        sys.env.get("DRONE_COMMIT") orElse
-        sys.env.get("CIRCLE_SHA1") orElse
-        sys.env.get("CI_COMMIT_ID") orElse
-        sys.env.get("WERCKER_GIT_COMMIT")
-          .filter(_.trim.nonEmpty)
-
-    FileHelper.withTokenAndCommit(Some(config.projectToken), commitUUID) {
+    FileHelper.withTokenAndCommit(Some(config.projectToken), config.commitUUID) {
       case (projectToken, commitUUID) =>
 
         logger.debug(s"Project token: $projectToken")
@@ -150,6 +155,10 @@ object CodacyCoverageReporter {
         logger.info(message)
         System.exit(0)
     }
+  }
+
+  private def getNonEmptyEnv(key: String): Option[String] = {
+    sys.env.get(key).filter(_.trim.nonEmpty)
   }
 
   private def transform[A](report: CoverageReport)(config: Config)(f: CoverageReport => A): A = {
