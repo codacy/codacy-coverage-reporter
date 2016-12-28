@@ -55,6 +55,13 @@ Codacy automatically detects the CommitUUID from several sources:
 
 * If it finds a git directory it will get current commit.
 
+**Force CommitUUID**
+
+* You may want to enforce a specific commitUUID with:
+```
+codacy-coverage-reporter -l Java --commitUUID "mycommituuid" -r coverage.xml
+```
+
 **Upload coverage**
 
 Next, simply run the Codacy reporter. It will find the current commit and send all details to your project dashboard:
