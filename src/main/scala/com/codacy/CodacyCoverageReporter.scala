@@ -11,7 +11,7 @@ import com.codacy.api.{CoverageReport, Language}
 import com.codacy.parsers.CoverageParserFactory
 import com.codacy.transformation.PathPrefixer
 import org.slf4j.LoggerFactory
-import scopt.Read
+import scopt.{OptionParser, Read}
 
 import scala.util.Try
 
@@ -85,7 +85,7 @@ object CodacyCoverageReporter {
 
   }
 
-  def buildParser = {
+  def buildParser: OptionParser[Config] = {
     new scopt.OptionParser[Config]("codacy-coverage-reporter") {
       head("codacy-coverage-reporter", getClass.getPackage.getImplementationVersion)
       opt[Language.Value]('l', "language").required().action { (x, c) =>
@@ -120,8 +120,6 @@ object CodacyCoverageReporter {
         logger.debug(s"Project token: $projectToken")
         logger.info(s"Parsing coverage data...")
 
-        //TODO: Check if config.coverageReport exists
-
         CoverageParserFactory.withCoverageReport(config.language, rootProjectDir, config.coverageReport)(transform(_)(config) {
           report =>
             val codacyReportFilename = s"${config.coverageReport.getAbsoluteFile.getParent}${File.separator}codacy-coverage.json"
@@ -147,13 +145,18 @@ object CodacyCoverageReporter {
   }
 
   def codacyCoverage(config: Config): Unit = {
-    coverageWithTokenAndCommit(config) match {
-      case Left(error) =>
-        logger.error(error)
-        System.exit(1)
-      case Right(message) =>
-        logger.info(message)
-        System.exit(0)
+    if (config.coverageReport.exists()) {
+      coverageWithTokenAndCommit(config) match {
+        case Left(error) =>
+          logger.error(error)
+          System.exit(1)
+        case Right(message) =>
+          logger.info(message)
+          System.exit(0)
+      }
+    } else {
+      logger.error(s"File ${config.coverageReport.getName} does not exist.")
+      System.exit(1)
     }
   }
 
