@@ -185,30 +185,33 @@ after_success:
   - ~/jpm/bin/codacy-coverage-reporter -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
 ```
 
-Make sure you have set `CODACY_PROJECT_TOKEN` as an environment variable in your travis job! 
+Make sure you have set `CODACY_PROJECT_TOKEN` as an environment variable in your travis job!
 
 ## Troubleshooting
 
-If you receive a `Failed to upload report: Not Found`error when running the command, then you'll probably have codacy-coverage-reporter 1.0.3 installed. Make sure you install version 1.0.4, that fixes that error.
+### `Failed to upload report: Not Found`
 
-Example (issue: [#11](https://github.com/codacy/codacy-coverage-reporter/issues/11)) : 
+Error when running the command, then you'll probably have codacy-coverage-reporter 1.0.3 installed.
+Make sure you install version 1.0.4, that fixes that error.
+
+Example (issue: [#11](https://github.com/codacy/codacy-coverage-reporter/issues/11)) :
 ```
 codacy-coverage-reporter -l Java -r PATH_TO_COVERAGE/coverage.xml
-2015-11-20 04:06:58,887 [info]  com.codacy Parsing coverage data... 
-2015-11-20 04:06:59,506 [info]  com.codacy Uploading coverage data... 
+2015-11-20 04:06:58,887 [info]  com.codacy Parsing coverage data...
+2015-11-20 04:06:59,506 [info]  com.codacy Uploading coverage data...
 
 2015-11-20 04:07:00,639 [error] com.codacy Failed to upload report: Not Found
 ```
-Even after doing all of the above troubleshooting steps in case you still encounter the same error 
+Even after doing all of the above troubleshooting steps in case you still encounter the same error
 
 ```
-2015-11-20 04:07:00,639 [error] com.codacy Failed to upload report: Not Found 
+2015-11-20 04:07:00,639 [error] com.codacy Failed to upload report: Not Found
 ```
 
 Please try running the command with a --prefix option with path to your code  as shown below , it helps to locate the files for which code coverage is desired
 
 ```
-codacy-coverage-reporter -l Java -r PATH_TO_COVERAGE/coverage.xml --prefix PATH_TO_THE_DIRECTORY 
+codacy-coverage-reporter -l Java -r PATH_TO_COVERAGE/coverage.xml --prefix PATH_TO_THE_DIRECTORY
 ```
 
 Example
@@ -216,6 +219,10 @@ Example
 ```
 codacy-coverage-reporter -l Java -r api/target/site/jacoco/jacoco.xml --prefix api/src/main/java/
 ```
+
+### Failed to install jpm on Mac OS:
+
+Follow the steps in `http://jpm4j.org/#!/md/macos`
 
 ## What is Codacy?
 
