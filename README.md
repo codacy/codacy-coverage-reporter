@@ -85,20 +85,32 @@ Due to a limitation in Java 6, the plugin is unable to establish a connection to
 You can run [this script](https://gist.github.com/mrfyda/51cdf48fa0722593db6a) after the execution to upload the generated report to Codacy.
 
 
+## Run with Jar
+
+If you are having any issues with your installation, you can run the coverage reporter jar directly.
+
+1. Download the latest jar from https://github.com/codacy/codacy-coverage-reporter/releases/latest
+
+2. Run the command bellow
+
+```
+$ java -cp codacy-coverage-reporter-assembly-<version>.jar com.codacy.CodacyCoverageReporter -l Java -r jacoco.xml
+```
+
 ## Build from source
 
 If you are having any issues with your installation, you can also build the coverage reporter from source.
 
-To make sure you are using the version that you are building, you can remove your previously installed version:
+**NOTE:** To make sure you are using the version that you are building, you can remove your previously installed version:
 ```
 [sudo] jpm remove codacy-coverage-reporter
 ```
 
-1- Clone our repository https://github.com/codacy/codacy-coverage-reporter
+1. Clone our repository https://github.com/codacy/codacy-coverage-reporter
 
-2- Run the command `sbt assembly`. This will produce a .jar that you can run in the `codacy-coverage-reporter/target/codacy-coverage-reporter-assembly-<version>.jar`
+2. Run the command `sbt assembly`. This will produce a .jar that you can run in the `codacy-coverage-reporter/target/codacy-coverage-reporter-assembly-<version>.jar`
 
-3- In the project you want to send the coverage, use the jar. Example:
+3. In the project you want to send the coverage, use the jar. Example:
 
 ```
 <path>/java-project$ java -cp ../codacy-coverage-reporter/target/codacy-coverage-reporter-assembly-<version>.jar com.codacy.CodacyCoverageReporter -l Java -r jacoco.xml
