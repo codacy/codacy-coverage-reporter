@@ -2,7 +2,7 @@ import Dependencies._
 
 name := "codacy-coverage-reporter"
 
-version := "1.0.5"
+version := "1.0.14"
 
 scalaVersion := "2.11.6"
 
@@ -23,6 +23,9 @@ libraryDependencies ++= Seq(
   codacyScalaApi,
   coverageParser,
   scopt,
+  log,
+  playLog,
+  raptureJsonPlay,
   scalaTest
 )
 

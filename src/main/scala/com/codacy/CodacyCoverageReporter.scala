@@ -2,18 +2,18 @@ package com.codacy
 
 import java.io.File
 import java.net.URL
-
 import ch.qos.logback.classic.{Level, Logger}
-import com.codacy.api.client.CodacyClient
+import com.codacy.api.client.{CodacyClient, FailedResponse, SuccessfulResponse}
 import com.codacy.api.helpers.FileHelper
 import com.codacy.api.service.CoverageServices
-import com.codacy.api.{CoverageReport, Language}
+import com.codacy.api.{CoverageFileReport, CoverageReport, Language}
 import com.codacy.parsers.CoverageParserFactory
 import com.codacy.transformation.PathPrefixer
 import org.slf4j.LoggerFactory
+import rapture.json.{Json, Serializer}
 import scopt.{OptionParser, Read}
-
 import scala.util.Try
+import rapture.json.jsonBackends.play._
 
 object CodacyCoverageReporter {
 
@@ -127,6 +127,7 @@ object CodacyCoverageReporter {
             val codacyReportFile = new File(codacyReportFilename)
 
             logger.debug(report.toString)
+            implicit val s3 = implicitly[Serializer[CoverageFileReport,Json]]
             FileHelper.writeJsonToFile(codacyReportFile, report)
 
             val codacyClient = new CodacyClient(Some(config.codacyApiBaseUrl), projectToken = Some(projectToken))
@@ -135,10 +136,10 @@ object CodacyCoverageReporter {
             logger.info(s"Uploading coverage data...")
 
             coverageServices.sendReport(commitUUID, config.language, report) match {
-              case requestResponse if requestResponse.hasError =>
-                Left(s"Failed to upload report: ${requestResponse.message}")
-              case requestResponse =>
-                Right(s"Coverage data uploaded. ${requestResponse.message}")
+              case SuccessfulResponse(value) =>
+                Right(s"Coverage data uploaded. $value")
+              case FailedResponse(message) =>
+                Left(s"Failed to upload report: $message")
             }
         }).joinRight
     }
