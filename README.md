@@ -72,7 +72,7 @@ codacy-coverage-reporter -l Java -r coverage.xml
 
 > Note: You should keep your API token well **protected**, as it grants owner permissions to your projects.
 
-###Enterprise
+### Enterprise
 
 To send coverage in the enterprise version you should:
 ```
