@@ -65,7 +65,7 @@ codacy-coverage-reporter -l Java --commitUUID "mycommituuid" -r coverage.xml
 Next, simply run the Codacy reporter. It will find the current commit and send all details to your project dashboard:
 
 ```
-codacy-coverage-reporter -l Java -r coverage.xml
+codacy-coverage-reporter -l Python -r coverage.xml
 ```
 
 > Note: You should keep your API token well **protected**, as it grants owner permissions to your projects.
