@@ -15,16 +15,14 @@ codacy-coverage-reporter will only work with:
 Codacy assumes that coverage is previously configured for your project.
 The official coverage tools we support for Java are JaCoCo and Cobertura.
 
-You can install the coverage reporter by running:
+You can run the coverage reporter:
 
-### [Install jpm](https://www.jpm4j.org/#!/md/install)
-```
-curl https://www.jpm4j.org/install/script | sh
-```
+1. Download the latest jar from https://github.com/codacy/codacy-coverage-reporter/releases/latest
 
-### Install codacy-coverage-reporter
+2. Run the command bellow
+
 ```
-jpm install com.codacy:codacy-coverage-reporter:assembly
+$ java -cp codacy-coverage-reporter-assembly-<version>.jar com.codacy.CodacyCoverageReporter -l Java -r jacoco.xml
 ```
 
 ## Updating Codacy
@@ -83,19 +81,6 @@ export CODACY_API_BASE_URL=<Codacy_instance_URL>:16006
 
 Due to a limitation in Java 6, the plugin is unable to establish a connection to codacy.com.
 You can run [this script](https://gist.github.com/mrfyda/51cdf48fa0722593db6a) after the execution to upload the generated report to Codacy.
-
-
-## Run with Jar
-
-If you are having any issues with your installation, you can run the coverage reporter jar directly.
-
-1. Download the latest jar from https://github.com/codacy/codacy-coverage-reporter/releases/latest
-
-2. Run the command bellow
-
-```
-$ java -cp codacy-coverage-reporter-assembly-<version>.jar com.codacy.CodacyCoverageReporter -l Java -r jacoco.xml
-```
 
 ## Build from source
 
