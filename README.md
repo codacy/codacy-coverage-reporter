@@ -159,6 +159,20 @@ task sendCoverageToCodacy(type: JavaExec, dependsOn: jacocoTestReport) {
     ]
 }
 ```
+___
+
+[Gradle plugin](https://plugins.gradle.org/plugin/io.github.ddimtirov.codacy), inspired from the two solutions above.
+
+Minimum usage, taking the configuration from environment variables:
+
+```gradle
+plugins {
+    id "io.github.ddimtirov.codacy" version "0.1.0"
+}
+repositories.maven { url "http://dl.bintray.com/typesafe/maven-releases" } // FIXME: remove when codacy uploader updates Play (see codacy-coverage-reporter#22)
+```
+
+For more details, check the [plugin README](https://github.com/ddimtirov/codacy-gradle-plugin/blob/master/README.md), or [open an issue](https://github.com/ddimtirov/codacy-gradle-plugin/issues) to document your use case.
 
 ## Community supported alternatives
 
