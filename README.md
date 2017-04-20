@@ -70,6 +70,12 @@ codacy-coverage-reporter -l Java -r coverage.xml
 
 > Note: You should keep your API token well **protected**, as it grants owner permissions to your projects.
 
+**Multiple coverage reports**
+
+If you have multiple modules generating multiple report files you need to merge them before invoking this reporter, since Codacy only receives one report per commit per language.
+
+Most coverage tools support merge/aggregation, example: http://www.eclemma.org/jacoco/trunk/doc/merge-mojo.html
+
 ### Enterprise
 
 To send coverage in the enterprise version you should:
