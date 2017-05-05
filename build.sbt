@@ -24,7 +24,6 @@ libraryDependencies ++= Seq(
   coverageParser,
   scopt,
   log,
-  playLog,
   raptureJsonPlay,
   scalaTest
 )
