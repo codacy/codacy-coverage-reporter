@@ -2,6 +2,7 @@ package com.codacy
 
 import java.io.File
 import java.net.URL
+
 import ch.qos.logback.classic.{Level, Logger}
 import com.codacy.api.client.{CodacyClient, FailedResponse, SuccessfulResponse}
 import com.codacy.api.helpers.FileHelper
@@ -10,10 +11,11 @@ import com.codacy.api.{CoverageFileReport, CoverageReport, Language}
 import com.codacy.parsers.CoverageParserFactory
 import com.codacy.transformation.PathPrefixer
 import org.slf4j.LoggerFactory
-import rapture.json.{Json, Serializer}
-import scopt.{OptionParser, Read}
-import scala.util.Try
 import rapture.json.jsonBackends.play._
+import rapture.json.{Json, Serializer}
+import scopt.OptionParser
+
+import scala.util.Try
 
 object CodacyCoverageReporter {
 
@@ -25,16 +27,19 @@ object CodacyCoverageReporter {
     logger
   }
 
-  case class Config(language: Language.Value = Language.Python,
+  case class Config(languageStr: String = Language.Python.toString,
+                    forceLanguage: Boolean = false,
                     projectToken: String = getProjectToken,
                     coverageReport: File = new File("coverage.xml"),
                     codacyApiBaseUrl: String = getApiBaseUrl,
                     prefix: String = "",
                     debug: Boolean = false,
-                    commitUUID: Option[String] = commitUUIDOpt)
+                    commitUUID: Option[String] = commitUUIDOpt) {
 
-  implicit def languageRead: Read[Language.Value] = Read.reads { (s: String) =>
-    Language.withName(s)
+    lazy val language: Language.Value =
+      Language.values.find(_.toString == languageStr).getOrElse(Language.NotDefined)
+
+    lazy val hasKnownLanguage: Boolean = language != Language.NotDefined
   }
 
   private def getApiBaseUrl: String = {
@@ -71,6 +76,9 @@ object CodacyCoverageReporter {
           logger.error("Maybe you forgot the http:// or https:// ?")
         }
 
+      case Some(config) if !config.hasKnownLanguage && !config.forceLanguage =>
+        logger.error(s"Invalid language ${config.languageStr}")
+
       case Some(config) if config.projectToken.trim.nonEmpty =>
         if (config.debug) {
           logger.setLevel(Level.DEBUG)
@@ -88,9 +96,12 @@ object CodacyCoverageReporter {
   def buildParser: OptionParser[Config] = {
     new scopt.OptionParser[Config]("codacy-coverage-reporter") {
       head("codacy-coverage-reporter", getClass.getPackage.getImplementationVersion)
-      opt[Language.Value]('l', "language").required().action { (x, c) =>
-        c.copy(language = x)
+      opt[String]('l', "language").required().action { (x, c) =>
+        c.copy(languageStr = x)
       }.text("your project language")
+      opt[Unit]('f', "forceLanguage").optional().hidden().action { (_, c) =>
+        c.copy(forceLanguage = true)
+      }
       opt[String]('t', "projectToken").optional().action { (x, c) =>
         c.copy(projectToken = x)
       }.text("your project API token")
@@ -127,7 +138,7 @@ object CodacyCoverageReporter {
             val codacyReportFile = new File(codacyReportFilename)
 
             logger.debug(report.toString)
-            implicit val s3 = implicitly[Serializer[CoverageFileReport,Json]]
+            implicit val s3 = implicitly[Serializer[CoverageFileReport, Json]]
             FileHelper.writeJsonToFile(codacyReportFile, report)
 
             val codacyClient = new CodacyClient(Some(config.codacyApiBaseUrl), projectToken = Some(projectToken))
@@ -135,7 +146,7 @@ object CodacyCoverageReporter {
 
             logger.info(s"Uploading coverage data...")
 
-            coverageServices.sendReport(commitUUID, config.language, report) match {
+            coverageServices.sendReport(commitUUID, config.languageStr, report) match {
               case SuccessfulResponse(value) =>
                 Right(s"Coverage data uploaded. $value")
               case FailedResponse(message) =>
