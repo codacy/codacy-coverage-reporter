@@ -7,7 +7,7 @@ import scala.collection.mutable.Stack
 
 class PathPrefixerTest extends FlatSpec with Matchers {
 
-  val report = CoverageReport(Language.Scala, 83, Seq(
+  val report = CoverageReport(83, Seq(
     CoverageFileReport("Filename.scala", 24, Map()),
     CoverageFileReport("OtherFile.scala", 74, Map())
   ))
