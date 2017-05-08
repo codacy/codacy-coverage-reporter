@@ -15,7 +15,8 @@ class CodacyCoverageReporterTest extends FlatSpec with Matchers {
 
   val args = Array("-l", "Scala", "-r", "coverage.xml")
 
-  val config = com.codacy.CodacyCoverageReporter.Config(Language.Scala,
+  val config = com.codacy.CodacyCoverageReporter.Config(Language.Scala.toString,
+                    false,
                     projToken,
                     coverageFile,
                     apiBaseUrl,
