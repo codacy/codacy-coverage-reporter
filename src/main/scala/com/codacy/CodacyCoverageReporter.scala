@@ -57,7 +57,8 @@ object CodacyCoverageReporter {
       getNonEmptyEnv("DRONE_COMMIT") orElse
       getNonEmptyEnv("CIRCLE_SHA1") orElse
       getNonEmptyEnv("CI_COMMIT_ID") orElse
-      getNonEmptyEnv("WERCKER_GIT_COMMIT")
+      getNonEmptyEnv("WERCKER_GIT_COMMIT") orElse
+      getNonEmptyEnv("CODEBUILD_RESOLVED_SOURCE_VERSION")
         .filter(_.trim.nonEmpty)
   }
 
