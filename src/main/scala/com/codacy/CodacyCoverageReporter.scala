@@ -114,10 +114,10 @@ object CodacyCoverageReporter {
       }.text("the base URL for the Codacy API")
       opt[String]("prefix").optional().action { (x, c) =>
         c.copy(prefix = x)
-      }.text("your commitUUID")
+      }.text("the project path prefix")
       opt[String]("commitUUID").optional().action { (x, c) =>
         c.copy(commitUUID = Some(x))
-      }.text("the project path prefix")
+      }.text("your commitUUID")
       opt[Unit]("debug").optional().hidden().action { (_, c) =>
         c.copy(debug = true)
       }
