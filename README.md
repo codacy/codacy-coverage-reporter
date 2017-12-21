@@ -77,6 +77,10 @@ If you have multiple modules generating multiple report files you need to merge 
 
 Most coverage tools support merge/aggregation, example: http://www.eclemma.org/jacoco/trunk/doc/merge-mojo.html
 
+**Other Languages**
+
+If your language is not in the list of supported languages, you can still coverage. Just provide the correct `--language` name and then add `--forceLanguage` to make sure it is sent.
+
 ### Enterprise
 
 To send coverage in the enterprise version you should:
