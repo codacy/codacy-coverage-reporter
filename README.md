@@ -1,14 +1,14 @@
-# codacy-coverage-reporter
+# Codacy Coverage Reporter
+
+Multi-language coverage reporter for Codacy https://www.codacy.com
+
 [![Codacy Badge](https://api.codacy.com/project/badge/grade/1c524e61cd8640e79b80d406eda8754b)](https://www.codacy.com/app/Codacy/codacy-coverage-reporter)
 [![Build Status](https://circleci.com/gh/codacy/codacy-coverage-reporter.png?style=shield&circle-token=:circle-token)](https://circleci.com/gh/codacy/codacy-coverage-reporter)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.codacy/codacy-coverage-reporter/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.codacy/codacy-coverage-reporter)
 
-Multi-language coverage reporter for Codacy https://www.codacy.com
+## Requirements
 
-```
-codacy-coverage-reporter will only work with:
-  * Java JRE 8 and higher
-```
+* Java JRE 8 and higher
 
 ## Setup
 
