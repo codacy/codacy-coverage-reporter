@@ -4,9 +4,9 @@ name := "codacy-coverage-reporter"
 
 version := "1.0.14"
 
-scalaVersion := "2.11.6"
+scalaVersion := "2.11.12"
 
-crossScalaVersions := Seq("2.10.5", "2.11.6")
+crossScalaVersions := Seq("2.10.7", "2.11.12")
 
 scalacOptions := Seq("-deprecation", "-feature", "-unchecked", "-Ywarn-adapted-args", "-Xlint", "-Xfatal-warnings")
 
