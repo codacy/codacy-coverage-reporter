@@ -4,8 +4,8 @@ import java.io.File
 import java.net.URL
 
 import ch.qos.logback.classic.{Level, Logger}
-import com.codacy.api.Language
-import com.codacy.rules.ReportRules
+import com.codacy.model.configuration.Config
+import com.codacy.rules.{ConfigurationRules, ReportRules}
 import org.slf4j.LoggerFactory
 import scopt.OptionParser
 
@@ -13,49 +13,14 @@ import scala.util.Try
 
 object CodacyCoverageReporter {
 
-  private val publicApiBaseUrl = "https://api.codacy.com"
-
-  private[codacy] val logger = {
+  private val logger = {
     val logger = LoggerFactory.getLogger("com.codacy.CodacyCoverageReporter").asInstanceOf[Logger]
     logger
   }
 
-  private lazy val reportRules = new ReportRules(logger)
+  private[codacy] lazy val reportRules = new ReportRules(logger)
+  private[codacy] lazy val configRules = new ConfigurationRules(logger)
 
-  case class Config(languageStr: String = Language.Python.toString,
-                    forceLanguage: Boolean = false,
-                    projectToken: String = getProjectToken,
-                    coverageReport: File = new File("coverage.xml"),
-                    codacyApiBaseUrl: String = getApiBaseUrl,
-                    prefix: String = "",
-                    debug: Boolean = false,
-                    commitUUID: Option[String] = commitUUIDOpt) {
-
-    lazy val language: Language.Value =
-      Language.values.find(_.toString == languageStr).getOrElse(Language.NotDefined)
-
-    lazy val hasKnownLanguage: Boolean = language != Language.NotDefined
-  }
-
-  private def getApiBaseUrl: String = {
-    sys.env.getOrElse("CODACY_API_BASE_URL", publicApiBaseUrl)
-  }
-
-  private def getProjectToken: String = {
-    sys.env.getOrElse("CODACY_PROJECT_TOKEN", "")
-  }
-
-  lazy val commitUUIDOpt: Option[String] = {
-    getNonEmptyEnv("CI_COMMIT") orElse
-      getNonEmptyEnv("TRAVIS_PULL_REQUEST_SHA") orElse
-      getNonEmptyEnv("TRAVIS_COMMIT") orElse
-      getNonEmptyEnv("DRONE_COMMIT") orElse
-      getNonEmptyEnv("CIRCLE_SHA1") orElse
-      getNonEmptyEnv("CI_COMMIT_ID") orElse
-      getNonEmptyEnv("WERCKER_GIT_COMMIT") orElse
-      getNonEmptyEnv("CODEBUILD_RESOLVED_SOURCE_VERSION")
-        .filter(_.trim.nonEmpty)
-  }
 
   private def validUrl(baseUrl: String) = {
     Try(new URL(baseUrl)).toOption.isDefined
@@ -65,7 +30,7 @@ object CodacyCoverageReporter {
 
     val parser = buildParser
 
-    parser.parse(args, Config()) match {
+    parser.parse(args, configRules.emptyConfig) match {
       case Some(config) if !validUrl(config.codacyApiBaseUrl) =>
         logger.error(s"Error: Invalid CODACY_API_BASE_URL: ${config.codacyApiBaseUrl}")
         if (!config.codacyApiBaseUrl.startsWith("http")) {
@@ -118,10 +83,6 @@ object CodacyCoverageReporter {
       }
       help("help").text("prints this usage text")
     }
-  }
-
-  private def getNonEmptyEnv(key: String): Option[String] = {
-    sys.env.get(key).filter(_.trim.nonEmpty)
   }
 
 }

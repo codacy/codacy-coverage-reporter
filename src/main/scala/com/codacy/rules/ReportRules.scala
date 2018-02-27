@@ -3,11 +3,11 @@ package com.codacy.rules
 import java.io.File
 
 import ch.qos.logback.classic.Logger
-import com.codacy.CodacyCoverageReporter.Config
 import com.codacy.api.client.{CodacyClient, FailedResponse, SuccessfulResponse}
 import com.codacy.api.helpers.FileHelper
 import com.codacy.api.service.CoverageServices
 import com.codacy.api.{CoverageFileReport, CoverageReport}
+import com.codacy.model.configuration.Config
 import com.codacy.parsers.CoverageParserFactory
 import com.codacy.transformation.PathPrefixer
 import rapture.json.jsonBackends.play._
