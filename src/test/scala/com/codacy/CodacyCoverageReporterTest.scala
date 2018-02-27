@@ -1,7 +1,9 @@
 package com.codacy
 
 import java.io.File
+
 import com.codacy.api.Language
+import com.codacy.rules.ReportRules
 import org.scalatest._
 import org.scalatest.OptionValues._
 import org.scalatest.EitherValues._
@@ -36,10 +38,11 @@ class CodacyCoverageReporterTest extends FlatSpec with Matchers {
   it should "codacyCoverage no parser" in {
 
     val parser = CodacyCoverageReporter.buildParser
+    val reportRules = new ReportRules(CodacyCoverageReporter.logger)
 
     parser.parse(args, config) match {
       case Some(conf) =>
-        val result = CodacyCoverageReporter.coverageWithTokenAndCommit(conf)
+        val result = reportRules.coverageWithTokenAndCommit(conf)
         result.left.value should be ("no parser for Scala")
       case _ =>
         fail("args parser error")

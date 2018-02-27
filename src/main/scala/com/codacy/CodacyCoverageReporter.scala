@@ -4,15 +4,9 @@ import java.io.File
 import java.net.URL
 
 import ch.qos.logback.classic.{Level, Logger}
-import com.codacy.api.client.{CodacyClient, FailedResponse, SuccessfulResponse}
-import com.codacy.api.helpers.FileHelper
-import com.codacy.api.service.CoverageServices
-import com.codacy.api.{CoverageFileReport, CoverageReport, Language}
-import com.codacy.parsers.CoverageParserFactory
-import com.codacy.transformation.PathPrefixer
+import com.codacy.api.Language
+import com.codacy.rules.ReportRules
 import org.slf4j.LoggerFactory
-import rapture.json.jsonBackends.play._
-import rapture.json.{Json, Serializer}
 import scopt.OptionParser
 
 import scala.util.Try
@@ -20,12 +14,13 @@ import scala.util.Try
 object CodacyCoverageReporter {
 
   private val publicApiBaseUrl = "https://api.codacy.com"
-  private val rootProjectDir = new File(System.getProperty("user.dir"))
 
-  private val logger = {
+  private[codacy] val logger = {
     val logger = LoggerFactory.getLogger("com.codacy.CodacyCoverageReporter").asInstanceOf[Logger]
     logger
   }
+
+  private lazy val reportRules = new ReportRules(logger)
 
   case class Config(languageStr: String = Language.Python.toString,
                     forceLanguage: Boolean = false,
@@ -86,7 +81,7 @@ object CodacyCoverageReporter {
         }
         logger.debug(config.toString)
 
-        codacyCoverage(config)
+        reportRules.codacyCoverage(config)
       case Some(config) if config.projectToken.trim.isEmpty =>
         logger.error("Error: Missing option --projectToken")
       case _ =>
@@ -125,65 +120,8 @@ object CodacyCoverageReporter {
     }
   }
 
-  def coverageWithTokenAndCommit(config: Config): Either[String, String] = {
-    FileHelper.withTokenAndCommit(Some(config.projectToken), config.commitUUID) {
-      case (projectToken, commitUUID) =>
-
-        logger.debug(s"Project token: $projectToken")
-        logger.info(s"Parsing coverage data...")
-
-        CoverageParserFactory.withCoverageReport(config.language, rootProjectDir, config.coverageReport)(transform(_)(config) {
-          report =>
-            val codacyReportFilename = s"${config.coverageReport.getAbsoluteFile.getParent}${File.separator}codacy-coverage.json"
-            logger.debug(s"Saving parsed report to $codacyReportFilename")
-            val codacyReportFile = new File(codacyReportFilename)
-
-            logger.debug(report.toString)
-            implicit val s3 = implicitly[Serializer[CoverageFileReport, Json]]
-            FileHelper.writeJsonToFile(codacyReportFile, report)
-
-            val codacyClient = new CodacyClient(Some(config.codacyApiBaseUrl), projectToken = Some(projectToken))
-            val coverageServices = new CoverageServices(codacyClient)
-
-            logger.info(s"Uploading coverage data...")
-
-            coverageServices.sendReport(commitUUID, config.languageStr, report) match {
-              case SuccessfulResponse(value) =>
-                Right(s"Coverage data uploaded. $value")
-              case FailedResponse(message) =>
-                Left(s"Failed to upload report: $message")
-            }
-        }).joinRight
-    }
-  }
-
-  def codacyCoverage(config: Config): Unit = {
-    if (config.coverageReport.exists()) {
-      coverageWithTokenAndCommit(config) match {
-        case Left(error) =>
-          logger.error(error)
-          System.exit(1)
-        case Right(message) =>
-          logger.info(message)
-          System.exit(0)
-      }
-    } else {
-      logger.error(s"File ${config.coverageReport.getName} does not exist.")
-      System.exit(1)
-    }
-  }
-
   private def getNonEmptyEnv(key: String): Option[String] = {
     sys.env.get(key).filter(_.trim.nonEmpty)
-  }
-
-  private def transform[A](report: CoverageReport)(config: Config)(f: CoverageReport => A): A = {
-    val transformations = Set(new PathPrefixer(config.prefix))
-    val transformedReport = transformations.foldLeft(report) {
-      (report, transformation) => transformation.execute(report)
-    }
-
-    f(transformedReport)
   }
 
 }
