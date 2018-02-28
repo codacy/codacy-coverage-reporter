@@ -4,17 +4,15 @@ name := "codacy-coverage-reporter"
 
 version := "1.0.14"
 
-scalaVersion := "2.11.12"
-
-crossScalaVersions := Seq("2.10.7", "2.11.12")
+scalaVersion := "2.12.4"
 
 scalacOptions := Seq("-deprecation", "-feature", "-unchecked", "-Ywarn-adapted-args", "-Xlint", "-Xfatal-warnings")
 
 resolvers ++= Seq(
   DefaultMavenRepository,
-  "Sonatype releases" at "https://oss.sonatype.org/content/repositories/releases/",
-  "Sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/",
-  "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
+  Resolver.sonatypeRepo("releases"),
+  Resolver.sonatypeRepo("snapshots"),
+  Resolver.typesafeRepo("releases"),
   Classpaths.typesafeReleases,
   Classpaths.sbtPluginReleases
 )

@@ -3,15 +3,14 @@ package com.codacy.rules
 import java.io.File
 
 import ch.qos.logback.classic.Logger
+import com.codacy.api.CoverageReport
 import com.codacy.api.client.{CodacyClient, FailedResponse, SuccessfulResponse}
 import com.codacy.api.helpers.FileHelper
 import com.codacy.api.service.CoverageServices
-import com.codacy.api.{CoverageFileReport, CoverageReport}
 import com.codacy.model.configuration.Config
 import com.codacy.parsers.CoverageParserFactory
 import com.codacy.transformation.PathPrefixer
 import rapture.json.jsonBackends.play._
-import rapture.json.{Json, Serializer}
 
 class ReportRules(logger: => Logger) {
 
@@ -31,7 +30,6 @@ class ReportRules(logger: => Logger) {
             val codacyReportFile = new File(codacyReportFilename)
 
             logger.debug(report.toString)
-            implicit val s3 = implicitly[Serializer[CoverageFileReport, Json]]
             FileHelper.writeJsonToFile(codacyReportFile, report)
 
             val codacyClient = new CodacyClient(Some(config.codacyApiBaseUrl), projectToken = Some(projectToken))
