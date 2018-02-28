@@ -19,23 +19,10 @@ class CodacyCoverageReporterTest extends FlatSpec with Matchers {
   lazy val reportRules = CodacyCoverageReporter.reportRules
   lazy val configRules = CodacyCoverageReporter.configRules
 
-  private val config = configRules.emptyConfig
-    .copy(
-      Language.Scala.toString,
-      forceLanguage = false,
-      projToken,
-      coverageFile,
-      apiBaseUrl,
-      prefix,
-      debug = false
-    )
-
 
   "CodacyCoverageReporter" should "buildParser" in {
 
-    val parser = CodacyCoverageReporter.buildParser
-
-    val result = parser.parse(args, config)
+    val result = configRules.parseConfig(args)
 
     result.value.language should be(Language.Scala)
     result.value.coverageReport.toString should be("coverage.xml")
@@ -43,9 +30,7 @@ class CodacyCoverageReporterTest extends FlatSpec with Matchers {
 
   it should "codacyCoverage no parser" in {
 
-    val parser = CodacyCoverageReporter.buildParser
-
-    parser.parse(args, config) match {
+    configRules.parseConfig(args) match {
       case Some(conf) =>
         val result = reportRules.coverageWithTokenAndCommit(conf)
         result.left.value should be("no parser for Scala")
