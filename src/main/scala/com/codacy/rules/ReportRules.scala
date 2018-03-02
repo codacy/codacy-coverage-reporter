@@ -41,7 +41,7 @@ class ReportRules(config: Configuration,
     FileHelper.withCommit(config.baseConfig.commitUUID) { commitUUID =>
       coverageServices.sendFinalNotification(commitUUID) match {
         case SuccessfulResponse(value) =>
-          Right(s"Final coverage notification sent. $value")
+          Right(s"Final coverage notification sent. ${value.success}")
         case FailedResponse(message) =>
           Left(s"Failed to send final coverage notification: $message")
       }
@@ -52,28 +52,28 @@ class ReportRules(config: Configuration,
   private[rules] def coverageWithTokenAndCommit(config: ReportConfig): Either[String, String] = {
     FileHelper.withCommit(config.baseConfig.commitUUID) { commitUUID =>
 
-        logger.debug(s"Project token: ${config.baseConfig.projectToken}")
-        logger.info(s"Parsing coverage data...")
+      logger.debug(s"Project token: ${config.baseConfig.projectToken}")
+      logger.info(s"Parsing coverage data...")
 
-        CoverageParserFactory.withCoverageReport(config.language, rootProjectDir, config.coverageReport)(transform(_)(config) {
-          report =>
-            val codacyReportFilename = s"${config.coverageReport.getAbsoluteFile.getParent}${File.separator}codacy-coverage.json"
-            logger.debug(s"Saving parsed report to $codacyReportFilename")
-            val codacyReportFile = new File(codacyReportFilename)
+      CoverageParserFactory.withCoverageReport(config.language, rootProjectDir, config.coverageReport)(transform(_)(config) {
+        report =>
+          val codacyReportFilename = s"${config.coverageReport.getAbsoluteFile.getParent}${File.separator}codacy-coverage.json"
+          logger.debug(s"Saving parsed report to $codacyReportFilename")
+          val codacyReportFile = new File(codacyReportFilename)
 
-            logger.debug(report.toString)
-            implicit val ser = implicitly[Serializer[CoverageFileReport, Json]]
-            FileHelper.writeJsonToFile(codacyReportFile, report)
+          logger.debug(report.toString)
+          implicit val ser = implicitly[Serializer[CoverageFileReport, Json]]
+          FileHelper.writeJsonToFile(codacyReportFile, report)
 
-            logger.info(s"Uploading coverage data...")
+          logger.info(s"Uploading coverage data...")
 
-            coverageServices.sendReport(commitUUID, config.languageStr, report) match {
-              case SuccessfulResponse(value) =>
-                Right(s"Coverage data uploaded. $value")
-              case FailedResponse(message) =>
-                Left(s"Failed to upload report: $message")
-            }
-        }).joinRight
+          coverageServices.sendReport(commitUUID, config.languageStr, report) match {
+            case SuccessfulResponse(value) =>
+              Right(s"Coverage data uploaded. ${value.success}")
+            case FailedResponse(message) =>
+              Left(s"Failed to upload report: $message")
+          }
+      }).joinRight
     }
   }
 
