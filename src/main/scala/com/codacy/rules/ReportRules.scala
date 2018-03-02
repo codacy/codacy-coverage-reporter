@@ -2,19 +2,20 @@ package com.codacy.rules
 
 import java.io.File
 
-import cats.implicits._
-import ch.qos.logback.classic.Logger
-import com.codacy.api.{CoverageFileReport, CoverageReport}
 import com.codacy.api.client.{CodacyClient, FailedResponse, SuccessfulResponse}
 import com.codacy.api.helpers.FileHelper
 import com.codacy.api.service.CoverageServices
+import com.codacy.api.{CoverageFileReport, CoverageReport}
 import com.codacy.model.configuration.{FinalConfig, ReportConfig}
 import com.codacy.parsers.CoverageParserFactory
 import com.codacy.transformation.PathPrefixer
-import rapture.json.{Json, Serializer}
+import org.log4s.getLogger
 import rapture.json.jsonBackends.play._
+import rapture.json.{Json, Serializer}
 
-class ReportRules(logger: => Logger) {
+class ReportRules {
+
+  private val logger = getLogger
 
   private val rootProjectDir = new File(System.getProperty("user.dir"))
 

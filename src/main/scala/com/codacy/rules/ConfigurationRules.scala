@@ -3,14 +3,16 @@ package com.codacy.rules
 import java.net.URL
 
 import cats.implicits._
-import ch.qos.logback.classic.Logger
 import com.codacy.configuration.parser.{BaseCommandConfig, CommandConfiguration, Final, Report}
 import com.codacy.model.configuration.{BaseConfig, Configuration, FinalConfig, ReportConfig}
+import org.log4s.getLogger
 
 import scala.util.Try
 
-class ConfigurationRules(logger: => Logger) {
+class ConfigurationRules {
   private val publicApiBaseUrl = "https://api.codacy.com"
+
+  private val logger = getLogger
 
   def validateConfig(cmdConfig: CommandConfiguration): Either[String, Configuration] = {
     cmdConfig match {

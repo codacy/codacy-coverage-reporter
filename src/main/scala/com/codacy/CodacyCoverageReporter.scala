@@ -1,21 +1,18 @@
 package com.codacy
 
 import cats.implicits._
-import ch.qos.logback.classic.{Level, Logger}
+import ch.qos.logback.classic.Level
 import com.codacy.configuration.parser.{CommandConfiguration, ConfigurationParsingApp}
 import com.codacy.model.configuration.{Configuration, FinalConfig, ReportConfig}
 import com.codacy.rules.{ConfigurationRules, ReportRules}
-import org.slf4j.LoggerFactory
+import org.log4s.getLogger
 
 object CodacyCoverageReporter extends ConfigurationParsingApp {
 
-  private val logger = {
-    val logger = LoggerFactory.getLogger("com.codacy.CodacyCoverageReporter").asInstanceOf[Logger]
-    logger
-  }
+  private val logger = getLogger
 
-  private[codacy] lazy val reportRules = new ReportRules(logger)
-  private[codacy] lazy val configRules = new ConfigurationRules(logger)
+  private[codacy] lazy val reportRules = new ReportRules
+  private[codacy] lazy val configRules = new ConfigurationRules
 
 
   def run(commandConfig: CommandConfiguration): Unit = {
@@ -42,7 +39,9 @@ object CodacyCoverageReporter extends ConfigurationParsingApp {
 
   private def setLoggerLevel(config: Configuration): Unit = {
     if (config.baseConfig.debug) {
-      logger.setLevel(Level.DEBUG)
+      logger.logger
+        .asInstanceOf[ch.qos.logback.classic.Logger]
+        .setLevel(Level.DEBUG)
     }
   }
 

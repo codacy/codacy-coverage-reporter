@@ -22,8 +22,8 @@ resolvers ++= Seq(
 libraryDependencies ++= Seq(
   codacyScalaApi,
   coverageParser,
-  scopt,
   logback,
+  log4s,
   caseApp,
   raptureJsonPlay,
   scalaTest,

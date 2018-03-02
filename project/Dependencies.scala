@@ -2,9 +2,8 @@ import sbt._
 
 object Dependencies {
 
-  lazy val codacyScalaApi = "com.codacy" %% "codacy-api-scala" % "3.0.3"
+  lazy val codacyScalaApi = "com.codacy" %% "codacy-api-scala" % "1.0.3-SNAPSHOT"
   lazy val coverageParser = "com.codacy" %% "coverage-parser" % "2.0.3"
-  lazy val scopt = "com.github.scopt" %% "scopt" % "3.7.0"
   lazy val caseApp = "com.github.alexarchambault" %% "case-app" % "1.2.0"
   lazy val raptureJsonPlay = "com.propensive" %% "rapture-json-play" % "2.0.0-M8"
 
@@ -13,5 +12,5 @@ object Dependencies {
   lazy val cats = "org.typelevel" %% "cats-core" % "1.0.1"
 
   lazy val logback = "ch.qos.logback" % "logback-classic" % "1.2.3"
-//  lazy val log4s = "org.log4s" %% "log4s" % "1.5.0"
+  lazy val log4s = "org.log4s" %% "log4s" % "1.5.0"
 }
