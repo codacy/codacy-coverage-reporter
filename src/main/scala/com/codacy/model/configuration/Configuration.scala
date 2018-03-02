@@ -4,18 +4,29 @@ import java.io.File
 
 import com.codacy.api.Language
 
-case class Config(languageStr: String,
-                      forceLanguage: Boolean,
-                      projectToken: String,
-                      coverageReport: File,
-                      codacyApiBaseUrl: String,
-                      prefix: String,
-                      commitUUID: Option[String],
-                      debug: Boolean
-                     ) {
+sealed trait Configuration {
+  def baseConfig: BaseConfig
+}
+
+case class ReportConfig(baseConfig: BaseConfig,
+                        languageStr: String,
+                        forceLanguage: Boolean,
+                        coverageReport: File,
+                        prefix: String
+                       ) extends Configuration {
 
   lazy val language: Language.Value =
     Language.values.find(_.toString == languageStr).getOrElse(Language.NotDefined)
 
   lazy val hasKnownLanguage: Boolean = language != Language.NotDefined
 }
+
+
+case class FinalConfig(baseConfig: BaseConfig) extends Configuration
+
+
+case class BaseConfig(projectToken: String,
+                      codacyApiBaseUrl: String,
+                      commitUUID: Option[String],
+                      debug: Boolean
+                     )

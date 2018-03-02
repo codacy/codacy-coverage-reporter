@@ -8,6 +8,8 @@ scalaVersion := "2.12.4"
 
 scalacOptions := Seq("-deprecation", "-feature", "-unchecked", "-Ywarn-adapted-args", "-Xlint", "-Xfatal-warnings")
 
+scalacOptions += "-Ypartial-unification"
+
 resolvers ++= Seq(
   DefaultMavenRepository,
   Resolver.sonatypeRepo("releases"),
@@ -21,7 +23,8 @@ libraryDependencies ++= Seq(
   codacyScalaApi,
   coverageParser,
   scopt,
-  log,
+  logback,
+  caseApp,
   raptureJsonPlay,
   scalaTest
 )

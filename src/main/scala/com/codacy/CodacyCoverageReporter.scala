@@ -1,14 +1,12 @@
 package com.codacy
 
-import java.net.URL
-
 import ch.qos.logback.classic.{Level, Logger}
+import com.codacy.configuration.parser.{CommandConfiguration, ConfigurationParsingApp}
+import com.codacy.model.configuration.{Configuration, FinalConfig, ReportConfig}
 import com.codacy.rules.{ConfigurationRules, ReportRules}
 import org.slf4j.LoggerFactory
 
-import scala.util.Try
-
-object CodacyCoverageReporter {
+object CodacyCoverageReporter extends ConfigurationParsingApp {
 
   private val logger = {
     val logger = LoggerFactory.getLogger("com.codacy.CodacyCoverageReporter").asInstanceOf[Logger]
@@ -19,34 +17,32 @@ object CodacyCoverageReporter {
   private[codacy] lazy val configRules = new ConfigurationRules(logger)
 
 
-  def main(args: Array[String]): Unit = {
+  def run(commandConfig: CommandConfiguration): Unit = {
+    val validatedConfig = configRules.validateConfig(commandConfig)
 
-    configRules.parseConfig(args) match {
-      case Some(config) if !validUrl(config.codacyApiBaseUrl) =>
-        logger.error(s"Error: Invalid CODACY_API_BASE_URL: ${config.codacyApiBaseUrl}")
-        if (!config.codacyApiBaseUrl.startsWith("http")) {
-          logger.error("Maybe you forgot the http:// or https:// ?")
-        }
-
-      case Some(config) if !config.hasKnownLanguage && !config.forceLanguage =>
-        logger.error(s"Invalid language ${config.languageStr}")
-
-      case Some(config) if config.projectToken.trim.nonEmpty =>
-        if (config.debug) {
-          logger.setLevel(Level.DEBUG)
-        }
-        logger.debug(config.toString)
-
-        reportRules.codacyCoverage(config)
-      case Some(config) if config.projectToken.trim.isEmpty =>
-        logger.error("Error: Missing option --projectToken")
-      case _ =>
+    validatedConfig.foreach { config =>
+      setLoggerLevel(config)
+      logger.debug(commandConfig.toString)
     }
 
+    validatedConfig
+      .fold({ error =>
+        logger.error(s"Invalid configuration: \n$error")
+        sys.exit(1)
+      }, {
+        case config: ReportConfig =>
+          reportRules.codacyCoverage(config)
+
+        case config: FinalConfig =>
+          reportRules.finalReport(config)
+      })
   }
 
-  private def validUrl(baseUrl: String) = {
-    Try(new URL(baseUrl)).toOption.isDefined
+
+  private def setLoggerLevel(config: Configuration): Unit = {
+    if (config.baseConfig.debug) {
+      logger.setLevel(Level.DEBUG)
+    }
   }
 
 }

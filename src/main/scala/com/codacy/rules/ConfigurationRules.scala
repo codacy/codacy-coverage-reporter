@@ -1,59 +1,81 @@
 package com.codacy.rules
 
-import java.io.File
+import java.net.URL
 
 import ch.qos.logback.classic.Logger
-import com.codacy.CodacyCoverageReporter.configRules
-import com.codacy.api.Language
-import com.codacy.model.configuration.Config
-import scopt.OptionParser
+import com.codacy.configuration.parser.{BaseCommandConfig, CommandConfiguration, Final, Report}
+import com.codacy.model.configuration.{BaseConfig, Configuration, FinalConfig, ReportConfig}
+
+import scala.util.Try
 
 class ConfigurationRules(logger: => Logger) {
   private val publicApiBaseUrl = "https://api.codacy.com"
 
-  val emptyConfig =
-    Config(
-      Language.Python.toString,
-      forceLanguage = false,
-      getProjectToken,
-      new File("coverage.xml"),
-      getApiBaseUrl,
-      "",
-      commitUUIDOpt,
-      debug = false)
+  def validateConfig(cmdConfig: CommandConfiguration): Either[String, Configuration] = {
+    cmdConfig match {
+      case config: Report =>
+        validateReportConfig(config)
+      case config: Final =>
+        validateFinalConfig(config)
+    }
+  }
 
 
-  def parseConfig(args: Array[String]): Option[Config] =
-    buildParser.parse(args, configRules.emptyConfig)
+  private def validateFinalConfig(finalConfig: Final): Either[String, FinalConfig] = {
+    for {
+      baseConfig <- validateBaseConfig(finalConfig.baseConfig)
+    } yield FinalConfig(baseConfig)
+  }
 
-  private def buildParser: OptionParser[Config] = {
-    new scopt.OptionParser[Config]("codacy-coverage-reporter") {
-      head("codacy-coverage-reporter", getClass.getPackage.getImplementationVersion)
-      opt[String]('l', "language").required().action { (x, c) =>
-        c.copy(languageStr = x)
-      }.text("your project language")
-      opt[Unit]('f', "forceLanguage").optional().hidden().action { (_, c) =>
-        c.copy(forceLanguage = true)
+  private def validateReportConfig(reportConfig: Report): Either[String, ReportConfig] = {
+    def validate(reportConf: ReportConfig) = {
+      reportConf match {
+        case config if !config.hasKnownLanguage && !config.forceLanguage =>
+          logger.error(s"Error: Invalid language ${config.languageStr}")
+          Left("")
+
+        case _ =>
+          Right(reportConf)
       }
-      opt[String]('t', "projectToken").optional().action { (x, c) =>
-        c.copy(projectToken = x)
-      }.text("your project API token")
-      opt[File]('r', "coverageReport").required().action { (x, c) =>
-        c.copy(coverageReport = x)
-      }.text("your project coverage file name")
-      opt[String]("codacyApiBaseUrl").optional().action { (x, c) =>
-        c.copy(codacyApiBaseUrl = x)
-      }.text("the base URL for the Codacy API")
-      opt[String]("prefix").optional().action { (x, c) =>
-        c.copy(prefix = x)
-      }.text("the project path prefix")
-      opt[String]("commitUUID").optional().action { (x, c) =>
-        c.copy(commitUUID = Some(x))
-      }.text("your commitUUID")
-      opt[Unit]("debug").optional().hidden().action { (_, c) =>
-        c.copy(debug = true)
-      }
-      help("help").text("prints this usage text")
+    }
+
+    for {
+      baseConfig <- validateBaseConfig(reportConfig.baseConfig)
+      reportConf = ReportConfig(
+        baseConfig,
+        reportConfig.languageStr,
+        reportConfig.forceLanguage.fold(false)(_ => true),
+        reportConfig.coverageReport,
+        reportConfig.prefix.getOrElse("")
+      )
+      validatedConfig <- validate(reportConf)
+    } yield validatedConfig
+
+
+  }
+
+  private def validateBaseConfig(baseConfig: BaseCommandConfig): Either[String, BaseConfig] = {
+    val baseConf = BaseConfig(
+      baseConfig.projectToken.getOrElse(getProjectToken),
+      baseConfig.codacyApiBaseUrl.getOrElse(getApiBaseUrl),
+      baseConfig.commitUUID.orElse(commitUUIDOpt),
+      baseConfig.debug.fold(false)(_ => true)
+    )
+
+    baseConf match {
+      case config if !validUrl(config.codacyApiBaseUrl) =>
+        logger.error(s"Error: Invalid CODACY_API_BASE_URL: ${config.codacyApiBaseUrl}")
+        if (!config.codacyApiBaseUrl.startsWith("http")) {
+          logger.error("Maybe you forgot the http:// or https:// ?")
+        }
+        Left("")
+
+      case config if config.projectToken.trim.isEmpty =>
+        logger.error("Error: Missing option --projectToken")
+        Left("")
+
+      case _ =>
+        Right(baseConf)
     }
   }
 
@@ -79,6 +101,10 @@ class ConfigurationRules(logger: => Logger) {
 
   private def getProjectToken: String = {
     sys.env.getOrElse("CODACY_PROJECT_TOKEN", "")
+  }
+
+  private def validUrl(baseUrl: String) = {
+    Try(new URL(baseUrl)).toOption.isDefined
   }
 
 }
