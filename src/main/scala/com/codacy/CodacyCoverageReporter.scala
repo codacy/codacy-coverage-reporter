@@ -1,5 +1,6 @@
 package com.codacy
 
+import cats.implicits._
 import ch.qos.logback.classic.{Level, Logger}
 import com.codacy.configuration.parser.{CommandConfiguration, ConfigurationParsingApp}
 import com.codacy.model.configuration.{Configuration, FinalConfig, ReportConfig}

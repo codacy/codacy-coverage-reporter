@@ -4,7 +4,7 @@ name := "codacy-coverage-reporter"
 
 version := "1.0.14"
 
-scalaVersion := "2.12.4"
+scalaVersion := "2.11.12"
 
 scalacOptions := Seq("-deprecation", "-feature", "-unchecked", "-Ywarn-adapted-args", "-Xlint", "-Xfatal-warnings")
 
@@ -26,7 +26,8 @@ libraryDependencies ++= Seq(
   logback,
   caseApp,
   raptureJsonPlay,
-  scalaTest
+  scalaTest,
+  cats
 )
 
 assemblyMergeStrategy in assembly := {
