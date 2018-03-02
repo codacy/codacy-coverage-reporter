@@ -3,7 +3,7 @@ import sbt._
 object Dependencies {
 
   lazy val codacyScalaApi = "com.codacy" %% "codacy-api-scala" % "1.0.3-SNAPSHOT"
-  lazy val coverageParser = "com.codacy" %% "coverage-parser" % "2.0.3"
+  lazy val coverageParser = "com.codacy" %% "coverage-parser" % "1.1.1-SNAPSHOT"
   lazy val caseApp = "com.github.alexarchambault" %% "case-app" % "1.2.0"
   lazy val raptureJsonPlay = "com.propensive" %% "rapture-json-play" % "2.0.0-M8"
 

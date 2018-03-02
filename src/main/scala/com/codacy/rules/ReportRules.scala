@@ -37,14 +37,22 @@ class ReportRules(config: Configuration,
     }
   }
 
-  def finalReport(config: FinalConfig): Unit = ???
+  def finalReport(config: FinalConfig): Either[String, String] = {
+    FileHelper.withCommit(config.baseConfig.commitUUID) { commitUUID =>
+      coverageServices.sendFinalNotification(commitUUID) match {
+        case SuccessfulResponse(value) =>
+          Right(s"Final coverage notification sent. $value")
+        case FailedResponse(message) =>
+          Left(s"Failed to send final coverage notification: $message")
+      }
+    }
+  }
 
 
   private[rules] def coverageWithTokenAndCommit(config: ReportConfig): Either[String, String] = {
-    FileHelper.withTokenAndCommit(Some(config.baseConfig.projectToken), config.baseConfig.commitUUID) {
-      case (projectToken, commitUUID) =>
+    FileHelper.withCommit(config.baseConfig.commitUUID) { commitUUID =>
 
-        logger.debug(s"Project token: $projectToken")
+        logger.debug(s"Project token: ${config.baseConfig.projectToken}")
         logger.info(s"Parsing coverage data...")
 
         CoverageParserFactory.withCoverageReport(config.language, rootProjectDir, config.coverageReport)(transform(_)(config) {

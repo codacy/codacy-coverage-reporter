@@ -9,7 +9,8 @@ object CodacyCoverageReporter extends ConfigurationParsingApp {
 
   def run(commandConfig: CommandConfiguration): Unit = {
     val components = new Components(commandConfig)
-    import components._
+
+    val validatedConfig = components.validatedConfig
 
     val logger = LoggerHelper.logger(this.getClass, validatedConfig)
 
@@ -17,10 +18,10 @@ object CodacyCoverageReporter extends ConfigurationParsingApp {
 
     validatedConfig match {
       case config: ReportConfig =>
-        reportRules.codacyCoverage(config)
+        components.reportRules.codacyCoverage(config)
 
       case config: FinalConfig =>
-        reportRules.finalReport(config)
+        components.reportRules.finalReport(config)
     }
   }
 
