@@ -11,8 +11,6 @@
         </encoder>
     </appender>
 
-    <logger name="com.codacy" level="DEBUG"/>
-
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
     </root>

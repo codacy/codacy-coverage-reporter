@@ -4,17 +4,28 @@ import java.net.URL
 
 import cats.implicits._
 import com.codacy.configuration.parser.{BaseCommandConfig, CommandConfiguration, Final, Report}
+import com.codacy.helpers.LoggerHelper
 import com.codacy.model.configuration.{BaseConfig, Configuration, FinalConfig, ReportConfig}
-import org.log4s.getLogger
 
 import scala.util.Try
 
-class ConfigurationRules {
+class ConfigurationRules(cmdConfig: CommandConfiguration) {
   private val publicApiBaseUrl = "https://api.codacy.com"
 
-  private val logger = getLogger
+  private val logger = LoggerHelper.logger(getClass, cmdConfig)
 
-  def validateConfig(cmdConfig: CommandConfiguration): Either[String, Configuration] = {
+
+  lazy val validatedConfig: Configuration = {
+    validateConfig(cmdConfig)
+      .fold({ error =>
+        logger.error(s"Invalid configuration: \n$error")
+        sys.exit(1)
+      },
+        identity
+      )
+  }
+
+  private def validateConfig(cmdConfig: CommandConfiguration): Either[String, Configuration] = {
     cmdConfig match {
       case config: Report =>
         validateReportConfig(config)
@@ -74,7 +85,7 @@ class ConfigurationRules {
         Left("")
 
       case config if config.projectToken.trim.isEmpty =>
-        logger.error("Error: Missing option --projectToken")
+        logger.error("Error: Missing option --project-token")
         Left("")
 
       case _ =>

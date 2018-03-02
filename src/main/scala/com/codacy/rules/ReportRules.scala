@@ -2,20 +2,22 @@ package com.codacy.rules
 
 import java.io.File
 
-import com.codacy.api.client.{CodacyClient, FailedResponse, SuccessfulResponse}
+import com.codacy.api.client.{FailedResponse, SuccessfulResponse}
 import com.codacy.api.helpers.FileHelper
 import com.codacy.api.service.CoverageServices
 import com.codacy.api.{CoverageFileReport, CoverageReport}
-import com.codacy.model.configuration.{FinalConfig, ReportConfig}
+import com.codacy.helpers.LoggerHelper
+import com.codacy.model.configuration.{Configuration, FinalConfig, ReportConfig}
 import com.codacy.parsers.CoverageParserFactory
 import com.codacy.transformation.PathPrefixer
-import org.log4s.getLogger
+import org.log4s.Logger
 import rapture.json.jsonBackends.play._
 import rapture.json.{Json, Serializer}
 
-class ReportRules {
+class ReportRules(config: Configuration,
+                  coverageServices: => CoverageServices) {
 
-  private val logger = getLogger
+  private val logger: Logger = LoggerHelper.logger(getClass, config)
 
   private val rootProjectDir = new File(System.getProperty("user.dir"))
 
@@ -54,9 +56,6 @@ class ReportRules {
             logger.debug(report.toString)
             implicit val ser = implicitly[Serializer[CoverageFileReport, Json]]
             FileHelper.writeJsonToFile(codacyReportFile, report)
-
-            val codacyClient = new CodacyClient(Some(config.baseConfig.codacyApiBaseUrl), projectToken = Some(projectToken))
-            val coverageServices = new CoverageServices(codacyClient)
 
             logger.info(s"Uploading coverage data...")
 
