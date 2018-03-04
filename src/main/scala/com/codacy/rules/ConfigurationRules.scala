@@ -16,20 +16,22 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) {
 
 
   lazy val validatedConfig: Configuration = {
-    validateConfig(cmdConfig)
-      .fold({ error =>
-        logger.error(s"Invalid configuration: \n$error")
-        sys.exit(1)
-      },
-        identity
-      )
+    val config = validateConfig(cmdConfig)
+    config.fold({ error =>
+      logger.error(s"Invalid configuration: \n$error")
+      sys.exit(1)
+    },
+      identity
+    )
   }
 
   private def validateConfig(cmdConfig: CommandConfiguration): Either[String, Configuration] = {
     cmdConfig match {
       case config: Report =>
+        logger.debug("Parsing report command config")
         validateReportConfig(config)
       case config: Final =>
+        logger.debug("Parsing final command config")
         validateFinalConfig(config)
     }
   }
@@ -45,8 +47,7 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) {
     def validate(reportConf: ReportConfig) = {
       reportConf match {
         case config if !config.hasKnownLanguage && !config.forceLanguage =>
-          logger.error(s"Error: Invalid language ${config.languageStr}")
-          Left("")
+          Left(s"Invalid language ${config.languageStr}")
 
         case _ =>
           Right(reportConf)
@@ -69,28 +70,32 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) {
   }
 
   private def validateBaseConfig(baseConfig: BaseCommandConfig): Either[String, BaseConfig] = {
-    val baseConf = BaseConfig(
-      baseConfig.projectToken.getOrElse(getProjectToken),
-      baseConfig.codacyApiBaseUrl.getOrElse(getApiBaseUrl),
-      baseConfig.commitUUID.orElse(commitUUIDOpt),
-      baseConfig.debug.fold(false)(_ => true)
-    )
+    for {
+      projectToken <- baseConfig.projectToken.fold(getProjectToken)(_.asRight)
+      baseConf = BaseConfig(
+        projectToken,
+        baseConfig.codacyApiBaseUrl.getOrElse(getApiBaseUrl),
+        baseConfig.commitUUID.orElse(commitUUIDOpt),
+        baseConfig.debug.fold(false)(_ => true)
+      )
+      validatedConfig <- {
+        baseConf match {
+          case config if !validUrl(config.codacyApiBaseUrl) =>
+            val error = s"Invalid CODACY_API_BASE_URL: ${config.codacyApiBaseUrl}"
 
-    baseConf match {
-      case config if !validUrl(config.codacyApiBaseUrl) =>
-        logger.error(s"Error: Invalid CODACY_API_BASE_URL: ${config.codacyApiBaseUrl}")
-        if (!config.codacyApiBaseUrl.startsWith("http")) {
-          logger.error("Maybe you forgot the http:// or https:// ?")
+            val help = if (!config.codacyApiBaseUrl.startsWith("http")) {
+              "Maybe you forgot the http:// or https:// ?"
+            }
+            Left(s"$error\n$help")
+
+          case config if config.projectToken.trim.isEmpty =>
+            Left("Empty argument for --project-token")
+
+          case _ =>
+            Right(baseConf)
         }
-        Left("")
-
-      case config if config.projectToken.trim.isEmpty =>
-        logger.error("Error: Missing option --project-token")
-        Left("")
-
-      case _ =>
-        Right(baseConf)
-    }
+      }
+    } yield validatedConfig
   }
 
   private def commitUUIDOpt: Option[String] = {
@@ -113,8 +118,11 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) {
     sys.env.getOrElse("CODACY_API_BASE_URL", publicApiBaseUrl)
   }
 
-  private def getProjectToken: String = {
-    sys.env.getOrElse("CODACY_PROJECT_TOKEN", "")
+  private def getProjectToken: Either[String, String] = {
+    Either.fromOption(
+      sys.env.get("CODACY_PROJECT_TOKEN"),
+      "Project token not provided and not available in environment variable \"CODACY_PROJECT_TOKEN\""
+    )
   }
 
   private def validUrl(baseUrl: String) = {
