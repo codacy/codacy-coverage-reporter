@@ -24,15 +24,18 @@ class ReportRules(config: Configuration,
   private val rootProjectDir = new File(System.getProperty("user.dir"))
 
   def codacyCoverage(config: ReportConfig): Either[String, String] = {
-    if (config.coverageReport.exists()) {
+
+    if (!config.coverageReport.exists()) {
+      s"File ${config.coverageReport.getAbsolutePath} does not exist.".asLeft
+    } else if (!config.coverageReport.canRead) {
+      s"Missing read permissions for report file: ${config.coverageReport.getAbsolutePath}".asLeft
+    } else {
       coverageWithTokenAndCommit(config) match {
         case Left(error) =>
           error.asLeft
         case Right(message) =>
           message.asRight
       }
-    } else {
-      s"File ${config.coverageReport.getName} does not exist.".asLeft
     }
   }
 
@@ -72,10 +75,13 @@ class ReportRules(config: Configuration,
     withCommitUUID(config.baseConfig) { commitUUID =>
 
       logger.debug(s"Project token: ${config.baseConfig.projectToken}")
-      logger.info(s"Parsing coverage data...")
+      logger.info(s"Parsing coverage data from: ${config.coverageReport.getAbsolutePath} ...")
 
       CoverageParserFactory.withCoverageReport(config.language, rootProjectDir, config.coverageReport)(transform(_)(config) {
-        report =>
+        case report if report.fileReports.isEmpty =>
+          Left("The provided coverage report generated an empty result.")
+
+        case report =>
           val codacyReportFilename = s"${config.coverageReport.getAbsoluteFile.getParent}${File.separator}codacy-coverage.json"
           logger.debug(s"Saving parsed report to $codacyReportFilename")
           val codacyReportFile = new File(codacyReportFilename)
@@ -84,7 +90,7 @@ class ReportRules(config: Configuration,
           implicit val ser = implicitly[Serializer[CoverageFileReport, Json]]
           FileHelper.writeJsonToFile(codacyReportFile, report)
 
-          logger.info(s"Uploading coverage data...")
+          logUploadedFileInfo(codacyReportFile)
 
           coverageServices.sendReport(commitUUID, config.languageStr, report) match {
             case SuccessfulResponse(value) =>
@@ -95,6 +101,15 @@ class ReportRules(config: Configuration,
           }
       }).joinRight
     }
+  }
+
+  private def logUploadedFileInfo(codacyReportFile: File): Unit = {
+    // Convert to kB with 2 decimal places
+    val fileSize = ((codacyReportFile.length / 1024.0) * 100).toInt / 100.0
+    val filePath = codacyReportFile.getAbsolutePath
+
+    logger.info(s"Generated report: $filePath ($fileSize kB)")
+    logger.info("Uploading coverage data...")
   }
 
   private def handleFailedResponse(response: FailedResponse): String = {
