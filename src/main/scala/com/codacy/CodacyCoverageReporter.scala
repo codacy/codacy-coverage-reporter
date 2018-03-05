@@ -12,17 +12,25 @@ object CodacyCoverageReporter extends ConfigurationParsingApp {
 
     val validatedConfig = components.validatedConfig
 
-    val logger = LoggerHelper.logger(this.getClass, validatedConfig)
+    val logger = LoggerHelper.logger(getClass, validatedConfig)
 
     logger.debug(validatedConfig.toString)
 
-    validatedConfig match {
+    val result = validatedConfig match {
       case config: ReportConfig =>
         components.reportRules.codacyCoverage(config)
 
       case config: FinalConfig =>
         components.reportRules.finalReport(config)
     }
+
+    result.fold({ error =>
+      logger.error(error)
+      sys.exit(1)
+    }, { successMessage =>
+      logger.info(successMessage)
+      sys.exit(0)
+    })
   }
 
 }
