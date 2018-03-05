@@ -57,7 +57,7 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) {
       baseConfig <- validateBaseConfig(reportConfig.baseConfig)
       reportConf = ReportConfig(
         baseConfig,
-        reportConfig.languageStr,
+        reportConfig.language,
         reportConfig.forceLanguage.fold(false)(_ => true),
         reportConfig.coverageReport,
         reportConfig.prefix.getOrElse("")

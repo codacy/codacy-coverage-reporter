@@ -33,7 +33,7 @@ case class Final(@Recurse
 case class Report(@Recurse
                   baseConfig: BaseCommandConfig,
                   @Name("l") @ValueDescription("your project language")
-                  languageStr: String,
+                  language: String,
                   @Hidden @Name("f")
                   forceLanguage: Option[Unit],
                   @Name("r") @ValueDescription("your project coverage file name")
