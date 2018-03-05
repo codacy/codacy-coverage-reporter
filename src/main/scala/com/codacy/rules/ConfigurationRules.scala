@@ -18,7 +18,7 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) {
   lazy val validatedConfig: Configuration = {
     val config = validateConfig(cmdConfig)
     config.fold({ error =>
-      logger.error(s"Invalid configuration: \n$error")
+      logger.error(s"Invalid configuration: $error")
       sys.exit(1)
     },
       identity

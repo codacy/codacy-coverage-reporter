@@ -2,12 +2,14 @@ package com.codacy.rules
 
 import java.io.File
 
+import cats.implicits._
 import com.codacy.api.client.{FailedResponse, SuccessfulResponse}
 import com.codacy.api.helpers.FileHelper
+import com.codacy.api.helpers.vcs.{CommitInfo, GitClient}
 import com.codacy.api.service.CoverageServices
 import com.codacy.api.{CoverageFileReport, CoverageReport}
 import com.codacy.helpers.LoggerHelper
-import com.codacy.model.configuration.{Configuration, FinalConfig, ReportConfig}
+import com.codacy.model.configuration.{BaseConfig, Configuration, FinalConfig, ReportConfig}
 import com.codacy.parsers.CoverageParserFactory
 import com.codacy.transformation.PathPrefixer
 import org.log4s.Logger
@@ -21,24 +23,21 @@ class ReportRules(config: Configuration,
 
   private val rootProjectDir = new File(System.getProperty("user.dir"))
 
-  def codacyCoverage(config: ReportConfig): Unit = {
+  def codacyCoverage(config: ReportConfig): Either[String, String] = {
     if (config.coverageReport.exists()) {
       coverageWithTokenAndCommit(config) match {
         case Left(error) =>
-          logger.error(error)
-          System.exit(1)
+          error.asLeft
         case Right(message) =>
-          logger.info(message)
-          System.exit(0)
+          message.asRight
       }
     } else {
-      logger.error(s"File ${config.coverageReport.getName} does not exist.")
-      System.exit(1)
+      s"File ${config.coverageReport.getName} does not exist.".asLeft
     }
   }
 
   def finalReport(config: FinalConfig): Either[String, String] = {
-    FileHelper.withCommit(config.baseConfig.commitUUID) { commitUUID =>
+    withCommitUUID(config.baseConfig) { commitUUID =>
       coverageServices.sendFinalNotification(commitUUID) match {
         case SuccessfulResponse(value) =>
           Right(s"Final coverage notification sent. ${value.success}")
@@ -48,9 +47,29 @@ class ReportRules(config: Configuration,
     }
   }
 
+  private def withCommitUUID[T](config: BaseConfig
+                               )(block: (String) => Either[String, T]
+                               ): Either[String, T] = {
+    val maybeCommitUUID = config.commitUUID.fold {
+      val currentPath = new File(System.getProperty("user.dir"))
+      new GitClient(currentPath).latestCommitInfo
+        .fold(
+          "Commit UUID not provided and could not retrieve it from current directory ".asLeft[String]
+        ) { case CommitInfo(uuid, authorName, authorEmail, date) =>
+          val info =
+            s"""Commit UUID not provided, using latest commit of current directory:
+               |$uuid $authorName <$authorEmail> $date""".stripMargin
+          logger.info(info)
+
+          uuid.asRight[String]
+        }
+    }(_.asRight)
+
+    maybeCommitUUID.flatMap(block)
+  }
 
   private[rules] def coverageWithTokenAndCommit(config: ReportConfig): Either[String, String] = {
-    FileHelper.withCommit(config.baseConfig.commitUUID) { commitUUID =>
+    withCommitUUID(config.baseConfig) { commitUUID =>
 
       logger.debug(s"Project token: ${config.baseConfig.projectToken}")
       logger.info(s"Parsing coverage data...")
@@ -70,10 +89,19 @@ class ReportRules(config: Configuration,
           coverageServices.sendReport(commitUUID, config.languageStr, report) match {
             case SuccessfulResponse(value) =>
               Right(s"Coverage data uploaded. ${value.success}")
-            case FailedResponse(message) =>
+            case failed: FailedResponse =>
+              val message = handleFailedResponse(failed)
               Left(s"Failed to upload report: $message")
           }
       }).joinRight
+    }
+  }
+
+  private def handleFailedResponse(response: FailedResponse): String = {
+    if (response.message.contains("not found")) {
+      """Request URL not found. (Check if the project token or the API base URL are valid)"""
+    } else {
+      response.message
     }
   }
 
