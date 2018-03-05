@@ -30,6 +30,8 @@ libraryDependencies ++= Seq(
   cats
 )
 
+mainClass in assembly := Some("com.codacy.CodacyCoverageReporter")
+
 assemblyMergeStrategy in assembly := {
   case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
   case m if m.toLowerCase.matches("meta-inf.*\\.sf$") => MergeStrategy.discard
