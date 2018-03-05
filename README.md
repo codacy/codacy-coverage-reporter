@@ -35,7 +35,7 @@ Then set it in your terminal, replacing %Project_Token% with your own token:
 export CODACY_PROJECT_TOKEN=%Project_Token%
 ```
 
-You can also use the option `--project-token` or `-l` to set it.
+You can also use the option `--project-token` or `-t` to set it.
 
 ### CommitUUID Detection
 
