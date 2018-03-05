@@ -95,7 +95,10 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) {
             Right(baseConf)
         }
       }
-    } yield validatedConfig
+    } yield {
+      logger.info(s"Using API base URL: ${validatedConfig.codacyApiBaseUrl}")
+      validatedConfig
+    }
   }
 
   private def commitUUIDOpt: Option[String] = {
