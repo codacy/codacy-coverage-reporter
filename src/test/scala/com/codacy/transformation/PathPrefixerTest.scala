@@ -1,9 +1,7 @@
 package com.codacy.transformation
 
-import com.codacy.api.{Language, CoverageFileReport, CoverageReport}
+import com.codacy.api.{CoverageFileReport, CoverageReport}
 import org.scalatest._
-
-import scala.collection.mutable.Stack
 
 class PathPrefixerTest extends FlatSpec with Matchers {
 

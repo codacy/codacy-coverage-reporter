@@ -22,7 +22,7 @@ You can run the coverage reporter:
 2. Run the command bellow
 
 ```
-$ java -cp codacy-coverage-reporter-assembly-<version>.jar com.codacy.CodacyCoverageReporter -l Java -r jacoco.xml
+$ java -jar codacy-coverage-reporter-assembly-<version>.jar report -l Java -r jacoco.xml
 ```
 
 ## Updating Codacy
@@ -34,6 +34,8 @@ Then set it in your terminal, replacing %Project_Token% with your own token:
 ```
 export CODACY_PROJECT_TOKEN=%Project_Token%
 ```
+
+You can also use the option `--project-token` or `-t` to set it.
 
 ### CommitUUID Detection
 
@@ -58,7 +60,7 @@ Codacy automatically detects the CommitUUID from several sources:
 
 * You may want to enforce a specific commitUUID with:
 ```
-codacy-coverage-reporter -l Java --commitUUID "mycommituuid" -r coverage.xml
+codacy-coverage-reporter report -l Java --commit-uuid "mycommituuid" -r coverage.xml
 ```
 
 **Upload coverage**
@@ -66,7 +68,7 @@ codacy-coverage-reporter -l Java --commitUUID "mycommituuid" -r coverage.xml
 Next, simply run the Codacy reporter. It will find the current commit and send all details to your project dashboard:
 
 ```
-codacy-coverage-reporter -l Java -r coverage.xml
+codacy-coverage-reporter report -l Java -r coverage.xml
 ```
 
 > Note: You should keep your API token well **protected**, as it grants owner permissions to your projects.
@@ -79,13 +81,22 @@ Most coverage tools support merge/aggregation, example: http://www.eclemma.org/j
 
 **Other Languages**
 
-If your language is not in the list of supported languages, you can still coverage. Just provide the correct `--language` name and then add `--forceLanguage` to make sure it is sent.
+If your language is not in the list of supported languages, you can still coverage. Just provide the correct `--language` name and then add `--force-language` to make sure it is sent.
 
 ### Enterprise
 
 To send coverage in the enterprise version you should:
 ```
 export CODACY_API_BASE_URL=<Codacy_instance_URL>:16006
+```
+
+Or use the option `--codacy-api-base-url <Codacy_instance_URL>:16006`.
+
+## Other commands
+
+For a complete list of commands and options run:
+```
+java -jar codacy-coverage-reporter-assembly-<version>.jar --help
 ```
 
 ## Java 6
@@ -104,7 +115,7 @@ If you are having any issues with your installation, you can also build the cove
 3. In the project you want to send the coverage, use the jar. Example:
 
 ```
-<path>/java-project$ java -cp ../codacy-coverage-reporter/target/codacy-coverage-reporter-assembly-<version>.jar com.codacy.CodacyCoverageReporter -l Java -r jacoco.xml
+<path>/java-project$ java -jar ../codacy-coverage-reporter/target/codacy-coverage-reporter-assembly-<version>.jar report -l Java -r jacoco.xml
 ```
 
 ## Gradle task
@@ -116,6 +127,7 @@ task uploadCoverageToCodacy(type: JavaExec, dependsOn : jacocoTestReport) {
    main = "com.codacy.CodacyCoverageReporter"
    classpath = configurations.codacy
    args = [
+            "report",
             "-l",
             "Java",
             "-r",
@@ -158,6 +170,7 @@ task sendCoverageToCodacy(type: JavaExec, dependsOn: jacocoTestReport) {
     main = "com.codacy.CodacyCoverageReporter"
     classpath = configurations.codacy
     args = [
+            "report",
             "-l",
             "Java",
             "-r",
@@ -184,7 +197,7 @@ before_install:
   - wget -O ~/codacy-coverage-reporter-assembly-latest.jar $(curl https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r .assets[0].browser_download_url)
 
 after_success:
-  - java -cp ~/codacy-coverage-reporter-assembly-latest.jar com.codacy.CodacyCoverageReporter -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
+  - java -jar ~/codacy-coverage-reporter-assembly-latest.jar -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
 ```
 
 Make sure you have set `CODACY_PROJECT_TOKEN` as an environment variable in your travis job!
@@ -198,7 +211,7 @@ Make sure you install version 1.0.4, that fixes that error.
 
 Example (issue: [#11](https://github.com/codacy/codacy-coverage-reporter/issues/11)) :
 ```
-codacy-coverage-reporter -l Java -r PATH_TO_COVERAGE/coverage.xml
+codacy-coverage-reporter report -l Java -r PATH_TO_COVERAGE/coverage.xml
 2015-11-20 04:06:58,887 [info]  com.codacy Parsing coverage data...
 2015-11-20 04:06:59,506 [info]  com.codacy Uploading coverage data...
 
@@ -213,13 +226,13 @@ Even after doing all of the above troubleshooting steps in case you still encoun
 Please try running the command with a --prefix option with path to your code  as shown below , it helps to locate the files for which code coverage is desired
 
 ```
-codacy-coverage-reporter -l Java -r PATH_TO_COVERAGE/coverage.xml --prefix PATH_TO_THE_DIRECTORY
+codacy-coverage-reporter report -l Java -r PATH_TO_COVERAGE/coverage.xml --prefix PATH_TO_THE_DIRECTORY
 ```
 
 Example
 
 ```
-codacy-coverage-reporter -l Java -r api/target/site/jacoco/jacoco.xml --prefix api/src/main/java/
+codacy-coverage-reporter report -l Java -r api/target/site/jacoco/jacoco.xml --prefix api/src/main/java/
 ```
 
 ## What is Codacy?
