@@ -16,6 +16,8 @@ import org.log4s.Logger
 import rapture.json.jsonBackends.play._
 import rapture.json.{Json, Serializer}
 
+import scala.util.{Failure, Success}
+
 class ReportRules(config: Configuration,
                   coverageServices: => CoverageServices) {
 
@@ -37,38 +39,6 @@ class ReportRules(config: Configuration,
           message.asRight
       }
     }
-  }
-
-  def finalReport(config: FinalConfig): Either[String, String] = {
-    withCommitUUID(config.baseConfig) { commitUUID =>
-      coverageServices.sendFinalNotification(commitUUID) match {
-        case SuccessfulResponse(value) =>
-          Right(s"Final coverage notification sent. ${value.success}")
-        case FailedResponse(message) =>
-          Left(s"Failed to send final coverage notification: $message")
-      }
-    }
-  }
-
-  private def withCommitUUID[T](config: BaseConfig
-                               )(block: (String) => Either[String, T]
-                               ): Either[String, T] = {
-    val maybeCommitUUID = config.commitUUID.fold {
-      val currentPath = new File(System.getProperty("user.dir"))
-      new GitClient(currentPath).latestCommitInfo
-        .fold(
-          "Commit UUID not provided and could not retrieve it from current directory ".asLeft[String]
-        ) { case CommitInfo(uuid, authorName, authorEmail, date) =>
-          val info =
-            s"""Commit UUID not provided, using latest commit of current directory:
-               |$uuid $authorName <$authorEmail> $date""".stripMargin
-          logger.info(info)
-
-          uuid.asRight[String]
-        }
-    }(_.asRight)
-
-    maybeCommitUUID.flatMap(block)
   }
 
   private[rules] def coverageWithTokenAndCommit(config: ReportConfig): Either[String, String] = {
@@ -127,5 +97,37 @@ class ReportRules(config: Configuration,
     }
 
     f(transformedReport)
+  }
+
+  def finalReport(config: FinalConfig): Either[String, String] = {
+    withCommitUUID(config.baseConfig) { commitUUID =>
+      coverageServices.sendFinalNotification(commitUUID) match {
+        case SuccessfulResponse(value) =>
+          Right(s"Final coverage notification sent. ${value.success}")
+        case FailedResponse(message) =>
+          Left(s"Failed to send final coverage notification: $message")
+      }
+    }
+  }
+
+  private def withCommitUUID[T](config: BaseConfig
+                               )(block: (String) => Either[String, T]
+                               ): Either[String, T] = {
+    val maybeCommitUUID = config.commitUUID.fold {
+      val currentPath = new File(System.getProperty("user.dir"))
+      new GitClient(currentPath).latestCommitInfo match {
+        case Failure(e) =>
+          "Commit UUID not provided and could not retrieve it from current directory".asLeft[String]
+        case Success(CommitInfo(uuid, authorName, authorEmail, date)) =>
+          val info =
+            s"""Commit UUID not provided, using latest commit of current directory:
+               |$uuid $authorName <$authorEmail> $date""".stripMargin
+
+          logger.info(info)
+          uuid.asRight[String]
+      }
+    }(_.asRight)
+
+    maybeCommitUUID.flatMap(block)
   }
 }
