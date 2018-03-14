@@ -12,6 +12,7 @@ case class ReportConfig(baseConfig: BaseConfig,
                         languageStr: String,
                         forceLanguage: Boolean,
                         coverageReport: File,
+                        partial: Boolean,
                         prefix: String
                        ) extends Configuration {
 
