@@ -5,6 +5,8 @@ import java.io.File
 import caseapp._
 import caseapp.core.ArgParser
 import com.codacy.configuration.parser.ConfigArgumentParsers._
+// Intellij keeps removing this import, I'll leave it here for future reference
+// import com.codacy.configuration.parser.ConfigArgumentParsers._
 
 abstract class ConfigurationParsingApp extends CommandAppWithPreCommand[BaseCommand, CommandConfiguration] {
   override final def run(options: CommandConfiguration, remainingArgs: RemainingArgs): Unit = {
@@ -38,6 +40,8 @@ case class Report(@Recurse
                   forceLanguage: Option[Unit],
                   @Name("r") @ValueDescription("your project coverage file name")
                   coverageReport: File,
+                  @ValueDescription("if the report is partial")
+                  partial: Option[Unit],
                   @ValueDescription("the project path prefix")
                   prefix: Option[String]
                  ) extends CommandConfiguration

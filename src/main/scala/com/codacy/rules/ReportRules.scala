@@ -62,7 +62,7 @@ class ReportRules(config: Configuration,
 
           logUploadedFileInfo(codacyReportFile)
 
-          coverageServices.sendReport(commitUUID, config.languageStr, report) match {
+          coverageServices.sendReport(commitUUID, config.languageStr, report, config.partial) match {
             case SuccessfulResponse(value) =>
               Right(s"Coverage data uploaded. ${value.success}")
             case failed: FailedResponse =>

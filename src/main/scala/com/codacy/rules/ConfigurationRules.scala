@@ -7,6 +7,7 @@ import com.codacy.configuration.parser.{BaseCommandConfig, CommandConfiguration,
 import com.codacy.helpers.LoggerHelper
 import com.codacy.model.configuration.{BaseConfig, Configuration, FinalConfig, ReportConfig}
 
+import scala.language.implicitConversions
 import scala.util.Try
 
 class ConfigurationRules(cmdConfig: CommandConfiguration) {
@@ -59,8 +60,9 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) {
       reportConf = ReportConfig(
         baseConfig,
         reportConfig.language,
-        reportConfig.forceLanguage.fold(false)(_ => true),
+        reportConfig.forceLanguage,
         reportConfig.coverageReport,
+        reportConfig.partial,
         reportConfig.prefix.getOrElse("")
       )
       validatedConfig <- validate(reportConf)
@@ -76,7 +78,7 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) {
         projectToken,
         baseConfig.codacyApiBaseUrl.getOrElse(getApiBaseUrl),
         baseConfig.commitUUID.orElse(commitUUIDOpt),
-        baseConfig.debug.fold(false)(_ => true)
+        baseConfig.debug
       )
       validatedConfig <- {
         baseConf match {
@@ -100,6 +102,8 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) {
       validatedConfig
     }
   }
+
+  private implicit def flagToBooleanConversion(flag: Option[Unit]): Boolean = flag.fold(false)(_ => true)
 
   private def commitUUIDOpt: Option[String] = {
     getNonEmptyEnv("CI_COMMIT") orElse
