@@ -192,13 +192,31 @@ Just follow the [instructions on his repository](https://github.com/halkeye/coda
 If you want to use codacy with Travis CI and report coverage generated from your tests run in Travis, update your .travis.yml to include the following blocks:
 
 ```yaml
+sudo: required
 before_install:
-  - sudo apt-get install jq
-  - wget -O ~/codacy-coverage-reporter-assembly-latest.jar $(curl https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r .assets[0].browser_download_url)
+- "before-install.sh"
 
 after_success:
   - java -jar ~/codacy-coverage-reporter-assembly-latest.jar report -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
 ```
+and add a file named `before-install.sh` (or whatever name you feel like) with this content:
+```sh
+#!/usr/bin/env bash
+sudo apt-get install libxml-xpath-perl
+# get latest version of codacy reporter from sonatype
+latest=$(curl "https://oss.sonatype.org/service/local/repositories/releases/content/com/codacy/codacy-coverage-reporter/maven-metadata.xml" | xpath -e "/metadata/versioning/release/text()")
+
+echo Downloading latest version $latest of codacy reporter from sonatype 
+# download laterst assembly jar 
+mvn dependency:get dependency:copy \
+   -DoutputDirectory=$HOME \
+   -DoutputAbsoluteArtifactFilename=true \
+   -Dmdep.stripVersion=true \
+   -DrepoUrl=https://oss.sonatype.org/service/local/repositories/releases/content/ \
+   -Dartifact=com.codacy:codacy-coverage-reporter:$latest:jar:assembly
+   
+```
+* do not forget to make the file executable using `chmod u+x`
 
 Make sure you have set `CODACY_PROJECT_TOKEN` as an environment variable in your travis job!
 
