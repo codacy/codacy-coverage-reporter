@@ -197,7 +197,7 @@ before_install:
   - wget -O ~/codacy-coverage-reporter-assembly-latest.jar $(curl https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r .assets[0].browser_download_url)
 
 after_success:
-  - java -jar ~/codacy-coverage-reporter-assembly-latest.jar -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
+  - java -jar ~/codacy-coverage-reporter-assembly-latest.jar report -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
 ```
 
 Make sure you have set `CODACY_PROJECT_TOKEN` as an environment variable in your travis job!
