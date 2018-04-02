@@ -73,11 +73,18 @@ codacy-coverage-reporter report -l Java -r coverage.xml
 
 > Note: You should keep your API token well **protected**, as it grants owner permissions to your projects.
 
-**Multiple coverage reports**
+**Multiple coverage reports for the same language**
 
-If you have multiple modules generating multiple report files you need to merge them before invoking this reporter, since Codacy only receives one report per commit per language.
+In order to send multiple reports for the same language, you need to upload each report separately with the flag `--partial` and then notify Codacy, after all reports were sent, with the `final` command.
 
-Most coverage tools support merge/aggregation, example: http://www.eclemma.org/jacoco/trunk/doc/merge-mojo.html
+***Example***
+1. `codacy-coverage-reporter report -l Java -r report1.xml --partial`
+1. `codacy-coverage-reporter report -l Java -r report2.xml --partial`
+1. `codacy-coverage-reporter final`
+
+Note that the behaviour is unspecified if you send, for the same language, some reports with the partial flag and others without it.
+
+It is might also possible to merge the reports before uploading them to Codacy, since most coverage tools support merge/aggregation, example: http://www.eclemma.org/jacoco/trunk/doc/merge-mojo.html .
 
 **Other Languages**
 
