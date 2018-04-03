@@ -82,9 +82,9 @@ In order to send multiple reports for the same language, you need to upload each
 1. `codacy-coverage-reporter report -l Java -r report2.xml --partial`
 1. `codacy-coverage-reporter final`
 
-Note that the behaviour is unspecified if you send, for the same language, some reports with the partial flag and others without it.
+If you are sending reports with the partial flag for a certain language you should use it in all reports for that language to ensure the correct calculation of the coverage.
 
-It is might also possible to merge the reports before uploading them to Codacy, since most coverage tools support merge/aggregation, example: http://www.eclemma.org/jacoco/trunk/doc/merge-mojo.html .
+It might also be possible to merge the reports before uploading them to Codacy, since most coverage tools support merge/aggregation, example: http://www.eclemma.org/jacoco/trunk/doc/merge-mojo.html .
 
 **Other Languages**
 
