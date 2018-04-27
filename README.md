@@ -88,7 +88,7 @@ It might also be possible to merge the reports before uploading them to Codacy, 
 
 **Other Languages**
 
-If your language is not in the list of supported languages, you can still coverage. Just provide the correct `--language` name and then add `--force-language` to make sure it is sent.
+If your language is not in the list of supported languages, you can still send coverage to Codacy. Just provide the correct `--language` name and then add `--forceLanguage` to make sure it is sent.
 
 ### Enterprise
 
