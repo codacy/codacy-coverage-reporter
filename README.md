@@ -79,7 +79,7 @@ Most coverage tools support merge/aggregation, example: http://www.eclemma.org/j
 
 **Other Languages**
 
-If your language is not in the list of supported languages, you can still coverage. Just provide the correct `--language` name and then add `--forceLanguage` to make sure it is sent.
+If your language is not in the list of supported languages, you can still send coverage to Codacy. Just provide the correct `--language` name and then add `--forceLanguage` to make sure it is sent.
 
 ### Enterprise
 
