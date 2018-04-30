@@ -2,7 +2,7 @@ package com.codacy.rules
 
 import java.net.URL
 
-import cats.implicits._
+import cats.syntax.either._
 import com.codacy.configuration.parser.{BaseCommandConfig, CommandConfiguration, Final, Report}
 import com.codacy.helpers.LoggerHelper
 import com.codacy.model.configuration.{BaseConfig, Configuration, FinalConfig, ReportConfig}
@@ -45,10 +45,13 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) {
   }
 
   private def validateReportConfig(reportConfig: Report): Either[String, ReportConfig] = {
-    def validate(reportConf: ReportConfig) = {
+    def validate(reportConf: ReportConfig): Either[String, ReportConfig] = {
       reportConf match {
         case config if !config.hasKnownLanguage && !config.forceLanguage =>
           Left(s"Invalid language ${config.languageStr}")
+
+        case config if !config.hasValidFormat =>
+          Left(s"Invalid report format ${config.formatStr.getOrElse("")}")
 
         case _ =>
           Right(reportConf)
@@ -63,11 +66,11 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) {
         reportConfig.forceLanguage,
         reportConfig.coverageReport,
         reportConfig.partial,
-        reportConfig.prefix.getOrElse("")
+        reportConfig.prefix.getOrElse(""),
+        reportConfig.format
       )
       validatedConfig <- validate(reportConf)
     } yield validatedConfig
-
 
   }
 

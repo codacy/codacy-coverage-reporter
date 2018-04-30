@@ -16,7 +16,7 @@ class ConfigurationRulesTest extends FlatSpec with Matchers {
   val apiBaseUrl = "https://api.codacy.com"
 
   val baseConf = BaseCommandConfig(Some(projToken), Some(apiBaseUrl), None, debug = None)
-  val conf = Report(baseConf, "Scala", None, coverageFile, None, None)
+  val conf = Report(baseConf, "Scala", None, coverageFile, None, None, None)
 
   val components = new Components(conf)
 
@@ -34,7 +34,7 @@ class ConfigurationRulesTest extends FlatSpec with Matchers {
       case config: ReportConfig =>
         val result = components.reportRules.coverageWithTokenAndCommit(config)
 
-        result should be(Left("no parser for Scala"))
+        result should be(Left("could not parse report"))
     }
   }
 

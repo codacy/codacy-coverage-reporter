@@ -13,13 +13,21 @@ case class ReportConfig(baseConfig: BaseConfig,
                         forceLanguage: Boolean,
                         coverageReport: File,
                         partial: Boolean,
-                        prefix: String
+                        prefix: String,
+                        formatStr: Option[String]
                        ) extends Configuration {
 
   lazy val language: Language.Value =
     Language.values.find(_.toString == languageStr).getOrElse(Language.NotDefined)
 
   lazy val hasKnownLanguage: Boolean = language != Language.NotDefined
+
+  lazy val reportFormat: Option[ReportFormat.Value] = formatStr.flatMap(getFormat)
+
+  lazy val hasValidFormat: Boolean = formatStr.forall(getFormat(_).isDefined)
+
+  private def getFormat(formatName: String): Option[ReportFormat.Value] =
+    ReportFormat.values.find(_.toString.toLowerCase == formatName)
 }
 
 

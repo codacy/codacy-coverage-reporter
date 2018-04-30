@@ -9,8 +9,9 @@ import com.codacy.api.helpers.vcs.{CommitInfo, GitClient}
 import com.codacy.api.service.CoverageServices
 import com.codacy.api.{CoverageFileReport, CoverageReport}
 import com.codacy.helpers.LoggerHelper
-import com.codacy.model.configuration.{BaseConfig, Configuration, FinalConfig, ReportConfig}
+import com.codacy.model.configuration._
 import com.codacy.parsers.CoverageParserFactory
+import com.codacy.parsers.implementation.{CoberturaParser, JacocoParser}
 import com.codacy.transformation.PathPrefixer
 import org.log4s.Logger
 import rapture.json.jsonBackends.play._
@@ -41,13 +42,29 @@ class ReportRules(config: Configuration,
     }
   }
 
+  def finalReport(config: FinalConfig): Either[String, String] = {
+    withCommitUUID(config.baseConfig) { commitUUID =>
+      coverageServices.sendFinalNotification(commitUUID) match {
+        case SuccessfulResponse(value) =>
+          Right(s"Final coverage notification sent. ${value.success}")
+        case FailedResponse(message) =>
+          Left(s"Failed to send final coverage notification: $message")
+      }
+    }
+  }
+
   private[rules] def coverageWithTokenAndCommit(config: ReportConfig): Either[String, String] = {
     withCommitUUID(config.baseConfig) { commitUUID =>
 
       logger.debug(s"Project token: ${config.baseConfig.projectToken}")
       logger.info(s"Parsing coverage data from: ${config.coverageReport.getAbsolutePath} ...")
 
-      CoverageParserFactory.withCoverageReport(config.language, rootProjectDir, config.coverageReport)(transform(_)(config) {
+      val parserOpt = getParserForConfig(config)
+      if (parserOpt.isEmpty) {
+        logger.info("No report format specified. Trying all parsers available.")
+      }
+
+      CoverageParserFactory.withCoverageReport(config.language, rootProjectDir, config.coverageReport, parserOpt)(transform(_)(config) {
         case report if report.fileReports.isEmpty =>
           Left("The provided coverage report generated an empty result.")
 
@@ -99,17 +116,6 @@ class ReportRules(config: Configuration,
     f(transformedReport)
   }
 
-  def finalReport(config: FinalConfig): Either[String, String] = {
-    withCommitUUID(config.baseConfig) { commitUUID =>
-      coverageServices.sendFinalNotification(commitUUID) match {
-        case SuccessfulResponse(value) =>
-          Right(s"Final coverage notification sent. ${value.success}")
-        case FailedResponse(message) =>
-          Left(s"Failed to send final coverage notification: $message")
-      }
-    }
-  }
-
   private def withCommitUUID[T](config: BaseConfig
                                )(block: (String) => Either[String, T]
                                ): Either[String, T] = {
@@ -129,5 +135,12 @@ class ReportRules(config: Configuration,
     }(_.asRight)
 
     maybeCommitUUID.flatMap(block)
+  }
+
+  private def getParserForConfig(config: ReportConfig): Option[CoverageParserFactory] = {
+    config.reportFormat.map {
+      case ReportFormat.Jacoco => JacocoParser
+      case ReportFormat.Cobertura => CoberturaParser
+    }
   }
 }
