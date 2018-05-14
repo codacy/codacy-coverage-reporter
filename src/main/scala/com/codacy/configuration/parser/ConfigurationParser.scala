@@ -43,7 +43,9 @@ case class Report(@Recurse
                   @ValueDescription("if the report is partial")
                   partial: Option[Unit],
                   @ValueDescription("the project path prefix")
-                  prefix: Option[String]
+                  prefix: Option[String],
+                  @ValueDescription("the format of the report (jacoco, cobertura), if not specified the reporter tries to guess the format")
+                  format: Option[String]
                  ) extends CommandConfiguration
 
 
