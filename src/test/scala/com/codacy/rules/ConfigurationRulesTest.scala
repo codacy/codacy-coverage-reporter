@@ -34,7 +34,7 @@ class ConfigurationRulesTest extends FlatSpec with Matchers {
       case config: ReportConfig =>
         val result = components.reportRules.coverageWithTokenAndCommit(config)
 
-        result should be(Left("no parser for Scala"))
+        result should be(Left("could not parse report, unrecognized report format (tried: Cobertura, Jacoco)"))
     }
   }
 
