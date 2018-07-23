@@ -27,7 +27,8 @@ libraryDependencies ++= Seq(
   caseApp,
   raptureJsonPlay,
   scalaTest,
-  cats
+  cats,
+  javaxActivation
 )
 
 mainClass in assembly := Some("com.codacy.CodacyCoverageReporter")
