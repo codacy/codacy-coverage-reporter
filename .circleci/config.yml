@@ -144,10 +144,34 @@ jobs:
       - *restore_dependencies
       - *restore_build
       - run:
-          name: Publish local docker
+          name: Publish local binary
           command: ./scripts/publish-native.sh -n codacy-coverage-reporter -m com.codacy.CodacyCoverageReporter -t docker -s 2.11 5.0.$CIRCLE_BUILD_NUM
       - store_artifacts:
-          path: ~/workdir/codacy-coverage-reporter-linux-5.0.$CIRCLE_BUILD_NUM
+          path: ~/workdir/codacy-coverage-reporter-linux
+      - run:
+          name: Move binary to workspace
+          command: |
+            mkdir workspace
+            cp ~/workdir/codacy-coverage-reporter-linux workspace/codacy-coverage-reporter
+      - persist_to_workspace:
+          root: workspace
+          paths:
+            - codacy-coverage-reporter
+
+  publish_binary_bintray:
+    machine: true
+    environment:
+      <<: *host_environment_defaults
+    working_directory: ~/workdir
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - run:
+          name: Publish binary to bintray
+          command: |
+              curl -fL https://getcli.jfrog.io | sh
+              ./jfrog bt config --interactive=false --user codacy-ci --key $BINTRAY_API_KEY
+              ./jfrog bt upload --user codacy-ci --key $BINTRAY_API_KEY --publish /tmp/workspace/codacy-coverage-reporter codacy/Binaries/codacy-coverage-reporter/5.0.$CIRCLE_BUILD_NUM linux/codacy-coverage-reporter
 
 workflows:
   version: 2
@@ -170,3 +194,15 @@ workflows:
           requires:
             - compile
             - test
+          filters:
+            branches:
+              only:
+                - master
+      - publish_binary_bintray:
+          requires:
+            - test
+            - publish_binary_locally
+          filters:
+            branches:
+              only:
+                - master

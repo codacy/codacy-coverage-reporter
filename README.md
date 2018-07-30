@@ -6,10 +6,6 @@
 
 Multi-language coverage reporter for Codacy https://www.codacy.com
 
-## Requirements
-
-* Java JRE 8 and higher
-
 ## Setup
 
 Codacy assumes that coverage is previously configured for your project.
@@ -19,10 +15,28 @@ You can run the coverage reporter:
 
 ### Linux Binary
 
-1. Download the latest binary from [CircleCI](https://circleci.com/api/v1.1/project/github/codacy/codacy-coverage-reporter/latest/artifacts)
-2. Run: `codacy-coverage-reporter report -l Java -r jacoco.xml`
+** Operation Systems **: Linux
 
-### Jar
+#### Bintray
+
+```bash
+curl -o codacy-coverage-reporter "https://dl.bintray.com/codacy/Binaries/$(curl https://api.bintray.com/packages/codacy/Binaries/codacy-coverage-reporter/versions/_latest | jq -r .name)/codacy-coverage-reporter"
+chmod u+x codacy-coverage-reporter
+./codacy-coverage-reporter report -l Java -r jacoco.xml
+```
+
+#### CircleCI
+
+```bash
+curl -o codacy-coverage-reporter "$(curl https://circleci.com/api/v1.1/project/github/codacy/codacy-coverage-reporter/latest/artifacts | jq -r .[0].url)"
+chmod u+x codacy-coverage-reporter
+./codacy-coverage-reporter report -l Java -r jacoco.xml
+```
+
+### Java Jar
+
+** Requirements **: Java JRE 8+
+** Operation Systems **: Windows, Unix (Linux, Mac OS, ...)
 
 1. Download the latest jar from https://github.com/codacy/codacy-coverage-reporter/releases/latest
 2. Run the command bellow
@@ -65,6 +79,7 @@ Codacy automatically detects the CommitUUID from several sources:
 #### Force CommitUUID
 
 * You may want to enforce a specific commitUUID with:
+
 ```
 codacy-coverage-reporter report -l Java --commit-uuid "mycommituuid" -r coverage.xml
 ```
@@ -84,6 +99,7 @@ codacy-coverage-reporter report -l Java -r coverage.xml
 In order to send multiple reports for the same language, you need to upload each report separately with the flag `--partial` and then notify Codacy, after all reports were sent, with the `final` command.
 
 ***Example***
+
 1. `codacy-coverage-reporter report -l Java -r report1.xml --partial`
 2. `codacy-coverage-reporter report -l Java -r report2.xml --partial`
 3. `codacy-coverage-reporter final`
@@ -115,6 +131,8 @@ java -jar codacy-coverage-reporter-assembly-<version>.jar --help
 ```
 
 ## Java 6
+
+** Alternative **: Use the `Linux Binary` described above
 
 Due to a limitation in Java 6, the plugin is unable to establish a connection to codacy.com.
 You can run [this script](https://gist.github.com/mrfyda/51cdf48fa0722593db6a) after the execution to upload the generated report to Codacy.
@@ -211,10 +229,11 @@ If you want to use codacy with Travis CI and report coverage generated from your
 ```yaml
 before_install:
   - sudo apt-get install jq
-  - wget -O ~/codacy-coverage-reporter-assembly-latest.jar $(curl https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r .assets[0].browser_download_url)
+  - curl -o codacy-coverage-reporter "https://dl.bintray.com/codacy/Binaries/$(curl https://api.bintray.com/packages/codacy/Binaries/codacy-coverage-reporter/versions/_latest | jq -r .name)/codacy-coverage-reporter"
+  - chmod u+x codacy-coverage-reporter
 
 after_success:
-  - java -jar ~/codacy-coverage-reporter-assembly-latest.jar report -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
+  - codacy-coverage-reporter report -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
 ```
 
 Make sure you have set `CODACY_PROJECT_TOKEN` as an environment variable in your travis job!
