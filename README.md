@@ -15,7 +15,7 @@ You can run the coverage reporter:
 
 ### Linux Binary
 
-** Operation Systems **: Linux
+**Operating Systems**: Linux
 
 #### Bintray
 
@@ -35,8 +35,9 @@ chmod u+x codacy-coverage-reporter
 
 ### Java Jar
 
-** Requirements **: Java JRE 8+
-** Operation Systems **: Windows, Unix (Linux, Mac OS, ...)
+**Requirements:** Java JRE 8+
+
+**Operating Systems:** Windows, Unix (Linux, Mac OS, ...)
 
 1. Download the latest jar from https://github.com/codacy/codacy-coverage-reporter/releases/latest
 2. Run the command bellow
