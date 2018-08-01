@@ -133,7 +133,7 @@ java -jar codacy-coverage-reporter-assembly-<version>.jar --help
 
 ## Java 6
 
-** Alternative **: Use the `Linux Binary` described above
+**Alternative:** Use the `Linux Binary` described above
 
 Due to a limitation in Java 6, the plugin is unable to establish a connection to codacy.com.
 You can run [this script](https://gist.github.com/mrfyda/51cdf48fa0722593db6a) after the execution to upload the generated report to Codacy.
