@@ -21,6 +21,3 @@ npm-debug.log
 config
 
 .vscode
-.codacy.json
-codacy-coverage-reporter-linux
-codacy-coverage-reporter-darwin
