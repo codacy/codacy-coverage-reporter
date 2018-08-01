@@ -1,0 +1,223 @@
+# CircleCI 2.0 configuration file
+version: 2
+
+# Re-usable blocks to reduce boilerplate in job definitions.
+references:
+  host_environment_defaults: &host_environment_defaults
+    # Customize the JVM maximum heap limit
+    JAVA_OPTS: -Xmx3200m
+  docker_environment_defaults: &docker_environment_defaults
+    # Customize the JVM to read correct memory values
+    JAVA_OPTS: '-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1'
+
+  default_java_job: &default_java_job
+    docker:
+      - image: circleci/openjdk:8-jdk
+        environment:
+          <<: *docker_environment_defaults
+    environment:
+      <<: *host_environment_defaults
+    working_directory: ~/workdir
+
+  restore_source_code: &restore_source_code
+    restore_cache:
+      keys:
+        - source-code-1.0.4-{{ .Branch }}-{{ .Revision }}
+        - source-code-1.0.4-{{ .Branch }}
+        - source-code-1.0.4
+  restore_dependencies: &restore_dependencies
+    restore_cache:
+      keys:
+        - sbt-ivy2-dependencies-1.0.4-{{ checksum "/tmp/dependencies.cache.tmp" }}
+        - sbt-ivy2-dependencies-1.0.4
+  restore_build: &restore_build
+    restore_cache:
+      keys:
+        - sbt-build-1.0.4-{{ .Branch }}-{{ .Revision }}
+        - sbt-build-1.0.4
+
+  setup_dependencies_key: &setup_dependencies_key
+    run:
+      name: Generate cache key
+      command: |
+        shasum build.sbt \
+          project/plugins.sbt \
+          project/build.properties \
+          project/Dependencies.scala > /tmp/dependencies.cache.tmp
+
+jobs:
+  checkout_code:
+    <<: *default_java_job
+    steps:
+      - *restore_source_code
+      - checkout
+      - save_cache:
+          key: source-code-1.0.4-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ~/workdir
+
+  sbt_dependencies:
+    <<: *default_java_job
+    steps:
+      - *restore_source_code
+      - *setup_dependencies_key
+      - *restore_dependencies
+      - run:
+          name: Resolve dependencies
+          command: |
+            sbt update
+      - save_cache:
+          paths:
+            - ~/.ivy2
+            - ~/.sbt
+          key: sbt-ivy2-dependencies-1.0.4-{{ checksum "/tmp/dependencies.cache.tmp" }}
+
+  compile:
+    <<: *default_java_job
+    steps:
+      - *restore_source_code
+      - *setup_dependencies_key
+      - *restore_dependencies
+      - *restore_build
+      - run:
+          name: Compile
+          command: ./scripts/compile.sh
+      - save_cache:
+          paths:
+            - ~/workdir/target
+            - ~/workdir/project/target
+            - ~/workdir/project/project
+          key: sbt-build-1.0.4-{{ .Branch }}-{{ .Revision }}
+
+  test:
+    machine: true
+    environment:
+      <<: *host_environment_defaults
+    working_directory: ~/workdir
+    steps:
+      - *restore_source_code
+      - *setup_dependencies_key
+      - *restore_dependencies
+      - *restore_build
+      - run:
+          name: Test
+          command: ./scripts/test.sh
+      - run:
+          name: Store test reports
+          working_directory: ~/
+          command: |
+            mkdir -p ~/coverage-reports
+            cp -rf ~/workdir/target/test-reports ~/coverage-reports/junit
+      - store_test_results:
+          path: ~/coverage-reports
+      - store_artifacts:
+          path: ~/workdir/target/coverage-report
+      - store_artifacts:
+          path: ~/workdir/target/scoverage-report
+      - store_artifacts:
+          path: ~/workdir/target/scoverage-data
+      - store_artifacts:
+          path: ~/workdir/target/test-reports
+
+  publish_library:
+    machine: true
+    environment:
+      <<: *host_environment_defaults
+    working_directory: ~/workdir
+    steps:
+      - *restore_source_code
+      - *setup_dependencies_key
+      - *restore_dependencies
+      - *restore_build
+      - run:
+          name: Install AWS CLI
+          command: |
+            sudo apt -y update
+            sudo apt -y install python3-pip
+            sudo python3 -m pip install awscli
+      - run:
+          name: Setup AWS Credentials
+          command: ./scripts/setup-aws-credentials.sh
+      - run:
+          name: Retrieve GPG Keys
+          command: |
+            mkdir -p ~/.gnupg
+            aws s3 sync --profile shared-services --include '*.gpg' s3://$AWS_CREDENTIALS_BUCKET/gnupg/ ~/.gnupg
+      - run:
+          name: Publish library
+          command: ./scripts/publish-lib.sh 5.0.$CIRCLE_BUILD_NUM
+
+  publish_binary_locally:
+    machine: true
+    environment:
+      <<: *host_environment_defaults
+    working_directory: ~/workdir
+    steps:
+      - *restore_source_code
+      - *setup_dependencies_key
+      - *restore_dependencies
+      - *restore_build
+      - run:
+          name: Publish local binary
+          command: ./scripts/publish-native.sh -n codacy-coverage-reporter -m com.codacy.CodacyCoverageReporter -t docker -s 2.11 5.0.$CIRCLE_BUILD_NUM
+      - store_artifacts:
+          path: ~/workdir/codacy-coverage-reporter-linux
+      - run:
+          name: Move binary to workspace
+          command: |
+            mkdir workspace
+            cp ~/workdir/codacy-coverage-reporter-linux workspace/codacy-coverage-reporter
+      - persist_to_workspace:
+          root: workspace
+          paths:
+            - codacy-coverage-reporter
+
+  publish_binary_bintray:
+    machine: true
+    environment:
+      <<: *host_environment_defaults
+    working_directory: ~/workdir
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - run:
+          name: Publish binary to bintray
+          command: |
+              curl -fL https://getcli.jfrog.io | sh
+              ./jfrog bt config --interactive=false --user codacy-ci --key $BINTRAY_API_KEY
+              ./jfrog bt upload --user codacy-ci --key $BINTRAY_API_KEY --publish /tmp/workspace/codacy-coverage-reporter codacy/Binaries/codacy-coverage-reporter/5.0.$CIRCLE_BUILD_NUM linux/codacy-coverage-reporter
+
+workflows:
+  version: 2
+  test-and-publish:
+    jobs:
+      - checkout_code
+      - sbt_dependencies:
+          requires:
+            - checkout_code
+      - compile:
+          requires:
+            - sbt_dependencies
+      - test:
+          requires:
+            - compile
+      - publish_binary_locally:
+          requires:
+            - compile
+      - publish_library:
+          context: CodacyAWS
+          requires:
+            - compile
+            - test
+          filters:
+            branches:
+              only:
+                - master
+      - publish_binary_bintray:
+          requires:
+            - test
+            - publish_binary_locally
+          filters:
+            branches:
+              only:
+                - master
