@@ -20,15 +20,7 @@ You can run the coverage reporter:
 #### Bintray
 
 ```bash
-curl -o codacy-coverage-reporter "https://dl.bintray.com/codacy/Binaries/$(curl https://api.bintray.com/packages/codacy/Binaries/codacy-coverage-reporter/versions/_latest | jq -r .name)/codacy-coverage-reporter"
-chmod u+x codacy-coverage-reporter
-./codacy-coverage-reporter report -l Java -r jacoco.xml
-```
-
-#### CircleCI
-
-```bash
-curl -o codacy-coverage-reporter "$(curl https://circleci.com/api/v1.1/project/github/codacy/codacy-coverage-reporter/latest/artifacts | jq -r .[0].url)"
+curl -L -o codacy-coverage-reporter "https://dl.bintray.com/codacy/Binaries/$(curl https://api.bintray.com/packages/codacy/Binaries/codacy-coverage-reporter/versions/_latest | jq -r .name)/codacy-coverage-reporter"
 chmod u+x codacy-coverage-reporter
 ./codacy-coverage-reporter report -l Java -r jacoco.xml
 ```
