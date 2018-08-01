@@ -113,8 +113,7 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) {
       getNonEmptyEnv("CIRCLE_SHA1") orElse
       getNonEmptyEnv("CI_COMMIT_ID") orElse
       getNonEmptyEnv("WERCKER_GIT_COMMIT") orElse
-      getNonEmptyEnv("CODEBUILD_RESOLVED_SOURCE_VERSION") orElse
-      getNonEmptyEnv("HEROKU_TEST_RUN_COMMIT_VERSION")
+      getNonEmptyEnv("CODEBUILD_RESOLVED_SOURCE_VERSION")
         .filter(_.trim.nonEmpty)
   }
 

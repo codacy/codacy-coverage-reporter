@@ -1,17 +1,14 @@
 import Dependencies._
 
 name := "codacy-coverage-reporter"
-organization := "com.codacy"
-version := "1.0.0-SNAPSHOT"
+
+version := "1.0.14"
+
 scalaVersion := "2.11.12"
 
-scalacOptions := Seq("-deprecation",
-                     "-feature",
-                     "-unchecked",
-                     "-Ywarn-adapted-args",
-                     "-Xlint",
-                     "-Xfatal-warnings",
-                     "-Ypartial-unification")
+scalacOptions := Seq("-deprecation", "-feature", "-unchecked", "-Ywarn-adapted-args", "-Xlint", "-Xfatal-warnings")
+
+scalacOptions += "-Ypartial-unification"
 
 resolvers ++= Seq(
   DefaultMavenRepository,
@@ -35,35 +32,50 @@ libraryDependencies ++= Seq(
 )
 
 mainClass in assembly := Some("com.codacy.CodacyCoverageReporter")
+
 assemblyMergeStrategy in assembly := {
   case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
   case m if m.toLowerCase.matches("meta-inf.*\\.sf$") => MergeStrategy.discard
   case _ => MergeStrategy.first
 }
+
 crossPaths := false
+
 artifact in(Compile, assembly) := {
   val art = (artifact in(Compile, assembly)).value
   art.copy(`classifier` = Some("assembly"))
 }
+
 addArtifact(artifact in(Compile, assembly), assembly)
 
+organization := "com.codacy"
+
 organizationName := "Codacy"
+
 organizationHomepage := Some(new URL("https://www.codacy.com"))
+
 publishMavenStyle := true
+
 publishArtifact in Test := false
+
 pomIncludeRepository := { _ => false }
-publishTo := sonatypePublishTo.value
-// Sonatype repository settings
-credentials += Credentials(
-  "Sonatype Nexus Repository Manager",
-  "oss.sonatype.org",
-  sys.env.getOrElse("SONATYPE_USER", "username"),
-  sys.env.getOrElse("SONATYPE_PASSWORD", "password")
-)
+
+publishTo := {
+  val nexus = "https://oss.sonatype.org/"
+  if (version.value.trim.endsWith("SNAPSHOT"))
+    Some("snapshots" at nexus + "content/repositories/snapshots")
+  else
+    Some("releases" at nexus + "service/local/staging/deploy/maven2")
+}
+
 startYear := Some(2015)
+
 description := "Library for parsing coverage reports"
+
 licenses := Seq("The Apache Software License, Version 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
+
 homepage := Some(url("http://www.github.com/codacy/codacy-coverage-reporter/"))
+
 pomExtra :=
   <scm>
     <url>https://github.com/codacy/codacy-coverage-reporter</url>
