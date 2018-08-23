@@ -103,7 +103,7 @@ Or use the option `--codacy-api-base-url <Codacy_instance_URL>:16006`.
 
 For a complete list of commands and options run:
 ```
-java -jar codacy-coverage-reporter-assembly-<version>.jar --help
+java -jar codacy-coverage-reporter-<version>-assembly.jar --help
 ```
 
 ## Java 6
@@ -117,12 +117,12 @@ If you are having any issues with your installation, you can also build the cove
 
 1. Clone our repository https://github.com/codacy/codacy-coverage-reporter
 
-2. Run the command `sbt assembly`. This will produce a .jar that you can run in the `codacy-coverage-reporter/target/codacy-coverage-reporter-assembly-<version>.jar`
+2. Run the command `sbt assembly`. This will produce a .jar that you can run in the `codacy-coverage-reporter/target/codacy-coverage-reporter-<version>-assembly.jar`
 
 3. In the project you want to send the coverage, use the jar. Example:
 
 ```
-<path>/java-project$ java -jar ../codacy-coverage-reporter/target/codacy-coverage-reporter-assembly-<version>.jar report -l Java -r jacoco.xml
+<path>/java-project$ java -jar ../codacy-coverage-reporter/target/codacy-coverage-reporter-<version>-assembly.jar report -l Java -r jacoco.xml
 ```
 
 ## Gradle task
