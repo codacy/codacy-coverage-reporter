@@ -19,20 +19,18 @@ You can run the coverage reporter:
 
 1. Download the latest jar from https://github.com/codacy/codacy-coverage-reporter/releases/latest
 
-2. Run the command bellow
-
-```
-$ java -cp codacy-coverage-reporter-assembly-<version>.jar com.codacy.CodacyCoverageReporter -l Java -r jacoco.xml
-```
-
-## Updating Codacy
-
-To update Codacy, you will need your project API token. You can find the token in Project -> Settings -> Integrations -> Project API.
+2. Update Codacy - to do this you will need your project API token. You can find the token in Project -> Settings -> Integrations -> Project API.
 
 Then set it in your terminal, replacing %Project_Token% with your own token:
 
 ```
 export CODACY_PROJECT_TOKEN=%Project_Token%
+```
+
+3. Run the command bellow (changing <version> for the version you just downloaded)
+
+```
+$ java -cp codacy-coverage-reporter-<version>-assembly.jar com.codacy.CodacyCoverageReporter -l Java -r jacoco.xml
 ```
 
 ### CommitUUID Detection
