@@ -4,17 +4,17 @@ name := "codacy-coverage-reporter"
 
 version := "1.0.14"
 
-scalaVersion := "2.11.6"
-
-crossScalaVersions := Seq("2.10.5", "2.11.6")
+scalaVersion := "2.11.12"
 
 scalacOptions := Seq("-deprecation", "-feature", "-unchecked", "-Ywarn-adapted-args", "-Xlint", "-Xfatal-warnings")
 
+scalacOptions += "-Ypartial-unification"
+
 resolvers ++= Seq(
   DefaultMavenRepository,
-  "Sonatype releases" at "https://oss.sonatype.org/content/repositories/releases/",
-  "Sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/",
-  "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
+  Resolver.sonatypeRepo("releases"),
+  Resolver.sonatypeRepo("snapshots"),
+  Resolver.typesafeRepo("releases"),
   Classpaths.typesafeReleases,
   Classpaths.sbtPluginReleases
 )
@@ -22,11 +22,16 @@ resolvers ++= Seq(
 libraryDependencies ++= Seq(
   codacyScalaApi,
   coverageParser,
-  scopt,
-  log,
+  logback,
+  log4s,
+  caseApp,
   raptureJsonPlay,
-  scalaTest
+  scalaTest,
+  cats,
+  javaxActivation
 )
+
+mainClass in assembly := Some("com.codacy.CodacyCoverageReporter")
 
 assemblyMergeStrategy in assembly := {
   case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard

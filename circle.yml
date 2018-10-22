@@ -1,4 +1,6 @@
 machine:
+  pre:
+    - mkdir -p $HOME/.sbt/.lib/0.13.17 && wget https://repo.typesafe.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/0.13.17/sbt-launch.jar -O $HOME/.sbt/.lib/0.13.17/sbt-launch.jar
   java:
     version: oraclejdk8
 
