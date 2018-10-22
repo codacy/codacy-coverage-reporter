@@ -27,7 +27,7 @@ Then set it in your terminal, replacing %Project_Token% with your own token:
 export CODACY_PROJECT_TOKEN=%Project_Token%
 ```
 
-3. Run the command bellow (changing <version> for the version you just downloaded)
+3. Run the command below (changing <version> for the version you just downloaded)
 
 ```
 $ java -jar codacy-coverage-reporter-assembly-<version>.jar report -l Java -r jacoco.xml
