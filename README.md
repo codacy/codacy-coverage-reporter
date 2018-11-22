@@ -84,6 +84,13 @@ If you are sending reports with the partial flag for a certain language you shou
 
 It might also be possible to merge the reports before uploading them to Codacy, since most coverage tools support merge/aggregation, example: http://www.eclemma.org/jacoco/trunk/doc/merge-mojo.html .
 
+**Multi module projects**
+
+For coverage reports including multiple modules we need the correct path for matching the covered files.
+
+***Example***
+1. `codacy-coverage-reporter report -l Java -r report1.xml --multi-module app/src/main/java,lib/src/main/scala`
+
 **Other Languages**
 
 If your language is not in the list of supported languages, you can still send coverage to Codacy. Just provide the correct `--language` name and then add `--force-language` to make sure it is sent.
