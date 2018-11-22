@@ -16,7 +16,7 @@ class ConfigurationRulesTest extends FlatSpec with Matchers {
   val apiBaseUrl = "https://api.codacy.com"
 
   val baseConf = BaseCommandConfig(Some(projToken), Some(apiBaseUrl), None, debug = None)
-  val conf = Report(baseConf, "Scala", None, coverageFile, None, None)
+  val conf = Report(baseConf, "Scala", None, coverageFile, None, None, None)
 
   val components = new Components(conf)
 

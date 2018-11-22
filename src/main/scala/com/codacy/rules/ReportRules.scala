@@ -11,7 +11,7 @@ import com.codacy.api.{CoverageFileReport, CoverageReport}
 import com.codacy.helpers.LoggerHelper
 import com.codacy.model.configuration.{BaseConfig, Configuration, FinalConfig, ReportConfig}
 import com.codacy.parsers.CoverageParserFactory
-import com.codacy.transformation.PathPrefixer
+import com.codacy.transformation.{MultiModulePathMatcher, PathPrefixer}
 import org.log4s.Logger
 import rapture.json.jsonBackends.play._
 import rapture.json.{Json, Serializer}
@@ -91,7 +91,7 @@ class ReportRules(config: Configuration,
   }
 
   private def transform[A](report: CoverageReport)(config: ReportConfig)(f: CoverageReport => A): A = {
-    val transformations = Set(new PathPrefixer(config.prefix))
+    val transformations = Set(new PathPrefixer(config.prefix), new MultiModulePathMatcher(config.multiModule))
     val transformedReport = transformations.foldLeft(report) {
       (report, transformation) => transformation.execute(report)
     }

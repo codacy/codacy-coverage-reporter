@@ -63,7 +63,8 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) {
         reportConfig.forceLanguage,
         reportConfig.coverageReport,
         reportConfig.partial,
-        reportConfig.prefix.getOrElse("")
+        reportConfig.prefix.getOrElse(""),
+        reportConfig.multiModule.getOrElse(List())
       )
       validatedConfig <- validate(reportConf)
     } yield validatedConfig

@@ -43,7 +43,9 @@ case class Report(@Recurse
                   @ValueDescription("if the report is partial")
                   partial: Option[Unit],
                   @ValueDescription("the project path prefix")
-                  prefix: Option[String]
+                  prefix: Option[String],
+                  @ValueDescription("the project modules sources as comma separated list (e.g. modA/src/java,modB/src/scala")
+                  multiModule: Option[List[String]]
                  ) extends CommandConfiguration
 
 
@@ -59,6 +61,8 @@ case class BaseCommandConfig(@Name("t") @ValueDescription("your project API toke
 
 
 object ConfigArgumentParsers {
+
+  implicit val stringListParser: ArgParser[List[String]] = ArgParser.instance("fileList")(a => Right(a.split(",").toList))
 
   implicit val fileParser: ArgParser[File] = ArgParser.instance("file")(a => Right(new File(a)))
 

@@ -13,7 +13,8 @@ case class ReportConfig(baseConfig: BaseConfig,
                         forceLanguage: Boolean,
                         coverageReport: File,
                         partial: Boolean,
-                        prefix: String
+                        prefix: String,
+                        multiModule: List[String]
                        ) extends Configuration {
 
   lazy val language: Language.Value =
