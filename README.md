@@ -89,7 +89,7 @@ It might also be possible to merge the reports before uploading them to Codacy, 
 For coverage reports including multiple modules we need the correct path for matching the covered files.
 
 ***Example***
-1. `codacy-coverage-reporter report -l Java -r report1.xml --multi-module app/src/main/java,lib/src/main/scala`
+1. `codacy-coverage-reporter report -r coverage.xml --multi-module app/src/main/java,lib/src/main/scala`
 
 **Other Languages**
 
