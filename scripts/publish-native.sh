@@ -5,32 +5,24 @@
 #
 # Configuration:
 # * Target:
-#   * `native` - Builds the binary for the machine arch (Requires GraalVM and Oracle JDK 8)
+#   * `native` - Builds the binary for the machine arch (Requires GraalVM)
 #   * `docker` - Builds the binary for linux using a docker (Requires Docker)
 #
-# Setup GraalVM and Oracle JDK 8:
-#   * Install GraalVM (https://www.graalvm.org/docs/getting-started/).
-#   * Install Oracle JDK 8 (http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html).
-#   * Add GraalVM native-image bin to the beginning of your PATH.
-#   * Set Oracle JDK 8 as your JAVA_HOME, JDK_HOME and JRE_HOME.
-#   * Add Oracle JDK 8 bin to the beginning of your PATH.
-#
 # Example:
-# ./scripts/publish-native.sh -n codacy-coverage-reporter -m com.codacy.CodacyCoverageReporter -t docker -s 2.11 1.0.0
+# ./scripts/publish-native.sh -n codacy-coverage-reporter -m com.codacy.CodacyCoverageReporter -t docker 1.0.0
 #
 
 set -e
 
-SCALA_VERSION="2.11"
 VERSION="1.0.0-$(git symbolic-ref --short HEAD)-SNAPSHOT"
-TARGET="docker"
+TARGET="native"
 OS_TARGET="$(uname | awk '{print tolower($0)}')"
 
 function usage() {
-  echo >&2 "Usage: $0 -n <app-name> -m <main-class> [-t target (native)] [-s scala-version (2.12)] [app-version (1.0.0-<branch-name>-SNAPSHOT)]"
+  echo >&2 "Usage: $0 -n <app-name> -m <main-class> [-t target (native)] [app-version (1.0.0-<branch-name>-SNAPSHOT)]"
 }
 
-while getopts :s:t:n:m:h opt
+while getopts :t:n:m:h opt
 do
   case "$opt" in
     t)
@@ -47,9 +39,6 @@ do
       ;;
     m)
       APP_MAIN_CLASS="$OPTARG"
-      ;;
-    s)
-      SCALA_VERSION="$OPTARG"
       ;;
     h | ?)
       usage
@@ -81,29 +70,37 @@ if [ -n "$1" ]; then
 fi
 
 function app_classpath() {
-  echo $(cat /dev/null | sbt 'export runtime:fullClasspath' | tail -n 1)
+  echo $(cat /dev/null | sbt ';clean;compile;export runtime:fullClasspath' | tail -n 1)
 }
 
 function build_cmd() {
   local BINARY_NAME=$1
   local APP_MAIN_CLASS=$2
   local APP_CLASSPATH=$3
-  local FLAGS="--static -O1"
-  local NATIVE_IMAGE_FLAGS="-H:+ReportUnsupportedElementsAtRuntime -H:+JNI -H:IncludeResourceBundles=com.sun.org.apache.xerces.internal.impl.msg.XMLMessages"
+  local FLAGS='-O1'
+  FLAGS+=' --enable-url-protocols=http,https,file,jar --enable-all-security-services'
+  FLAGS+=' -H:+JNI -H:IncludeResourceBundles=com.sun.org.apache.xerces.internal.impl.msg.XMLMessages'
+  # FLAGS+=' --delay-class-initialization-to-runtime=com.codacy.CodacyCoverageReporter'
+  # FLAGS+=' --rerun-class-initialization-at-runtime=com.codacy.CodacyCoverageReporter'
 
-  if [[ "${OS_TARGET}" == "darwin" ]]
+  if [ "${OS_TARGET}" != "darwin" ]
   then
-    FLAGS="-O1"
+    FLAGS+=' --static'
   fi
 
-  echo 'native-image -cp '"${APP_CLASSPATH}"' '"${FLAGS}"' '"${NATIVE_IMAGE_FLAGS}"' -H:Name='"${BINARY_NAME}"' -H:Class='"${APP_MAIN_CLASS}"
+  echo 'native-image -cp '"${APP_CLASSPATH}"' '"${FLAGS}"' -H:Name='"${BINARY_NAME}"' -H:Class='"${APP_MAIN_CLASS}"
 }
 
 echo "Publishing ${APP_NAME} binary version ${VERSION} for ${OS_TARGET}"
-BINARY_NAME="${APP_NAME}-${OS_TARGET}"
-BUILD_CMD="$(build_cmd ${BINARY_NAME} "${APP_MAIN_CLASS}" "$(app_classpath)")"
+BINARY_NAME="${APP_NAME}-${OS_TARGET}-${VERSION}"
+BUILD_CMD="cd /tmp"
+# BUILD_CMD+=" && curl -Lq -o \$JAVA_HOME/jre/lib/ext/bcprov-jdk15on-161.jar https://www.bouncycastle.org/download/bcprov-jdk15on-161.jar"
+BUILD_CMD+=" && sed -i 's/^security\.provider/# security\.provider/g' \${JAVA_HOME}/jre/lib/security/java.security"
+# BUILD_CMD+=" && echo -e '\nsecurity.provider.1=sun.security.provider.Sun\nsecurity.provider.2=sun.security.rsa.SunRsaSign\nsecurity.provider.3=org.bouncycastle.jce.provider.BouncyCastleProvider\nsecurity.provider.4=com.sun.net.ssl.internal.ssl.Provider\nsecurity.provider.5=com.sun.crypto.provider.SunJCE\nsecurity.provider.6=sun.security.jgss.SunProvider\nsecurity.provider.7=com.sun.security.sasl.Provider\nsecurity.provider.8=org.jcp.xml.dsig.internal.dom.XMLDSigRI\nsecurity.provider.9=sun.security.smartcardio.SunPCSC\n' >> \${JAVA_HOME}/jre/lib/security/java.security"
+BUILD_CMD+=" && echo -e '\nsecurity.provider.1=sun.security.provider.Sun\nsecurity.provider.2=sun.security.rsa.SunRsaSign\nsecurity.provider.3=com.sun.net.ssl.internal.ssl.Provider\nsecurity.provider.4=com.sun.crypto.provider.SunJCE\nsecurity.provider.5=sun.security.jgss.SunProvider\nsecurity.provider.6=com.sun.security.sasl.Provider\nsecurity.provider.7=org.jcp.xml.dsig.internal.dom.XMLDSigRI\nsecurity.provider.8=sun.security.smartcardio.SunPCSC\n' >> \${JAVA_HOME}/jre/lib/security/java.security"
+BUILD_CMD+=" && $(build_cmd ${BINARY_NAME} "${APP_MAIN_CLASS}" "$(app_classpath)")"
+BUILD_CMD+=" && mv $BINARY_NAME $PWD/$BINARY_NAME"
 
-echo "Going to run ${BUILD_CMD} ..."
 case "$TARGET" in
   native)
     ${BUILD_CMD}
@@ -112,13 +109,13 @@ case "$TARGET" in
     docker run \
       --rm=true \
       -it \
-      -e JAVA_TOOL_OPTIONS="${JAVA_TOOL_OPTIONS}" \
       --user=root \
       --entrypoint=bash \
       -v $HOME/.ivy2:$HOME/.ivy2 \
+      -v $HOME/.sbt:$HOME/.sbt \
       -v $PWD:$PWD \
-      findepi/graalvm:1.0.0-rc4-all \
-        -c 'cd /tmp && '"${BUILD_CMD}"' && mv '"$BINARY_NAME $PWD/$BINARY_NAME"
+      oracle/graalvm-ce:1.0.0-rc13 \
+        -c "${BUILD_CMD}"
     ;;
   *)
     echo >&2 "Could not find command for target $TARGET"

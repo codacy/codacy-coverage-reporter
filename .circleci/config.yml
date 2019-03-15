@@ -3,221 +3,199 @@ version: 2
 
 # Re-usable blocks to reduce boilerplate in job definitions.
 references:
-  host_environment_defaults: &host_environment_defaults
-    # Customize the JVM maximum heap limit
-    JAVA_OPTS: -Xmx3200m
-  docker_environment_defaults: &docker_environment_defaults
-    # Customize the JVM to read correct memory values
-    JAVA_OPTS: '-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1'
 
-  default_java_job: &default_java_job
-    docker:
-      - image: circleci/openjdk:8-jdk
-        environment:
-          <<: *docker_environment_defaults
-    environment:
-      <<: *host_environment_defaults
+  sbt_jvm_defaults: &sbt_jvm_defaults
+    JAVA_OPTS: -Xmx3g
+
+  default_sbt_job: &default_sbt_job
+    machine: true
     working_directory: ~/workdir
+    environment:
+      <<: *sbt_jvm_defaults
 
-  restore_source_code: &restore_source_code
+  restore_sbt_cache: &restore_sbt_cache
     restore_cache:
       keys:
-        - source-code-1.0.4-{{ .Branch }}-{{ .Revision }}
-        - source-code-1.0.4-{{ .Branch }}
-        - source-code-1.0.4
-  restore_dependencies: &restore_dependencies
-    restore_cache:
-      keys:
-        - sbt-ivy2-dependencies-1.0.4-{{ checksum "/tmp/dependencies.cache.tmp" }}
-        - sbt-ivy2-dependencies-1.0.4
-  restore_build: &restore_build
-    restore_cache:
-      keys:
-        - sbt-build-1.0.4-{{ .Branch }}-{{ .Revision }}
-        - sbt-build-1.0.4
+        - sbt-cache-{{ .Branch }}-{{ checksum "build.sbt" }}-{{ .Environment.CIRCLE_SHA1 }}
+        - sbt-cache-{{ .Branch }}-{{ checksum "build.sbt" }}
+        - sbt-cache-{{ .Branch }}
+        - sbt-cache
 
-  setup_dependencies_key: &setup_dependencies_key
+  clean_sbt_cache: &clean_sbt_cache
     run:
-      name: Generate cache key
+      name: CleanCache
       command: |
-        shasum build.sbt \
-          project/plugins.sbt \
-          project/build.properties \
-          project/Dependencies.scala > /tmp/dependencies.cache.tmp
+        find $HOME/.sbt -name "*.lock" | xargs rm | true
+        find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm | true
+
+  save_sbt_cache: &save_sbt_cache
+    save_cache:
+      key: sbt-cache-{{ .Branch }}-{{ checksum "build.sbt" }}-{{ .Environment.CIRCLE_SHA1 }}
+      paths:
+        - "~/.ivy2/cache"
+        - "~/.sbt"
+        - "~/.m2"
 
 jobs:
-  checkout_code:
-    <<: *default_java_job
+
+  trigger_test:
+    <<: *default_sbt_job
     steps:
-      - *restore_source_code
       - checkout
-      - save_cache:
-          key: source-code-1.0.4-{{ .Branch }}-{{ .Revision }}
-          paths:
-            - ~/workdir
-
-  sbt_dependencies:
-    <<: *default_java_job
-    steps:
-      - *restore_source_code
-      - *setup_dependencies_key
-      - *restore_dependencies
-      - run:
-          name: Resolve dependencies
-          command: |
-            sbt update
-      - save_cache:
-          paths:
-            - ~/.ivy2
-            - ~/.sbt
-          key: sbt-ivy2-dependencies-1.0.4-{{ checksum "/tmp/dependencies.cache.tmp" }}
-
-  compile:
-    <<: *default_java_job
-    steps:
-      - *restore_source_code
-      - *setup_dependencies_key
-      - *restore_dependencies
-      - *restore_build
-      - run:
-          name: Compile
-          command: ./scripts/compile.sh
-      - save_cache:
-          paths:
-            - ~/workdir/target
-            - ~/workdir/project/target
-            - ~/workdir/project/project
-          key: sbt-build-1.0.4-{{ .Branch }}-{{ .Revision }}
-
-  test:
-    machine: true
-    environment:
-      <<: *host_environment_defaults
-    working_directory: ~/workdir
-    steps:
-      - *restore_source_code
-      - *setup_dependencies_key
-      - *restore_dependencies
-      - *restore_build
+      - *restore_sbt_cache
       - run:
           name: Test
-          command: ./scripts/test.sh
-      - run:
-          name: Store test reports
-          working_directory: ~/
-          command: |
-            mkdir -p ~/coverage-reports
-            cp -rf ~/workdir/target/test-reports ~/coverage-reports/junit
-      - store_test_results:
-          path: ~/coverage-reports
-      - store_artifacts:
-          path: ~/workdir/target/coverage-report
-      - store_artifacts:
-          path: ~/workdir/target/scoverage-report
-      - store_artifacts:
-          path: ~/workdir/target/scoverage-data
-      - store_artifacts:
-          path: ~/workdir/target/test-reports
+          command: sbt test
 
-  publish_library:
-    machine: true
-    environment:
-      <<: *host_environment_defaults
+  checkout_and_version:
+    docker:
+      - image: codacy/git-version:latest
     working_directory: ~/workdir
     steps:
-      - *restore_source_code
-      - *setup_dependencies_key
-      - *restore_dependencies
-      - *restore_build
+      - checkout
       - run:
-          name: Install AWS CLI
-          command: |
-            sudo apt -y update
-            sudo apt -y install python3-pip
-            sudo python3 -m pip install awscli
+          name: Set version
+          command: /bin/git-version > .version
       - run:
-          name: Setup AWS Credentials
-          command: ./scripts/setup-aws-credentials.sh
+          name: Set Sbt version
+          command: echo "version in ThisBuild := \"$(cat .version)\"" > version.sbt
       - run:
-          name: Retrieve GPG Keys
-          command: |
-            mkdir -p ~/.gnupg
-            aws s3 sync --profile shared-services --include '*.gpg' s3://$AWS_CREDENTIALS_BUCKET/gnupg/ ~/.gnupg
-      - run:
-          name: Publish library
-          command: ./scripts/publish-lib.sh 5.0.$CIRCLE_BUILD_NUM
-
-  publish_binary_locally:
-    machine: true
-    environment:
-      <<: *host_environment_defaults
-    working_directory: ~/workdir
-    steps:
-      - *restore_source_code
-      - *setup_dependencies_key
-      - *restore_dependencies
-      - *restore_build
-      - run:
-          name: Publish local binary
-          command: ./scripts/publish-native.sh -n codacy-coverage-reporter -m com.codacy.CodacyCoverageReporter -t docker -s 2.11 5.0.$CIRCLE_BUILD_NUM
-      - store_artifacts:
-          path: ~/workdir/codacy-coverage-reporter-linux
-      - run:
-          name: Move binary to workspace
-          command: |
-            mkdir workspace
-            cp ~/workdir/codacy-coverage-reporter-linux workspace/codacy-coverage-reporter
+          name: Current version
+          command: cat .version
       - persist_to_workspace:
-          root: workspace
+          root: ~/
           paths:
-            - codacy-coverage-reporter
+            - workdir/*
 
-  publish_binary_bintray:
-    machine: true
-    environment:
-      <<: *host_environment_defaults
-    working_directory: ~/workdir
+  checkfmt:
+    <<: *default_sbt_job
     steps:
       - attach_workspace:
-          at: /tmp/workspace
+          at: ~/
+      - *restore_sbt_cache
       - run:
-          name: Publish binary to bintray
+          name: Check formatting
+          command: sbt ";scalafmt::test;test:scalafmt::test;sbt:scalafmt::test"
+      - *clean_sbt_cache
+      - *save_sbt_cache
+
+  populate_cache:
+    <<: *default_sbt_job
+    steps:
+      - attach_workspace:
+          at: ~/
+      - *restore_sbt_cache
+      - run:
+          name: Safely populate caches
+          command: sbt ";set scalafmtUseIvy in ThisBuild := false;update"
+      - *clean_sbt_cache
+      - *save_sbt_cache
+
+  compile_and_test:
+    <<: *default_sbt_job
+    steps:
+      - attach_workspace:
+          at: ~/
+      - *restore_sbt_cache
+      - run:
+          name: Coverage
           command: |
-              curl -fL https://getcli.jfrog.io | sh
-              ./jfrog bt config --interactive=false --user codacy-ci --key $BINTRAY_API_KEY
-              ./jfrog bt upload --user codacy-ci --key $BINTRAY_API_KEY --publish /tmp/workspace/codacy-coverage-reporter codacy/Binaries/codacy-coverage-reporter/5.0.$CIRCLE_BUILD_NUM linux/codacy-coverage-reporter
+            sbt clean compile coverage test coverageReport coverageAggregate codacyCoverage
+      - *clean_sbt_cache
+      - *save_sbt_cache
+
+  publish_lib:
+    <<: *default_sbt_job
+    steps:
+      - attach_workspace:
+          at: ~/
+      - *restore_sbt_cache
+      - run:
+          name: Publish the library
+          command: |
+            sbt ";clean;retrieveGPGKeys"
+            sbt ";+publishSigned;sonatypeReleaseAll"
+      - *clean_sbt_cache
+      - *save_sbt_cache
+
+  publish_binary:
+    <<: *default_sbt_job
+    steps:
+      - attach_workspace:
+          at: ~/
+      - *restore_sbt_cache
+      - run:
+          name: Publish the library
+          command: |
+            ./scripts/publish-native.sh -n codacy-coverage-reporter -m com.codacy.CodacyCoverageReporter -t docker $(cat .version)
+
+            cp ~/workdir/codacy-coverage-reporter-linux-$(cat .version) ~/workdir/codacy-coverage-reporter-linux
+            curl -fL https://getcli.jfrog.io | sh
+            ./jfrog bt config --interactive=false --user codacy-ci --key $BINTRAY_API_KEY
+            ./jfrog bt upload --user codacy-ci --key $BINTRAY_API_KEY --publish $HOME/workdir codacy/Binaries/codacy-coverage-reporter/$(cat .version) codacy-coverage-reporter-linux
+
+            go get github.com/tcnksm/ghr
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ~/workdir/codacy-coverage-reporter-linux-$(cat .version)
+      - *clean_sbt_cache
+      - *save_sbt_cache
+
+  tag_version:
+    <<: *default_sbt_job
+    steps:
+      - attach_workspace:
+          at: ~/
+      - add_ssh_keys:
+          fingerprints:
+            - "df:83:d7:c7:d5:79:06:c2:3b:d1:fd:e2:a3:d1:12:c5"
+      - run:
+          name: Tag
+          command: git tag $(cat .version) && git push --tags
 
 workflows:
   version: 2
-  test-and-publish:
+
+  compile_deploy:
     jobs:
-      - checkout_code
-      - sbt_dependencies:
-          requires:
-            - checkout_code
-      - compile:
-          requires:
-            - sbt_dependencies
-      - test:
-          requires:
-            - compile
-      - publish_binary_locally:
-          requires:
-            - compile
-      - publish_library:
+      - checkout_and_version:
+          context: CodacyAWS
+      - populate_cache:
           context: CodacyAWS
           requires:
-            - compile
-            - test
-          filters:
-            branches:
-              only:
-                - master
-      - publish_binary_bintray:
+            - checkout_and_version
+      - checkfmt:
+          context: CodacyAWS
           requires:
-            - test
-            - publish_binary_locally
+            - populate_cache
+      - compile_and_test:
+          context: CodacyAWS
+          requires:
+            - populate_cache
+      - publish_lib:
           filters:
             branches:
               only:
                 - master
+                - native-binary
+          context: CodacyAWS
+          requires:
+            - compile_and_test
+            - checkfmt
+      - publish_native:
+          filters:
+            branches:
+              only:
+                - master
+                - native-binary
+          context: CodacyAWS
+          requires:
+            - compile_and_test
+            - checkfmt
+      - tag_version:
+          filters:
+            branches:
+              only:
+                - master
+                - native-binary
+          context: CodacyAWS
+          requires:
+            - publish
