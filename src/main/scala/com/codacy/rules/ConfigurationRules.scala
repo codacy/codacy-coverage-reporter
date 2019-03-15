@@ -6,14 +6,15 @@ import cats.implicits._
 import com.codacy.configuration.parser.{BaseCommandConfig, CommandConfiguration, Final, Report}
 import com.codacy.helpers.LoggerHelper
 import com.codacy.model.configuration.{BaseConfig, Configuration, FinalConfig, ReportConfig}
+import com.typesafe.scalalogging.LazyLogging
 
 import scala.language.implicitConversions
 import scala.util.Try
 
-class ConfigurationRules(cmdConfig: CommandConfiguration) {
+class ConfigurationRules(cmdConfig: CommandConfiguration) extends LazyLogging {
   private val publicApiBaseUrl = "https://api.codacy.com"
 
-  private val logger = LoggerHelper.logger(getClass, cmdConfig)
+  LoggerHelper.setLoggerLevel(logger, cmdConfig.baseConfig.debug)
 
   lazy val validatedConfig: Configuration = {
     val config = validateConfig(cmdConfig)
@@ -43,7 +44,7 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) {
   private def validateReportConfig(reportConfig: Report): Either[String, ReportConfig] = {
     def validate(reportConf: ReportConfig) = {
       reportConf match {
-        case config if !config.hasKnownLanguage && !config.forceLanguage =>
+        case config if config.language.isEmpty && !config.forceLanguage =>
           Left(s"Invalid language ${config.languageStr}")
 
         case _ =>

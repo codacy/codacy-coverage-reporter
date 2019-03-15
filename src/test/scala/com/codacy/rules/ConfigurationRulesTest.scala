@@ -2,14 +2,14 @@ package com.codacy.rules
 
 import java.io.File
 
-import com.codacy.api.Language
 import com.codacy.configuration.parser.{BaseCommandConfig, Report}
 import com.codacy.di.Components
 import com.codacy.model.configuration.ReportConfig
+import com.codacy.plugins.api.languages.Languages
 import org.scalatest.Inside._
 import org.scalatest._
 
-class ConfigurationRulesTest extends FlatSpec with Matchers {
+class ConfigurationRulesTest extends FlatSpec with Matchers with OptionValues {
 
   val projToken = "1234adasdsdw333"
   val coverageFile = new File("coverage.xml")
@@ -23,7 +23,7 @@ class ConfigurationRulesTest extends FlatSpec with Matchers {
   "ConfigurationRules" should "transform configuration" in {
     inside(components.validatedConfig) {
       case config: ReportConfig =>
-        config.language should be(Language.Scala)
+        config.language.value should be(Languages.Scala)
         config.coverageReport.toString should be("coverage.xml")
     }
 
@@ -34,7 +34,7 @@ class ConfigurationRulesTest extends FlatSpec with Matchers {
       case config: ReportConfig =>
         val result = components.reportRules.coverageWithTokenAndCommit(config)
 
-        result should be(Left("could not parse report, unrecognized report format (tried: Cobertura, Jacoco)"))
+        result should be(Left("Could not parse report, unrecognized report format (tried: Cobertura, Jacoco)"))
     }
   }
 
