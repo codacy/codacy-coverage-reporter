@@ -13,7 +13,6 @@ object LoggerHelper {
   def logger(clazz: Class[_], config: Configuration): Logger =
     getLogger(clazz, config.baseConfig.debug)
 
-
   private def getLogger(clazz: Class[_], debug: Boolean): org.log4s.Logger = {
     val logger = org.log4s.getLogger(clazz)
     setLoggerLevel(logger, debug)

@@ -18,45 +18,47 @@ abstract class ConfigurationParsingApp extends CommandAppWithPreCommand[BaseComm
   override def beforeCommand(options: BaseCommand, remainingArgs: Seq[String]): Unit = ()
 }
 
-
 @AppName("codacy-coverage-reporter")
 @AppVersion(Option(BaseCommand.getClass.getPackage.getImplementationVersion).getOrElse("dev"))
-@ProgName(s"java -cp codacy-coverage-reporter-assembly-${Option(BaseCommand.getClass.getPackage.getImplementationVersion).getOrElse("dev")}.jar")
+@ProgName(
+  s"java -cp codacy-coverage-reporter-assembly-${Option(BaseCommand.getClass.getPackage.getImplementationVersion).getOrElse("dev")}.jar"
+)
 case class BaseCommand()
 
 sealed trait CommandConfiguration {
   def baseConfig: BaseCommandConfig
 }
 
-case class Final(@Recurse
-                 baseConfig: BaseCommandConfig
-                ) extends CommandConfiguration
+case class Final(
+    @Recurse
+    baseConfig: BaseCommandConfig
+) extends CommandConfiguration
 
-case class Report(@Recurse
-                  baseConfig: BaseCommandConfig,
-                  @Name("l") @ValueDescription("your project language")
-                  language: String,
-                  @Hidden @Name("f")
-                  forceLanguage: Option[Unit],
-                  @Name("r") @ValueDescription("your project coverage file name")
-                  coverageReport: File,
-                  @ValueDescription("if the report is partial")
-                  partial: Option[Unit],
-                  @ValueDescription("the project path prefix")
-                  prefix: Option[String]
-                 ) extends CommandConfiguration
+case class Report(
+    @Recurse
+    baseConfig: BaseCommandConfig,
+    @Name("l") @ValueDescription("your project language")
+    language: String,
+    @Hidden @Name("f")
+    forceLanguage: Option[Unit],
+    @Name("r") @ValueDescription("your project coverage file name")
+    coverageReport: File,
+    @ValueDescription("if the report is partial")
+    partial: Option[Unit],
+    @ValueDescription("the project path prefix")
+    prefix: Option[String]
+) extends CommandConfiguration
 
-
-case class BaseCommandConfig(@Name("t") @ValueDescription("your project API token")
-                             projectToken: Option[String],
-                             @ValueDescription("the base URL for the Codacy API")
-                             codacyApiBaseUrl: Option[String],
-                             @ValueDescription("your commitUUID")
-                             commitUUID: Option[String],
-                             @Hidden
-                             debug: Option[Unit]
-                            )
-
+case class BaseCommandConfig(
+    @Name("t") @ValueDescription("your project API token")
+    projectToken: Option[String],
+    @ValueDescription("the base URL for the Codacy API")
+    codacyApiBaseUrl: Option[String],
+    @ValueDescription("your commitUUID")
+    commitUUID: Option[String],
+    @Hidden
+    debug: Option[Unit]
+)
 
 object ConfigArgumentParsers {
 

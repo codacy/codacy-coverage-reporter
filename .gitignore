@@ -1,15 +1,15 @@
-logs
-project/project
-project/target
-target
+/logs/
+project/project/
+project/target/
+target/
 tmp
 .history
-dist
+/dist/
 /.idea
 /*.iml
-.cache
-/out
-/.idea_modules
+.cache/
+/out/
+/.idea_modules/
 .classpath
 .project
 /RUNNING_PID
@@ -20,7 +20,8 @@ codacy.pylint.conf
 npm-debug.log
 config
 
-.vscode
+.metals/
+.vscode/
 .codacy.json
-codacy-coverage-reporter-linux
-codacy-coverage-reporter-darwin
+codacy-coverage-reporter-linux-*
+codacy-coverage-reporter-darwin-*

@@ -5,17 +5,16 @@ import org.scalatest._
 
 class PathPrefixerTest extends FlatSpec with Matchers {
 
-  val report = CoverageReport(83, Seq(
-    CoverageFileReport("Filename.scala", 24, Map()),
-    CoverageFileReport("OtherFile.scala", 74, Map())
-  ))
+  val report = CoverageReport(
+    83,
+    Seq(CoverageFileReport("Filename.scala", 24, Map()), CoverageFileReport("OtherFile.scala", 74, Map()))
+  )
 
   "PathPrefixer" should "prefix all filenames in a report" in {
     val prefixer = new PathPrefixer("folder/")
 
-    prefixer.execute(report).fileReports.foreach {
-      fileReport =>
-        fileReport.filename should startWith("folder/")
+    prefixer.execute(report).fileReports.foreach { fileReport =>
+      fileReport.filename should startWith("folder/")
     }
   }
 

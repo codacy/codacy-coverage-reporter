@@ -15,15 +15,12 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) {
 
   private val logger = LoggerHelper.logger(getClass, cmdConfig)
 
-
   lazy val validatedConfig: Configuration = {
     val config = validateConfig(cmdConfig)
     config.fold({ error =>
       logger.error(s"Invalid configuration: $error")
       sys.exit(1)
-    },
-      identity
-    )
+    }, identity)
   }
 
   private def validateConfig(cmdConfig: CommandConfiguration): Either[String, Configuration] = {
@@ -36,7 +33,6 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) {
         validateFinalConfig(config)
     }
   }
-
 
   private def validateFinalConfig(finalConfig: Final): Either[String, FinalConfig] = {
     for {
@@ -67,7 +63,6 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) {
       )
       validatedConfig <- validate(reportConf)
     } yield validatedConfig
-
 
   }
 
