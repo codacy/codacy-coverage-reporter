@@ -80,8 +80,8 @@ function build_cmd() {
   local FLAGS='-O1'
   FLAGS+=' --enable-url-protocols=http,https,file,jar --enable-all-security-services'
   FLAGS+=' -H:+JNI -H:IncludeResourceBundles=com.sun.org.apache.xerces.internal.impl.msg.XMLMessages'
-  # FLAGS+=' --delay-class-initialization-to-runtime=com.codacy.CodacyCoverageReporter'
-  # FLAGS+=' --rerun-class-initialization-at-runtime=com.codacy.CodacyCoverageReporter'
+  FLAGS+=' -H:+ReportExceptionStackTraces'
+  #  FLAGS+=' -H:+ReportUnsupportedElementsAtRuntime'
 
   if [ "${OS_TARGET}" != "darwin" ]
   then
@@ -94,8 +94,8 @@ function build_cmd() {
 echo "Publishing ${APP_NAME} binary version ${VERSION} for ${OS_TARGET}"
 BINARY_NAME="${APP_NAME}-${OS_TARGET}-${VERSION}"
 BUILD_CMD="cd /tmp"
-# BUILD_CMD+=" && curl -Lq -o \$JAVA_HOME/jre/lib/ext/bcprov-jdk15on-161.jar https://www.bouncycastle.org/download/bcprov-jdk15on-161.jar"
 BUILD_CMD+=" && sed -i 's/^security\.provider/# security\.provider/g' \${JAVA_HOME}/jre/lib/security/java.security"
+# BUILD_CMD+=" && curl -Lq -o \$JAVA_HOME/jre/lib/ext/bcprov-jdk15on-161.jar https://www.bouncycastle.org/download/bcprov-jdk15on-161.jar"
 # BUILD_CMD+=" && echo -e '\nsecurity.provider.1=sun.security.provider.Sun\nsecurity.provider.2=sun.security.rsa.SunRsaSign\nsecurity.provider.3=org.bouncycastle.jce.provider.BouncyCastleProvider\nsecurity.provider.4=com.sun.net.ssl.internal.ssl.Provider\nsecurity.provider.5=com.sun.crypto.provider.SunJCE\nsecurity.provider.6=sun.security.jgss.SunProvider\nsecurity.provider.7=com.sun.security.sasl.Provider\nsecurity.provider.8=org.jcp.xml.dsig.internal.dom.XMLDSigRI\nsecurity.provider.9=sun.security.smartcardio.SunPCSC\n' >> \${JAVA_HOME}/jre/lib/security/java.security"
 BUILD_CMD+=" && echo -e '\nsecurity.provider.1=sun.security.provider.Sun\nsecurity.provider.2=sun.security.rsa.SunRsaSign\nsecurity.provider.3=com.sun.net.ssl.internal.ssl.Provider\nsecurity.provider.4=com.sun.crypto.provider.SunJCE\nsecurity.provider.5=sun.security.jgss.SunProvider\nsecurity.provider.6=com.sun.security.sasl.Provider\nsecurity.provider.7=org.jcp.xml.dsig.internal.dom.XMLDSigRI\nsecurity.provider.8=sun.security.smartcardio.SunPCSC\n' >> \${JAVA_HOME}/jre/lib/security/java.security"
 BUILD_CMD+=" && $(build_cmd ${BINARY_NAME} "${APP_MAIN_CLASS}" "$(app_classpath)")"

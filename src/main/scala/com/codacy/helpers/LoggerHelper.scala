@@ -10,6 +10,10 @@ object LoggerHelper {
       logger.underlying
         .asInstanceOf[ch.qos.logback.classic.Logger]
         .setLevel(Level.DEBUG)
+    } else {
+      logger.underlying
+        .asInstanceOf[ch.qos.logback.classic.Logger]
+        .setLevel(Level.INFO)
     }
   }
 

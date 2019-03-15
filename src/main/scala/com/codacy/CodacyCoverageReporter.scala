@@ -4,9 +4,9 @@ import com.codacy.configuration.parser.{CommandConfiguration, ConfigurationParsi
 import com.codacy.di.Components
 import com.codacy.helpers.LoggerHelper
 import com.codacy.model.configuration.{FinalConfig, ReportConfig}
-import com.typesafe.scalalogging.LazyLogging
+import com.typesafe.scalalogging.StrictLogging
 
-object CodacyCoverageReporter extends ConfigurationParsingApp with LazyLogging {
+object CodacyCoverageReporter extends ConfigurationParsingApp with StrictLogging {
 
   def run(commandConfig: CommandConfiguration): Unit = {
     val components = new Components(commandConfig)

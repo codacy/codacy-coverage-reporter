@@ -12,11 +12,11 @@ import com.codacy.helpers.LoggerHelper
 import com.codacy.model.configuration.{BaseConfig, Configuration, FinalConfig, ReportConfig}
 import com.codacy.parsers.CoverageParser
 import com.codacy.transformation.PathPrefixer
-import com.typesafe.scalalogging.LazyLogging
+import com.typesafe.scalalogging.StrictLogging
 
 import scala.util.{Failure, Success}
 
-class ReportRules(config: Configuration, coverageServices: => CoverageServices) extends LazyLogging {
+class ReportRules(config: Configuration, coverageServices: => CoverageServices) extends StrictLogging {
 
   LoggerHelper.setLoggerLevel(logger, config.baseConfig.debug)
 

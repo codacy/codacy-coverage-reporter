@@ -6,12 +6,12 @@ import cats.implicits._
 import com.codacy.configuration.parser.{BaseCommandConfig, CommandConfiguration, Final, Report}
 import com.codacy.helpers.LoggerHelper
 import com.codacy.model.configuration.{BaseConfig, Configuration, FinalConfig, ReportConfig}
-import com.typesafe.scalalogging.LazyLogging
+import com.typesafe.scalalogging.StrictLogging
 
 import scala.language.implicitConversions
 import scala.util.Try
 
-class ConfigurationRules(cmdConfig: CommandConfiguration) extends LazyLogging {
+class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging {
   private val publicApiBaseUrl = "https://api.codacy.com"
 
   LoggerHelper.setLoggerLevel(logger, cmdConfig.baseConfig.debug)
