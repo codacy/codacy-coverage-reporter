@@ -15,11 +15,7 @@ Multi-language coverage reporter for Codacy https://www.codacy.com
 Codacy assumes that coverage is previously configured for your project.
 The supported coverage formats are JaCoCo and Cobertura.
 
-You can run the coverage reporter:
-
-1. Download the latest jar from https://github.com/codacy/codacy-coverage-reporter/releases/latest
-
-2. Update Codacy - to do this you will need your project API token. You can find the token in Project -> Settings -> Integrations -> Project API.
+1. Setup the project API token. You can find the token in Project -> Settings -> Integrations -> Project API.
 
 Then set it in your terminal, replacing %Project_Token% with your own token:
 
@@ -27,13 +23,24 @@ Then set it in your terminal, replacing %Project_Token% with your own token:
 export CODACY_PROJECT_TOKEN=%Project_Token%
 ```
 
-3. Run the command below (changing <version> for the version you just downloaded)
+### Linux amd64
 
+```bash
+LATEST_VERSION=$(curl -Lqs https://api.bintray.com/packages/codacy/Binaries/codacy-coverage-reporter/versions/_latest | jq -r .name)
+curl -o codacy-coverage-reporter https://dl.bintray.com/codacy/Binaries/${LATEST_VERSION}/:codacy-coverage-reporter-linux
+chmod +x codacy-coverage-reporter
+./codacy-coverage-reporter report -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
 ```
+
+### Others
+
+1. Download the latest jar from https://github.com/codacy/codacy-coverage-reporter/releases/latest
+
+2. Run the command below (changing <version> for the version you just downloaded)
+
+```bash
 $ java -jar codacy-coverage-reporter-assembly-<version>.jar report -l Java -r jacoco.xml
 ```
-
-You can also use the option `--project-token` or `-t` to set it.
 
 ### CommitUUID Detection
 
