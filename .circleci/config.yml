@@ -129,27 +129,16 @@ jobs:
           command: |
             ./scripts/publish-native.sh -n codacy-coverage-reporter -m com.codacy.CodacyCoverageReporter -t docker $(cat .version)
 
-            cp ~/workdir/codacy-coverage-reporter-linux-$(cat .version) ~/workdir/codacy-coverage-reporter-linux
+            mkdir -p /tmp/binary
+            cp ~/workdir/codacy-coverage-reporter-linux-$(cat .version) /tmp/binary/codacy-coverage-reporter-linux
             curl -fL https://getcli.jfrog.io | sh
             ./jfrog bt config --interactive=false --user codacy-ci --key $BINTRAY_API_KEY
-            ./jfrog bt upload --user codacy-ci --key $BINTRAY_API_KEY --publish $HOME/workdir codacy/Binaries/codacy-coverage-reporter/$(cat .version) codacy-coverage-reporter-linux
+            ./jfrog bt upload --user codacy-ci --key $BINTRAY_API_KEY --publish /tmp/binary codacy/Binaries/codacy-coverage-reporter/$(cat .version) codacy-coverage-reporter-linux
 
             go get github.com/tcnksm/ghr
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ~/workdir/codacy-coverage-reporter-linux-$(cat .version)
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete $(cat .version) ~/workdir/codacy-coverage-reporter-linux-$(cat .version)
       - *clean_sbt_cache
       - *save_sbt_cache
-
-  tag_version:
-    <<: *default_sbt_job
-    steps:
-      - attach_workspace:
-          at: ~/
-      - add_ssh_keys:
-          fingerprints:
-            - "df:83:d7:c7:d5:79:06:c2:3b:d1:fd:e2:a3:d1:12:c5"
-      - run:
-          name: Tag
-          command: git tag $(cat .version) && git push --tags
 
 workflows:
   version: 2
@@ -180,7 +169,7 @@ workflows:
           requires:
             - compile_and_test
             - checkfmt
-      - publish_native:
+      - publish_binary:
           filters:
             branches:
               only:
@@ -190,12 +179,3 @@ workflows:
           requires:
             - compile_and_test
             - checkfmt
-      - tag_version:
-          filters:
-            branches:
-              only:
-                - master
-                - native-binary
-          context: CodacyAWS
-          requires:
-            - publish
