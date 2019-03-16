@@ -135,7 +135,7 @@ jobs:
             ./jfrog bt upload --user codacy-ci --key $BINTRAY_API_KEY --publish $HOME/workdir codacy/Binaries/codacy-coverage-reporter/$(cat .version) codacy-coverage-reporter-linux
 
             go get github.com/tcnksm/ghr
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ~/workdir/codacy-coverage-reporter-linux-$(cat .version)
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete $(cat .version) ~/workdir/codacy-coverage-reporter-linux-$(cat .version)
       - *clean_sbt_cache
       - *save_sbt_cache
 
@@ -180,7 +180,7 @@ workflows:
           requires:
             - compile_and_test
             - checkfmt
-      - publish_native:
+      - publish_binary:
           filters:
             branches:
               only:
@@ -198,4 +198,5 @@ workflows:
                 - native-binary
           context: CodacyAWS
           requires:
-            - publish
+            - publish_binary
+            - publish_lib
