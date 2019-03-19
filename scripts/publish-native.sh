@@ -70,7 +70,7 @@ if [ -n "$1" ]; then
 fi
 
 function app_classpath() {
-  echo $(cat /dev/null | sbt ';clean;compile;export runtime:fullClasspath' | tail -n 1)
+  echo $(cat /dev/null | sbt ';compile;export runtime:fullClasspath' | tail -n 1)
 }
 
 function build_cmd() {
@@ -115,7 +115,7 @@ case "$TARGET" in
       -v $HOME/.ivy2:$HOME/.ivy2 \
       -v $HOME/.sbt:$HOME/.sbt \
       -v $PWD:$PWD \
-      oracle/graalvm-ce:1.0.0-rc13 \
+      oracle/graalvm-ce:1.0.0-rc14 \
         -c "${BUILD_CMD}"
     ;;
   *)

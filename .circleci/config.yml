@@ -95,39 +95,34 @@ jobs:
       - *clean_sbt_cache
       - *save_sbt_cache
 
-  publish_lib:
+  publish:
     <<: *default_sbt_job
     steps:
       - attach_workspace:
           at: ~/
       - *restore_sbt_cache
       - run:
-          name: Publish the library
+          name: Publish the library and binary
           command: |
             sbt ";clean;retrieveGPGKeys"
-            sbt ";+publishSigned;sonatypeReleaseAll"
-      - *clean_sbt_cache
-      - *save_sbt_cache
+            sbt ";publishSigned;sonatypeRelease"
 
-  publish_binary:
-    <<: *default_sbt_job
-    steps:
-      - attach_workspace:
-          at: ~/
-      - *restore_sbt_cache
-      - run:
-          name: Publish the library
-          command: |
             ./scripts/publish-native.sh -n codacy-coverage-reporter -m com.codacy.CodacyCoverageReporter -t docker $(cat .version)
 
-            mkdir -p /tmp/binary
-            cp ~/workdir/codacy-coverage-reporter-linux-$(cat .version) /tmp/binary/codacy-coverage-reporter-linux
-            curl -fL https://getcli.jfrog.io | sh
-            ./jfrog bt config --interactive=false --user codacy-ci --key $BINTRAY_API_KEY
-            ./jfrog bt upload --user codacy-ci --key $BINTRAY_API_KEY --publish /tmp/binary/ codacy/Binaries/codacy-coverage-reporter/$(cat .version) codacy-coverage-reporter-linux
+            curl -T ~/workdir/codacy-coverage-reporter-linux-$(cat .version) -ucodacy-ci:$BINTRAY_API_KEY -H "X-Bintray-Package:codacy-coverage-reporter" -H "X-Bintray-Version:$(cat .version)" https://api.bintray.com/content/codacy/Binaries/$(cat .version)/codacy-coverage-reporter-linux
+            curl -T ~/workdir/target/codacy-coverage-reporter-assembly-$(cat .version).jar -ucodacy-ci:$BINTRAY_API_KEY -H "X-Bintray-Package:codacy-coverage-reporter" -H "X-Bintray-Version:$(cat .version)" https://api.bintray.com/content/codacy/Binaries/$(cat .version)/codacy-coverage-reporter-assembly.jar
+            curl -X POST -ucodacy-ci:$BINTRAY_API_KEY https://api.bintray.com/content/codacy/Binaries/codacy-coverage-reporter/$(cat .version)/publish
 
+            GHR_FLAGS=""
+            if [ "${CIRCLE_BRANCH}" != "master" ]; then
+              GHR_FLAGS+="-prerelease"
+            fi
+
+            mkdir -p /tmp/ghr-publish
+            cp ~/workdir/codacy-coverage-reporter-linux-$(cat .version) /tmp/ghr-publish
+            cp ~/workdir/target/codacy-coverage-reporter-assembly-$(cat .version).jar /tmp/ghr-publish/codacy-coverage-reporter-$(cat .version)-assembly.jar
             go get github.com/tcnksm/ghr
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete $(cat .version) ~/workdir/codacy-coverage-reporter-linux-$(cat .version)
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${GHR_FLAGS} -delete $(cat .version) /tmp/ghr-publish
       - *clean_sbt_cache
       - *save_sbt_cache
 
@@ -150,20 +145,12 @@ workflows:
           context: CodacyAWS
           requires:
             - populate_cache
-      - publish_lib:
+      - publish:
           filters:
             branches:
               only:
                 - master
-          context: CodacyAWS
-          requires:
-            - compile_and_test
-            - checkfmt
-      - publish_binary:
-          filters:
-            branches:
-              only:
-                - master
+                - native-binary
           context: CodacyAWS
           requires:
             - compile_and_test
