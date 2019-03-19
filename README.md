@@ -25,6 +25,10 @@ export CODACY_PROJECT_TOKEN=%Project_Token%
 
 ### Linux amd64
 
+Download the latest binary and use it to post the coverage to Codacy
+
+#### Bintray
+
 ```bash
 LATEST_VERSION=$(curl -Lqs https://api.bintray.com/packages/codacy/Binaries/codacy-coverage-reporter/versions/_latest | jq -r .name)
 curl -o codacy-coverage-reporter https://dl.bintray.com/codacy/Binaries/${LATEST_VERSION}/:codacy-coverage-reporter-linux
@@ -32,14 +36,33 @@ chmod +x codacy-coverage-reporter
 ./codacy-coverage-reporter report -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
 ```
 
+#### GitHub
+
+```sh
+curl $(curl https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r '.assets | map({name, browser_download_url} | select(.name | contains("codacy-coverage-reporter-linux"))) | .[0].browser_download_url') -o codacy-coverage-reporter
+chmod +x codacy-coverage-reporter
+./codacy-coverage-reporter report -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
+```
+
 ### Others
 
-1. Download the latest jar from https://github.com/codacy/codacy-coverage-reporter/releases/latest
+* Linux x86, MacOS, Windows, ...
 
-2. Run the command below (changing <version> for the version you just downloaded)
+Download the latest jar and use it to post the coverage to Codacy
 
-```bash
-$ java -jar codacy-coverage-reporter-assembly-<version>.jar report -l Java -r jacoco.xml
+#### Bintray
+
+```sh
+LATEST_VERSION=$(curl -Lqs https://api.bintray.com/packages/codacy/Binaries/codacy-coverage-reporter/versions/_latest | jq -r .name)
+curl -o codacy-coverage-reporter-assembly.jar https://dl.bintray.com/codacy/Binaries/${LATEST_VERSION}/:codacy-coverage-reporter-assembly.jar
+java -jar codacy-coverage-reporter-assembly.jar report -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
+```
+
+#### GitHub
+
+```sh
+curl $(curl https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r '.assets | map({content_type, browser_download_url} | select(.content_type | contains("application/x-java-archive"))) | .[0].browser_download_url') -o codacy-coverage-reporter-assembly.jar
+java -jar codacy-coverage-reporter-assembly.jar report -l Java -r jacoco.xml
 ```
 
 ### CommitUUID Detection
@@ -206,10 +229,10 @@ If you want to use codacy with Travis CI and report coverage generated from your
 ```yaml
 before_install:
   - sudo apt-get install jq
-  - wget -O ~/codacy-coverage-reporter-assembly-latest.jar $(curl https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r '.assets[0].browser_download_url')
+  - curl $(curl https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r '.assets | map({content_type, browser_download_url} | select(.content_type | contains("application/x-java-archive"))) | .[0].browser_download_url') -o codacy-coverage-reporter-assembly.jar
 
 after_success:
-  - java -jar ~/codacy-coverage-reporter-assembly-latest.jar report -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
+  - java -jar ~/codacy-coverage-reporter-assembly.jar report -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
 ```
 
 Make sure you have set `CODACY_PROJECT_TOKEN` as an environment variable in your travis job!
