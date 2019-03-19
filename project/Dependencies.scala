@@ -2,7 +2,7 @@ import sbt._
 
 object Dependencies {
 
-  val coverageParser = "com.codacy" %% "coverage-parser" % "fixes-SNAPSHOT"
+  val coverageParser = "com.codacy" %% "coverage-parser" % "2.0.14"
 
   val caseApp = "com.github.alexarchambault" %% "case-app" % "1.2.0"
 

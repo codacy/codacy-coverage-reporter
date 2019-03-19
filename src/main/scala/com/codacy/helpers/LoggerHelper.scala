@@ -6,14 +6,10 @@ import com.typesafe.scalalogging.Logger
 object LoggerHelper {
 
   def setLoggerLevel(logger: Logger, debug: Boolean): Unit = {
-    if (debug) {
-      logger.underlying
-        .asInstanceOf[ch.qos.logback.classic.Logger]
-        .setLevel(Level.DEBUG)
-    } else {
-      logger.underlying
-        .asInstanceOf[ch.qos.logback.classic.Logger]
-        .setLevel(Level.INFO)
+    val level = if (debug) Level.DEBUG else Level.INFO
+    logger.underlying match {
+      case l: ch.qos.logback.classic.Logger => l.setLevel(level)
+      case _ =>
     }
   }
 

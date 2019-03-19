@@ -18,8 +18,6 @@ import scala.util.{Failure, Success}
 
 class ReportRules(config: Configuration, coverageServices: => CoverageServices) extends StrictLogging {
 
-  LoggerHelper.setLoggerLevel(logger, config.baseConfig.debug)
-
   private val rootProjectDir = new File(System.getProperty("user.dir"))
 
   def codacyCoverage(config: ReportConfig): Either[String, String] = {

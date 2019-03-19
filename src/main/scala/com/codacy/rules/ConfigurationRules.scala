@@ -14,8 +14,6 @@ import scala.util.Try
 class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging {
   private val publicApiBaseUrl = "https://api.codacy.com"
 
-  LoggerHelper.setLoggerLevel(logger, cmdConfig.baseConfig.debug)
-
   lazy val validatedConfig: Configuration = {
     val config = validateConfig(cmdConfig)
     config.fold({ error =>
