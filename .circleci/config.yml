@@ -1,0 +1,157 @@
+# CircleCI 2.0 configuration file
+version: 2
+
+# Re-usable blocks to reduce boilerplate in job definitions.
+references:
+
+  sbt_jvm_defaults: &sbt_jvm_defaults
+    JAVA_OPTS: -Xmx3g
+
+  default_sbt_job: &default_sbt_job
+    machine: true
+    working_directory: ~/workdir
+    environment:
+      <<: *sbt_jvm_defaults
+
+  restore_sbt_cache: &restore_sbt_cache
+    restore_cache:
+      keys:
+        - sbt-cache-{{ .Branch }}-{{ checksum "build.sbt" }}-{{ .Environment.CIRCLE_SHA1 }}
+        - sbt-cache-{{ .Branch }}-{{ checksum "build.sbt" }}
+        - sbt-cache-{{ .Branch }}
+        - sbt-cache
+
+  clean_sbt_cache: &clean_sbt_cache
+    run:
+      name: CleanCache
+      command: |
+        find $HOME/.sbt -name "*.lock" | xargs rm | true
+        find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm | true
+
+  save_sbt_cache: &save_sbt_cache
+    save_cache:
+      key: sbt-cache-{{ .Branch }}-{{ checksum "build.sbt" }}-{{ .Environment.CIRCLE_SHA1 }}
+      paths:
+        - "~/.ivy2/cache"
+        - "~/.sbt"
+        - "~/.m2"
+
+jobs:
+
+  checkout_and_version:
+    docker:
+      - image: codacy/git-version:latest
+    working_directory: ~/workdir
+    steps:
+      - checkout
+      - run:
+          name: Set version
+          command: /bin/git-version > .version
+      - run:
+          name: Set Sbt version
+          command: echo "version in ThisBuild := \"$(cat .version)\"" > version.sbt
+      - run:
+          name: Current version
+          command: cat .version
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - workdir/*
+
+  checkfmt:
+    <<: *default_sbt_job
+    steps:
+      - attach_workspace:
+          at: ~/
+      - *restore_sbt_cache
+      - run:
+          name: Check formatting
+          command: sbt ";scalafmt::test;test:scalafmt::test;sbt:scalafmt::test"
+      - *clean_sbt_cache
+      - *save_sbt_cache
+
+  populate_cache:
+    <<: *default_sbt_job
+    steps:
+      - attach_workspace:
+          at: ~/
+      - *restore_sbt_cache
+      - run:
+          name: Safely populate caches
+          command: sbt ";set scalafmtUseIvy in ThisBuild := false;update"
+      - *clean_sbt_cache
+      - *save_sbt_cache
+
+  compile_and_test:
+    <<: *default_sbt_job
+    steps:
+      - attach_workspace:
+          at: ~/
+      - *restore_sbt_cache
+      - run:
+          name: Coverage
+          command: |
+            sbt clean compile coverage test coverageReport coverageAggregate codacyCoverage
+      - *clean_sbt_cache
+      - *save_sbt_cache
+
+  publish:
+    <<: *default_sbt_job
+    steps:
+      - attach_workspace:
+          at: ~/
+      - *restore_sbt_cache
+      - run:
+          name: Publish the library and binary
+          command: |
+            sbt ";clean;retrieveGPGKeys"
+            sbt ";publishSigned;sonatypeRelease"
+
+            ./scripts/publish-native.sh -n codacy-coverage-reporter -m com.codacy.CodacyCoverageReporter -t docker $(cat .version)
+
+            curl -T ~/workdir/codacy-coverage-reporter-linux-$(cat .version) -ucodacy-ci:$BINTRAY_API_KEY -H "X-Bintray-Package:codacy-coverage-reporter" -H "X-Bintray-Version:$(cat .version)" https://api.bintray.com/content/codacy/Binaries/$(cat .version)/codacy-coverage-reporter-linux
+            curl -T ~/workdir/target/codacy-coverage-reporter-assembly-$(cat .version).jar -ucodacy-ci:$BINTRAY_API_KEY -H "X-Bintray-Package:codacy-coverage-reporter" -H "X-Bintray-Version:$(cat .version)" https://api.bintray.com/content/codacy/Binaries/$(cat .version)/codacy-coverage-reporter-assembly.jar
+            curl -X POST -ucodacy-ci:$BINTRAY_API_KEY https://api.bintray.com/content/codacy/Binaries/codacy-coverage-reporter/$(cat .version)/publish
+
+            GHR_FLAGS=""
+            if [ "${CIRCLE_BRANCH}" != "master" ]; then
+              GHR_FLAGS+="-prerelease"
+            fi
+
+            mkdir -p /tmp/ghr-publish
+            cp ~/workdir/codacy-coverage-reporter-linux-$(cat .version) /tmp/ghr-publish
+            cp ~/workdir/target/codacy-coverage-reporter-assembly-$(cat .version).jar /tmp/ghr-publish/codacy-coverage-reporter-$(cat .version)-assembly.jar
+            go get github.com/tcnksm/ghr
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${GHR_FLAGS} -delete $(cat .version) /tmp/ghr-publish
+      - *clean_sbt_cache
+      - *save_sbt_cache
+
+workflows:
+  version: 2
+
+  compile_deploy:
+    jobs:
+      - checkout_and_version:
+          context: CodacyAWS
+      - populate_cache:
+          context: CodacyAWS
+          requires:
+            - checkout_and_version
+      - checkfmt:
+          context: CodacyAWS
+          requires:
+            - populate_cache
+      - compile_and_test:
+          context: CodacyAWS
+          requires:
+            - populate_cache
+      - publish:
+          filters:
+            branches:
+              only:
+                - master
+                - native-binary
+          context: CodacyAWS
+          requires:
+            - compile_and_test
+            - checkfmt

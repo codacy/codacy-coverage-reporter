@@ -6,24 +6,20 @@ import cats.implicits._
 import com.codacy.configuration.parser.{BaseCommandConfig, CommandConfiguration, Final, Report}
 import com.codacy.helpers.LoggerHelper
 import com.codacy.model.configuration.{BaseConfig, Configuration, FinalConfig, ReportConfig}
+import com.typesafe.scalalogging.StrictLogging
 
 import scala.language.implicitConversions
 import scala.util.Try
 
-class ConfigurationRules(cmdConfig: CommandConfiguration) {
+class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging {
   private val publicApiBaseUrl = "https://api.codacy.com"
-
-  private val logger = LoggerHelper.logger(getClass, cmdConfig)
-
 
   lazy val validatedConfig: Configuration = {
     val config = validateConfig(cmdConfig)
     config.fold({ error =>
       logger.error(s"Invalid configuration: $error")
       sys.exit(1)
-    },
-      identity
-    )
+    }, identity)
   }
 
   private def validateConfig(cmdConfig: CommandConfiguration): Either[String, Configuration] = {
@@ -37,7 +33,6 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) {
     }
   }
 
-
   private def validateFinalConfig(finalConfig: Final): Either[String, FinalConfig] = {
     for {
       baseConfig <- validateBaseConfig(finalConfig.baseConfig)
@@ -47,7 +42,7 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) {
   private def validateReportConfig(reportConfig: Report): Either[String, ReportConfig] = {
     def validate(reportConf: ReportConfig) = {
       reportConf match {
-        case config if !config.hasKnownLanguage && !config.forceLanguage =>
+        case config if config.language.isEmpty && !config.forceLanguage =>
           Left(s"Invalid language ${config.languageStr}")
 
         case _ =>
@@ -67,7 +62,6 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) {
       )
       validatedConfig <- validate(reportConf)
     } yield validatedConfig
-
 
   }
 
@@ -114,7 +108,8 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) {
       getNonEmptyEnv("CI_COMMIT_ID") orElse
       getNonEmptyEnv("WERCKER_GIT_COMMIT") orElse
       getNonEmptyEnv("CODEBUILD_RESOLVED_SOURCE_VERSION") orElse
-      getNonEmptyEnv("CI_COMMIT_SHA")
+      getNonEmptyEnv("CI_COMMIT_SHA") orElse
+      getNonEmptyEnv("HEROKU_TEST_RUN_COMMIT_VERSION")
         .filter(_.trim.nonEmpty)
   }
 

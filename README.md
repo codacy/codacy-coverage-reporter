@@ -15,11 +15,7 @@ Multi-language coverage reporter for Codacy https://www.codacy.com
 Codacy assumes that coverage is previously configured for your project.
 The supported coverage formats are JaCoCo and Cobertura.
 
-You can run the coverage reporter:
-
-1. Download the latest jar from https://github.com/codacy/codacy-coverage-reporter/releases/latest
-
-2. Update Codacy - to do this you will need your project API token. You can find the token in Project -> Settings -> Integrations -> Project API.
+1. Setup the project API token. You can find the token in Project -> Settings -> Integrations -> Project API.
 
 Then set it in your terminal, replacing %Project_Token% with your own token:
 
@@ -27,13 +23,47 @@ Then set it in your terminal, replacing %Project_Token% with your own token:
 export CODACY_PROJECT_TOKEN=%Project_Token%
 ```
 
-3. Run the command below (changing <version> for the version you just downloaded)
+### Linux amd64
 
-```
-$ java -jar codacy-coverage-reporter-assembly-<version>.jar report -l Java -r jacoco.xml
+Download the latest binary and use it to post the coverage to Codacy
+
+#### Bintray
+
+```bash
+LATEST_VERSION="$(curl -Ls https://api.bintray.com/packages/codacy/Binaries/codacy-coverage-reporter/versions/_latest | jq -r .name)"
+curl -Ls -o codacy-coverage-reporter "https://dl.bintray.com/codacy/Binaries/${LATEST_VERSION}/codacy-coverage-reporter-linux"
+chmod +x codacy-coverage-reporter
+./codacy-coverage-reporter report -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
 ```
 
-You can also use the option `--project-token` or `-t` to set it.
+#### GitHub
+
+```sh
+curl -Ls -o codacy-coverage-reporter "$(curl -Ls https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r '.assets | map({name, browser_download_url} | select(.name | contains("codacy-coverage-reporter-linux"))) | .[0].browser_download_url')"
+chmod +x codacy-coverage-reporter
+./codacy-coverage-reporter report -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
+```
+
+### Others
+
+* Linux x86, MacOS, Windows, ...
+
+Download the latest jar and use it to post the coverage to Codacy
+
+#### Bintray
+
+```sh
+LATEST_VERSION="$(curl -Ls https://api.bintray.com/packages/codacy/Binaries/codacy-coverage-reporter/versions/_latest | jq -r .name)"
+curl -Ls -o codacy-coverage-reporter-assembly.jar "https://dl.bintray.com/codacy/Binaries/${LATEST_VERSION}/codacy-coverage-reporter-assembly.jar"
+java -jar codacy-coverage-reporter-assembly.jar report -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
+```
+
+#### GitHub
+
+```sh
+curl -Ls -o codacy-coverage-reporter-assembly.jar $(curl -Ls https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r '.assets | map({content_type, browser_download_url} | select(.content_type | contains("java-archive"))) | .[0].browser_download_url')
+java -jar codacy-coverage-reporter-assembly.jar report -l Java -r jacoco.xml
+```
 
 ### CommitUUID Detection
 
@@ -199,10 +229,10 @@ If you want to use codacy with Travis CI and report coverage generated from your
 ```yaml
 before_install:
   - sudo apt-get install jq
-  - wget -O ~/codacy-coverage-reporter-assembly-latest.jar $(curl https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r '.assets[0].browser_download_url')
+  - curl $(curl https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r '.assets | map({content_type, browser_download_url} | select(.content_type | contains("application/x-java-archive"))) | .[0].browser_download_url') -o codacy-coverage-reporter-assembly.jar
 
 after_success:
-  - java -jar ~/codacy-coverage-reporter-assembly-latest.jar report -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
+  - java -jar ~/codacy-coverage-reporter-assembly.jar report -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
 ```
 
 Make sure you have set `CODACY_PROJECT_TOKEN` as an environment variable in your travis job!

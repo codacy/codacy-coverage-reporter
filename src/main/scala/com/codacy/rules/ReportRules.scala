@@ -3,25 +3,20 @@ package com.codacy.rules
 import java.io.File
 
 import cats.implicits._
+import com.codacy.api.CoverageReport
 import com.codacy.api.client.{FailedResponse, SuccessfulResponse}
 import com.codacy.api.helpers.FileHelper
 import com.codacy.api.helpers.vcs.{CommitInfo, GitClient}
 import com.codacy.api.service.CoverageServices
-import com.codacy.api.{CoverageFileReport, CoverageReport}
 import com.codacy.helpers.LoggerHelper
 import com.codacy.model.configuration.{BaseConfig, Configuration, FinalConfig, ReportConfig}
-import com.codacy.parsers.CoverageParserFactory
+import com.codacy.parsers.CoverageParser
 import com.codacy.transformation.PathPrefixer
-import org.log4s.Logger
-import rapture.json.jsonBackends.play._
-import rapture.json.{Json, Serializer}
+import com.typesafe.scalalogging.StrictLogging
 
 import scala.util.{Failure, Success}
 
-class ReportRules(config: Configuration,
-                  coverageServices: => CoverageServices) {
-
-  private val logger: Logger = LoggerHelper.logger(getClass, config)
+class ReportRules(config: Configuration, coverageServices: => CoverageServices) extends StrictLogging {
 
   private val rootProjectDir = new File(System.getProperty("user.dir"))
 
@@ -43,33 +38,35 @@ class ReportRules(config: Configuration,
 
   private[rules] def coverageWithTokenAndCommit(config: ReportConfig): Either[String, String] = {
     withCommitUUID(config.baseConfig) { commitUUID =>
-
       logger.debug(s"Project token: ${config.baseConfig.projectToken}")
       logger.info(s"Parsing coverage data from: ${config.coverageReport.getAbsolutePath} ...")
 
-      CoverageParserFactory.withCoverageReport(config.language, rootProjectDir, config.coverageReport)(transform(_)(config) {
-        case report if report.fileReports.isEmpty =>
-          Left("The provided coverage report generated an empty result.")
+      CoverageParser
+        .parse(rootProjectDir, config.coverageReport)
+        .map(transform(_)(config))
+        .flatMap {
+          case report if report.fileReports.isEmpty =>
+            Left("The provided coverage report generated an empty result.")
 
-        case report =>
-          val codacyReportFilename = s"${config.coverageReport.getAbsoluteFile.getParent}${File.separator}codacy-coverage.json"
-          logger.debug(s"Saving parsed report to $codacyReportFilename")
-          val codacyReportFile = new File(codacyReportFilename)
+          case report =>
+            val codacyReportFilename =
+              s"${config.coverageReport.getAbsoluteFile.getParent}${File.separator}codacy-coverage.json"
+            logger.debug(s"Saving parsed report to $codacyReportFilename")
+            val codacyReportFile = new File(codacyReportFilename)
 
-          logger.debug(report.toString)
-          implicit val ser = implicitly[Serializer[CoverageFileReport, Json]]
-          FileHelper.writeJsonToFile(codacyReportFile, report)
+            logger.debug(report.toString)
+            FileHelper.writeJsonToFile(codacyReportFile, report)
 
-          logUploadedFileInfo(codacyReportFile)
+            logUploadedFileInfo(codacyReportFile)
 
-          coverageServices.sendReport(commitUUID, config.languageStr, report, config.partial) match {
-            case SuccessfulResponse(value) =>
-              Right(s"Coverage data uploaded. ${value.success}")
-            case failed: FailedResponse =>
-              val message = handleFailedResponse(failed)
-              Left(s"Failed to upload report: $message")
-          }
-      }).joinRight
+            coverageServices.sendReport(commitUUID, config.languageStr, report, config.partial) match {
+              case SuccessfulResponse(value) =>
+                Right(s"Coverage data uploaded. ${value.success}")
+              case failed: FailedResponse =>
+                val message = handleFailedResponse(failed)
+                Left(s"Failed to upload report: $message")
+            }
+        }
     }
   }
 
@@ -90,13 +87,11 @@ class ReportRules(config: Configuration,
     }
   }
 
-  private def transform[A](report: CoverageReport)(config: ReportConfig)(f: CoverageReport => A): A = {
+  private def transform(report: CoverageReport)(config: ReportConfig): CoverageReport = {
     val transformations = Set(new PathPrefixer(config.prefix))
-    val transformedReport = transformations.foldLeft(report) {
-      (report, transformation) => transformation.execute(report)
+    transformations.foldLeft(report) { (report, transformation) =>
+      transformation.execute(report)
     }
-
-    f(transformedReport)
   }
 
   def finalReport(config: FinalConfig): Either[String, String] = {
@@ -110,9 +105,7 @@ class ReportRules(config: Configuration,
     }
   }
 
-  private def withCommitUUID[T](config: BaseConfig
-                               )(block: (String) => Either[String, T]
-                               ): Either[String, T] = {
+  private def withCommitUUID[T](config: BaseConfig)(block: (String) => Either[String, T]): Either[String, T] = {
     val maybeCommitUUID = config.commitUUID.fold {
       val currentPath = new File(System.getProperty("user.dir"))
       new GitClient(currentPath).latestCommitInfo match {
@@ -130,4 +123,5 @@ class ReportRules(config: Configuration,
 
     maybeCommitUUID.flatMap(block)
   }
+
 }

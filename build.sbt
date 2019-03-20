@@ -1,92 +1,57 @@
 import Dependencies._
+import codacy.libs._
 
 name := "codacy-coverage-reporter"
 
-version := "1.0.14"
-
 scalaVersion := "2.11.12"
 
-scalacOptions := Seq("-deprecation", "-feature", "-unchecked", "-Ywarn-adapted-args", "-Xlint", "-Xfatal-warnings")
-
-scalacOptions += "-Ypartial-unification"
-
-resolvers ++= Seq(
-  DefaultMavenRepository,
-  Resolver.sonatypeRepo("releases"),
-  Resolver.sonatypeRepo("snapshots"),
-  Resolver.typesafeRepo("releases"),
-  Classpaths.typesafeReleases,
-  Classpaths.sbtPluginReleases
+scalacOptions := Seq(
+  "-deprecation",
+  "-feature",
+  "-unchecked",
+  "-Ywarn-adapted-args",
+  "-Xlint",
+  "-Xfatal-warnings",
+  "-Ypartial-unification"
 )
 
-libraryDependencies ++= Seq(
-  codacyScalaApi,
-  coverageParser,
-  logback,
-  log4s,
-  caseApp,
-  raptureJsonPlay,
-  scalaTest,
-  cats,
-  javaxActivation
-)
+// Runtime dependencies
+libraryDependencies ++= Seq(coverageParser, caseApp, cats, logbackClassic, scalaLogging)
+
+// Test dependencies
+libraryDependencies ++= Seq(scalatest).map(_ % "test")
 
 mainClass in assembly := Some("com.codacy.CodacyCoverageReporter")
-
 assemblyMergeStrategy in assembly := {
   case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
   case m if m.toLowerCase.matches("meta-inf.*\\.sf$") => MergeStrategy.discard
   case _ => MergeStrategy.first
 }
-
 crossPaths := false
+artifact in (Compile, assembly) := {
+  val art = (artifact in (Compile, assembly)).value
+  art.withClassifier(Some("assembly"))
+}
+addArtifact(artifact in (Compile, assembly), assembly)
 
-artifact in(Compile, assembly) := {
-  val art = (artifact in(Compile, assembly)).value
-  art.copy(`classifier` = Some("assembly"))
+// HACK: Since we are only using the public resolvers we need to remove the private for it to not fail
+resolvers ~= {
+  _.filterNot(_.name.toLowerCase.contains("codacy"))
 }
 
-addArtifact(artifact in(Compile, assembly), assembly)
+// HACK: This setting is not picked up properly from the plugin
+pgpPassphrase := Option(System.getenv("SONATYPE_GPG_PASSPHRASE")).map(_.toCharArray)
 
-organization := "com.codacy"
+description := "CLI to send coverage reports to Codacy through the API"
 
-organizationName := "Codacy"
+scmInfo := Some(
+  ScmInfo(
+    url("https://github.com/codacy/codacy-coverage-reporter"),
+    "scm:git:git@github.com:codacy/codacy-coverage-reporter.git"
+  )
+)
 
-organizationHomepage := Some(new URL("https://www.codacy.com"))
+publicMvnPublish
 
-publishMavenStyle := true
-
-publishArtifact in Test := false
-
-pomIncludeRepository := { _ => false }
-
-publishTo := {
-  val nexus = "https://oss.sonatype.org/"
-  if (version.value.trim.endsWith("SNAPSHOT"))
-    Some("snapshots" at nexus + "content/repositories/snapshots")
-  else
-    Some("releases" at nexus + "service/local/staging/deploy/maven2")
-}
-
-startYear := Some(2015)
-
-description := "Library for parsing coverage reports"
-
-licenses := Seq("The Apache Software License, Version 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
-
-homepage := Some(url("http://www.github.com/codacy/codacy-coverage-reporter/"))
-
-pomExtra :=
-  <scm>
-    <url>https://github.com/codacy/codacy-coverage-reporter</url>
-    <connection>scm:git:git@github.com:codacy/codacy-coverage-reporter.git</connection>
-    <developerConnection>scm:git:https://github.com/codacy/codacy-coverage-reporter.git</developerConnection>
-  </scm>
-    <developers>
-      <developer>
-        <id>mrfyda</id>
-        <name>Rafael</name>
-        <email>rafael [at] codacy.com</email>
-        <url>https://github.com/mrfyda</url>
-      </developer>
-    </developers>
+fork in Test := true
+cancelable in Global := true

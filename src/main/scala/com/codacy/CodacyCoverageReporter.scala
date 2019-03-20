@@ -4,15 +4,16 @@ import com.codacy.configuration.parser.{CommandConfiguration, ConfigurationParsi
 import com.codacy.di.Components
 import com.codacy.helpers.LoggerHelper
 import com.codacy.model.configuration.{FinalConfig, ReportConfig}
+import com.typesafe.scalalogging.StrictLogging
 
-object CodacyCoverageReporter extends ConfigurationParsingApp {
+object CodacyCoverageReporter extends ConfigurationParsingApp with StrictLogging {
 
   def run(commandConfig: CommandConfiguration): Unit = {
     val components = new Components(commandConfig)
 
     val validatedConfig = components.validatedConfig
 
-    val logger = LoggerHelper.logger(getClass, validatedConfig)
+    LoggerHelper.setLoggerLevel(logger, validatedConfig.baseConfig.debug)
 
     logger.debug(validatedConfig.toString)
 
