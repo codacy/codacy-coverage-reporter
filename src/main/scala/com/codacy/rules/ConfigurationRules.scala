@@ -109,7 +109,8 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging 
       getNonEmptyEnv("WERCKER_GIT_COMMIT") orElse
       getNonEmptyEnv("CODEBUILD_RESOLVED_SOURCE_VERSION") orElse
       getNonEmptyEnv("CI_COMMIT_SHA") orElse
-      getNonEmptyEnv("HEROKU_TEST_RUN_COMMIT_VERSION")
+      getNonEmptyEnv("HEROKU_TEST_RUN_COMMIT_VERSION") orElse
+      getNonEmptyEnv("REVISION")
         .filter(_.trim.nonEmpty)
   }
 
