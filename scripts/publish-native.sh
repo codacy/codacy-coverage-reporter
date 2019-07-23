@@ -115,8 +115,8 @@ case "$TARGET" in
       -v $HOME/.ivy2:$HOME/.ivy2 \
       -v $HOME/.sbt:$HOME/.sbt \
       -v $PWD:$PWD \
-      oracle/graalvm-ce:1.0.0-rc14 \
-        -c "${BUILD_CMD}"
+      oracle/graalvm-ce:19.1.1 \
+        -c "gu install native-image && ${BUILD_CMD}"
     ;;
   *)
     echo >&2 "Could not find command for target $TARGET"
