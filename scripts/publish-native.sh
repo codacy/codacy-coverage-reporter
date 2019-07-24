@@ -81,6 +81,8 @@ function build_cmd() {
   FLAGS+=' --enable-url-protocols=http,https,file,jar --enable-all-security-services'
   FLAGS+=' -H:+JNI -H:IncludeResourceBundles=com.sun.org.apache.xerces.internal.impl.msg.XMLMessages'
   FLAGS+=' -H:+ReportExceptionStackTraces'
+  FLAGS+=' --no-fallback --initialize-at-build-time'
+  FLAGS+=' --report-unsupported-elements-at-runtime'
   #  FLAGS+=' -H:+ReportUnsupportedElementsAtRuntime'
 
   if [ "${OS_TARGET}" != "darwin" ]
