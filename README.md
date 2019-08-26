@@ -79,6 +79,7 @@ Codacy automatically detects the CommitUUID from several sources:
 * CI_COMMIT_ID
 * WERCKER_GIT_COMMIT
 * CODEBUILD_RESOLVED_SOURCE_VERSION
+* REVISION
 
 **Git directory**
 
