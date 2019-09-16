@@ -3,7 +3,7 @@ import codacy.libs._
 
 name := "codacy-coverage-reporter"
 
-scalaVersion := "2.11.12"
+scalaVersion := "2.12.9"
 
 scalacOptions := Seq(
   "-deprecation",
