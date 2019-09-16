@@ -1,18 +1,18 @@
 package com.codacy.rules
 
 import java.net.URL
+import java.io.File
 
 import cats.implicits._
 import com.codacy.configuration.parser.{BaseCommandConfig, CommandConfiguration, Final, Report}
-import com.codacy.helpers.LoggerHelper
 import com.codacy.model.configuration.{BaseConfig, Configuration, FinalConfig, ReportConfig}
 import com.typesafe.scalalogging.StrictLogging
 
-import scala.language.implicitConversions
 import scala.util.Try
+import com.codacy.model.configuration.CommitUUID
 
 class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging {
-  private val publicApiBaseUrl = "https://api.codacy.com"
+  private[rules] val publicApiBaseUrl = "https://api.codacy.com"
 
   lazy val validatedConfig: Configuration = {
     val config = validateConfig(cmdConfig)
@@ -42,8 +42,8 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging 
   private def validateReportConfig(reportConfig: Report): Either[String, ReportConfig] = {
     def validate(reportConf: ReportConfig) = {
       reportConf match {
-        case config if config.language.isEmpty && !config.forceLanguage =>
-          Left(s"Invalid language ${config.languageStr}")
+        case config if config.language.isEmpty && config.languageOpt.isDefined && !config.forceLanguage =>
+          Left(s"Invalid language ${config.languageOpt.get}")
 
         case _ =>
           Right(reportConf)
@@ -52,12 +52,13 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging 
 
     for {
       baseConfig <- validateBaseConfig(reportConfig.baseConfig)
+      validReportFiles <- validateReportFiles(reportConfig.coverageReports)
       reportConf = ReportConfig(
         baseConfig,
         reportConfig.language,
-        reportConfig.forceLanguage,
-        reportConfig.coverageReport,
-        reportConfig.partial,
+        reportConfig.forceLanguageValue,
+        validReportFiles,
+        reportConfig.partialValue,
         reportConfig.prefix.getOrElse("")
       )
       validatedConfig <- validate(reportConf)
@@ -67,12 +68,12 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging 
 
   private def validateBaseConfig(baseConfig: BaseCommandConfig): Either[String, BaseConfig] = {
     for {
-      projectToken <- baseConfig.projectToken.fold(getProjectToken)(_.asRight)
+      projectToken <- baseConfig.projectToken.fold(getProjectToken(sys.env, baseConfig.skipValue))(_.asRight)
       baseConf = BaseConfig(
         projectToken,
-        baseConfig.codacyApiBaseUrl.getOrElse(getApiBaseUrl),
-        baseConfig.commitUUID.orElse(commitUUIDOpt),
-        baseConfig.debug
+        baseConfig.codacyApiBaseUrl.getOrElse(getApiBaseUrl(sys.env)),
+        baseConfig.commitUUID.map(CommitUUID(_)),
+        baseConfig.debugValue
       )
       validatedConfig <- {
         baseConf match {
@@ -97,41 +98,69 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging 
     }
   }
 
-  private implicit def flagToBooleanConversion(flag: Option[Unit]): Boolean = flag.fold(false)(_ => true)
-
-  private def commitUUIDOpt: Option[String] = {
-    getNonEmptyEnv("CI_COMMIT") orElse
-      getNonEmptyEnv("TRAVIS_PULL_REQUEST_SHA") orElse
-      getNonEmptyEnv("TRAVIS_COMMIT") orElse
-      getNonEmptyEnv("DRONE_COMMIT") orElse
-      getNonEmptyEnv("CIRCLE_SHA1") orElse
-      getNonEmptyEnv("CI_COMMIT_ID") orElse
-      getNonEmptyEnv("WERCKER_GIT_COMMIT") orElse
-      getNonEmptyEnv("CODEBUILD_RESOLVED_SOURCE_VERSION") orElse
-      getNonEmptyEnv("CI_COMMIT_SHA") orElse
-      getNonEmptyEnv("HEROKU_TEST_RUN_COMMIT_VERSION") orElse
-      getNonEmptyEnv("SCRUTINIZER_SHA1") orElse
-      getNonEmptyEnv("REVISION")
-        .filter(_.trim.nonEmpty)
+  /**
+    * Get API base URL
+    *
+    * This function try to get the API base URL from environment variables, and if not
+    * found, fallback to the public API base URL
+    * @param envVars environment variables
+    * @return api base url
+    */
+  private[rules] def getApiBaseUrl(envVars: Map[String, String]): String = {
+    envVars.getOrElse("CODACY_API_BASE_URL", publicApiBaseUrl)
   }
 
-  private def getNonEmptyEnv(key: String): Option[String] = {
-    sys.env.get(key).filter(_.trim.nonEmpty)
-  }
-
-  private def getApiBaseUrl: String = {
-    sys.env.getOrElse("CODACY_API_BASE_URL", publicApiBaseUrl)
-  }
-
-  private def getProjectToken: Either[String, String] = {
-    Either.fromOption(
-      sys.env.get("CODACY_PROJECT_TOKEN"),
+  /**
+    * Get project token
+    *
+    * This function try to get the project token from environment variables, and if not found
+    * return an error message. If the skip flag is true, it will exit the reporter with the normal state
+    * skipping the coverage to be reported.
+    * @param envVars environment variables
+    * @param skip skip flag
+    * @return the project token on the right or an error message on the left
+    */
+  private[rules] def getProjectToken(envVars: Map[String, String], skip: Boolean): Either[String, String] = {
+    val projectToken = Either.fromOption(
+      envVars.get("CODACY_PROJECT_TOKEN"),
       "Project token not provided and not available in environment variable \"CODACY_PROJECT_TOKEN\""
     )
+
+    if (skip && projectToken.isLeft) {
+      logger.warn(projectToken.left.get)
+      logger.info("Skip reporting coverage")
+      sys.exit(0)
+    } else {
+      projectToken
+    }
   }
 
-  private def validUrl(baseUrl: String) = {
+  /**
+    * Validate an URL
+    *
+    * This function check if the url is valid or not
+    * @param baseUrl base url
+    * @return true for valid url, false if not
+    */
+  private[rules] def validUrl(baseUrl: String): Boolean = {
     Try(new URL(baseUrl)).toOption.isDefined
   }
 
+  /**
+    * Validate report files option
+    *
+    * This function check if the report files option is valid or not.
+    * @param filesOpt files option
+    * @return list of files if validated on the right or an error message if not on the left
+    */
+  private[rules] def validateReportFiles(filesOpt: Option[List[File]]): Either[String, List[File]] = {
+    filesOpt match {
+      case Some(value) if value.isEmpty =>
+        Left("Invalid report list. Try passing a report file with -r")
+      case Some(value) if !value.isEmpty =>
+        Right(value)
+      case None =>
+        Right(List.empty[File])
+    }
+  }
 }

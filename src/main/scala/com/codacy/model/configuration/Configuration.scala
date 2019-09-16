@@ -10,16 +10,18 @@ sealed trait Configuration {
 
 case class ReportConfig(
     baseConfig: BaseConfig,
-    languageStr: String,
+    languageOpt: Option[String],
     forceLanguage: Boolean,
-    coverageReport: File,
+    coverageReports: List[File],
     partial: Boolean,
     prefix: String
 ) extends Configuration {
 
-  lazy val language: Option[Language] = Languages.fromName(languageStr)
+  lazy val language: Option[Language] = languageOpt.flatMap(Languages.fromName)
 }
 
 case class FinalConfig(baseConfig: BaseConfig) extends Configuration
 
-case class BaseConfig(projectToken: String, codacyApiBaseUrl: String, commitUUID: Option[String], debug: Boolean)
+case class BaseConfig(projectToken: String, codacyApiBaseUrl: String, commitUUID: Option[CommitUUID], debug: Boolean)
+
+case class CommitUUID(value: String) extends AnyVal
