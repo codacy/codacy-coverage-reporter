@@ -19,7 +19,7 @@ tmp
 codacy.pylint.conf
 npm-debug.log
 config
-
+.bloop
 .metals/
 .vscode/
 .codacy.json

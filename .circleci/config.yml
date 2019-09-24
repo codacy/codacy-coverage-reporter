@@ -26,15 +26,14 @@ references:
       name: CleanCache
       command: |
         find $HOME/.sbt -name "*.lock" | xargs rm | true
-        find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm | true
-
+        
   save_sbt_cache: &save_sbt_cache
     save_cache:
       key: sbt-cache-{{ .Branch }}-{{ checksum "build.sbt" }}-{{ .Environment.CIRCLE_SHA1 }}
       paths:
-        - "~/.ivy2/cache"
         - "~/.sbt"
         - "~/.m2"
+        - "~/.cache/coursier/v1"
 
 jobs:
 
