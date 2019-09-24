@@ -33,8 +33,7 @@ class ConfigurationRulesTest extends FlatSpec with Matchers with OptionValues {
     inside(components.validatedConfig) {
       case config: ReportConfig =>
         val result = components.reportRules.coverageWithTokenAndCommit(config)
-
-        result should be(Left("Could not parse report, unrecognized report format (tried: Cobertura, Jacoco)"))
+        result should be(Left("Could not parse report, unrecognized report format (tried: Cobertura, Jacoco, LCOV)"))
     }
   }
 
