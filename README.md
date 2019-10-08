@@ -23,11 +23,26 @@ Then set it in your terminal, replacing %Project_Token% with your own token:
 export CODACY_PROJECT_TOKEN=%Project_Token%
 ```
 
-### Linux amd64
+### Using the script
+
+Additional requirements:
+
+* jq
+* curl
+
+```bash
+bash <(curl -Ls https://coverage.codacy.com/get.sh)
+```
+
+If you want to specify a coverage reporter version, use `CODACY_REPORTER_VERSION` environment variable.
+
+### Using binary manually
+
+#### Linux amd64
 
 Download the latest binary and use it to post the coverage to Codacy
 
-#### Bintray
+##### Bintray
 
 ```bash
 LATEST_VERSION="$(curl -Ls https://api.bintray.com/packages/codacy/Binaries/codacy-coverage-reporter/versions/_latest | jq -r .name)"
@@ -36,7 +51,7 @@ chmod +x codacy-coverage-reporter
 ./codacy-coverage-reporter report -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
 ```
 
-#### GitHub
+##### GitHub
 
 ```sh
 curl -Ls -o codacy-coverage-reporter "$(curl -Ls https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r '.assets | map({name, browser_download_url} | select(.name | contains("codacy-coverage-reporter-linux"))) | .[0].browser_download_url')"
@@ -44,13 +59,13 @@ chmod +x codacy-coverage-reporter
 ./codacy-coverage-reporter report -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
 ```
 
-### Others
+#### Others
 
 * Linux x86, MacOS, Windows, ...
 
 Download the latest jar and use it to post the coverage to Codacy
 
-#### Bintray
+##### Bintray
 
 ```sh
 LATEST_VERSION="$(curl -Ls https://api.bintray.com/packages/codacy/Binaries/codacy-coverage-reporter/versions/_latest | jq -r .name)"
@@ -58,7 +73,7 @@ curl -Ls -o codacy-coverage-reporter-assembly.jar "https://dl.bintray.com/codacy
 java -jar codacy-coverage-reporter-assembly.jar report -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
 ```
 
-#### GitHub
+##### GitHub
 
 ```sh
 curl -Ls -o codacy-coverage-reporter-assembly.jar $(curl -Ls https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r '.assets | map({content_type, browser_download_url} | select(.content_type | contains("java-archive"))) | .[0].browser_download_url')
@@ -69,18 +84,25 @@ java -jar codacy-coverage-reporter-assembly.jar report -l Java -r jacoco.xml
 
 Codacy automatically detects the CommitUUID from several sources:
 
-**Environment Variables**
+**Providers**
 
-* CI_COMMIT
-* TRAVIS_PULL_REQUEST_SHA
-* TRAVIS_COMMIT
-* DRONE_COMMIT
-* CIRCLE_SHA1
-* CI_COMMIT_ID
-* WERCKER_GIT_COMMIT
-* CODEBUILD_RESOLVED_SOURCE_VERSION
-* SCRUTINIZER_SHA1
-* REVISION
+* Appveyor
+* Bitrise
+* Buildkite
+* Circle CI
+* Codefresh
+* Codeship
+* Docker
+* Gitlab
+* Greenhouse CI
+* Jenkins
+* Magnum CI
+* Semaphore CI
+* Shippable CI
+* Solano CI
+* TeamCity CI
+* Travis CI
+* Wercker CI
 
 **Git directory**
 
