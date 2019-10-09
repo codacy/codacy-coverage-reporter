@@ -3,7 +3,6 @@ package com.codacy.rules
 import java.net.URL
 import java.io.File
 
-import cats.implicits._
 import com.codacy.configuration.parser.{BaseCommandConfig, CommandConfiguration, Final, Report}
 import com.codacy.model.configuration.{BaseConfig, Configuration, FinalConfig, ReportConfig}
 import com.typesafe.scalalogging.StrictLogging
@@ -68,7 +67,7 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging 
 
   private def validateBaseConfig(baseConfig: BaseCommandConfig): Either[String, BaseConfig] = {
     for {
-      projectToken <- baseConfig.projectToken.fold(getProjectToken(sys.env, baseConfig.skipValue))(_.asRight)
+      projectToken <- baseConfig.projectToken.fold(getProjectToken(sys.env, baseConfig.skipValue))(Right(_))
       baseConf = BaseConfig(
         projectToken,
         baseConfig.codacyApiBaseUrl.getOrElse(getApiBaseUrl(sys.env)),
@@ -121,10 +120,10 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging 
     * @return the project token on the right or an error message on the left
     */
   private[rules] def getProjectToken(envVars: Map[String, String], skip: Boolean): Either[String, String] = {
-    val projectToken = Either.fromOption(
-      envVars.get("CODACY_PROJECT_TOKEN"),
-      "Project token not provided and not available in environment variable \"CODACY_PROJECT_TOKEN\""
-    )
+    val projectToken =
+      envVars
+        .get("CODACY_PROJECT_TOKEN")
+        .toRight("Project token not provided and not available in environment variable \"CODACY_PROJECT_TOKEN\"")
 
     if (skip && projectToken.isLeft) {
       logger.warn(projectToken.left.get)

@@ -3,7 +3,7 @@ import codacy.libs._
 
 name := "codacy-coverage-reporter"
 
-scalaVersion := "2.12.9"
+scalaVersion := "2.12.10"
 
 scalacOptions := Seq(
   "-deprecation",
@@ -16,7 +16,7 @@ scalacOptions := Seq(
 )
 
 // Runtime dependencies
-libraryDependencies ++= Seq(coverageParser, caseApp, cats, logbackClassic, scalaLogging)
+libraryDependencies ++= Seq(coverageParser, caseApp, logbackClassic, scalaLogging)
 
 // Test dependencies
 libraryDependencies ++= Seq(scalatest).map(_ % "test")

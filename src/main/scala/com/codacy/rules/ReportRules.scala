@@ -3,7 +3,6 @@ package com.codacy.rules
 import java.io.File
 import java.nio.file.Files
 
-import cats.implicits._
 import com.codacy.api.CoverageReport
 import com.codacy.api.client.{FailedResponse, SuccessfulResponse}
 import com.codacy.api.helpers.FileHelper
@@ -28,78 +27,64 @@ class ReportRules(config: Configuration, coverageServices: => CoverageServices) 
     .map(_.toFile)
 
   def codacyCoverage(config: ReportConfig): Either[String, String] = {
-    coverageWithTokenAndCommit(config) match {
-      case Left(error) =>
-        error.asLeft
-      case Right(message) =>
-        message.asRight
-    }
-  }
-
-  private[rules] def coverageWithTokenAndCommit(config: ReportConfig): Either[String, String] = {
     withCommitUUID(config.baseConfig) { commitUUID =>
       logger.debug(s"Project token: ${config.baseConfig.projectToken}")
 
-      val files = guessReportFiles(config.coverageReports, rootProjectDirIterator)
+      val filesEither = guessReportFiles(config.coverageReports, rootProjectDirIterator)
 
-      files
-        .fold(
-          _.asLeft,
-          files => {
-            val finalConfig = if (files.length > 1 && !config.partial) {
-              logger.info("More than one file. Considering a partial report")
-              config.copy(partial = true)
-            } else {
-              config
-            }
+      filesEither.flatMap { files =>
+        val finalConfig = if (files.length > 1 && !config.partial) {
+          logger.info("More than one file. Considering a partial report")
+          config.copy(partial = true)
+        } else config
 
-            files
-              .map {
-                case file if (!file.exists) =>
-                  s"File ${file.getAbsolutePath} does not exist.".asLeft
-                case file if (!file.canRead) =>
-                  s"Missing read permissions for report file: ${file.getAbsolutePath}".asLeft
-                case file =>
-                  logger.info(s"Parsing coverage data from: ${file.getAbsolutePath} ...")
+        files
+          .map {
+            case file if !file.exists =>
+              Left(s"File ${file.getAbsolutePath} does not exist.")
+            case file if !file.canRead =>
+              Left(s"Missing read permissions for report file: ${file.getAbsolutePath}")
+            case file =>
+              logger.info(s"Parsing coverage data from: ${file.getAbsolutePath} ...")
 
-                  CoverageParser
-                    .parse(rootProjectDir, file)
-                    .map(transform(_)(finalConfig))
-                    .flatMap {
-                      case report if report.fileReports.isEmpty =>
-                        Left("The provided coverage report generated an empty result.")
+              CoverageParser
+                .parse(rootProjectDir, file)
+                .map(transform(_)(finalConfig))
+                .flatMap { report =>
+                  if (report.fileReports.isEmpty)
+                    Left("The provided coverage report generated an empty result.")
+                  else {
+                    val codacyReportFilename =
+                      s"${file.getAbsoluteFile.getParent}${File.separator}codacy-coverage.json"
+                    logger.debug(s"Saving parsed report to $codacyReportFilename")
+                    val codacyReportFile = new File(codacyReportFilename)
 
-                      case report =>
-                        val codacyReportFilename =
-                          s"${file.getAbsoluteFile.getParent}${File.separator}codacy-coverage.json"
-                        logger.debug(s"Saving parsed report to $codacyReportFilename")
-                        val codacyReportFile = new File(codacyReportFilename)
+                    logger.debug(report.toString)
+                    FileHelper.writeJsonToFile(codacyReportFile, report)
 
-                        logger.debug(report.toString)
-                        FileHelper.writeJsonToFile(codacyReportFile, report)
+                    logUploadedFileInfo(codacyReportFile)
 
-                        logUploadedFileInfo(codacyReportFile)
+                    val language = guessReportLanguage(finalConfig.languageOpt, report)
 
-                        val language = guessReportLanguage(finalConfig.languageOpt, report)
-
-                        language.map(languageStr => {
-                          coverageServices.sendReport(commitUUID, languageStr, report, finalConfig.partial) match {
-                            case SuccessfulResponse(value) =>
-                              logger.info(s"Coverage data uploaded. ${value.success}")
-                              Right(())
-                            case failed: FailedResponse =>
-                              val message = handleFailedResponse(failed)
-                              Left(s"Failed to upload report: $message")
-                          }
-                        })
-                    }
-              }
-              .collectFirst {
-                case Left(l) => Left(l)
-              }
-              .getOrElse(Right(s"All coverage data uploaded."))
+                    language.map(
+                      languageStr =>
+                        coverageServices.sendReport(commitUUID, languageStr, report, finalConfig.partial) match {
+                          case SuccessfulResponse(value) =>
+                            logger.info(s"Coverage data uploaded. ${value.success}")
+                            Right(())
+                          case failed: FailedResponse =>
+                            val message = handleFailedResponse(failed)
+                            Left(s"Failed to upload report: $message")
+                      }
+                    )
+                  }
+                }
           }
-        )
+          .collectFirst {
+            case Left(l) => Left(l)
+          }
+          .getOrElse(Right("All coverage data uploaded."))
+      }
     }
   }
 
@@ -152,11 +137,11 @@ class ReportRules(config: Configuration, coverageServices: => CoverageServices) 
           })
           .toList
         if (foundFiles.isEmpty)
-          "Can't guess any report due to no matching! Try to specify the report with -r".asLeft
+          Left("Can't guess any report due to no matching! Try to specify the report with -r")
         else
-          foundFiles.asRight
+          Right(foundFiles)
       case value =>
-        value.asRight
+        Right(value)
     }
   }
 
@@ -209,10 +194,10 @@ class ReportRules(config: Configuration, coverageServices: => CoverageServices) 
   }
 
   private def withCommitUUID[T](config: BaseConfig)(block: (String) => Either[String, T]): Either[String, T] = {
-    val maybeCommitUUID = config.commitUUID.fold {
+    val maybeCommitUUID = config.commitUUID.map(Right(_)).getOrElse {
       val envVars = sys.env.filter { case (_, value) => value.trim.nonEmpty }
       CommitUUIDProvider.getFromAll(envVars)
-    }(_.asRight)
+    }
 
     maybeCommitUUID.flatMap(uuid => block(uuid.value))
   }
