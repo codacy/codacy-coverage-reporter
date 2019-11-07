@@ -1,4 +1,3 @@
-import Dependencies._
 import codacy.libs._
 
 name := "codacy-coverage-reporter"
@@ -16,7 +15,12 @@ scalacOptions := Seq(
 )
 
 // Runtime dependencies
-libraryDependencies ++= Seq(coverageParser, caseApp, logbackClassic, scalaLogging)
+libraryDependencies ++= Seq(
+  "com.codacy" %% "coverage-parser" % "2.1.0",
+  "com.github.alexarchambault" %% "case-app" % "1.2.0",
+  logbackClassic,
+  scalaLogging
+)
 
 // Test dependencies
 libraryDependencies ++= Seq(scalatest).map(_ % "test")
