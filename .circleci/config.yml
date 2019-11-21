@@ -1,161 +1,92 @@
-# CircleCI 2.0 configuration file
-version: 2
+version: 2.1
 
-# Re-usable blocks to reduce boilerplate in job definitions.
-references:
-
-  sbt_jvm_defaults: &sbt_jvm_defaults
-    JAVA_OPTS: -Xmx3g
-
-  default_sbt_job: &default_sbt_job
-    machine: true
-    working_directory: ~/workdir
-    environment:
-      <<: *sbt_jvm_defaults
-
-  restore_sbt_cache: &restore_sbt_cache
-    restore_cache:
-      keys:
-        - sbt-cache-{{ .Branch }}-{{ checksum "build.sbt" }}-{{ .Environment.CIRCLE_SHA1 }}
-        - sbt-cache-{{ .Branch }}-{{ checksum "build.sbt" }}
-        - sbt-cache-{{ .Branch }}
-        - sbt-cache
-
-  clean_sbt_cache: &clean_sbt_cache
-    run:
-      name: CleanCache
-      command: |
-        find $HOME/.sbt -name "*.lock" | xargs rm | true
-        
-  save_sbt_cache: &save_sbt_cache
-    save_cache:
-      key: sbt-cache-{{ .Branch }}-{{ checksum "build.sbt" }}-{{ .Environment.CIRCLE_SHA1 }}
-      paths:
-        - "~/.sbt"
-        - "~/.m2"
-        - "~/.cache/coursier/v1"
+orbs:
+  codacy: codacy/base@1.0.1
 
 jobs:
-
-  checkout_and_version:
-    docker:
-      - image: codacy/git-version:latest
+  publish_circleci_artifacts:
+    machine: true
     working_directory: ~/workdir
     steps:
-      - checkout
-      - run:
-          name: Set version
-          command: /bin/git-version > .version
-      - run:
-          name: Set Sbt version
-          command: echo "version in ThisBuild := \"$(cat .version)\"" > version.sbt
-      - run:
-          name: Current version
-          command: cat .version
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - workdir/*
-
-  checkfmt:
-    <<: *default_sbt_job
-    steps:
       - attach_workspace:
           at: ~/
-      - *restore_sbt_cache
-      - run:
-          name: Check formatting
-          command: sbt ";scalafmt::test;test:scalafmt::test;sbt:scalafmt::test"
-      - *clean_sbt_cache
-      - *save_sbt_cache
-
-  populate_cache:
-    <<: *default_sbt_job
-    steps:
-      - attach_workspace:
-          at: ~/
-      - *restore_sbt_cache
-      - run:
-          name: Safely populate caches
-          command: sbt ";set scalafmtUseIvy in ThisBuild := false;update"
-      - *clean_sbt_cache
-      - *save_sbt_cache
-
-  compile_and_test:
-    <<: *default_sbt_job
-    steps:
-      - attach_workspace:
-          at: ~/
-      - *restore_sbt_cache
-      - run:
-          name: Coverage
-          command: |
-            if [ -z ${CODACY_PROJECT_TOKEN+x} ]; then
-              echo "CODACY_PROJECT_TOKEN not found. Skipping send coverage to Codacy."
-              sbt ";compile;test"
-            else
-              sbt ";compile;coverage;test;coverageReport;coverageAggregate;codacyCoverage"
-            fi
-      - *clean_sbt_cache
-      - *save_sbt_cache
-
-  publish:
-    <<: *default_sbt_job
-    steps:
-      - attach_workspace:
-          at: ~/
-      - *restore_sbt_cache
-      - run:
-          name: Publish the library and binary
-          command: |
-            sbt ";clean;retrieveGPGKeys"
-            sbt ";publishSigned;sonatypeRelease"
-
-            ./scripts/publish-native.sh -n codacy-coverage-reporter -m com.codacy.CodacyCoverageReporter -t docker $(cat .version)
-
-            curl -T ~/workdir/codacy-coverage-reporter-linux-$(cat .version) -ucodacy-ci:$BINTRAY_API_KEY -H "X-Bintray-Package:codacy-coverage-reporter" -H "X-Bintray-Version:$(cat .version)" https://api.bintray.com/content/codacy/Binaries/$(cat .version)/codacy-coverage-reporter-linux
-            curl -T ~/workdir/target/codacy-coverage-reporter-assembly-$(cat .version).jar -ucodacy-ci:$BINTRAY_API_KEY -H "X-Bintray-Package:codacy-coverage-reporter" -H "X-Bintray-Version:$(cat .version)" https://api.bintray.com/content/codacy/Binaries/$(cat .version)/codacy-coverage-reporter-assembly.jar
-            curl -X POST -ucodacy-ci:$BINTRAY_API_KEY https://api.bintray.com/content/codacy/Binaries/codacy-coverage-reporter/$(cat .version)/publish
-
-            GHR_FLAGS=""
-            if [ "${CIRCLE_BRANCH}" != "master" ]; then
-              GHR_FLAGS+="-prerelease"
-            fi
-
-            mkdir -p /tmp/ghr-publish
-            cp ~/workdir/codacy-coverage-reporter-linux-$(cat .version) /tmp/ghr-publish
-            cp ~/workdir/target/codacy-coverage-reporter-assembly-$(cat .version).jar /tmp/ghr-publish/codacy-coverage-reporter-$(cat .version)-assembly.jar
-            go get github.com/tcnksm/ghr
-            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${GHR_FLAGS} -delete $(cat .version) /tmp/ghr-publish
-      - *clean_sbt_cache
-      - *save_sbt_cache
+      - store_artifacts:
+          path: ~/workdir/artifacts/
 
 workflows:
   version: 2
-
-  compile_deploy:
+  compile_test_deploy:
     jobs:
-      - checkout_and_version:
-          context: CodacyAWS
-      - populate_cache:
-          context: CodacyAWS
+      - codacy/checkout_and_version:
+          write_sbt_version: true
+      - codacy/sbt:
+          name: populate_cache
+          cmd: sbt ";set scalafmtUseIvy in ThisBuild := false;update"
           requires:
-            - checkout_and_version
-      - checkfmt:
-          context: CodacyAWS
-          requires:
-            - populate_cache
-      - compile_and_test:
-          context: CodacyAWS
+            - codacy/checkout_and_version
+      - codacy/sbt:
+          name: check_fmt
+          cmd: sbt ";scalafmt::test;test:scalafmt::test;sbt:scalafmt::test"
           requires:
             - populate_cache
-      - publish:
+      - codacy/sbt:
+          name: compile
+          cmd: sbt compile
+          requires:
+            - check_fmt
+      - codacy/sbt:
+          name: test_and_coverage
+          cmd: |
+            if [ -z ${CODACY_PROJECT_TOKEN+x} ]; then
+              echo "CODACY_PROJECT_TOKEN not found. Skipping send coverage to Codacy."
+              sbt test
+            else
+              sbt ";test;coverage;coverageReport;coverageAggregate;codacyCoverage"
+            fi
+          requires:
+            - compile
+      - codacy/sbt:
+          name: publish
+          cmd: |
+            sbt ";clean;retrieveGPGKeys;publishSigned;sonatypeRelease"
+
+            ./scripts/publish-native.sh -n codacy-coverage-reporter -m com.codacy.CodacyCoverageReporter -t docker $(cat .version)
+
+            mkdir -p ~/workdir/artifacts/
+            mv codacy-coverage-reporter-linux-$(cat .version) ~/workdir/artifacts/
+            mv ~/workdir/target/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/artifacts/
+          persist_to_workspace: true
+          requires:
+            - test_and_coverage
+          context: CodacyAWS
           filters:
             branches:
               only:
                 - master
-                - native-binary
-          context: CodacyAWS
+      - publish_circleci_artifacts:
           requires:
-            - compile_and_test
-            - checkfmt
+            - publish
+      #TODO: Add bintray orb
+      - codacy/shell:
+          name: publish_bintray
+          cmd: |
+            curl -T ~/workdir/artifacts/codacy-coverage-reporter-linux-$(cat .version) -ucodacy-ci:$BINTRAY_API_KEY -H "X-Bintray-Package:codacy-coverage-reporter" -H "X-Bintray-Version:$(cat .version)" https://api.bintray.com/content/codacy/Binaries/$(cat .version)/codacy-coverage-reporter-linux
+            curl -T ~/workdir/artifacts/codacy-coverage-reporter-assembly-$(cat .version).jar -ucodacy-ci:$BINTRAY_API_KEY -H "X-Bintray-Package:codacy-coverage-reporter" -H "X-Bintray-Version:$(cat .version)" https://api.bintray.com/content/codacy/Binaries/$(cat .version)/codacy-coverage-reporter-assembly.jar
+            curl -X POST -ucodacy-ci:$BINTRAY_API_KEY https://api.bintray.com/content/codacy/Binaries/codacy-coverage-reporter/$(cat .version)/publish
+          filters:
+            branches:
+              only:
+                - master
+          context: CodacyBintray
+          requires:
+            - publish
+      - codacy/publish_ghr:
+          name: publish_ghr
+          path: ~/workdir/artifacts/
+          filters:
+            branches:
+              only:
+                - master
+          context: CodacyGitHub
+          requires:
+            - publish

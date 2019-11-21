@@ -38,16 +38,19 @@ case class Report(
     @Recurse
     baseConfig: BaseCommandConfig,
     @Name("l") @ValueDescription("your project language")
-    language: String,
+    language: Option[String],
     @Hidden @Name("f")
-    forceLanguage: Option[Unit],
+    forceLanguage: Int @@ Counter = Tag.of(0),
     @Name("r") @ValueDescription("your project coverage file name")
-    coverageReport: File,
+    coverageReports: Option[List[File]],
     @ValueDescription("if the report is partial")
-    partial: Option[Unit],
+    partial: Int @@ Counter = Tag.of(0),
     @ValueDescription("the project path prefix")
     prefix: Option[String]
-) extends CommandConfiguration
+) extends CommandConfiguration {
+  val partialValue: Boolean = partial.## > 0
+  val forceLanguageValue: Boolean = forceLanguage.## > 0
+}
 
 case class BaseCommandConfig(
     @Name("t") @ValueDescription("your project API token")
@@ -56,14 +59,16 @@ case class BaseCommandConfig(
     codacyApiBaseUrl: Option[String],
     @ValueDescription("your commitUUID")
     commitUUID: Option[String],
+    @Name("s") @ValueDescription("skip if project token isn't defined")
+    skip: Int @@ Counter = Tag.of(0),
     @Hidden
-    debug: Option[Unit]
-)
+    debug: Int @@ Counter = Tag.of(0)
+) {
+  val skipValue: Boolean = skip.## > 0
+  val debugValue: Boolean = debug.## > 0
+}
 
 object ConfigArgumentParsers {
 
   implicit val fileParser: ArgParser[File] = ArgParser.instance("file")(a => Right(new File(a)))
-
-  implicit val boolean: ArgParser[Option[Unit]] = ArgParser.flag("flag")(_ => Right(Option(())))
-
 }
