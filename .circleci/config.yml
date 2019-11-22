@@ -41,7 +41,7 @@ workflows:
               echo "CODACY_PROJECT_TOKEN not found. Skipping send coverage to Codacy."
               sbt test
             else
-              sbt ";test;coverage;coverageReport;coverageAggregate;codacyCoverage"
+              sbt ";clean;coverage;test;coverageReport;coverageAggregate;codacyCoverage"
             fi
           requires:
             - compile
