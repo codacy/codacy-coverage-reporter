@@ -13,7 +13,7 @@ Multi-language coverage reporter for Codacy https://www.codacy.com
 ## Setup
 
 Codacy assumes that coverage is previously configured for your project.
-The supported coverage formats are JaCoCo and Cobertura.
+The supported coverage formats are JaCoCo, Cobertura and LCOV.
 
 1. Setup the project API token. You can find the token in Project -> Settings -> Integrations -> Project API.
 
