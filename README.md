@@ -48,7 +48,6 @@ Download the latest binary and use it to post the coverage to Codacy
 LATEST_VERSION="$(curl -Ls https://api.bintray.com/packages/codacy/Binaries/codacy-coverage-reporter/versions/_latest | jq -r .name)"
 curl -Ls -o codacy-coverage-reporter "https://dl.bintray.com/codacy/Binaries/${LATEST_VERSION}/codacy-coverage-reporter-linux"
 chmod +x codacy-coverage-reporter
-echo "$(dig +short api.codacy.com | tail -n1) api.codacy.com" >> /etc/hosts
 ./codacy-coverage-reporter report -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
 ```
 
@@ -57,8 +56,13 @@ echo "$(dig +short api.codacy.com | tail -n1) api.codacy.com" >> /etc/hosts
 ```sh
 curl -Ls -o codacy-coverage-reporter "$(curl -Ls https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r '.assets | map({name, browser_download_url} | select(.name | contains("codacy-coverage-reporter-linux"))) | .[0].browser_download_url')"
 chmod +x codacy-coverage-reporter
-echo "$(dig +short api.codacy.com | tail -n1) api.codacy.com" >> /etc/hosts
 ./codacy-coverage-reporter report -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
+```
+
+If you are experiencing segmentation faults uploading the coverage (due to [oracle/graal#624](https://github.com/oracle/graal/issues/624)), do this before running the reporter, as a workaround:
+
+```sh
+echo "$(dig +short api.codacy.com | tail -n1) api.codacy.com" >> /etc/hosts
 ```
 
 #### Others
