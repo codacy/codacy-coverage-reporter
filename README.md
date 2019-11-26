@@ -8,7 +8,7 @@ Multi-language coverage reporter for Codacy https://www.codacy.com
 
 ## Requirements
 
-* Java JRE 8 and higher
+- Java JRE 8 and higher
 
 ## Setup
 
@@ -27,8 +27,8 @@ export CODACY_PROJECT_TOKEN=%Project_Token%
 
 Additional requirements:
 
-* jq
-* curl
+- jq
+- curl
 
 ```bash
 bash <(curl -Ls https://coverage.codacy.com/get.sh)
@@ -61,7 +61,7 @@ chmod +x codacy-coverage-reporter
 
 #### Others
 
-* Linux x86, MacOS, Windows, ...
+- Linux x86, MacOS, Windows, ...
 
 Download the latest jar and use it to post the coverage to Codacy
 
@@ -76,7 +76,7 @@ java -jar codacy-coverage-reporter-assembly.jar report -l Java -r build/reports/
 ##### GitHub
 
 ```sh
-curl -Ls -o codacy-coverage-reporter-assembly.jar $(curl -Ls https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r '.assets | map({content_type, browser_download_url} | select(.content_type | contains("java-archive"))) | .[0].browser_download_url')
+curl -LS -o codacy-coverage-reporter-assembly.jar "$(curl -LSs https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r '.assets | map({name, browser_download_url} | select(.name | endswith(".jar"))) | .[0].browser_download_url')"
 java -jar codacy-coverage-reporter-assembly.jar report -l Java -r jacoco.xml
 ```
 
@@ -86,31 +86,32 @@ Codacy automatically detects the CommitUUID from several sources:
 
 **Providers**
 
-* Appveyor
-* Bitrise
-* Buildkite
-* Circle CI
-* Codefresh
-* Codeship
-* Docker
-* Gitlab
-* Greenhouse CI
-* Jenkins
-* Magnum CI
-* Semaphore CI
-* Shippable CI
-* Solano CI
-* TeamCity CI
-* Travis CI
-* Wercker CI
+- Appveyor
+- Bitrise
+- Buildkite
+- Circle CI
+- Codefresh
+- Codeship
+- Docker
+- Gitlab
+- Greenhouse CI
+- Jenkins
+- Magnum CI
+- Semaphore CI
+- Shippable CI
+- Solano CI
+- TeamCity CI
+- Travis CI
+- Wercker CI
 
 **Git directory**
 
-* If it finds a git directory it will get current commit.
+- If it finds a git directory it will get current commit.
 
 **Force CommitUUID**
 
-* You may want to enforce a specific commitUUID with:
+- You may want to enforce a specific commitUUID with:
+
 ```
 codacy-coverage-reporter report -l Java --commit-uuid "mycommituuid" -r coverage.xml
 ```
@@ -129,7 +130,8 @@ codacy-coverage-reporter report -l Java -r coverage.xml
 
 In order to send multiple reports for the same language, you need to upload each report separately with the flag `--partial` and then notify Codacy, after all reports were sent, with the `final` command.
 
-***Example***
+**_Example_**
+
 1. `codacy-coverage-reporter report -l Java -r report1.xml --partial`
 1. `codacy-coverage-reporter report -l Java -r report2.xml --partial`
 1. `codacy-coverage-reporter final`
@@ -145,6 +147,7 @@ If your language is not in the list of supported languages, you can still send c
 ### Enterprise
 
 To send coverage in the enterprise version you should:
+
 ```
 export CODACY_API_BASE_URL=<Codacy_instance_URL>:16006
 ```
@@ -154,6 +157,7 @@ Or use the option `--codacy-api-base-url <Codacy_instance_URL>:16006`.
 ## Other commands
 
 For a complete list of commands and options run:
+
 ```
 java -jar codacy-coverage-reporter-<version>-assembly.jar --help
 ```
@@ -213,7 +217,8 @@ task (codacyLocs) << {
 }
 ```
 
-___
+---
+
 Gradle task by [Mr_ramych](https://github.com/MrRamych). Made up from solution above.
 
 ```gradle
@@ -253,7 +258,7 @@ If you want to use codacy with Travis CI and report coverage generated from your
 ```yaml
 before_install:
   - sudo apt-get install jq
-  - curl -LSs $(curl -LSs https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r '.assets | map({content_type, browser_download_url} | select(.content_type | contains("application/java-archive"))) | .[0].browser_download_url') -o codacy-coverage-reporter-assembly.jar
+  - curl -LSs $(curl -LSs https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r '.assets | map({name, browser_download_url} | select(.name | endswith(".jar"))) | .[0].browser_download_url')" -o codacy-coverage-reporter-assembly.jar
 
 after_success:
   - java -jar codacy-coverage-reporter-assembly.jar report -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
@@ -269,6 +274,7 @@ Error when running the command, then you'll probably have codacy-coverage-report
 Make sure you install version 1.0.4, that fixes that error.
 
 Example (issue: [#11](https://github.com/codacy/codacy-coverage-reporter/issues/11)) :
+
 ```
 codacy-coverage-reporter report -l Java -r PATH_TO_COVERAGE/coverage.xml
 2015-11-20 04:06:58,887 [info]  com.codacy Parsing coverage data...
@@ -276,13 +282,14 @@ codacy-coverage-reporter report -l Java -r PATH_TO_COVERAGE/coverage.xml
 
 2015-11-20 04:07:00,639 [error] com.codacy Failed to upload report: Not Found
 ```
+
 Even after doing all of the above troubleshooting steps in case you still encounter the same error
 
 ```
 2015-11-20 04:07:00,639 [error] com.codacy Failed to upload report: Not Found
 ```
 
-Please try running the command with a --prefix option with path to your code  as shown below , it helps to locate the files for which code coverage is desired
+Please try running the command with a --prefix option with path to your code as shown below , it helps to locate the files for which code coverage is desired
 
 ```
 codacy-coverage-reporter report -l Java -r PATH_TO_COVERAGE/coverage.xml --prefix PATH_TO_THE_DIRECTORY
@@ -300,11 +307,11 @@ codacy-coverage-reporter report -l Java -r api/target/site/jacoco/jacoco.xml --p
 
 ### Among Codacy’s features:
 
- - Identify new Static Analysis issues
- - Commit and Pull Request Analysis with GitHub, BitBucket/Stash, GitLab (and also direct git repositories)
- - Auto-comments on Commits and Pull Requests
- - Integrations with Slack, HipChat, Jira, YouTrack
- - Track issues Code Style, Security, Error Proneness, Performance, Unused Code and other categories
+- Identify new Static Analysis issues
+- Commit and Pull Request Analysis with GitHub, BitBucket/Stash, GitLab (and also direct git repositories)
+- Auto-comments on Commits and Pull Requests
+- Integrations with Slack, HipChat, Jira, YouTrack
+- Track issues Code Style, Security, Error Proneness, Performance, Unused Code and other categories
 
 Codacy also helps keep track of Code Coverage, Code Duplication, and Code Complexity.
 
