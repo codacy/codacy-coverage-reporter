@@ -77,7 +77,7 @@ function build_cmd() {
   local BINARY_NAME=$1
   local APP_MAIN_CLASS=$2
   local APP_CLASSPATH=$3
-  local FLAGS='-O0'
+  local FLAGS='-O1'
   FLAGS+=' --enable-http --enable-https --enable-url-protocols=http,https,file,jar --enable-all-security-services'
   FLAGS+=' -H:+JNI -H:IncludeResourceBundles=com.sun.org.apache.xerces.internal.impl.msg.XMLMessages'
   FLAGS+=' -H:+ReportExceptionStackTraces'
@@ -95,7 +95,7 @@ function build_cmd() {
 echo "Publishing ${APP_NAME} binary version ${VERSION} for ${OS_TARGET}"
 BINARY_NAME="${APP_NAME}-${OS_TARGET}-${VERSION}"
 
-BUILD_CMD+="$(build_cmd ${BINARY_NAME} ${APP_MAIN_CLASS} "$(app_classpath)")"
+BUILD_CMD+="cd "$PWD" && $(build_cmd ${BINARY_NAME} ${APP_MAIN_CLASS} "$(app_classpath)")"
 
 echo "Going to run ${BUILD_CMD}"
 
@@ -111,8 +111,8 @@ case "$TARGET" in
       --entrypoint=bash \
       -v $HOME:$HOME:ro \
       -v $PWD:$PWD \
-      oracle/graalvm-ce:19.2.1 \
-      -c "gu install native-image && ${BUILD_CMD}"
+      oracle/graalvm-ce:19.3.0-java8 \
+      -c "yum install -y libstdc++-static && gu install native-image && ${BUILD_CMD}"
     ;;
   *)
     echo >&2 "Could not find command for target $TARGET"
