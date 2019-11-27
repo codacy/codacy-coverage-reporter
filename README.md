@@ -59,6 +59,12 @@ chmod +x codacy-coverage-reporter
 ./codacy-coverage-reporter report -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
 ```
 
+If you are experiencing segmentation faults uploading the coverage (due to [oracle/graal#624](https://github.com/oracle/graal/issues/624)), do this before running the reporter, as a workaround:
+
+```sh
+echo "$(dig +short api.codacy.com | tail -n1) api.codacy.com" >> /etc/hosts
+```
+
 #### Others
 
 - Linux x86, MacOS, Windows, ...
