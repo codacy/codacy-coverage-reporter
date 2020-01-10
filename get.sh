@@ -77,7 +77,7 @@ codacy_reporter="$codacy_temp_folder/codacy-coverage-reporter-assembly.jar"
 
 if [ ! -f "$codacy_reporter" ]
 then
-    log "$i" "Download the codacy reporter..."
+    log "$i" "Download the codacy reporter... ($CODACY_REPORTER_VERSION)"
     curl -LS -o "$codacy_reporter" "$(curl -LSs https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/$CODACY_REPORTER_VERSION | jq -r '.assets | map({name, browser_download_url} | select(.name | endswith(".jar"))) | .[0].browser_download_url')"
 else
     log "$i" "Using codacy reporter from cache"
