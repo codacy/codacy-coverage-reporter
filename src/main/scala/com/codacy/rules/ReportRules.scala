@@ -135,7 +135,9 @@ class ReportRules(config: Configuration, coverageServices: => CoverageServices) 
       case value if value.isEmpty =>
         val foundFiles = pathIterator
           .filter(_.getName match {
-            case JacocoRegex(_) | CoberturaRegex(_) | LCOVRegex(_) | CloverRegex(_) | DotcoverRegex(_) | OpencoverRegex(_) => true
+            case JacocoRegex(_) | CoberturaRegex(_) | LCOVRegex(_) | CloverRegex(_) | DotcoverRegex(_) |
+                OpencoverRegex(_) =>
+              true
             case _ => false
           })
           .toList
