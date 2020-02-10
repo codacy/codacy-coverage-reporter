@@ -57,12 +57,11 @@ class ReportRules(config: Configuration, coverageServices: => CoverageServices) 
               result
           }
 
-        if (reportResults.forall(_.isRight))
-          Right("All coverage data uploaded.")
-        else if (reportResults.exists(_.isRight))
-          Right("Not all files were successfully uploaded.")
-        else
-          Left("No files were uploaded.")
+        reportResults match {
+          case result if result.forall(_.isRight) => Right("All coverage data uploaded.")
+          case result if result.exists(_.isRight) => Right("Not all files were successfully uploaded.")
+          case _ => Left("No files were uploaded.")
+        }
       }
     }
   }
