@@ -44,6 +44,7 @@ This command assumes the coverage reports follow a name convention:
 * Clover &rarr; clover.xml
 * DotCover &rarr; dotcover.xml
 * OpenCover &rarr; opencover.xml
+* PHPUnit XML &rarr; index.xml
 
 Otherwise, you must define the report's location with the flag `-r`.
 
