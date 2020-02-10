@@ -125,7 +125,7 @@ class ReportRules(config: Configuration, coverageServices: => CoverageServices) 
     */
   private[rules] def guessReportFiles(files: List[File], pathIterator: Iterator[File]): Either[String, List[File]] = {
     val JacocoRegex = """(jacoco.*\.xml)""".r
-    val CoberturaRegex = "(cobertura.xml)".r
+    val CoberturaRegex = """(cobertura\.xml)""".r
     val LCOVRegex = """(lcov(.info|.dat)|.*\.lcov)""".r
     val CloverRegex = """(clover\.xml)""".r
     val DotcoverRegex = """(dotcover\.xml)""".r

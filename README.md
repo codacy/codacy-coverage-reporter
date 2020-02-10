@@ -37,14 +37,14 @@ bash <(curl -Ls https://coverage.codacy.com/get.sh)
 If you want to specify a coverage reporter version, use `CODACY_REPORTER_VERSION` environment variable.
 
 This command assumes the coverage reports follow a name convention:
-```
-JaCoCo -> jacoco*.xml
-Cobertura -> cobertura.xml
-LCOV -> lcov.info | lcov.dat | *.lcov
-Clover -> clover.xml
-DotCover -> dotcover.xml
-OpenCover -> opencover.xml
-```
+
+* JaCoCo &rarr; jacoco*.xml
+* Cobertura &rarr; cobertura.xml
+* LCOV &rarr; lcov.info | lcov.dat | *.lcov
+* Clover &rarr; clover.xml
+* DotCover &rarr; dotcover.xml
+* OpenCover &rarr; opencover.xml
+
 Otherwise, you must define the report's location with the flag `-r`.
 
 ### Using binary manually
