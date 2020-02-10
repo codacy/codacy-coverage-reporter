@@ -13,7 +13,7 @@ Multi-language coverage reporter for Codacy https://www.codacy.com
 ## Setup
 
 Codacy assumes that coverage is previously configured for your project.
-The supported coverage formats are JaCoCo, Cobertura and LCOV.
+The supported coverage formats can be found [here](https://github.com/codacy/coverage-parser).
 
 1. Setup the project API token. You can find the token in Project -> Settings -> Integrations -> Project API.
 
@@ -35,6 +35,17 @@ bash <(curl -Ls https://coverage.codacy.com/get.sh)
 ```
 
 If you want to specify a coverage reporter version, use `CODACY_REPORTER_VERSION` environment variable.
+
+This command assumes the coverage reports follow a name convention:
+```
+JaCoCo -> jacoco*.xml
+Cobertura -> cobertura.xml
+LCOV -> lcov.info | lcov.dat | *.lcov
+Clover -> clover.xml
+DotCover -> dotcover.xml
+OpenCover -> opencover.xml
+```
+Otherwise, you must define the report's location with the flag `-r`.
 
 ### Using binary manually
 
