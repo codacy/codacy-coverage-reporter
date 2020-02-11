@@ -127,21 +127,23 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
       result should be('left)
     }
 
-    "successfully report" in {
-      val emptyReport = CoverageReport(0, List(CoverageFileReport("file-name", 0, Map())))
-      val tempFile = File.createTempFile("storeReport", "not-store")
-      val result = components.reportRules.storeReport(emptyReport, tempFile)
+    "report is stored" when {
+      def storeValidReport() = {
+        val emptyReport = CoverageReport(0, List(CoverageFileReport("file-name", 0, Map())))
+        val tempFile = File.createTempFile("storeReport", "not-store")
+        components.reportRules.storeReport(emptyReport, tempFile)
+      }
 
-      result should be('right)
-    }
+      "store is successful" in {
+        val result = storeValidReport()
+        result should be('right)
+      }
 
-    "store report" in {
-      val emptyReport = CoverageReport(0, List(CoverageFileReport("file-name", 0, Map())))
-      val tempFile = File.createTempFile("storeReport", "not-store")
-      val result = components.reportRules.storeReport(emptyReport, tempFile)
-
-      val resultFile = new File(result.right.value)
-      resultFile.exists should be(true)
+      "store report" in {
+        val result = storeValidReport()
+        val resultFile = new File(result.right.value)
+        resultFile.exists should be(true)
+      }
     }
   }
 }
