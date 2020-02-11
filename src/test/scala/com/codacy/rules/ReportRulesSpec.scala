@@ -78,5 +78,72 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
       reportEither should be('right)
       reportEither.right.value should be(files)
     }
+
+    "only provide phpunit report file inside coverage-xml" in {
+      val fileIterator = Iterator(new File("index.xml"), new File("coverage-xml", "index.xml"))
+      val reportEither = components.reportRules.guessReportFiles(List.empty, fileIterator)
+
+      reportEither should be('right)
+      reportEither.right.value should be(List(new File("coverage-xml", "index.xml")))
+    }
+  }
+
+  "validateFileAccess" should {
+    "not validate file" when {
+      "file does not exist" in {
+        val file = new File("not-exist.xml")
+        val result = components.reportRules.validateFileAccess(file)
+
+        result should be('left)
+      }
+
+      "file does not have read access" in {
+        val file = File.createTempFile("validateFileAccess", "read-access")
+        file.createNewFile()
+        file.setReadable(false)
+        file.deleteOnExit()
+
+        val result = components.reportRules.validateFileAccess(file)
+        result should be('left)
+      }
+    }
+
+    "validate file" in {
+      val file = File.createTempFile("validateFileAccess", "valid")
+      file.createNewFile()
+      file.deleteOnExit()
+
+      val result = components.reportRules.validateFileAccess(file)
+      result should be('right)
+    }
+  }
+
+  "storeReport" should {
+    "not store report" in {
+      val emptyReport = CoverageReport(0, Seq.empty[CoverageFileReport])
+      val tempFile = File.createTempFile("storeReport", "not-store")
+      val result = components.reportRules.storeReport(emptyReport, tempFile)
+
+      result should be('left)
+    }
+
+    "report is stored" when {
+      def storeValidReport() = {
+        val emptyReport = CoverageReport(0, List(CoverageFileReport("file-name", 0, Map())))
+        val tempFile = File.createTempFile("storeReport", "not-store")
+        components.reportRules.storeReport(emptyReport, tempFile)
+      }
+
+      "store is successful" in {
+        val result = storeValidReport()
+        result should be('right)
+      }
+
+      "store report" in {
+        val result = storeValidReport()
+        val resultFile = new File(result.right.value)
+        resultFile.exists should be(true)
+      }
+    }
   }
 }

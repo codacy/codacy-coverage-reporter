@@ -39,52 +39,85 @@ class ReportRules(config: Configuration, coverageServices: => CoverageServices) 
         } else config
 
         files
-          .map {
-            case file if !file.exists =>
-              Left(s"File ${file.getAbsolutePath} does not exist.")
-            case file if !file.canRead =>
-              Left(s"Missing read permissions for report file: ${file.getAbsolutePath}")
-            case file =>
-              logger.info(s"Parsing coverage data from: ${file.getAbsolutePath} ...")
-
-              CoverageParser
-                .parse(rootProjectDir, file)
-                .map(transform(_)(finalConfig))
-                .flatMap { report =>
-                  if (report.fileReports.isEmpty)
-                    Left("The provided coverage report generated an empty result.")
-                  else {
-                    val codacyReportFilename =
-                      s"${file.getAbsoluteFile.getParent}${File.separator}codacy-coverage.json"
-                    logger.debug(s"Saving parsed report to $codacyReportFilename")
-                    val codacyReportFile = new File(codacyReportFilename)
-
-                    logger.debug(report.toString)
-                    FileHelper.writeJsonToFile(codacyReportFile, report)
-
-                    logUploadedFileInfo(codacyReportFile)
-
-                    val language = guessReportLanguage(finalConfig.languageOpt, report)
-
-                    language.map(
-                      languageStr =>
-                        coverageServices.sendReport(commitUUID, languageStr, report, finalConfig.partial) match {
-                          case SuccessfulResponse(value) =>
-                            logger.info(s"Coverage data uploaded. ${value.success}")
-                            Right(())
-                          case failed: FailedResponse =>
-                            val message = handleFailedResponse(failed)
-                            Left(s"Failed to upload report: $message")
-                      }
-                    )
-                  }
-                }
+          .map { file =>
+            logger.info(s"Parsing coverage data from: ${file.getAbsolutePath} ...")
+            for {
+              _ <- validateFileAccess(file)
+              report <- CoverageParser.parse(rootProjectDir, file).map(transform(_)(finalConfig))
+              _ <- storeReport(report, file)
+              language <- guessReportLanguage(finalConfig.languageOpt, report)
+              success <- sendReport(report, language, finalConfig, commitUUID, file)
+            } yield { success }
           }
           .collectFirst {
             case Left(l) => Left(l)
           }
           .getOrElse(Right("All coverage data uploaded."))
       }
+    }
+  }
+
+  private[rules] def validateFileAccess(file: File) = {
+    file match {
+      case file if !file.exists =>
+        Left(s"File ${file.getAbsolutePath} does not exist.")
+      case file if !file.canRead =>
+        Left(s"Missing read permissions for report file: ${file.getAbsolutePath}")
+      case _ =>
+        Right(())
+    }
+  }
+
+  /**
+    * Store Report
+    *
+    * Store the parsed report for troubleshooting purposes
+    * @param report coverage report to be stored
+    * @param file report file
+    * @return either an error message or nothing
+    */
+  private[rules] def storeReport(report: CoverageReport, file: File) = {
+    if (report.fileReports.isEmpty)
+      Left(s"The provided coverage report ${file.getAbsolutePath} generated an empty result.")
+    else {
+      val codacyReportFilename =
+        s"${file.getAbsoluteFile.getParent}${File.separator}codacy-coverage.json"
+      logger.debug(s"Saving parsed report to $codacyReportFilename")
+      val codacyReportFile = new File(codacyReportFilename)
+
+      logger.debug(report.toString)
+      FileHelper.writeJsonToFile(codacyReportFile, report)
+
+      logUploadedFileInfo(codacyReportFile)
+      Right(codacyReportFilename)
+    }
+  }
+
+  /**
+    * Send Report
+    *
+    * Send the parsed report to coverage services with the given language and commitUUID
+    * @param report coverage report to be sent
+    * @param language language detected in files or specified by user input
+    * @param config configuration
+    * @param commitUUID unique id of commit being reported
+    * @param file report file
+    * @return either an error message or nothing
+    */
+  private def sendReport(
+      report: CoverageReport,
+      language: String,
+      config: ReportConfig,
+      commitUUID: String,
+      file: File
+  ) = {
+    coverageServices.sendReport(commitUUID, language, report, config.partial) match {
+      case SuccessfulResponse(value) =>
+        logger.info(s"Coverage data uploaded. ${value.success}")
+        Right(())
+      case failed: FailedResponse =>
+        val message = handleFailedResponse(failed)
+        Left(s"Failed to upload report ${file.getAbsolutePath}: $message")
     }
   }
 
@@ -130,16 +163,24 @@ class ReportRules(config: Configuration, coverageServices: => CoverageServices) 
     val CloverRegex = """(clover\.xml)""".r
     val DotcoverRegex = """(dotcover\.xml)""".r
     val OpencoverRegex = """(opencover\.xml)""".r
+    val PhpUnitRegex = """(index\.xml)""".r
+
+    val phpUnitCoverageFolder = "coverage-xml"
 
     files match {
       case value if value.isEmpty =>
         val foundFiles = pathIterator
-          .filter(_.getName match {
-            case JacocoRegex(_) | CoberturaRegex(_) | LCOVRegex(_) | CloverRegex(_) | DotcoverRegex(_) |
-                OpencoverRegex(_) =>
-              true
-            case _ => false
-          })
+          .filter(
+            file =>
+              file.getName match {
+                case JacocoRegex(_) | CoberturaRegex(_) | LCOVRegex(_) | CloverRegex(_) | DotcoverRegex(_) |
+                    OpencoverRegex(_) =>
+                  true
+                // index.xml is a common name, so we just consider it if it's inside the coverage-xml folder
+                case PhpUnitRegex(_) => file.getParent == phpUnitCoverageFolder
+                case _ => false
+            }
+          )
           .toList
         if (foundFiles.isEmpty)
           Left("Can't guess any report due to no matching! Try to specify the report with -r")
@@ -198,7 +239,7 @@ class ReportRules(config: Configuration, coverageServices: => CoverageServices) 
     }
   }
 
-  private def withCommitUUID[T](config: BaseConfig)(block: (String) => Either[String, T]): Either[String, T] = {
+  private def withCommitUUID[T](config: BaseConfig)(block: String => Either[String, T]): Either[String, T] = {
     val maybeCommitUUID = config.commitUUID.map(Right(_)).getOrElse {
       val envVars = sys.env.filter { case (_, value) => value.trim.nonEmpty }
       CommitUUIDProvider.getFromAll(envVars)
