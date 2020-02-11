@@ -39,22 +39,17 @@ class ReportRules(config: Configuration, coverageServices: => CoverageServices) 
         } else config
 
         val reportResults = files
-          .map {
-            case file if !file.exists =>
-              Left(s"File ${file.getAbsolutePath} does not exist.")
-            case file if !file.canRead =>
-              Left(s"Missing read permissions for report file: ${file.getAbsolutePath}")
-            case file =>
-              logger.info(s"Parsing coverage data from: ${file.getAbsolutePath} ...")
+          .map { file =>
+            val result = for {
+              _ <- validateFileAccess(file)
+              report <- CoverageParser.parse(rootProjectDir, file).map(transform(_)(finalConfig))
+              _ <- storeReport(report, file.getAbsoluteFile.getParent, finalConfig)
+              language <- guessReportLanguage(finalConfig.languageOpt, report)
+              success <- sendReport(report, language, finalConfig, commitUUID)
+            } yield { success }
 
-              val result = for {
-                report <- CoverageParser.parse(rootProjectDir, file).map(transform(_)(finalConfig))
-                _ <- storeReport(report, file.getAbsoluteFile.getParent, finalConfig)
-                language <- guessReportLanguage(config.languageOpt, report)
-              } yield { sendReport(report, language, finalConfig, commitUUID) }
-
-              result.left.foreach(errorMessage => logger.warn(errorMessage))
-              result
+            result.left.foreach(errorMessage => logger.error(errorMessage))
+            result
           }
 
         reportResults match {
@@ -63,6 +58,17 @@ class ReportRules(config: Configuration, coverageServices: => CoverageServices) 
           case _ => Left("No files were uploaded.")
         }
       }
+    }
+  }
+
+  private def validateFileAccess(file: File) = {
+    file match {
+      case file if !file.exists =>
+        Left(s"File ${file.getAbsolutePath} does not exist.")
+      case file if !file.canRead =>
+        Left(s"Missing read permissions for report file: ${file.getAbsolutePath}")
+      case file =>
+        Right(())
     }
   }
 
