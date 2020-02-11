@@ -78,5 +78,13 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
       reportEither should be('right)
       reportEither.right.value should be(files)
     }
+
+    "only provide phpunit report file inside coverage-xml" in {
+      val fileIterator = Iterator(new File("index.xml"), new File("coverage-xml", "index.xml"))
+      val reportEither = components.reportRules.guessReportFiles(List.empty, fileIterator)
+
+      reportEither should be('right)
+      reportEither.right.value should be(List(new File("coverage-xml", "index.xml")))
+    }
   }
 }
