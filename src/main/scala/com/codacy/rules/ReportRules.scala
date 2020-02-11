@@ -44,7 +44,7 @@ class ReportRules(config: Configuration, coverageServices: => CoverageServices) 
             for {
               _ <- validateFileAccess(file)
               report <- CoverageParser.parse(rootProjectDir, file).map(transform(_)(finalConfig))
-              _ <- storeReport(report, file, finalConfig)
+              _ <- storeReport(report, file)
               language <- guessReportLanguage(finalConfig.languageOpt, report)
               success <- sendReport(report, language, finalConfig, commitUUID, file)
             } yield { success }
@@ -57,7 +57,7 @@ class ReportRules(config: Configuration, coverageServices: => CoverageServices) 
     }
   }
 
-  private def validateFileAccess(file: File) = {
+  private[rules] def validateFileAccess(file: File) = {
     file match {
       case file if !file.exists =>
         Left(s"File ${file.getAbsolutePath} does not exist.")
@@ -74,10 +74,9 @@ class ReportRules(config: Configuration, coverageServices: => CoverageServices) 
     * Store the parsed report for troubleshooting purposes
     * @param report coverage report to be stored
     * @param file report file
-    * @param config configuration
     * @return either an error message or nothing
     */
-  private def storeReport(report: CoverageReport, file: File, config: ReportConfig) = {
+  private[rules] def storeReport(report: CoverageReport, file: File) = {
     if (report.fileReports.isEmpty)
       Left(s"The provided coverage report ${file.getAbsolutePath} generated an empty result.")
     else {
@@ -90,7 +89,7 @@ class ReportRules(config: Configuration, coverageServices: => CoverageServices) 
       FileHelper.writeJsonToFile(codacyReportFile, report)
 
       logUploadedFileInfo(codacyReportFile)
-      Right(())
+      Right(codacyReportFilename)
     }
   }
 
