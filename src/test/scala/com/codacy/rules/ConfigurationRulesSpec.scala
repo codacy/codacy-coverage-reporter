@@ -127,6 +127,14 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
         val result = components.configRules.validateBaseConfig(baseConfig, Map())
         result should be('right)
       }
+
+      // it should use the project token only
+      "project token and api token are used" in {
+        val baseConfig =
+          BaseCommandConfig(Some("projectToken"), Some("apiToken"), None, None, Some(apiBaseUrl), Some("CommitUUID"))
+        val result = components.configRules.validateBaseConfig(baseConfig, Map())
+        result should be('right)
+      }
     }
   }
 }
