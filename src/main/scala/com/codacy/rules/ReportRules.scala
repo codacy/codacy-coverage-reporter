@@ -119,7 +119,7 @@ class ReportRules(coverageServices: => CoverageServices) extends StrictLogging {
       file: File
   ) = {
     val coverageResponse = config.baseConfig match {
-      case BaseConfigWithProjectToken(_, _, _, _) =>
+      case _: BaseConfigWithProjectToken =>
         coverageServices.sendReport(commitUUID, language, report, config.partial)
 
       case BaseConfigWithApiToken(_, username, projectName, _, _, _) =>
