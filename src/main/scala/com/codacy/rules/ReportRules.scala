@@ -7,7 +7,14 @@ import com.codacy.api.CoverageReport
 import com.codacy.api.client.{FailedResponse, SuccessfulResponse}
 import com.codacy.api.helpers.FileHelper
 import com.codacy.api.service.CoverageServices
-import com.codacy.model.configuration.{BaseConfig, Configuration, FinalConfig, ReportConfig}
+import com.codacy.model.configuration.{
+  BaseConfig,
+  BaseConfigWithApiToken,
+  BaseConfigWithProjectToken,
+  Configuration,
+  FinalConfig,
+  ReportConfig
+}
 import com.codacy.parsers.CoverageParser
 import com.codacy.transformation.PathPrefixer
 import com.typesafe.scalalogging.StrictLogging
@@ -28,7 +35,8 @@ class ReportRules(config: Configuration, coverageServices: => CoverageServices) 
 
   def codacyCoverage(config: ReportConfig): Either[String, String] = {
     withCommitUUID(config.baseConfig) { commitUUID =>
-      logger.debug(s"Project token: ${config.baseConfig.projectToken}")
+      config.baseConfig.projectTokenOpt.foreach(token => logger.debug(s"Project token: $token"))
+      config.baseConfig.apiTokenOpt.foreach(token => logger.debug(s"API token: $token"))
 
       val filesEither = guessReportFiles(config.coverageReports, rootProjectDirIterator)
 
@@ -111,7 +119,14 @@ class ReportRules(config: Configuration, coverageServices: => CoverageServices) 
       commitUUID: String,
       file: File
   ) = {
-    coverageServices.sendReport(commitUUID, language, report, config.partial) match {
+    val coverageResponse = config.baseConfig match {
+      case BaseConfigWithProjectToken(_, _, _, _) =>
+        coverageServices.sendReport(commitUUID, language, report, config.partial)
+
+      case BaseConfigWithApiToken(_, username, projectName, _, _, _) =>
+        coverageServices.sendReportWithProjectName(username, projectName, commitUUID, language, report, config.partial)
+    }
+    coverageResponse match {
       case SuccessfulResponse(value) =>
         logger.info(s"Coverage data uploaded. ${value.success}")
         Right(())

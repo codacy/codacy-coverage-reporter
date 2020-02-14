@@ -14,7 +14,8 @@ class Components(private val cmdConfig: CommandConfiguration) {
 
   lazy val codacyClient = new CodacyClient(
     Some(validatedConfig.baseConfig.codacyApiBaseUrl),
-    projectToken = Some(validatedConfig.baseConfig.projectToken)
+    projectToken = validatedConfig.baseConfig.projectTokenOpt,
+    apiToken = validatedConfig.baseConfig.apiTokenOpt
   )
   lazy val coverageServices = new CoverageServices(codacyClient)
 

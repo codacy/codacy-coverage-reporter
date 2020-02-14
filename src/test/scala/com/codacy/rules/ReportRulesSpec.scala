@@ -1,21 +1,20 @@
 package com.codacy.rules
 
-import org.scalatest._
-
 import java.io.File
 
-import com.codacy.configuration.parser.{BaseCommandConfig, Report}
-import com.codacy.di.Components
 import com.codacy.api.client.FailedResponse
 import com.codacy.api.{CoverageFileReport, CoverageReport}
+import com.codacy.configuration.parser.{BaseCommandConfig, Report}
+import com.codacy.di.Components
 import com.codacy.plugins.api.languages.Languages
+import org.scalatest._
 
 class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester with EitherValues {
   val projToken = "1234adasdsdw333"
   val coverageFiles = List(new File("coverage.xml"))
   val apiBaseUrl = "https://api.codacy.com"
 
-  val baseConf = BaseCommandConfig(Some(projToken), Some(apiBaseUrl), None)
+  val baseConf = BaseCommandConfig(Some(projToken), None, None, None, Some(apiBaseUrl), None)
   val conf = Report(baseConf, Some("Scala"), coverageReports = Some(coverageFiles), prefix = None)
 
   val coverageReport = CoverageReport(100, Seq(CoverageFileReport("file.scala", 100, Map(10 -> 1))))
@@ -127,7 +126,7 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
       result should be('left)
     }
 
-    "report is stored" when {
+    "successfully store report" when {
       def storeValidReport() = {
         val emptyReport = CoverageReport(0, List(CoverageFileReport("file-name", 0, Map())))
         val tempFile = File.createTempFile("storeReport", "not-store")
@@ -139,10 +138,10 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
         result should be('right)
       }
 
-      "store report" in {
+      "store report exists" in {
         val result = storeValidReport()
         val resultFile = new File(result.right.value)
-        resultFile.exists should be(true)
+        resultFile should be('exists)
       }
     }
   }

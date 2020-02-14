@@ -4,11 +4,18 @@ import java.net.URL
 import java.io.File
 
 import com.codacy.configuration.parser.{BaseCommandConfig, CommandConfiguration, Final, Report}
-import com.codacy.model.configuration.{BaseConfig, Configuration, FinalConfig, ReportConfig}
+import com.codacy.model.configuration.{
+  BaseConfig,
+  BaseConfigWithApiToken,
+  BaseConfigWithProjectToken,
+  CommitUUID,
+  Configuration,
+  FinalConfig,
+  ReportConfig
+}
 import com.typesafe.scalalogging.StrictLogging
 
 import scala.util.Try
-import com.codacy.model.configuration.CommitUUID
 
 class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging {
   private[rules] val publicApiBaseUrl = "https://api.codacy.com"
@@ -65,35 +72,88 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging 
 
   }
 
-  private def validateBaseConfig(baseConfig: BaseCommandConfig): Either[String, BaseConfig] = {
+  private[rules] def validateBaseConfig(baseConfig: BaseCommandConfig): Either[String, BaseConfig] = {
+    val errorMessage =
+      "Either a project token or an api token must be provided or available in an environment variable"
+
+    val projectToken = getValueOrEnvironmentVar(baseConfig.projectToken, "CODACY_PROJECT_TOKEN")
+    val apiToken = getValueOrEnvironmentVar(baseConfig.apiToken, "CODACY_API_TOKEN")
+
+    baseConfig match {
+      case config if projectToken.isDefined => validateConfigWithProjectToken(config, projectToken)
+      case config if apiToken.isDefined => validateConfigWithApiToken(config, apiToken)
+      case config if config.skipValue =>
+        logger.warn(errorMessage)
+        logger.info("Skip reporting coverage")
+        sys.exit(0)
+      case _ => Left(errorMessage)
+    }
+  }
+
+  private def validateConfigWithProjectToken(baseConfig: BaseCommandConfig, projectToken: Option[String]) = {
+    val projectTokenErrorMsg = "Empty argument for --project-token"
     for {
-      projectToken <- baseConfig.projectToken.fold(getProjectToken(sys.env, baseConfig.skipValue))(Right(_))
-      baseConf = BaseConfig(
+      projectToken <- projectToken.toRight(projectTokenErrorMsg)
+      baseConf = BaseConfigWithProjectToken(
         projectToken,
         baseConfig.codacyApiBaseUrl.getOrElse(getApiBaseUrl(sys.env)),
-        baseConfig.commitUUID.map(CommitUUID(_)),
+        baseConfig.commitUUID.map(CommitUUID),
         baseConfig.debugValue
       )
-      validatedConfig <- {
-        baseConf match {
-          case config if !validUrl(config.codacyApiBaseUrl) =>
-            val error = s"Invalid CODACY_API_BASE_URL: ${config.codacyApiBaseUrl}"
+      validatedConfig <- validateConfig(baseConf) {
+        case config: BaseConfigWithProjectToken if !config.projectToken.trim.isEmpty => Right(config)
+        case _ => Left(projectTokenErrorMsg)
+      }
 
-            val help = if (!config.codacyApiBaseUrl.startsWith("http")) {
-              "Maybe you forgot the http:// or https:// ?"
-            }
-            Left(s"$error\n$help")
+    } yield {
+      logger.info(s"Using Project token -> API base URL: ${validatedConfig.codacyApiBaseUrl}")
+      validatedConfig
+    }
+  }
 
-          case config if config.projectToken.trim.isEmpty =>
-            Left("Empty argument for --project-token")
-
-          case _ =>
-            Right(baseConf)
-        }
+  private def validateConfigWithApiToken(baseConfig: BaseCommandConfig, apiToken: Option[String]) = {
+    val apiTokenErrorMsg = "Empty argument --api-token"
+    val emptyUsernameMsg = "Empty argument --username"
+    val emptyProjectMsg = "Empty argument --project-name"
+    for {
+      apiToken <- apiToken.toRight(apiTokenErrorMsg)
+      username <- getValueOrEnvironmentVar(baseConfig.username, "CODACY_USERNAME").toRight(emptyUsernameMsg)
+      projectName <- getValueOrEnvironmentVar(baseConfig.projectName, "CODACY_PROJECT_NAME").toRight(emptyProjectMsg)
+      baseConf = BaseConfigWithApiToken(
+        apiToken,
+        username,
+        projectName,
+        baseConfig.codacyApiBaseUrl.getOrElse(getApiBaseUrl(sys.env)),
+        baseConfig.commitUUID.map(CommitUUID),
+        baseConfig.debugValue
+      )
+      validatedConfig <- validateConfig(baseConf) {
+        case config: BaseConfigWithApiToken if config.apiToken.trim.isEmpty => Left(apiTokenErrorMsg)
+        case config: BaseConfigWithApiToken if config.username.trim.isEmpty => Left(emptyUsernameMsg)
+        case config: BaseConfigWithApiToken if config.projectName.trim.isEmpty => Left(emptyProjectMsg)
+        case config => Right(config)
       }
     } yield {
-      logger.info(s"Using API base URL: ${validatedConfig.codacyApiBaseUrl}")
+      logger.info(s"Using API token API -> API base URL: ${validatedConfig.codacyApiBaseUrl}")
       validatedConfig
+    }
+  }
+
+  private def getValueOrEnvironmentVar(value: Option[String], envVarName: String) =
+    value.orElse(sys.env.get(envVarName))
+
+  private def validateConfig(baseConf: BaseConfig)(additionalValidations: BaseConfig => Either[String, BaseConfig]) = {
+    baseConf match {
+      case config if !validUrl(config.codacyApiBaseUrl) =>
+        val error = s"Invalid CODACY_API_BASE_URL: ${config.codacyApiBaseUrl}"
+
+        val help = if (!config.codacyApiBaseUrl.startsWith("http")) {
+          "Maybe you forgot the http:// or https:// ?"
+        }
+        Left(s"$error\n$help")
+
+      case config =>
+        additionalValidations(config)
     }
   }
 
@@ -107,31 +167,6 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging 
     */
   private[rules] def getApiBaseUrl(envVars: Map[String, String]): String = {
     envVars.getOrElse("CODACY_API_BASE_URL", publicApiBaseUrl)
-  }
-
-  /**
-    * Get project token
-    *
-    * This function try to get the project token from environment variables, and if not found
-    * return an error message. If the skip flag is true, it will exit the reporter with the normal state
-    * skipping the coverage to be reported.
-    * @param envVars environment variables
-    * @param skip skip flag
-    * @return the project token on the right or an error message on the left
-    */
-  private[rules] def getProjectToken(envVars: Map[String, String], skip: Boolean): Either[String, String] = {
-    val projectToken =
-      envVars
-        .get("CODACY_PROJECT_TOKEN")
-        .toRight("Project token not provided and not available in environment variable \"CODACY_PROJECT_TOKEN\"")
-
-    if (skip && projectToken.isLeft) {
-      logger.warn(projectToken.left.get)
-      logger.info("Skip reporting coverage")
-      sys.exit(0)
-    } else {
-      projectToken
-    }
   }
 
   /**
@@ -156,7 +191,7 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging 
     filesOpt match {
       case Some(value) if value.isEmpty =>
         Left("Invalid report list. Try passing a report file with -r")
-      case Some(value) if !value.isEmpty =>
+      case Some(value) if value.nonEmpty =>
         Right(value)
       case None =>
         Right(List.empty[File])
