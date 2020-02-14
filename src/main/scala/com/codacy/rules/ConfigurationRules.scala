@@ -41,7 +41,7 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging 
 
   private def validateFinalConfig(finalConfig: Final): Either[String, FinalConfig] = {
     for {
-      baseConfig <- validateBaseConfig(finalConfig.baseConfig)
+      baseConfig <- validateBaseConfig(finalConfig.baseConfig, sys.env)
     } yield FinalConfig(baseConfig)
   }
 
@@ -57,7 +57,7 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging 
     }
 
     for {
-      baseConfig <- validateBaseConfig(reportConfig.baseConfig)
+      baseConfig <- validateBaseConfig(reportConfig.baseConfig, sys.env)
       validReportFiles <- validateReportFiles(reportConfig.coverageReports)
       reportConf = ReportConfig(
         baseConfig,
@@ -72,16 +72,19 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging 
 
   }
 
-  private[rules] def validateBaseConfig(baseConfig: BaseCommandConfig): Either[String, BaseConfig] = {
+  private[rules] def validateBaseConfig(
+      baseConfig: BaseCommandConfig,
+      envVars: Map[String, String]
+  ): Either[String, BaseConfig] = {
     val errorMessage =
       "Either a project token or an api token must be provided or available in an environment variable"
 
-    val projectToken = getValueOrEnvironmentVar(baseConfig.projectToken, "CODACY_PROJECT_TOKEN")
-    val apiToken = getValueOrEnvironmentVar(baseConfig.apiToken, "CODACY_API_TOKEN")
+    val projectToken = getValueOrEnvironmentVar(baseConfig.projectToken, envVars, "CODACY_PROJECT_TOKEN")
+    val apiToken = getValueOrEnvironmentVar(baseConfig.apiToken, envVars, "CODACY_API_TOKEN")
 
     baseConfig match {
       case config if projectToken.isDefined => validateConfigWithProjectToken(config, projectToken)
-      case config if apiToken.isDefined => validateConfigWithApiToken(config, apiToken)
+      case config if apiToken.isDefined => validateConfigWithApiToken(config, apiToken, envVars)
       case config if config.skipValue =>
         logger.warn(errorMessage)
         logger.info("Skip reporting coverage")
@@ -111,14 +114,19 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging 
     }
   }
 
-  private def validateConfigWithApiToken(baseConfig: BaseCommandConfig, apiToken: Option[String]) = {
+  private def validateConfigWithApiToken(
+      baseConfig: BaseCommandConfig,
+      apiToken: Option[String],
+      envVars: Map[String, String]
+  ) = {
     val apiTokenErrorMsg = "Empty argument --api-token"
     val emptyUsernameMsg = "Empty argument --username"
     val emptyProjectMsg = "Empty argument --project-name"
     for {
       apiToken <- apiToken.toRight(apiTokenErrorMsg)
-      username <- getValueOrEnvironmentVar(baseConfig.username, "CODACY_USERNAME").toRight(emptyUsernameMsg)
-      projectName <- getValueOrEnvironmentVar(baseConfig.projectName, "CODACY_PROJECT_NAME").toRight(emptyProjectMsg)
+      username <- getValueOrEnvironmentVar(baseConfig.username, envVars, "CODACY_USERNAME").toRight(emptyUsernameMsg)
+      projectName <- getValueOrEnvironmentVar(baseConfig.projectName, envVars, "CODACY_PROJECT_NAME")
+        .toRight(emptyProjectMsg)
       baseConf = BaseConfigWithApiToken(
         apiToken,
         username,
@@ -139,8 +147,8 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging 
     }
   }
 
-  private def getValueOrEnvironmentVar(value: Option[String], envVarName: String) =
-    value.orElse(sys.env.get(envVarName))
+  private def getValueOrEnvironmentVar(value: Option[String], envVars: Map[String, String], envVarName: String) =
+    value.orElse(envVars.get(envVarName))
 
   private def validateConfig(baseConf: BaseConfig)(additionalValidations: BaseConfig => Either[String, BaseConfig]) = {
     baseConf match {

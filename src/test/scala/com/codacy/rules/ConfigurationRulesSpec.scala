@@ -63,7 +63,7 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
   "validateBaseConfig" should {
     "fail" when {
       def assertFailure(baseCommandConfig: BaseCommandConfig) = {
-        val result = components.configRules.validateBaseConfig(baseCommandConfig)
+        val result = components.configRules.validateBaseConfig(baseCommandConfig, Map())
         result should be('left)
         result
       }
@@ -110,7 +110,7 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
       "project token is used" in {
         val baseConfig =
           BaseCommandConfig(Some("token"), None, None, None, Some(apiBaseUrl), Some("CommitUUID"))
-        val result = components.configRules.validateBaseConfig(baseConfig)
+        val result = components.configRules.validateBaseConfig(baseConfig, Map())
         result should be('right)
       }
 
@@ -124,7 +124,7 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
             Some(apiBaseUrl),
             Some("CommitUUID")
           )
-        val result = components.configRules.validateBaseConfig(baseConfig)
+        val result = components.configRules.validateBaseConfig(baseConfig, Map())
         result should be('right)
       }
     }
