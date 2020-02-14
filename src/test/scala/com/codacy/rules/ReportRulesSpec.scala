@@ -30,37 +30,36 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
   val components = new Components(conf)
 
   "codacyCoverage" should {
-    def assertCodacyCoverage(coverageServices: CoverageServices, reportConfig: ReportConfig, success: Boolean) = {
+    val baseConfig =
+      BaseConfigWithProjectToken(projToken, apiBaseUrl, Some(commitUUID), debug = false)
+
+    def assertCodacyCoverage(coverageServices: CoverageServices, coverageReports: List[String], success: Boolean) = {
       val reportRules = new ReportRules(coverageServices)
+      val reportConfig =
+        ReportConfig(
+          baseConfig,
+          None,
+          forceLanguage = false,
+          coverageReports = coverageReports.map(new File(_)),
+          partial = false,
+          prefix = ""
+        )
       val result = reportRules.codacyCoverage(reportConfig)
 
       result should be(if (success) 'right else 'left)
     }
-    val baseConfig =
-      BaseConfigWithProjectToken(projToken, apiBaseUrl, Some(commitUUID), debug = false)
 
     "fail" when {
       "it finds no report file" in {
         val coverageServices = mock[CoverageServices]
-        val reportConfig =
-          ReportConfig(baseConfig, None, forceLanguage = false, coverageReports = List(), partial = false, prefix = "")
 
-        assertCodacyCoverage(coverageServices, reportConfig, success = false)
+        assertCodacyCoverage(coverageServices, List(), success = false)
       }
 
       "it is not able to parse report file" in {
         val coverageServices = mock[CoverageServices]
-        val reportConfig =
-          ReportConfig(
-            baseConfig,
-            None,
-            forceLanguage = false,
-            coverageReports = List(new File("src/test/resources/invalid-report.xml")),
-            partial = false,
-            prefix = ""
-          )
 
-        assertCodacyCoverage(coverageServices, reportConfig, success = false)
+        assertCodacyCoverage(coverageServices, List("src/test/resources/invalid-report.xml"), success = false)
       }
 
       "cannot send report" in {
@@ -69,17 +68,7 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
         when(coverageServices.sendReport(anyString, anyString, any[CoverageReport], anyBoolean))
           .thenReturn(FailedResponse("Failed to send report"))
 
-        val reportConfig =
-          ReportConfig(
-            baseConfig,
-            None,
-            forceLanguage = false,
-            coverageReports = List(new File("src/test/resources/dotcover-example.xml")),
-            partial = false,
-            prefix = ""
-          )
-
-        assertCodacyCoverage(coverageServices, reportConfig, success = false)
+        assertCodacyCoverage(coverageServices, List("src/test/resources/dotcover-example.xml"), success = false)
       }
     }
 
@@ -89,17 +78,7 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
       when(coverageServices.sendReport(anyString, anyString, any[CoverageReport], anyBoolean))
         .thenReturn(SuccessfulResponse(RequestSuccess("Success")))
 
-      val reportConfig =
-        ReportConfig(
-          baseConfig,
-          None,
-          forceLanguage = false,
-          coverageReports = List(new File("src/test/resources/dotcover-example.xml")),
-          partial = false,
-          prefix = ""
-        )
-
-      assertCodacyCoverage(coverageServices, reportConfig, success = true)
+      assertCodacyCoverage(coverageServices, List("src/test/resources/dotcover-example.xml"), success = true)
     }
   }
 
