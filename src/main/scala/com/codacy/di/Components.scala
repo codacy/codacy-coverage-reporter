@@ -10,7 +10,7 @@ class Components(private val cmdConfig: CommandConfiguration) {
   lazy val validatedConfig: Configuration = configRules.validatedConfig
 
   lazy val configRules = new ConfigurationRules(cmdConfig)
-  lazy val reportRules = new ReportRules(validatedConfig, coverageServices)
+  lazy val reportRules = new ReportRules(coverageServices)
 
   lazy val codacyClient = new CodacyClient(
     Some(validatedConfig.baseConfig.codacyApiBaseUrl),

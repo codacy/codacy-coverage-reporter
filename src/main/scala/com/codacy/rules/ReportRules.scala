@@ -11,7 +11,6 @@ import com.codacy.model.configuration.{
   BaseConfig,
   BaseConfigWithApiToken,
   BaseConfigWithProjectToken,
-  Configuration,
   FinalConfig,
   ReportConfig
 }
@@ -24,7 +23,7 @@ import com.codacy.rules.commituuid.CommitUUIDProvider
 
 import scala.collection.JavaConverters._
 
-class ReportRules(config: Configuration, coverageServices: => CoverageServices) extends StrictLogging {
+class ReportRules(coverageServices: => CoverageServices) extends StrictLogging {
 
   private val rootProjectDir = new File(System.getProperty("user.dir"))
   private val rootProjectDirIterator = Files

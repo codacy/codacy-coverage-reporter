@@ -2,17 +2,24 @@ package com.codacy.rules
 
 import java.io.File
 
-import com.codacy.api.client.FailedResponse
+import com.codacy.api.client.{FailedResponse, RequestSuccess, SuccessfulResponse}
+import com.codacy.api.service.CoverageServices
 import com.codacy.api.{CoverageFileReport, CoverageReport}
 import com.codacy.configuration.parser.{BaseCommandConfig, Report}
 import com.codacy.di.Components
+import com.codacy.model.configuration.{BaseConfigWithProjectToken, CommitUUID, ReportConfig}
 import com.codacy.plugins.api.languages.Languages
 import org.scalatest._
+import org.scalatest.mockito.MockitoSugar
+import org.mockito.Mockito._
+import org.mockito.ArgumentMatchers._
 
-class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester with EitherValues {
+class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester with EitherValues with MockitoSugar {
   val projToken = "1234adasdsdw333"
   val coverageFiles = List(new File("coverage.xml"))
   val apiBaseUrl = "https://api.codacy.com"
+
+  val commitUUID = CommitUUID("commitUUID")
 
   val baseConf = BaseCommandConfig(Some(projToken), None, None, None, Some(apiBaseUrl), None)
   val conf = Report(baseConf, Some("Scala"), coverageReports = Some(coverageFiles), prefix = None)
@@ -21,6 +28,80 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
   val noLanguageReport = CoverageReport(0, Seq.empty[CoverageFileReport])
 
   val components = new Components(conf)
+
+  "codacyCoverage" should {
+    def assertCodacyCoverage(coverageServices: CoverageServices, reportConfig: ReportConfig, success: Boolean) = {
+      val reportRules = new ReportRules(coverageServices)
+      val result = reportRules.codacyCoverage(reportConfig)
+
+      result should be(if (success) 'right else 'left)
+    }
+    val baseConfig =
+      BaseConfigWithProjectToken(projToken, apiBaseUrl, Some(commitUUID), debug = false)
+
+    "fail" when {
+      "it finds no report file" in {
+        val coverageServices = mock[CoverageServices]
+        val reportConfig =
+          ReportConfig(baseConfig, None, forceLanguage = false, coverageReports = List(), partial = false, prefix = "")
+
+        assertCodacyCoverage(coverageServices, reportConfig, success = false)
+      }
+
+      "it is not able to parse report file" in {
+        val coverageServices = mock[CoverageServices]
+        val reportConfig =
+          ReportConfig(
+            baseConfig,
+            None,
+            forceLanguage = false,
+            coverageReports = List(new File("src/test/resources/invalid-report.xml")),
+            partial = false,
+            prefix = ""
+          )
+
+        assertCodacyCoverage(coverageServices, reportConfig, success = false)
+      }
+
+      "cannot send report" in {
+        val coverageServices = mock[CoverageServices]
+
+        when(coverageServices.sendReport(anyString, anyString, any[CoverageReport], anyBoolean))
+          .thenReturn(FailedResponse("Failed to send report"))
+
+        val reportConfig =
+          ReportConfig(
+            baseConfig,
+            None,
+            forceLanguage = false,
+            coverageReports = List(new File("src/test/resources/dotcover-example.xml")),
+            partial = false,
+            prefix = ""
+          )
+
+        assertCodacyCoverage(coverageServices, reportConfig, success = false)
+      }
+    }
+
+    "succeed if it can parse and send the report" in {
+      val coverageServices = mock[CoverageServices]
+
+      when(coverageServices.sendReport(anyString, anyString, any[CoverageReport], anyBoolean))
+        .thenReturn(SuccessfulResponse(RequestSuccess("Success")))
+
+      val reportConfig =
+        ReportConfig(
+          baseConfig,
+          None,
+          forceLanguage = false,
+          coverageReports = List(new File("src/test/resources/dotcover-example.xml")),
+          partial = false,
+          prefix = ""
+        )
+
+      assertCodacyCoverage(coverageServices, reportConfig, success = true)
+    }
+  }
 
   "handleFailedResponse" should {
     "provide a different message" in {
