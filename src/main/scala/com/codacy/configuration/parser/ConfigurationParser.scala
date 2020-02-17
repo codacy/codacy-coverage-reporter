@@ -65,7 +65,7 @@ case class BaseCommandConfig(
     codacyApiBaseUrl: Option[String],
     @ValueDescription("your commitUUID")
     commitUUID: Option[String],
-    @Name("s") @ValueDescription("skip if project token isn't defined")
+    @Name("s") @ValueDescription("skip if token isn't defined")
     skip: Int @@ Counter = Tag.of(0),
     @Hidden
     debug: Int @@ Counter = Tag.of(0)

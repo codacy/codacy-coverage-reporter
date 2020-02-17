@@ -8,37 +8,42 @@ import com.typesafe.scalalogging.StrictLogging
 import com.codacy.rules.ConfigurationRules
 
 object CodacyCoverageReporter extends ConfigurationParsingApp with StrictLogging {
+  private val Success = 0
+  private val Failure = 1
 
   def run(commandConfig: CommandConfiguration): Int = {
     if (commandConfig.baseConfig.skipValue) {
       logger.info("Skip reporting coverage")
-      0
+      Success
     } else {
-      val configRules = new ConfigurationRules(commandConfig)
-
-      val result = configRules.validatedConfig.flatMap { validatedConfig =>
-        val components = new Components(validatedConfig)
-        LoggerHelper.setLoggerLevel(logger, validatedConfig.baseConfig.debug)
-
-        logger.debug(validatedConfig.toString)
-
-        validatedConfig match {
-          case config: ReportConfig =>
-            components.reportRules.codacyCoverage(config)
-
-          case config: FinalConfig =>
-            components.reportRules.finalReport(config)
-        }
-      }
+      val result: Either[String, String] = sendReport(commandConfig)
       result.fold({ error =>
         logger.error(error)
-        1
+        Failure
       }, { successMessage =>
         logger.info(successMessage)
-        0
+        Success
       })
 
     }
   }
 
+  private def sendReport(commandConfig: CommandConfiguration) = {
+    val configRules = new ConfigurationRules(commandConfig)
+
+    configRules.validatedConfig.flatMap { validatedConfig =>
+      val components = new Components(validatedConfig)
+      LoggerHelper.setLoggerLevel(logger, validatedConfig.baseConfig.debug)
+
+      logger.debug(validatedConfig.toString)
+
+      validatedConfig match {
+        case config: ReportConfig =>
+          components.reportRules.codacyCoverage(config)
+
+        case config: FinalConfig =>
+          components.reportRules.finalReport(config)
+      }
+    }
+  }
 }
