@@ -25,7 +25,10 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
   val coverageReport = CoverageReport(100, Seq(CoverageFileReport("file.scala", 100, Map(10 -> 1))))
   val noLanguageReport = CoverageReport(0, Seq.empty[CoverageFileReport])
 
-  val components = new Components(conf)
+  val configRules = new ConfigurationRules(conf)
+  val validatedConfig = configRules.validatedConfig.right.value
+ 
+  val components = new Components(validatedConfig)
 
   "codacyCoverage" should {
     val baseConfig =

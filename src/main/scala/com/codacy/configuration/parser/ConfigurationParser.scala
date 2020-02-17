@@ -10,10 +10,10 @@ import com.codacy.configuration.parser.ConfigArgumentParsers._
 
 abstract class ConfigurationParsingApp extends CommandAppWithPreCommand[BaseCommand, CommandConfiguration] {
   override final def run(options: CommandConfiguration, remainingArgs: RemainingArgs): Unit = {
-    run(options)
+    sys.exit(run(options))
   }
 
-  def run(config: CommandConfiguration): Unit
+  def run(config: CommandConfiguration): Int
 
   override def beforeCommand(options: BaseCommand, remainingArgs: Seq[String]): Unit = ()
 }

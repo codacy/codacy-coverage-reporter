@@ -21,12 +21,9 @@ import scala.util.Try
 class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging {
   private[rules] val publicApiBaseUrl = "https://api.codacy.com"
 
-  lazy val validatedConfig: Configuration = {
+  lazy val validatedConfig: Either[String, Configuration] = {
     val config = validateConfig(cmdConfig)
-    config.fold({ error =>
-      logger.error(s"Invalid configuration: $error")
-      sys.exit(1)
-    }, identity)
+    config.left.map(error => s"Invalid configuration: $error")
   }
 
   private def validateConfig(cmdConfig: CommandConfiguration): Either[String, Configuration] = {
@@ -106,40 +103,30 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging 
       validateProjectTokenAuth(projectToken)
     else if (apiToken.isDefined)
       validateApiTokenAuth(baseCommandConfig, apiToken, envVars)
-    else if (baseCommandConfig.skipValue) {
-      logger.warn(errorMessage)
-      logger.info("Skip reporting coverage")
-      sys.exit(0)
-    } else
+    else
       Left(errorMessage)
   }
 
-  private def validateProjectTokenAuth(projectToken: Option[String]) = {
-    val projectTokenErrorMsg = "Empty argument for --project-token"
-    for {
-      projectToken <- projectToken.filter(_.nonEmpty).toRight(projectTokenErrorMsg)
-    } yield ProjectTokenAuthenticationConfig(projectToken)
-  }
+  private def validateProjectTokenAuth(projectToken: Option[String]) =
+    projectToken.filter(_.nonEmpty) match {
+      case None => Left("Empty argument for --project-token")
+      case Some(projectToken) => Right(ProjectTokenAuthenticationConfig(projectToken))
+    }
 
   private def validateApiTokenAuth(
       baseCommandConfig: BaseCommandConfig,
       apiToken: Option[String],
       envVars: Map[String, String]
-  ) = {
-    val apiTokenErrorMsg = "Empty argument --api-token"
-    val emptyUsernameMsg = "Empty argument --username"
-    val emptyProjectMsg = "Empty argument --project-name"
-
+  ) =
     for {
-      apiToken <- apiToken.filter(_.nonEmpty).toRight(apiTokenErrorMsg)
+      apiToken <- apiToken.filter(_.nonEmpty).toRight("Empty argument --api-token")
       username <- getValueOrEnvironmentVar(baseCommandConfig.username, envVars, "CODACY_USERNAME")
         .filter(_.nonEmpty)
-        .toRight(emptyUsernameMsg)
+        .toRight("Empty argument --username")
       projectName <- getValueOrEnvironmentVar(baseCommandConfig.projectName, envVars, "CODACY_PROJECT_NAME")
         .filter(_.nonEmpty)
-        .toRight(emptyProjectMsg)
+        .toRight("Empty argument --project-name")
     } yield ApiTokenAuthenticationConfig(apiToken, username, projectName)
-  }
 
   private def getValueOrEnvironmentVar(value: Option[String], envVars: Map[String, String], envVarName: String) =
     value.orElse(envVars.get(envVarName))
