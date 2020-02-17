@@ -117,10 +117,8 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging 
   private def validateProjectTokenAuth(projectToken: Option[String]) = {
     val projectTokenErrorMsg = "Empty argument for --project-token"
     for {
-      projectToken <- projectToken.toRight(projectTokenErrorMsg)
-      validatedAuthConfig <- if (projectToken.trim.nonEmpty) Right(ProjectTokenAuthenticationConfig(projectToken))
-      else Left(projectTokenErrorMsg)
-    } yield validatedAuthConfig
+      projectToken <- projectToken.filter(_.nonEmpty).toRight(projectTokenErrorMsg)
+    } yield ProjectTokenAuthenticationConfig(projectToken)
   }
 
   private def validateApiTokenAuth(
@@ -132,24 +130,15 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging 
     val emptyUsernameMsg = "Empty argument --username"
     val emptyProjectMsg = "Empty argument --project-name"
 
-    def validateApiTokenArguments(apiToken: String, username: String, projectName: String) = {
-      if (apiToken.trim.isEmpty)
-        Left(apiTokenErrorMsg)
-      else if (username.trim.isEmpty)
-        Left(emptyUsernameMsg)
-      else if (projectName.trim.isEmpty)
-        Left(emptyProjectMsg)
-      else Right(ApiTokenAuthenticationConfig(apiToken, username, projectName))
-    }
-
     for {
-      apiToken <- apiToken.toRight(apiTokenErrorMsg)
+      apiToken <- apiToken.filter(_.nonEmpty).toRight(apiTokenErrorMsg)
       username <- getValueOrEnvironmentVar(baseCommandConfig.username, envVars, "CODACY_USERNAME")
+        .filter(_.nonEmpty)
         .toRight(emptyUsernameMsg)
       projectName <- getValueOrEnvironmentVar(baseCommandConfig.projectName, envVars, "CODACY_PROJECT_NAME")
+        .filter(_.nonEmpty)
         .toRight(emptyProjectMsg)
-      validatedConfig <- validateApiTokenArguments(apiToken, username, projectName)
-    } yield validatedConfig
+    } yield ApiTokenAuthenticationConfig(apiToken, username, projectName)
   }
 
   private def getValueOrEnvironmentVar(value: Option[String], envVars: Map[String, String], envVarName: String) =
