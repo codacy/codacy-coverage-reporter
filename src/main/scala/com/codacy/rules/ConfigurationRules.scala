@@ -102,27 +102,24 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging 
     val projectToken = getValueOrEnvironmentVar(baseCommandConfig.projectToken, envVars, "CODACY_PROJECT_TOKEN")
     val apiToken = getValueOrEnvironmentVar(baseCommandConfig.apiToken, envVars, "CODACY_API_TOKEN")
 
-    baseCommandConfig match {
-      case _ if projectToken.isDefined => validateProjectTokenAuth(projectToken)
-      case config if apiToken.isDefined => validateApiTokenAuth(config, apiToken, envVars)
-      case config if config.skipValue =>
-        logger.warn(errorMessage)
-        logger.info("Skip reporting coverage")
-        sys.exit(0)
-      case _ => Left(errorMessage)
-    }
+    if (projectToken.isDefined)
+      validateProjectTokenAuth(projectToken)
+    else if (apiToken.isDefined)
+      validateApiTokenAuth(baseCommandConfig, apiToken, envVars)
+    else if (baseCommandConfig.skipValue) {
+      logger.warn(errorMessage)
+      logger.info("Skip reporting coverage")
+      sys.exit(0)
+    } else
+      Left(errorMessage)
   }
 
   private def validateProjectTokenAuth(projectToken: Option[String]) = {
     val projectTokenErrorMsg = "Empty argument for --project-token"
     for {
       projectToken <- projectToken.toRight(projectTokenErrorMsg)
-      validatedAuthConfig <- {
-        if (projectToken.trim.nonEmpty)
-          Right(ProjectTokenAuthenticationConfig(projectToken))
-        else
-          Left(projectTokenErrorMsg)
-      }
+      validatedAuthConfig <- if (projectToken.trim.nonEmpty) Right(ProjectTokenAuthenticationConfig(projectToken))
+      else Left(projectTokenErrorMsg)
     } yield validatedAuthConfig
   }
 
@@ -135,18 +132,23 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging 
     val emptyUsernameMsg = "Empty argument --username"
     val emptyProjectMsg = "Empty argument --project-name"
 
+    def validateApiTokenArguments(apiToken: String, username: String, projectName: String) = {
+      if (apiToken.trim.isEmpty)
+        Left(apiTokenErrorMsg)
+      else if (username.trim.isEmpty)
+        Left(emptyUsernameMsg)
+      else if (projectName.trim.isEmpty)
+        Left(emptyProjectMsg)
+      else Right(ApiTokenAuthenticationConfig(apiToken, username, projectName))
+    }
+
     for {
       apiToken <- apiToken.toRight(apiTokenErrorMsg)
       username <- getValueOrEnvironmentVar(baseCommandConfig.username, envVars, "CODACY_USERNAME")
         .toRight(emptyUsernameMsg)
       projectName <- getValueOrEnvironmentVar(baseCommandConfig.projectName, envVars, "CODACY_PROJECT_NAME")
         .toRight(emptyProjectMsg)
-      validatedConfig <- apiToken match {
-        case _ if apiToken.trim.isEmpty => Left(apiTokenErrorMsg)
-        case _ if username.trim.isEmpty => Left(emptyUsernameMsg)
-        case _ if projectName.trim.isEmpty => Left(emptyProjectMsg)
-        case _ => Right(ApiTokenAuthenticationConfig(apiToken, username, projectName))
-      }
+      validatedConfig <- validateApiTokenArguments(apiToken, username, projectName)
     } yield validatedConfig
   }
 
