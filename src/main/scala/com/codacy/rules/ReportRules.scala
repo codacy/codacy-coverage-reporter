@@ -8,17 +8,16 @@ import com.codacy.api.client.{FailedResponse, SuccessfulResponse}
 import com.codacy.api.helpers.FileHelper
 import com.codacy.api.service.CoverageServices
 import com.codacy.model.configuration.{
+  ApiTokenAuthenticationConfig,
   BaseConfig,
-  BaseConfigWithApiToken,
-  BaseConfigWithProjectToken,
   FinalConfig,
+  ProjectTokenAuthenticationConfig,
   ReportConfig
 }
 import com.codacy.parsers.CoverageParser
 import com.codacy.transformation.PathPrefixer
 import com.typesafe.scalalogging.StrictLogging
 import com.codacy.plugins.api.languages.Languages
-
 import com.codacy.rules.commituuid.CommitUUIDProvider
 
 import scala.collection.JavaConverters._
@@ -34,8 +33,7 @@ class ReportRules(coverageServices: => CoverageServices) extends StrictLogging {
 
   def codacyCoverage(config: ReportConfig): Either[String, String] = {
     withCommitUUID(config.baseConfig) { commitUUID =>
-      config.baseConfig.projectTokenOpt.foreach(token => logger.debug(s"Project token: $token"))
-      config.baseConfig.apiTokenOpt.foreach(token => logger.debug(s"API token: $token"))
+      logAuthenticationToken(config)
 
       val filesEither = guessReportFiles(config.coverageReports, rootProjectDirIterator)
 
@@ -61,6 +59,13 @@ class ReportRules(coverageServices: => CoverageServices) extends StrictLogging {
           }
           .getOrElse(Right("All coverage data uploaded."))
       }
+    }
+  }
+
+  private def logAuthenticationToken(config: ReportConfig): Unit = {
+    config.baseConfig.authentication match {
+      case ProjectTokenAuthenticationConfig(projectToken) => logger.debug(s"Project token: $projectToken")
+      case ApiTokenAuthenticationConfig(apiToken, _, _) => logger.debug(s"Api token: $apiToken")
     }
   }
 
@@ -118,11 +123,11 @@ class ReportRules(coverageServices: => CoverageServices) extends StrictLogging {
       commitUUID: String,
       file: File
   ) = {
-    val coverageResponse = config.baseConfig match {
-      case _: BaseConfigWithProjectToken =>
+    val coverageResponse = config.baseConfig.authentication match {
+      case _: ProjectTokenAuthenticationConfig =>
         coverageServices.sendReport(commitUUID, language, report, config.partial)
 
-      case BaseConfigWithApiToken(_, username, projectName, _, _, _) =>
+      case ApiTokenAuthenticationConfig(_, username, projectName) =>
         coverageServices.sendReportWithProjectName(username, projectName, commitUUID, language, report, config.partial)
     }
     coverageResponse match {

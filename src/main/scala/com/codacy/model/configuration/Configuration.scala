@@ -22,28 +22,18 @@ case class ReportConfig(
 
 case class FinalConfig(baseConfig: BaseConfig) extends Configuration
 
-sealed abstract class BaseConfig(
-    val projectTokenOpt: Option[String],
-    val apiTokenOpt: Option[String],
-    val codacyApiBaseUrl: String,
-    val commitUUID: Option[CommitUUID],
-    val debug: Boolean
+sealed trait AuthenticationConfig
+
+case class ProjectTokenAuthenticationConfig(projectToken: String) extends AuthenticationConfig
+
+case class ApiTokenAuthenticationConfig(apiToken: String, username: String, projectName: String)
+    extends AuthenticationConfig
+
+case class BaseConfig(
+    authentication: AuthenticationConfig,
+    codacyApiBaseUrl: String,
+    commitUUID: Option[CommitUUID],
+    debug: Boolean
 )
-
-case class BaseConfigWithProjectToken(
-    projectToken: String,
-    override val codacyApiBaseUrl: String,
-    override val commitUUID: Option[CommitUUID],
-    override val debug: Boolean
-) extends BaseConfig(Some(projectToken), None, codacyApiBaseUrl, commitUUID, debug)
-
-case class BaseConfigWithApiToken(
-    apiToken: String,
-    username: String,
-    projectName: String,
-    override val codacyApiBaseUrl: String,
-    override val commitUUID: Option[CommitUUID],
-    override val debug: Boolean
-) extends BaseConfig(None, Some(apiToken), codacyApiBaseUrl, commitUUID, debug)
 
 case class CommitUUID(value: String) extends AnyVal
