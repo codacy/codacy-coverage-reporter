@@ -22,6 +22,18 @@ case class ReportConfig(
 
 case class FinalConfig(baseConfig: BaseConfig) extends Configuration
 
-case class BaseConfig(projectToken: String, codacyApiBaseUrl: String, commitUUID: Option[CommitUUID], debug: Boolean)
+sealed trait AuthenticationConfig
+
+case class ProjectTokenAuthenticationConfig(projectToken: String) extends AuthenticationConfig
+
+case class ApiTokenAuthenticationConfig(apiToken: String, username: String, projectName: String)
+    extends AuthenticationConfig
+
+case class BaseConfig(
+    authentication: AuthenticationConfig,
+    codacyApiBaseUrl: String,
+    commitUUID: Option[CommitUUID],
+    debug: Boolean
+)
 
 case class CommitUUID(value: String) extends AnyVal

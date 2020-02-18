@@ -10,10 +10,10 @@ import com.codacy.configuration.parser.ConfigArgumentParsers._
 
 abstract class ConfigurationParsingApp extends CommandAppWithPreCommand[BaseCommand, CommandConfiguration] {
   override final def run(options: CommandConfiguration, remainingArgs: RemainingArgs): Unit = {
-    run(options)
+    sys.exit(run(options))
   }
 
-  def run(config: CommandConfiguration): Unit
+  def run(config: CommandConfiguration): Int
 
   override def beforeCommand(options: BaseCommand, remainingArgs: Seq[String]): Unit = ()
 }
@@ -55,11 +55,17 @@ case class Report(
 case class BaseCommandConfig(
     @Name("t") @ValueDescription("your project API token")
     projectToken: Option[String],
+    @Name("a") @ValueDescription("your api token")
+    apiToken: Option[String],
+    @Name("u") @ValueDescription("your username")
+    username: Option[String],
+    @Name("p") @ValueDescription("project name")
+    projectName: Option[String],
     @ValueDescription("the base URL for the Codacy API")
     codacyApiBaseUrl: Option[String],
     @ValueDescription("your commitUUID")
     commitUUID: Option[String],
-    @Name("s") @ValueDescription("skip if project token isn't defined")
+    @Name("s") @ValueDescription("skip if token isn't defined")
     skip: Int @@ Counter = Tag.of(0),
     @Hidden
     debug: Int @@ Counter = Tag.of(0)

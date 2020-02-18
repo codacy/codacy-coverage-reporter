@@ -25,3 +25,5 @@ config
 .codacy.json
 codacy-coverage-reporter-linux-*
 codacy-coverage-reporter-darwin-*
+classes/
+src/test/resources/codacy-coverage.json

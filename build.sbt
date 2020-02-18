@@ -16,14 +16,14 @@ scalacOptions := Seq(
 
 // Runtime dependencies
 libraryDependencies ++= Seq(
-  "com.codacy" %% "coverage-parser" % "2.5.0",
+  "com.codacy" %% "coverage-parser" % "2.5.4",
   "com.github.alexarchambault" %% "case-app" % "1.2.0",
   logbackClassic,
   scalaLogging
 )
 
 // Test dependencies
-libraryDependencies ++= Seq(scalatest).map(_ % "test")
+libraryDependencies ++= Seq(scalatest, mockitoScalaScalatest).map(_ % Test)
 
 mainClass in assembly := Some("com.codacy.CodacyCoverageReporter")
 assemblyMergeStrategy in assembly := {

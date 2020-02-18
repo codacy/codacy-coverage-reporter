@@ -15,14 +15,17 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
   val coverageFiles = List(new File("coverage.xml"))
   val apiBaseUrl = "https://example.com"
 
-  val baseConf = BaseCommandConfig(Some(projToken), Some(apiBaseUrl), None)
+  val baseConf = BaseCommandConfig(Some(projToken), None, None, None, Some(apiBaseUrl), None)
   val conf = Report(baseConf, Some("Scala"), coverageReports = Some(coverageFiles), prefix = None)
 
-  val components = new Components(conf)
+  val configRules = new ConfigurationRules(conf)
+  val validatedConfig = configRules.validatedConfig.right.value
+
+  val components = new Components(validatedConfig)
 
   "ConfigurationRules" should {
     "transform configuration" in {
-      inside(components.validatedConfig) {
+      inside(validatedConfig) {
         case config: ReportConfig =>
           config.language.value should be(Languages.Scala)
           config.coverageReports.map(_.toString) should be(List("coverage.xml"))
@@ -34,40 +37,107 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
     }
 
     "check a valid url" in {
-      components.configRules.validUrl("https://example.com") should be(true)
-      components.configRules.validUrl("httt://example.com") should be(false)
+      configRules.validUrl("https://example.com") should be(true)
+      configRules.validUrl("httt://example.com") should be(false)
     }
 
     "validate report files" in {
-      val filesNoneOption = components.configRules.validateReportFiles(None)
+      val filesNoneOption = configRules.validateReportFiles(None)
       filesNoneOption should be('right)
       filesNoneOption.right.value should be(List.empty[File])
 
-      val filesSomeInvalid = components.configRules.validateReportFiles(Some(List.empty[File]))
+      val filesSomeInvalid = configRules.validateReportFiles(Some(List.empty[File]))
       filesSomeInvalid should be('left)
 
-      val filesSomeValid = components.configRules.validateReportFiles(Some(coverageFiles))
+      val filesSomeValid = configRules.validateReportFiles(Some(coverageFiles))
       filesSomeValid should be('right)
       filesSomeValid.right.value should be(coverageFiles)
     }
 
     "get an api base url" in {
       val envVars = Map("CODACY_API_BASE_URL" -> apiBaseUrl)
-      val defaultBaseUrl = components.configRules.publicApiBaseUrl
+      val defaultBaseUrl = configRules.publicApiBaseUrl
 
-      components.configRules.getApiBaseUrl(envVars) should be(apiBaseUrl)
-      components.configRules.getApiBaseUrl(Map.empty) should be(defaultBaseUrl)
+      configRules.getApiBaseUrl(envVars) should be(apiBaseUrl)
+      configRules.getApiBaseUrl(Map.empty) should be(defaultBaseUrl)
+    }
+  }
+
+  "validateBaseConfig" should {
+    "fail" when {
+      def assertFailure(baseCommandConfig: BaseCommandConfig) = {
+        val result = configRules.validateBaseConfig(baseCommandConfig, Map())
+        result should be('left)
+        result
+      }
+
+      "no token is used" in {
+        val baseConfig =
+          BaseCommandConfig(None, None, Some("username"), Some("projectName"), Some(apiBaseUrl), Some("CommitUUID"))
+        val result = assertFailure(baseConfig)
+        result.left.value should include("project token or an api token")
+      }
+
+      "project token is empty" in {
+        val baseConfig =
+          BaseCommandConfig(Some(""), None, None, None, Some(apiBaseUrl), Some("CommitUUID"))
+        assertFailure(baseConfig)
+      }
+
+      "api token is empty" in {
+        val baseConfig =
+          BaseCommandConfig(None, Some(""), None, None, Some(apiBaseUrl), Some("CommitUUID"))
+        assertFailure(baseConfig)
+      }
+
+      "api token is used and username is not" in {
+        val baseConfig =
+          BaseCommandConfig(None, Some("token"), None, Some("projectName"), Some(apiBaseUrl), Some("CommitUUID"))
+        assertFailure(baseConfig)
+      }
+
+      "api token is used and project name is not" in {
+        val baseConfig =
+          BaseCommandConfig(None, Some("token"), Some("username"), None, Some(apiBaseUrl), Some("CommitUUID"))
+        assertFailure(baseConfig)
+      }
+
+      "API URL is invalid" in {
+        val baseConfig =
+          BaseCommandConfig(Some("projectToken"), None, None, None, Some("Invalid URL"), Some("CommitUUID"))
+        assertFailure(baseConfig)
+      }
     }
 
-    "get the project token" in {
-      val envVars = Map("CODACY_PROJECT_TOKEN" -> projToken)
+    "succeed" when {
+      "project token is used" in {
+        val baseConfig =
+          BaseCommandConfig(Some("token"), None, None, None, Some(apiBaseUrl), Some("CommitUUID"))
+        val result = configRules.validateBaseConfig(baseConfig, Map())
+        result should be('right)
+      }
 
-      val validProjectToken = components.configRules.getProjectToken(envVars, false)
-      validProjectToken should be('right)
-      validProjectToken.right.value should be(projToken)
+      "api token and required fields are used" in {
+        val baseConfig =
+          BaseCommandConfig(
+            None,
+            Some("apiToken"),
+            Some("username"),
+            Some("projectName"),
+            Some(apiBaseUrl),
+            Some("CommitUUID")
+          )
+        val result = configRules.validateBaseConfig(baseConfig, Map())
+        result should be('right)
+      }
 
-      val noProjectToken = components.configRules.getProjectToken(Map.empty, false)
-      noProjectToken should be('left)
+      // it should use the project token only
+      "project token and api token are used" in {
+        val baseConfig =
+          BaseCommandConfig(Some("projectToken"), Some("apiToken"), None, None, Some(apiBaseUrl), Some("CommitUUID"))
+        val result = configRules.validateBaseConfig(baseConfig, Map())
+        result should be('right)
+      }
     }
   }
 }

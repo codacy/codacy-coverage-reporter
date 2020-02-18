@@ -1,27 +1,89 @@
 package com.codacy.rules
 
-import org.scalatest._
-
 import java.io.File
 
+import com.codacy.api.client.{FailedResponse, RequestSuccess, SuccessfulResponse}
+import com.codacy.api.service.CoverageServices
+import com.codacy.api.{CoverageFileReport, CoverageReport}
 import com.codacy.configuration.parser.{BaseCommandConfig, Report}
 import com.codacy.di.Components
-import com.codacy.api.client.FailedResponse
-import com.codacy.api.{CoverageFileReport, CoverageReport}
+import com.codacy.model.configuration.{BaseConfig, CommitUUID, ProjectTokenAuthenticationConfig, ReportConfig}
 import com.codacy.plugins.api.languages.Languages
+import org.mockito.scalatest.IdiomaticMockito
+import org.scalatest._
 
-class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester with EitherValues {
+class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester with EitherValues with IdiomaticMockito {
   val projToken = "1234adasdsdw333"
   val coverageFiles = List(new File("coverage.xml"))
   val apiBaseUrl = "https://api.codacy.com"
 
-  val baseConf = BaseCommandConfig(Some(projToken), Some(apiBaseUrl), None)
+  val commitUUID = CommitUUID("commitUUID")
+
+  val baseConf = BaseCommandConfig(Some(projToken), None, None, None, Some(apiBaseUrl), None)
   val conf = Report(baseConf, Some("Scala"), coverageReports = Some(coverageFiles), prefix = None)
 
   val coverageReport = CoverageReport(100, Seq(CoverageFileReport("file.scala", 100, Map(10 -> 1))))
   val noLanguageReport = CoverageReport(0, Seq.empty[CoverageFileReport])
 
-  val components = new Components(conf)
+  val configRules = new ConfigurationRules(conf)
+  val validatedConfig = configRules.validatedConfig.right.value
+
+  val components = new Components(validatedConfig)
+
+  "codacyCoverage" should {
+    val baseConfig =
+      BaseConfig(ProjectTokenAuthenticationConfig(projToken), apiBaseUrl, Some(commitUUID), debug = false)
+
+    def assertCodacyCoverage(coverageServices: CoverageServices, coverageReports: List[String], success: Boolean) = {
+      val reportRules = new ReportRules(coverageServices)
+      val reportConfig =
+        ReportConfig(
+          baseConfig,
+          None,
+          forceLanguage = false,
+          coverageReports = coverageReports.map(new File(_)),
+          partial = false,
+          prefix = ""
+        )
+      val result = reportRules.codacyCoverage(reportConfig)
+
+      result should be(if (success) 'right else 'left)
+    }
+
+    "fail" when {
+      "it finds no report file" in {
+        val coverageServices = mock[CoverageServices]
+
+        assertCodacyCoverage(coverageServices, List(), success = false)
+      }
+
+      "it is not able to parse report file" in {
+        val coverageServices = mock[CoverageServices]
+
+        assertCodacyCoverage(coverageServices, List("src/test/resources/invalid-report.xml"), success = false)
+      }
+
+      "cannot send report" in {
+        val coverageServices = mock[CoverageServices]
+
+        coverageServices.sendReport(any[String], any[String], any[CoverageReport], anyBoolean) returns FailedResponse(
+          "Failed to send report"
+        )
+
+        assertCodacyCoverage(coverageServices, List("src/test/resources/dotcover-example.xml"), success = false)
+      }
+    }
+
+    "succeed if it can parse and send the report" in {
+      val coverageServices = mock[CoverageServices]
+
+      coverageServices.sendReport(any[String], any[String], any[CoverageReport], anyBoolean) returns SuccessfulResponse(
+        RequestSuccess("Success")
+      )
+
+      assertCodacyCoverage(coverageServices, List("src/test/resources/dotcover-example.xml"), success = true)
+    }
+  }
 
   "handleFailedResponse" should {
     "provide a different message" in {
@@ -127,7 +189,7 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
       result should be('left)
     }
 
-    "report is stored" when {
+    "successfully store report" when {
       def storeValidReport() = {
         val emptyReport = CoverageReport(0, List(CoverageFileReport("file-name", 0, Map())))
         val tempFile = File.createTempFile("storeReport", "not-store")
@@ -139,10 +201,10 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
         result should be('right)
       }
 
-      "store report" in {
+      "store report exists" in {
         val result = storeValidReport()
         val resultFile = new File(result.right.value)
-        resultFile.exists should be(true)
+        resultFile should be('exists)
       }
     }
   }

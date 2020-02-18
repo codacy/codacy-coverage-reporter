@@ -17,10 +17,26 @@ The supported coverage formats can be found [here](https://github.com/codacy/cov
 
 1. Setup the project API token. You can find the token in Project -> Settings -> Integrations -> Project API.
 
-Then set it in your terminal, replacing %Project_Token% with your own token:
+1. Set it in your terminal, replacing %Project_Token% with your own token:
 
 ```
 export CODACY_PROJECT_TOKEN=%Project_Token%
+```
+
+##### Alternative: using an API Token
+
+1. Setup the Account API token. You can find the token in Your account -> API tokens
+
+1. Set it in your terminal, replacing the %API_Token% with your own token:
+
+1. Set your project name in your terminal, replacing the %Project_Name%
+
+1. Set your username in your terminal, replacing the %Username%
+
+```
+export CODACY_API_TOKEN=%API_Token%
+export CODACY_PROJECT_NAME=%Project_Name%
+export CODACY_USERNAME=%Username%
 ```
 
 ### Using the script

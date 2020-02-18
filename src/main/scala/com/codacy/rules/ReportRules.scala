@@ -7,17 +7,22 @@ import com.codacy.api.CoverageReport
 import com.codacy.api.client.{FailedResponse, SuccessfulResponse}
 import com.codacy.api.helpers.FileHelper
 import com.codacy.api.service.CoverageServices
-import com.codacy.model.configuration.{BaseConfig, Configuration, FinalConfig, ReportConfig}
+import com.codacy.model.configuration.{
+  ApiTokenAuthenticationConfig,
+  BaseConfig,
+  FinalConfig,
+  ProjectTokenAuthenticationConfig,
+  ReportConfig
+}
 import com.codacy.parsers.CoverageParser
 import com.codacy.transformation.PathPrefixer
 import com.typesafe.scalalogging.StrictLogging
 import com.codacy.plugins.api.languages.Languages
-
 import com.codacy.rules.commituuid.CommitUUIDProvider
 
 import scala.collection.JavaConverters._
 
-class ReportRules(config: Configuration, coverageServices: => CoverageServices) extends StrictLogging {
+class ReportRules(coverageServices: => CoverageServices) extends StrictLogging {
 
   private val rootProjectDir = new File(System.getProperty("user.dir"))
   private val rootProjectDirIterator = Files
@@ -28,7 +33,7 @@ class ReportRules(config: Configuration, coverageServices: => CoverageServices) 
 
   def codacyCoverage(config: ReportConfig): Either[String, String] = {
     withCommitUUID(config.baseConfig) { commitUUID =>
-      logger.debug(s"Project token: ${config.baseConfig.projectToken}")
+      logAuthenticationToken(config)
 
       val filesEither = guessReportFiles(config.coverageReports, rootProjectDirIterator)
 
@@ -54,6 +59,13 @@ class ReportRules(config: Configuration, coverageServices: => CoverageServices) 
           }
           .getOrElse(Right("All coverage data uploaded."))
       }
+    }
+  }
+
+  private def logAuthenticationToken(config: ReportConfig): Unit = {
+    config.baseConfig.authentication match {
+      case ProjectTokenAuthenticationConfig(projectToken) => logger.debug(s"Project token: $projectToken")
+      case ApiTokenAuthenticationConfig(apiToken, _, _) => logger.debug(s"Api token: $apiToken")
     }
   }
 
@@ -111,7 +123,14 @@ class ReportRules(config: Configuration, coverageServices: => CoverageServices) 
       commitUUID: String,
       file: File
   ) = {
-    coverageServices.sendReport(commitUUID, language, report, config.partial) match {
+    val coverageResponse = config.baseConfig.authentication match {
+      case _: ProjectTokenAuthenticationConfig =>
+        coverageServices.sendReport(commitUUID, language, report, config.partial)
+
+      case ApiTokenAuthenticationConfig(_, username, projectName) =>
+        coverageServices.sendReportWithProjectName(username, projectName, commitUUID, language, report, config.partial)
+    }
+    coverageResponse match {
       case SuccessfulResponse(value) =>
         logger.info(s"Coverage data uploaded. ${value.success}")
         Right(())
