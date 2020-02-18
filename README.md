@@ -15,23 +15,23 @@ Multi-language coverage reporter for Codacy https://www.codacy.com
 Codacy assumes that coverage is previously configured for your project.
 The supported coverage formats can be found [here](https://github.com/codacy/coverage-parser).
 
-1. Setup the project API token. You can find the token in Project -> Settings -> Integrations -> Project API.
+1. Set up the project API token. You can find the token in Project -> Settings -> Integrations -> Project API.
 
-1. Set it in your terminal, replacing %Project_Token% with your own token:
+1. Set the API token in your terminal, replacing %Project_Token% with your own token:
 
 ```
 export CODACY_PROJECT_TOKEN=%Project_Token%
 ```
 
-##### Alternative: using an API Token
+**As an alternative**, you can use an API Token instead:
 
-1. Setup the Account API token. You can find the token in Your account -> API tokens
+1. Set up the Account API token. You can find the token in Your account -> API tokens
 
-1. Set it in your terminal, replacing the %API_Token% with your own token:
+1. Set the API token in your terminal, replacing %API_Token% with your own token
 
-1. Set your project name in your terminal, replacing the %Project_Name%
+1. Set your project name in your terminal, replacing %Project_Name%
 
-1. Set your username in your terminal, replacing the %Username%
+1. Set your username in your terminal, replacing %Username%
 
 ```
 export CODACY_API_TOKEN=%API_Token%
@@ -39,7 +39,7 @@ export CODACY_PROJECT_NAME=%Project_Name%
 export CODACY_USERNAME=%Username%
 ```
 
-### Using the script
+### Running Codacy Coverage Reporter with a script 
 
 Additional requirements:
 
@@ -64,7 +64,7 @@ This command assumes the coverage reports follow a name convention:
 
 Otherwise, you must define the report's location with the flag `-r`.
 
-### Using binary manually
+### Running Codacy Coverage Reporter by manually downloading the binary
 
 #### Linux amd64
 
@@ -114,9 +114,9 @@ curl -LS -o codacy-coverage-reporter-assembly.jar "$(curl -LSs https://api.githu
 java -jar codacy-coverage-reporter-assembly.jar report -l Java -r jacoco.xml
 ```
 
-### CommitUUID Detection
+### Commit UUID Detection
 
-Codacy automatically detects the CommitUUID from several sources:
+Codacy automatically detects the commit UUID from several sources:
 
 **Providers**
 
@@ -142,9 +142,9 @@ Codacy automatically detects the CommitUUID from several sources:
 
 - If it finds a git directory it will get current commit.
 
-**Force CommitUUID**
+**Force commit UUID**
 
-- You may want to enforce a specific commitUUID with:
+- You can force using a specific commit UUID with:
 
 ```
 codacy-coverage-reporter report -l Java --commit-uuid "mycommituuid" -r coverage.xml
