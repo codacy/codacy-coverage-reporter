@@ -8,23 +8,21 @@ import com.typesafe.scalalogging.StrictLogging
 import com.codacy.rules.ConfigurationRules
 
 object CodacyCoverageReporter extends ConfigurationParsingApp with StrictLogging {
-  private val Success = 0
-  private val Failure = 1
 
   def run(commandConfig: CommandConfiguration): Int = {
     if (commandConfig.baseConfig.skipValue) {
       logger.info("Skip reporting coverage")
-      Success
+      0
     } else {
       val result: Either[String, String] = sendReport(commandConfig)
-      result.fold({ error =>
-        logger.error(error)
-        Failure
-      }, { successMessage =>
-        logger.info(successMessage)
-        Success
-      })
-
+      result match {
+        case Right(message) =>
+          logger.info(message)
+          0
+        case Left(message) =>
+          logger.error(message)
+          1
+      }
     }
   }
 
