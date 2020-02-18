@@ -10,7 +10,8 @@ import com.codacy.rules.ConfigurationRules
 object CodacyCoverageReporter extends ConfigurationParsingApp with StrictLogging {
 
   def run(commandConfig: CommandConfiguration): Int = {
-    if (commandConfig.baseConfig.skipValue) {
+    val noAvailableTokens = commandConfig.baseConfig.projectToken.isEmpty && commandConfig.baseConfig.apiToken.isEmpty
+    if (commandConfig.baseConfig.skipValue && noAvailableTokens) {
       logger.info("Skip reporting coverage")
       0
     } else {
