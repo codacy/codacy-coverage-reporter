@@ -17,10 +17,10 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
 
   val baseConf = BaseCommandConfig(Some(projToken), None, None, None, Some(apiBaseUrl), None)
   val conf = Report(baseConf, Some("Scala"), coverageReports = Some(coverageFiles), prefix = None)
-  
+
   val configRules = new ConfigurationRules(conf)
   val validatedConfig = configRules.validatedConfig.right.value
-  
+
   val components = new Components(validatedConfig)
 
   "ConfigurationRules" should {

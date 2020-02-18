@@ -27,7 +27,7 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
 
   val configRules = new ConfigurationRules(conf)
   val validatedConfig = configRules.validatedConfig.right.value
- 
+
   val components = new Components(validatedConfig)
 
   "codacyCoverage" should {
