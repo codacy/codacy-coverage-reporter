@@ -138,7 +138,8 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging 
       val help = if (!config.codacyApiBaseUrl.startsWith("http")) {
         "Maybe you forgot the http:// or https:// ?"
       }
-      Left(s"$error\n$help")
+      Left(s"""$error
+              |$help""".stripMargin)
     case config => Right(config)
   }
 
