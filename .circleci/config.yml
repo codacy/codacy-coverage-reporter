@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  codacy: codacy/base@1.0.2
+  codacy: codacy/base@2.4.1
 
 jobs:
   publish_circleci_artifacts:
