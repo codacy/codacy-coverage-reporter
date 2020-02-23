@@ -5,23 +5,25 @@ executor: machine
 parameters:
   coverage_version:
     type: string
-    default: latest
+    default: $CODACY_COVERAGE_REPORTER_VERSION
     description: "Codacy coverage version"
+  project_token:
+    type: string
+    default: $CODACY_PROJECT_TOKEN
+    description: "Codacy's project token" 
 
 steps:
   - attach_workspace:
       at: ~/workdir
-  - restore_cache:
-      key: codacy-coverage-reporter-cache-$CODACY_REPORTER_VERSION
   - run:
       command: |
         if [ -z ${CODACY_PROJECT_TOKEN+x} ]; then
             echo "CODACY_PROJECT_TOKEN not found. Skipping send coverage to Codacy."
         else
-            export CODACY_REPORTER_VERSION=<< parameters.coverage_version >>
-            bash <(curl -Ls https://coverage.codacy.com/get.sh)
+          echo "Codacy project token: $CODACY_PROJECT_TOKEN"
+          echo "Codacy coverage reporter version: $CODACY_REPORTER_VERSION"
+          bash <(curl -Ls https://coverage.codacy.com/get.sh)
         fi
-  - save_cache:
-      key: codacy-coverage-reporter-cache-$CODACY_REPORTER_VERSION
-      paths:
-        - ~/workdir/.codacy-coverage
+      environment:
+        CODACY_REPORTER_VERSION: << parameters.coverage_version >>
+        CODACY_PROJECT_TOKEN: << parameters.project_token >>
