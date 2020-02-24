@@ -1,0 +1,4 @@
+version: 2.1
+
+description: >
+  Orb to send Codacy coverage reports

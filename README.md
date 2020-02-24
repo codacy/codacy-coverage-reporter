@@ -299,6 +299,24 @@ after_success:
 
 Make sure you have set `CODACY_PROJECT_TOKEN` as an environment variable in your travis job!
 
+## CircleCI
+
+If you want to use codacy with Circle CI and report coverage generated from your tests run in CircleCI, you can use our [coverage reporter orb](https://circleci.com/orbs/registry/orb/codacy/coverage-reporter):
+
+Example:
+
+    jobs:
+      send-coverage-report:
+        steps:
+          - checkout
+          - "run commands to generate the coverage result"
+          - coverage-reporter/send_report
+    workflows:
+      version: 2
+      coverage-example:
+        jobs:
+          - send-coverage-report
+       
 ## Troubleshooting
 
 ### `Failed to upload report: Not Found`
