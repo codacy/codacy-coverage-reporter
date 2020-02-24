@@ -3,6 +3,12 @@ version: 2.1
 orbs:
   codacy: codacy/base@2.4.1
 
+references:
+  circleci_job: &circleci_job
+    docker:
+      - image: circleci/circleci-cli:0.1.5879
+    working_directory: ~/workdir
+
 jobs:
   publish_circleci_artifacts:
     machine: true
@@ -13,12 +19,54 @@ jobs:
       - store_artifacts:
           path: ~/workdir/artifacts/
 
+  pack_and_validate:
+    <<: *circleci_job
+    steps:
+      - attach_workspace:
+          at: ~/workdir
+      - run:
+          name: Pack orb
+          command: |
+            echo ""                                                       >> orbs/jobs/send_report.yml
+            echo "environment:"                                           >> orbs/jobs/send_report.yml
+            echo "  - CODACY_COVERAGE_REPORTER_VERSION: $(cat .version)"  >> orbs/jobs/send_report.yml
+            circleci config pack orbs > orb.yml
+      - run:
+          name: Validate orb
+          command: circleci orb validate orb.yml
+      - persist_to_workspace:
+          root: ~/workdir
+          paths:
+            - "orb.yml"
+
+  publish_dev:
+    <<: *circleci_job
+    steps:
+      - attach_workspace:
+          at: ~/workdir
+      - deploy:
+          name: Publish orb as dev (deleted after 90 days)
+          command: circleci orb publish orb.yml codacy/coverage-reporter@dev:$(cat .version) --token $CIRCLE_TOKEN
+
+  publish_prod:
+    <<: *circleci_job
+    steps:
+      - attach_workspace:
+          at: ~/workdir
+      - deploy:
+          name: Publish final orb
+          command: circleci orb publish orb.yml codacy/coverage-reporter@$(cat .version) --token $CIRCLE_TOKEN
+
 workflows:
   version: 2
   compile_test_deploy:
     jobs:
       - codacy/checkout_and_version:
           write_sbt_version: true
+      - pack_and_validate:
+          context: CodacyCircleCI
+          requires:
+            - codacy/checkout_and_version            
       - codacy/sbt:
           name: populate_cache
           cmd: sbt ";set scalafmtUseIvy in ThisBuild := false;update"
@@ -90,3 +138,21 @@ workflows:
           context: CodacyGitHub
           requires:
             - publish
+      - publish_dev:
+          context: CodacyCircleCI
+          requires:
+            - publish_ghr
+            - pack_and_validate
+          filters:
+            branches:
+              ignore:
+              - master
+      - publish_prod:
+          context: CodacyCircleCI
+          requires:
+            - publish_ghr
+            - pack_and_validate
+          filters:
+            branches:
+              only:
+                - master

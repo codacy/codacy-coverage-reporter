@@ -5,7 +5,7 @@ executor: machine
 parameters:
   coverage_version:
     type: string
-    default: $CODACY_COVERAGE_REPORTER_VERSION
+    default: latest
     description: "Codacy coverage version"
   project_token:
     type: string
