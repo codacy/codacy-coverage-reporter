@@ -131,10 +131,6 @@ workflows:
       - codacy/publish_ghr:
           name: publish_ghr
           path: ~/workdir/artifacts/
-          filters:
-            branches:
-              only:
-                - master
           context: CodacyGitHub
           requires:
             - publish
