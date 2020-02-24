@@ -1,0 +1,10 @@
+description: Send coverage report to Codacy
+usage:
+  jobs:
+    codacy-coverage-report:
+      machine: true
+      steps:
+        - checkout
+        - run: <run-coverage-command>
+        - coverage-reporter/send_report
+  version: 2.1

@@ -27,9 +27,9 @@ jobs:
       - run:
           name: Pack orb
           command: |
-            echo ""                                                       >> orbs/jobs/send_report.yml
-            echo "environment:"                                           >> orbs/jobs/send_report.yml
-            echo "  - CODACY_COVERAGE_REPORTER_VERSION: $(cat .version)"  >> orbs/jobs/send_report.yml
+            echo ""                                                       >> orbs/examples/codacy-coverage-report.yml
+            echo "  orbs:"                                                  >> orbs/examples/codacy-coverage-report.yml
+            echo "    coverage-reporter: codacy/coverage-reporter@$(cat .version)"  >> orbs/examples/codacy-coverage-report.yml
             circleci config pack orbs > orb.yml
       - run:
           name: Validate orb

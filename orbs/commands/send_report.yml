@@ -1,0 +1,12 @@
+description: "Download Codacy's coverage reporter and run it"
+
+parameters:
+  tool_version:
+    type: string
+    default: latest
+    description: "Specify Codacy's coverage reporter tool version"
+steps:
+  - run:
+      command: |
+        export CODACY_REPORTER_VERSION=<< parameters.tool_version >>
+        bash <(curl -Ls https://coverage.codacy.com/get.sh)
