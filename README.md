@@ -52,17 +52,26 @@ bash <(curl -Ls https://coverage.codacy.com/get.sh)
 
 If you want to specify a coverage reporter version, use `CODACY_REPORTER_VERSION` environment variable.
 
-This command assumes the coverage reports follow a name convention:
 
-* JaCoCo &rarr; jacoco*.xml
-* Cobertura &rarr; cobertura.xml
-* LCOV &rarr; lcov.info | lcov.dat | *.lcov
-* Clover &rarr; clover.xml
-* DotCover &rarr; dotcover.xml
-* OpenCover &rarr; opencover.xml
-* PHPUnit XML &rarr; coverage-xml/index.xml
+#### Supported formats
 
-Otherwise, you must define the report's location with the flag `-r`.
+The following table contains the formats supported and which coverage tools generate them:
+
+| Language   | Coverage tools (examples) | Formats   | Filename |
+| ---        | ---                       | ---       | ---      |
+| Java       | [JaCoCo](http://eclemma.org/jacoco/) <br> [Cobertura](http://cobertura.github.io/cobertura/) | JaCoCo <br> Cobertura | jacoco*.xml <br> cobertura.xml |
+| Scala      | [sbt-jacoco](https://www.scala-sbt.org/sbt-jacoco/) <br> [scoverage](http://scoverage.org/) | JaCoCo <br> Cobertura | jacoco*.xml <br> cobertura.xml |
+| Javascript | [Istanbul](https://github.com/gotwarlost/istanbul) <br> [Poncho](https://github.com/deepsweet/poncho) <br> [Mocha](http://mochajs.org/) + [Blanket.js](https://github.com/alex-seville/blanket) | LCOV | lcov.info, lcov.dat, *.lcov |
+| Python     | [Coverage.py](https://coverage.readthedocs.io/en/coverage-5.0.3/) | Cobertura                 | cobertura.xml |
+| PHP        | [PHPUnit](https://phpunit.readthedocs.io/en/8.5/code-coverage-analysis.html) | PHPUnit XML <br> [Clover](https://confluence.atlassian.com/clover/using-clover-for-php-420973033.html) | coverage-xml/index.xml <br> clover.xml |
+| Ruby       | [SimpleCov](https://github.com/colszowka/simplecov) | [Cobertura](https://github.com/dashingrocket/simplecov-cobertura) <br> [LCOV](https://github.com/fortissimo1997/simplecov-lcov) | cobertura.xml <br> lcov.info, lcov.dat, *.lcov |
+| C#         | [OpenCover](https://github.com/OpenCover/opencover) <br> [DotCover CLI](https://www.jetbrains.com/dotcover/) | OpenCover <br> DotCover-DetailedXML | opencover.xml <br> dotcover.xml |
+
+You can use this script with any of the listed coverage formats, even if your language or coverage tool of choice is not in the table above.
+If your coverage reports are in a different format you can use a format converter, such as
+[ReportGenerator](https://danielpalme.github.io/ReportGenerator/), to generate a supported format.
+
+This command assumes the coverage reports filename follow the name convention. Otherwise, you must define the report's location with the flag `-r`.
 
 ### Running Codacy Coverage Reporter by manually downloading the binary
 
