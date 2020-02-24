@@ -309,7 +309,7 @@ Example:
       send-coverage-report:
         steps:
           - checkout
-          - run: <run-coverage-command>
+          - "run commands to generate the coverage result"
           - coverage-reporter/send_report
     workflows:
       version: 2

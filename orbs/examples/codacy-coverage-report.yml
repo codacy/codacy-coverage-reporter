@@ -2,9 +2,10 @@ description: Send coverage report to Codacy
 usage:
   jobs:
     codacy-coverage-report:
-      machine: true
+      docker:
+        - image: circleci/openjdk:8-jdk
       steps:
         - checkout
-        - run: <run-coverage-command>
+        - "run commands to generate the coverage result"
         - coverage-reporter/send_report
   version: 2.1
