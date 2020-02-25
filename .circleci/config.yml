@@ -66,7 +66,7 @@ workflows:
       - pack_and_validate:
           context: CodacyCircleCI
           requires:
-            - codacy/checkout_and_version            
+            - codacy/checkout_and_version
       - codacy/sbt:
           name: populate_cache
           cmd: sbt ";set scalafmtUseIvy in ThisBuild := false;update"
@@ -94,9 +94,9 @@ workflows:
           requires:
             - compile
       - codacy/sbt:
-          name: publish
+          name: package_artifacts
           cmd: |
-            sbt ";clean;retrieveGPGKeys;publishSigned;sonatypeRelease"
+            sbt "assembly"
 
             ./scripts/publish-native.sh -n codacy-coverage-reporter -m com.codacy.CodacyCoverageReporter -t docker $(cat .version)
 
@@ -113,7 +113,7 @@ workflows:
                 - master
       - publish_circleci_artifacts:
           requires:
-            - publish
+            - package_artifacts
       #TODO: Add bintray orb
       - codacy/shell:
           name: publish_bintray
@@ -127,13 +127,13 @@ workflows:
                 - master
           context: CodacyBintray
           requires:
-            - publish
+            - package_artifacts
       - codacy/publish_ghr:
           name: publish_ghr
           path: ~/workdir/artifacts/
           context: CodacyGitHub
           requires:
-            - publish
+            - package_artifacts
       - publish_dev:
           context: CodacyCircleCI
           requires:
