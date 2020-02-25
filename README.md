@@ -43,7 +43,6 @@ export CODACY_USERNAME=%Username%
 
 Additional requirements:
 
-- jq
 - curl
 
 ```bash
