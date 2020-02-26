@@ -31,20 +31,13 @@ assemblyMergeStrategy in assembly := {
   case m if m.toLowerCase.matches("meta-inf.*\\.sf$") => MergeStrategy.discard
   case _ => MergeStrategy.first
 }
+test in assembly := {}
 crossPaths := false
-artifact in (Compile, assembly) := {
-  val art = (artifact in (Compile, assembly)).value
-  art.withClassifier(Some("assembly"))
-}
-addArtifact(artifact in (Compile, assembly), assembly)
 
 // HACK: Since we are only using the public resolvers we need to remove the private for it to not fail
 resolvers ~= {
   _.filterNot(_.name.toLowerCase.contains("codacy"))
 }
-
-// HACK: This setting is not picked up properly from the plugin
-pgpPassphrase := Option(System.getenv("SONATYPE_GPG_PASSPHRASE")).map(_.toCharArray)
 
 description := "CLI to send coverage reports to Codacy through the API"
 
@@ -54,8 +47,6 @@ scmInfo := Some(
     "scm:git:git@github.com:codacy/codacy-coverage-reporter.git"
   )
 )
-
-publicMvnPublish
 
 fork in Test := true
 cancelable in Global := true
