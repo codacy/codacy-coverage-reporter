@@ -1,4 +1,9 @@
-#!/usr/bin/env bash
+#!/bin/sh
+path_to_bash=$(which bash)
+is_running_in_bash=$(ps aux | grep $0 | grep bash | wc -l)
+if [ -x "$path_to_bash" ] && [ $is_running_in_bash = 0 ]; then
+    exec bash "$0" "$@";
+fi
 
 set -e +o pipefail
 
@@ -101,7 +106,7 @@ codacy_reporter_jar_start_cmd() {
 
 run_command=""
 
-if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+if [ "$(expr substr $(uname -s) 1 5)" = "Linux" ]; then
     codacy_reporter_native_start_cmd
 else
     codacy_reporter_jar_start_cmd
