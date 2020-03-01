@@ -1,9 +1,4 @@
-#!/bin/sh
-path_to_bash=$(which bash)
-is_running_in_bash=$(ps aux | grep $0 | grep bash | wc -l)
-if [ -x "$path_to_bash" ] && [ $is_running_in_bash = 0 ]; then
-    exec bash "$0" "$@";
-fi
+#!/usr/bin/env bash
 
 set -e +o pipefail
 
@@ -82,7 +77,7 @@ download_coverage_reporter() {
     if [ ! -f "$codacy_reporter" ]
     then
         log "$i" "Download the codacy reporter $1... ($CODACY_REPORTER_VERSION)"
-        curl -LS -o "$codacy_reporter" "$(curl -LSs https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/$CODACY_REPORTER_VERSION | grep browser_download_url | grep $1 | cut -d '"' -f 4)"
+        curl -# -LS -o "$codacy_reporter" "$(curl -LSs https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/$CODACY_REPORTER_VERSION | grep browser_download_url | grep $1 | cut -d '"' -f 4)"
     else
         log "$i" "Using codacy reporter $1 from cache"
     fi
@@ -95,6 +90,7 @@ run() {
 codacy_reporter_native_start_cmd() {
     codacy_reporter="$codacy_temp_folder/codacy-coverage-reporter"    
     download_coverage_reporter "linux"
+    chmod +x $codacy_reporter
     run_command="$codacy_reporter"
 }
 
@@ -105,8 +101,8 @@ codacy_reporter_jar_start_cmd() {
 }
 
 run_command=""
-
-if [ "$(expr substr $(uname -s) 1 5)" = "Linux" ]; then
+unamestr=`uname`
+if [ "$unamestr" = "Linux" ]; then
     codacy_reporter_native_start_cmd
 else
     codacy_reporter_jar_start_cmd
