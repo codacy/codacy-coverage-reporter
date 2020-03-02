@@ -28,6 +28,10 @@ Example:
         jobs:
           - send-coverage-report
 
+## GitHub Action
+
+If your are using GitHub Actions check out the [codacy/coverage-coverage-reporter action](https://github.com/codacy/codacy-coverage-reporter-action#codacy-coverage-reporter-action).
+
 ## Community supported alternatives
 
 ### Maven plugin

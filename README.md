@@ -42,6 +42,8 @@ bash <(curl -Ls https://coverage.codacy.com/get.sh)
 
 Using CircleCI? Check out the [codacy/coverage-reporter orb](docs/installation.md#circleci-orb).
 
+Using GitHub Actions? Check out the [codacy/coverage-coverage-reporter action](https://github.com/codacy/codacy-coverage-reporter-action#codacy-coverage-reporter-action).
+
 If the automated script does not cover your use case, [check the manual installation methods](docs/installation.md).
 
 ## Supported formats
