@@ -73,19 +73,49 @@ if [ -z "$CODACY_REPORTER_VERSION" ]; then
     CODACY_REPORTER_VERSION="latest"
 fi
 
-codacy_reporter="$codacy_temp_folder/codacy-coverage-reporter-assembly.jar"
+download_coverage_reporter() {
+    if [ ! -f "$codacy_reporter" ]
+    then
+        log "$i" "Download the codacy reporter $1... ($CODACY_REPORTER_VERSION)"
+        curl -# -LS -o "$codacy_reporter" "$(curl -LSs https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/$CODACY_REPORTER_VERSION | grep browser_download_url | grep $1 | cut -d '"' -f 4)"
+    else
+        log "$i" "Using codacy reporter $1 from cache"
+    fi
+}
 
-if [ ! -f "$codacy_reporter" ]
-then
-    log "$i" "Download the codacy reporter... ($CODACY_REPORTER_VERSION)"
-    curl -LS -o "$codacy_reporter" "$(curl -LSs https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/$CODACY_REPORTER_VERSION | grep browser_download_url | grep jar | cut -d '"' -f 4)"
+run() {
+    eval $1
+}
+
+codacy_reporter_native_start_cmd() {
+    codacy_reporter="$codacy_temp_folder/codacy-coverage-reporter"    
+    download_coverage_reporter "linux"
+    chmod +x $codacy_reporter
+    run_command="$codacy_reporter"
+}
+
+codacy_reporter_jar_start_cmd() {
+    codacy_reporter="$codacy_temp_folder/codacy-coverage-reporter-assembly.jar"
+    download_coverage_reporter "jar"
+    run_command="java -jar \"$codacy_reporter\""
+}
+
+run_command=""
+unamestr=`uname`
+if [ "$unamestr" = "Linux" ]; then
+    codacy_reporter_native_start_cmd
 else
-    log "$i" "Using codacy reporter from cache"
+    codacy_reporter_jar_start_cmd
+fi
+
+if [ -z "$run_command" ]
+then 
+    fatal "Codacy coverage reporter command could not be found."
 fi
 
 if [ "$#" -gt 0 ];
 then
-    java -jar "$codacy_reporter" $@
+    run "$run_command $@"
 else
-    java -jar "$codacy_reporter" report
+    run "$run_command \"report\""
 fi
