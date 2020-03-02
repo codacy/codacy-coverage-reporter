@@ -100,7 +100,7 @@ BUILD_CMD+="cd "$PWD" && $(build_cmd ${BINARY_NAME} ${APP_MAIN_CLASS} "$(app_cla
 echo "Going to run ${BUILD_CMD}"
 
 INSTALL_UPX="cd $PWD && yum install -y wget && yum install -y xz && curl -s https://api.github.com/repos/upx/upx/releases/latest | grep \"browser_download_url.*amd64_linux.tar.xz\" | cut -d '\"' -f 4 | wget -qi - -O upx-linux.tar.xz && tar xf upx-linux.tar.xz && ls && cp *amd64_linux/upx ."
-COMPRESS_USING_UPX="./upx ${BINARY_NAME} && rm -rf upx*"
+COMPRESS_USING_UPX="./upx --lzma ${BINARY_NAME} && rm -rf upx*"
 
 case "$TARGET" in
   native)
