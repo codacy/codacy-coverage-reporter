@@ -84,7 +84,7 @@ download_coverage_reporter() {
 }
 
 run() {
-    eval $1
+    eval "$@"
 }
 
 codacy_reporter_native_start_cmd() {
