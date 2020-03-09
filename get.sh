@@ -73,11 +73,16 @@ if [ -z "$CODACY_REPORTER_VERSION" ]; then
     CODACY_REPORTER_VERSION="latest"
 fi
 
+download_url() {
+    grep browser_download_url | grep $1 | cut -d '"' -f 4
+}
+
 download_using_wget_or_curl() {
+    api_url="https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/$CODACY_REPORTER_VERSION"
     if [ -x "$(which curl)" ]; then
-        curl -# -LS -o "$codacy_reporter" "$(curl -LSs https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/$CODACY_REPORTER_VERSION | grep browser_download_url | grep $1 | cut -d '"' -f 4)"
+        curl -# -LS -o "$codacy_reporter" "$(curl -LSs $api_url | download_url $1)"
     elif [ -x "$(which wget)" ] ; then
-        wget -O "$codacy_reporter" "$(wget -O -  https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/$CODACY_REPORTER_VERSION | grep browser_download_url | grep $1 | cut -d '"' -f 4)"
+        wget -O "$codacy_reporter" "$(wget -O - $api_url | download_url $1)"
     else
         fatal "Could not find curl or wget, please install one."
     fi
