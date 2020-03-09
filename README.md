@@ -32,7 +32,11 @@ Or use the flag: `--codacy-api-base-url <Codacy_instance_URL>:16006`.
 
 ## Running Codacy Coverage Reporter
 
-Requirements: bash, curl, glibc.
+Requirements: 
+
+- bash
+- curl or wget
+- glibc
 
 ```bash
 bash <(curl -Ls https://coverage.codacy.com/get.sh)
