@@ -32,21 +32,46 @@ Or use the flag: `--codacy-api-base-url <Codacy_instance_URL>:16006`.
 
 ## Running Codacy Coverage Reporter
 
-Requirements: 
+### Requirements 
 
-- bash
-- curl or wget
-- glibc
+- `bash` or `sh` (Use `bash` on Ubuntu)
+- `curl` or `wget`
+- `glibc`
 
+### _Using curl_
 ```bash
 bash <(curl -Ls https://coverage.codacy.com/get.sh)
 ```
 
-> To specify a coverage reporter version, use `CODACY_REPORTER_VERSION` environment variable. You can find all versions in the [Releases tab](https://github.com/codacy/codacy-coverage-reporter/releases).
+### _Using wget_
+```bash
+bash <(wget -q -O - https://coverage.codacy.com/get.sh)
+```
 
-Using CircleCI? Check out the [codacy/coverage-reporter orb](docs/installation.md#circleci-orb).
+### _On Alpine Linux_
+```sh
+wget -qO - https://coverage.codacy.com/get.sh | sh
+```
+
+#### _On Alpine Linux passsing command line options_
+```sh
+wget -qO - https://coverage.codacy.com/get.sh | sh -s report -l Java -r report1.xml --partial
+```
+
+### Choose a specific version
+The script uses by default the latest version.
+
+If you want to specify a coverage reporter version, use `CODACY_REPORTER_VERSION` environment variable.
+
+You can find all versions in the [Releases tab](https://github.com/codacy/codacy-coverage-reporter/releases).
+
+### Manual Installation
 
 If the automated script does not cover your use case, [check the manual installation methods](docs/installation.md).
+
+## CircleCI Orb
+
+Using CircleCI? Check out the [codacy/coverage-reporter orb](docs/installation.md#circleci-orb).
 
 ## Supported formats
 
