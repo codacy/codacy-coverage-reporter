@@ -234,7 +234,7 @@ class ReportRules(coverageServices: => CoverageServices) extends StrictLogging {
     */
   private[rules] def handleFailedResponse(response: FailedResponse): String = {
     if (response.message.contains("not found")) {
-      """Request URL not found. (Check if the project token or the API base URL are valid)"""
+      """Request URL not found. (Check if the token you are using or the API base URL are valid)"""
     } else {
       response.message
     }
