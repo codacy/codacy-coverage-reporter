@@ -96,9 +96,8 @@ workflows:
       - codacy/sbt:
           name: package_artifacts
           cmd: |
-            sbt "assembly"
-
-            ./scripts/publish-native.sh -n codacy-coverage-reporter -m com.codacy.CodacyCoverageReporter -t docker $(cat .version)
+            sbt assembly
+            ./scripts/build-publish-native.sh
 
             mkdir -p ~/workdir/artifacts/
             mv codacy-coverage-reporter-linux-$(cat .version) ~/workdir/artifacts/

@@ -50,3 +50,19 @@ scmInfo := Some(
 
 fork in Test := true
 cancelable in Global := true
+
+enablePlugins(GraalVMNativeImagePlugin)
+graalVMNativeImageGraalVersion := Some("19.3.0-java8")
+graalVMNativeImageOptions := Seq(
+  "--enable-http",
+  "--enable-https",
+  "--enable-url-protocols=http,https,file,jar",
+  "--enable-all-security-services",
+  "-H:+JNI",
+  "--static",
+  "-H:IncludeResourceBundles=com.sun.org.apache.xerces.internal.impl.msg.XMLMessages",
+  "-H:+ReportExceptionStackTraces",
+  "--no-fallback",
+  "--initialize-at-build-time",
+  "--report-unsupported-elements-at-runtime"
+)
