@@ -111,7 +111,7 @@ workflows:
           name: create_artifacts
           cmd: |
             sbt assembly
-            sbt 'show graalvm-native-image:packageBin'
+            sbt graalvm-native-image:packageBin
           persist_to_workspace: true
           requires:
             - test_and_coverage
