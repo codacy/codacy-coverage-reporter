@@ -57,6 +57,19 @@ jobs:
           name: Publish final orb
           command: circleci orb publish orb.yml codacy/coverage-reporter@$(cat .version) --token $CIRCLE_TOKEN
 
+  package_artifacts:
+    docker:
+      - image: hairyhenderson/upx:3.94
+    working_directory: ~/workdir
+    steps:
+      - run: apk add ca-certificates
+      - attach_workspace:
+          at: ~/workdir
+      - run: |
+          mkdir -p ~/workdir/artifacts/
+          mv ~/workdir/target/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/artifacts/
+          upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-linux-$(cat .version) ~/workdir/target/graalvm-native-image/codacy-coverage-reporter
+
 workflows:
   version: 2
   compile_test_deploy:
@@ -94,26 +107,22 @@ workflows:
           requires:
             - compile
       - codacy/sbt:
-          name: package_artifacts
+          name: create_artifacts
           cmd: |
-            sbt "assembly"
-
-            ./scripts/publish-native.sh -n codacy-coverage-reporter -m com.codacy.CodacyCoverageReporter -t docker $(cat .version)
-
-            mkdir -p ~/workdir/artifacts/
-            mv codacy-coverage-reporter-linux-$(cat .version) ~/workdir/artifacts/
-            mv ~/workdir/target/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/artifacts/
+            sbt "assembly;graalvm-native-image:packageBin"
           persist_to_workspace: true
           requires:
             - test_and_coverage
-          context: CodacyAWS
+      - package_artifacts:
+          requires:
+            - create_artifacts
+      - publish_circleci_artifacts:
+          requires:
+            - package_artifacts
           filters:
             branches:
               only:
                 - master
-      - publish_circleci_artifacts:
-          requires:
-            - package_artifacts
       #TODO: Add bintray orb
       - codacy/shell:
           name: publish_bintray
@@ -132,6 +141,10 @@ workflows:
           name: publish_ghr
           path: ~/workdir/artifacts/
           context: CodacyGitHub
+          filters:
+            branches:
+              only:
+                - master
           requires:
             - package_artifacts
       - publish_dev:
