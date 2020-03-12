@@ -52,7 +52,7 @@ fork in Test := true
 cancelable in Global := true
 
 enablePlugins(GraalVMNativeImagePlugin)
-graalVMNativeImageGraalVersion := Some("19.3.0-java8")
+graalVMNativeImageGraalVersion := Some("20.0.0-java8")
 graalVMNativeImageOptions := Seq(
   "--enable-http",
   "--enable-https",
