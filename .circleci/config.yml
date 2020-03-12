@@ -69,6 +69,10 @@ jobs:
           mkdir -p ~/workdir/artifacts/
           mv ~/workdir/target/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/artifacts/
           upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-linux-$(cat .version) ~/workdir/target/graalvm-native-image/codacy-coverage-reporter
+      - persist_to_workspace:
+          root: ~/workdir
+          paths:
+            - "*"
 
 workflows:
   version: 2
