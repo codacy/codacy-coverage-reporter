@@ -78,18 +78,24 @@ jobs:
     docker:
       - image: alpine
     working_directory: ~/workdir
+    parameters:
+      code:
+        type: integer
+        default: 0
+      token:
+        type: string
     steps:
       - run: |
-          apk --no-cache add ca-certificates wget
           wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
           wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.31-r0/glibc-2.31-r0.apk
           apk add glibc-2.31-r0.apk
       - attach_workspace:
           at: ~/workdir
       - run: |
-          export CODACY_PROJECT_TOKEN=$TEST_CODACY_PROJECT_TOKEN
+          export CODACY_PROJECT_TOKEN=<< parameters.token >>
           export CODACY_TOOL_PATH=$TEST_CODACY_TOOL_PATH
           sh get.sh report --commit-uuid $TEST_COMMIT_UUID -r $TEST_CODACY_REPORT_PATH
+          if [ $? -eq << parameters.code >> ]; then exit 1; fi
 
 workflows:
   version: 2
@@ -135,14 +141,24 @@ workflows:
           requires:
             - test_and_coverage
       - test_coverage_script:
+          name: test_coverage_success
+          token: $TEST_CODACY_PROJECT_TOKEN
+          requires:
+            - create_artifacts
+      - test_coverage_script:
+          name: test_coverage_failure
+          code: 1
+          token: "invalid token"
           requires:
             - create_artifacts
       - package_artifacts:
           requires:
-            - test_coverage_script
+            - test_coverage_success
+            - test_coverage_failure
       - publish_circleci_artifacts:
           requires:
-            - test_coverage_script
+            - test_coverage_success
+            - test_coverage_failure
           filters:
             branches:
               only:
