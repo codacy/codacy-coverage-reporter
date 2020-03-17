@@ -94,6 +94,7 @@ jobs:
       - run: |
           export CODACY_PROJECT_TOKEN=<< parameters.token >>
           export CODACY_TOOL_PATH=$TEST_CODACY_TOOL_PATH
+          set +e
           sh get.sh report --commit-uuid $TEST_COMMIT_UUID -r $TEST_CODACY_REPORT_PATH
           if [ $? -ne << parameters.code >> ]; then echo "Found an unexpected status code: $?"; exit 1; fi
 
