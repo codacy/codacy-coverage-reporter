@@ -28,3 +28,4 @@ codacy-coverage-reporter-darwin-*
 classes/
 src/test/resources/codacy-coverage.json
 /.codacy-coverage/
+metals.sbt

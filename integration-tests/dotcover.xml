@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Root CoveredStatements="25" TotalStatements="33" CoveragePercent="76" ReportType="DetailedXml" DotCoverVersion="2019.3.1">
+  <FileIndices>
+    <File Index="1" Name="/app/Tests/FooBarTests.cs" ChecksumAlgorithm="SHA256" Checksum="5E24F8E80A97C4CF29C7253739BAFA54604E404D66EB9CB7FAF80ED298B3BA14" />
+    <File Index="2" Name="/app/Experiment/Program.cs" ChecksumAlgorithm="SHA256" Checksum="1B3D9F852A896CD8EBF786BC13EE242891EA00F49600B94CD7833C4AA1DE86B3" />
+    <File Index="3" Name="/app/Experiment/Bar.cs" ChecksumAlgorithm="SHA256" Checksum="147393855222EF85D83C298103D1BA96733F0FAD96CB4B3E7585FD53E09EEB8E" />
+    <File Index="4" Name="/app/Experiment/Foo.cs" ChecksumAlgorithm="SHA256" Checksum="AA0B94F0034959DE2BFD9481E6D37F1FB68DAB0C525F379B153BCDDDEFCE1873" />
+    <File Index="5" Name="/app/Experiment/FooBar.cs" ChecksumAlgorithm="SHA256" Checksum="453C1111E89058E714D1B8C0CC619FC07B2B463A9B597ACB37F397DAC8B048C8" />
+  </FileIndices>
+  <Assembly Name="Tests" CoveredStatements="13" TotalStatements="13" CoveragePercent="100">
+    <Namespace Name="Tests" CoveredStatements="13" TotalStatements="13" CoveragePercent="100">
+      <Type Name="FooBarTests" CoveredStatements="13" TotalStatements="13" CoveragePercent="100">
+        <Method Name="TestBar():System.Void" CoveredStatements="4" TotalStatements="4" CoveragePercent="100">
+          <Statement FileIndex="1" Line="18" Column="9" EndLine="18" EndColumn="10" Covered="True" />
+          <Statement FileIndex="1" Line="19" Column="13" EndLine="19" EndColumn="33" Covered="True" />
+          <Statement FileIndex="1" Line="21" Column="13" EndLine="21" EndColumn="44" Covered="True" />
+          <Statement FileIndex="1" Line="22" Column="9" EndLine="22" EndColumn="10" Covered="True" />
+        </Method>
+        <Method Name="TestFoo():System.Void" CoveredStatements="4" TotalStatements="4" CoveragePercent="100">
+          <Statement FileIndex="1" Line="10" Column="9" EndLine="10" EndColumn="10" Covered="True" />
+          <Statement FileIndex="1" Line="11" Column="13" EndLine="11" EndColumn="33" Covered="True" />
+          <Statement FileIndex="1" Line="13" Column="13" EndLine="13" EndColumn="26" Covered="True" />
+          <Statement FileIndex="1" Line="14" Column="9" EndLine="14" EndColumn="10" Covered="True" />
+        </Method>
+        <Method Name="TestFooBar():System.Void" CoveredStatements="5" TotalStatements="5" CoveragePercent="100">
+          <Statement FileIndex="1" Line="26" Column="9" EndLine="26" EndColumn="10" Covered="True" />
+          <Statement FileIndex="1" Line="27" Column="13" EndLine="27" EndColumn="54" Covered="True" />
+          <Statement FileIndex="1" Line="29" Column="13" EndLine="29" EndColumn="61" Covered="True" />
+          <Statement FileIndex="1" Line="30" Column="13" EndLine="30" EndColumn="59" Covered="True" />
+          <Statement FileIndex="1" Line="31" Column="9" EndLine="31" EndColumn="10" Covered="True" />
+        </Method>
+      </Type>
+    </Namespace>
+  </Assembly>
+  <Assembly Name="experiments" CoveredStatements="12" TotalStatements="20" CoveragePercent="60">
+    <Namespace Name="Experiment" CoveredStatements="12" TotalStatements="17" CoveragePercent="71">
+      <Type Name="Bar" CoveredStatements="4" TotalStatements="7" CoveragePercent="57">
+        <Method Name="RunBar(System.Boolean):System.Boolean" CoveredStatements="4" TotalStatements="7" CoveragePercent="57">
+          <Statement FileIndex="3" Line="8" Column="9" EndLine="8" EndColumn="10" Covered="True" />
+          <Statement FileIndex="3" Line="9" Column="13" EndLine="9" EndColumn="29" Covered="True" />
+          <Statement FileIndex="3" Line="10" Column="13" EndLine="10" EndColumn="14" Covered="False" />
+          <Statement FileIndex="3" Line="11" Column="17" EndLine="11" EndColumn="46" Covered="False" />
+          <Statement FileIndex="3" Line="12" Column="13" EndLine="12" EndColumn="14" Covered="False" />
+          <Statement FileIndex="3" Line="14" Column="13" EndLine="14" EndColumn="25" Covered="True" />
+          <Statement FileIndex="3" Line="15" Column="9" EndLine="15" EndColumn="10" Covered="True" />
+        </Method>
+      </Type>
+      <Type Name="Foo" CoveredStatements="3" TotalStatements="3" CoveragePercent="100">
+        <Method Name="RunFoo():System.Void" CoveredStatements="3" TotalStatements="3" CoveragePercent="100">
+          <Statement FileIndex="4" Line="8" Column="9" EndLine="8" EndColumn="10" Covered="True" />
+          <Statement FileIndex="4" Line="9" Column="13" EndLine="10" EndColumn="39" Covered="True" />
+          <Statement FileIndex="4" Line="11" Column="9" EndLine="11" EndColumn="10" Covered="True" />
+        </Method>
+      </Type>
+      <Type Name="FooBar" CoveredStatements="5" TotalStatements="7" CoveragePercent="71">
+        <Type Name="InnerClass" CoveredStatements="5" TotalStatements="7" CoveragePercent="71">
+          <Method Name="RunInnerClass(System.String):System.Boolean" CoveredStatements="5" TotalStatements="7" CoveragePercent="71">
+            <Statement FileIndex="5" Line="9" Column="13" EndLine="9" EndColumn="14" Covered="True" />
+            <Statement FileIndex="5" Line="10" Column="17" EndLine="10" EndColumn="31" Covered="True" />
+            <Statement FileIndex="5" Line="13" Column="25" EndLine="13" EndColumn="38" Covered="True" />
+            <Statement FileIndex="5" Line="15" Column="25" EndLine="15" EndColumn="38" Covered="False" />
+            <Statement FileIndex="5" Line="17" Column="25" EndLine="17" EndColumn="37" Covered="True" />
+            <Statement FileIndex="5" Line="19" Column="25" EndLine="19" EndColumn="38" Covered="False" />
+            <Statement FileIndex="5" Line="21" Column="13" EndLine="21" EndColumn="14" Covered="True" />
+          </Method>
+        </Type>
+      </Type>
+    </Namespace>
+    <Namespace Name="experiments" CoveredStatements="0" TotalStatements="3" CoveragePercent="0">
+      <Type Name="Program" CoveredStatements="0" TotalStatements="3" CoveragePercent="0">
+        <Method Name="Main(System.String[]):System.Void" CoveredStatements="0" TotalStatements="3" CoveragePercent="0">
+          <Statement FileIndex="2" Line="8" Column="9" EndLine="8" EndColumn="10" Covered="False" />
+          <Statement FileIndex="2" Line="9" Column="13" EndLine="9" EndColumn="47" Covered="False" />
+          <Statement FileIndex="2" Line="10" Column="9" EndLine="10" EndColumn="10" Covered="False" />
+        </Method>
+      </Type>
+    </Namespace>
+  </Assembly>
+</Root>

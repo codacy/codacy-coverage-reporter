@@ -74,6 +74,23 @@ jobs:
           paths:
             - "*"
 
+  test_coverage_script:
+    docker:
+      - image: alpine
+    working_directory: ~/workdir
+    steps:
+      - run: |
+          apk --no-cache add ca-certificates wget
+          wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
+          wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.31-r0/glibc-2.31-r0.apk
+          apk add glibc-2.31-r0.apk
+      - attach_workspace:
+          at: ~/workdir
+      - run: |
+          export CODACY_PROJECT_TOKEN=$TEST_CODACY_PROJECT_TOKEN
+          export CODACY_TOOL_PATH=$TEST_CODACY_TOOL_PATH
+          sh get.sh report --commit-uuid $TEST_COMMIT_UUID -r $TEST_CODACY_REPORT_PATH
+
 workflows:
   version: 2
   compile_test_deploy:
@@ -117,12 +134,15 @@ workflows:
           persist_to_workspace: true
           requires:
             - test_and_coverage
-      - package_artifacts:
+      - test_coverage_script:
           requires:
             - create_artifacts
+      - package_artifacts:
+          requires:
+            - test_coverage_script
       - publish_circleci_artifacts:
           requires:
-            - package_artifacts
+            - test_coverage_script
           filters:
             branches:
               only:
