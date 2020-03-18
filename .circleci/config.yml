@@ -137,18 +137,16 @@ workflows:
           requires:
             - test_and_coverage
       - test_coverage_script:
-          name: test_coverage_success
+          name: it_test_coverage_script
           token: $TEST_CODACY_PROJECT_TOKEN
           requires:
             - create_artifacts
       - package_artifacts:
           requires:
-            - test_coverage_success
-            - test_coverage_failure
+            - it_test_coverage_script
       - publish_circleci_artifacts:
           requires:
-            - test_coverage_success
-            - test_coverage_failure
+            - it_test_coverage_script
           filters:
             branches:
               only:
