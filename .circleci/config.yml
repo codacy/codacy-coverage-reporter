@@ -99,7 +99,7 @@ jobs:
       - attach_workspace:
           at: ~/workdir
       - run: |
-          export CODACY_PROJECT_TOKEN=<< parameters.token >>
+          export CODACY_PROJECT_TOKEN=$TEST_CODACY_PROJECT_TOKEN
           export CODACY_TOOL_PATH=$TEST_CODACY_TOOL_PATH
           sh get.sh report --commit-uuid $TEST_COMMIT_UUID -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
 
@@ -148,7 +148,6 @@ workflows:
             - test_and_coverage
       - test_coverage_script_2:
           name: it_test_coverage_script
-          token: $TEST_CODACY_PROJECT_TOKEN
           requires:
             - create_artifacts
       - package_artifacts:
