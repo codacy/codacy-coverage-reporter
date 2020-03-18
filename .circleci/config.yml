@@ -79,9 +79,6 @@ jobs:
       - image: alpine
     working_directory: ~/workdir
     parameters:
-      code:
-        type: integer
-        default: 0
       token:
         type: string
     steps:
@@ -94,9 +91,7 @@ jobs:
       - run: |
           export CODACY_PROJECT_TOKEN=<< parameters.token >>
           export CODACY_TOOL_PATH=$TEST_CODACY_TOOL_PATH
-          set +e
           sh get.sh report --commit-uuid $TEST_COMMIT_UUID -r $TEST_CODACY_REPORT_PATH --skip-send
-          if [ $? -ne << parameters.code >> ]; then echo "Found an unexpected status code: $?"; exit 1; fi
 
 workflows:
   version: 2
@@ -144,12 +139,6 @@ workflows:
       - test_coverage_script:
           name: test_coverage_success
           token: $TEST_CODACY_PROJECT_TOKEN
-          requires:
-            - create_artifacts
-      - test_coverage_script:
-          name: test_coverage_failure
-          code: 1
-          token: "invalid token"
           requires:
             - create_artifacts
       - package_artifacts:
