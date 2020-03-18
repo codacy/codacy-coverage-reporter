@@ -4,9 +4,7 @@ import java.io.File
 import java.nio.file.Files
 
 import com.codacy.api.CoverageReport
-import com.codacy.api.client.{FailedResponse, SuccessfulResponse}
 import com.codacy.api.helpers.FileHelper
-import com.codacy.api.service.CoverageServices
 import com.codacy.model.configuration.{
   ApiTokenAuthenticationConfig,
   BaseConfig,
@@ -18,11 +16,12 @@ import com.codacy.parsers.CoverageParser
 import com.codacy.transformation.PathPrefixer
 import com.typesafe.scalalogging.StrictLogging
 import com.codacy.plugins.api.languages.Languages
+import com.codacy.repositories.CoverageRepository
 import com.codacy.rules.commituuid.CommitUUIDProvider
 
 import scala.collection.JavaConverters._
 
-class ReportRules(coverageServices: => CoverageServices) extends StrictLogging {
+class ReportRules(coverageRepository: => CoverageRepository) extends StrictLogging {
 
   private val rootProjectDir = new File(System.getProperty("user.dir"))
   private val rootProjectDirIterator = Files
@@ -123,20 +122,13 @@ class ReportRules(coverageServices: => CoverageServices) extends StrictLogging {
       commitUUID: String,
       file: File
   ) = {
-    val coverageResponse = config.baseConfig.authentication match {
+    config.baseConfig.authentication match {
       case _: ProjectTokenAuthenticationConfig =>
-        coverageServices.sendReport(commitUUID, language, report, config.partial)
+        coverageRepository.addReport(commitUUID, language, report, config.partial)
 
       case ApiTokenAuthenticationConfig(_, username, projectName) =>
-        coverageServices.sendReportWithProjectName(username, projectName, commitUUID, language, report, config.partial)
-    }
-    coverageResponse match {
-      case SuccessfulResponse(value) =>
-        logger.info(s"Coverage data uploaded. ${value.success}")
-        Right(())
-      case failed: FailedResponse =>
-        val message = handleFailedResponse(failed)
-        Left(s"Failed to upload report ${file.getAbsolutePath}: $message")
+        coverageRepository
+          .addReportWithProjectName(username, projectName, commitUUID, language, report, config.partial)
     }
   }
 
@@ -225,21 +217,6 @@ class ReportRules(coverageServices: => CoverageServices) extends StrictLogging {
     logger.info("Uploading coverage data...")
   }
 
-  /**
-    * Handle failed response
-    *
-    * This function handle failed response and transform it to a user readable message.
-    * @param response failed response
-    * @return user readable message
-    */
-  private[rules] def handleFailedResponse(response: FailedResponse): String = {
-    if (response.message.contains("not found")) {
-      "Request URL not found. (Check if the token you are using or the API base URL are valid)"
-    } else {
-      response.message
-    }
-  }
-
   private def transform(report: CoverageReport)(config: ReportConfig): CoverageReport = {
     val transformations = Set(new PathPrefixer(config.prefix))
     transformations.foldLeft(report) { (report, transformation) =>
@@ -249,11 +226,13 @@ class ReportRules(coverageServices: => CoverageServices) extends StrictLogging {
 
   def finalReport(config: FinalConfig): Either[String, String] = {
     withCommitUUID(config.baseConfig) { commitUUID =>
-      coverageServices.sendFinalNotification(commitUUID) match {
-        case SuccessfulResponse(value) =>
-          Right(s"Final coverage notification sent. ${value.success}")
-        case FailedResponse(message) =>
-          Left(s"Failed to send final coverage notification: $message")
+      config.baseConfig.authentication match {
+        case _: ProjectTokenAuthenticationConfig =>
+          coverageRepository.commitReports(commitUUID)
+
+        case ApiTokenAuthenticationConfig(_, username, projectName) =>
+          coverageRepository
+            .commitReportsWithProjectName(username, projectName, commitUUID)
       }
     }
   }

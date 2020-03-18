@@ -68,10 +68,13 @@ case class BaseCommandConfig(
     @Name("s") @ValueDescription("skip if token isn't defined")
     skip: Int @@ Counter = Tag.of(0),
     @Hidden
-    debug: Int @@ Counter = Tag.of(0)
+    debug: Int @@ Counter = Tag.of(0),
+    @Hidden
+    skipSend: Int @@ Counter = Tag.of(0) // skip send and write body to a file instead
 ) {
   val skipValue: Boolean = skip.## > 0
   val debugValue: Boolean = debug.## > 0
+  val skipSendValue: Boolean = skipSend.## > 0
 }
 
 object ConfigArgumentParsers {

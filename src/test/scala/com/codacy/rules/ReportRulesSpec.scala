@@ -9,6 +9,7 @@ import com.codacy.configuration.parser.{BaseCommandConfig, Report}
 import com.codacy.di.Components
 import com.codacy.model.configuration.{BaseConfig, CommitUUID, ProjectTokenAuthenticationConfig, ReportConfig}
 import com.codacy.plugins.api.languages.Languages
+import com.codacy.repositories.CoverageServiceRepository
 import org.mockito.scalatest.IdiomaticMockito
 import org.scalatest._
 
@@ -32,10 +33,16 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
 
   "codacyCoverage" should {
     val baseConfig =
-      BaseConfig(ProjectTokenAuthenticationConfig(projToken), apiBaseUrl, Some(commitUUID), debug = false)
+      BaseConfig(
+        ProjectTokenAuthenticationConfig(projToken),
+        apiBaseUrl,
+        Some(commitUUID),
+        debug = false,
+        skipSend = false
+      )
 
     def assertCodacyCoverage(coverageServices: CoverageServices, coverageReports: List[String], success: Boolean) = {
-      val reportRules = new ReportRules(coverageServices)
+      val reportRules = new ReportRules(new CoverageServiceRepository(coverageServices))
       val reportConfig =
         ReportConfig(
           baseConfig,
@@ -82,18 +89,6 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
       )
 
       assertCodacyCoverage(coverageServices, List("src/test/resources/dotcover-example.xml"), success = true)
-    }
-  }
-
-  "handleFailedResponse" should {
-    "provide a different message" in {
-      val notFoundMessage = FailedResponse("not found")
-      components.reportRules.handleFailedResponse(notFoundMessage) should not be notFoundMessage.message
-    }
-
-    "provide the same message" in {
-      val unknownErrorMessage = FailedResponse("unknown error")
-      components.reportRules.handleFailedResponse(unknownErrorMessage) should be(unknownErrorMessage.message)
     }
   }
 

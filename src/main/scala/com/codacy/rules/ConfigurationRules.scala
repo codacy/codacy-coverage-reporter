@@ -80,7 +80,8 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging 
         authConfig,
         baseConfig.codacyApiBaseUrl.getOrElse(getApiBaseUrl(sys.env)),
         baseConfig.commitUUID.map(CommitUUID),
-        baseConfig.debugValue
+        baseConfig.debugValue,
+        baseConfig.skipSendValue
       )
       validatedConfig <- validateBaseConfigUrl(baseConf)
     } yield {

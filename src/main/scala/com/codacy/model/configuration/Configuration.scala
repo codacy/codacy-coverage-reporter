@@ -33,7 +33,8 @@ case class BaseConfig(
     authentication: AuthenticationConfig,
     codacyApiBaseUrl: String,
     commitUUID: Option[CommitUUID],
-    debug: Boolean
+    debug: Boolean,
+    skipSend: Boolean
 )
 
 case class CommitUUID(value: String) extends AnyVal
