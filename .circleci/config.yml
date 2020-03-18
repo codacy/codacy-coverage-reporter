@@ -85,14 +85,15 @@ jobs:
           wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
           wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.31-r0/glibc-2.31-r0.apk
           apk add glibc-2.31-r0.apk
-      - run:
-          name: install dockerize
-          command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz && tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
-          environment:
-            DOCKERIZE_VERSION: v0.6.1
-      - run:
-          name: Wait for mock server
-          command: dockerize -wait http://localhost:1080 -timeout 1m
+#      - run:
+#          name: install dockerize
+#          command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz && tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+#          environment:
+#            DOCKERIZE_VERSION: v0.6.1
+#      - run:
+#          name: Wait for mock server
+#          command: dockerize -wait http://localhost:1080 -timeout 1m
+      - run: wget --retry-connrefused --method=PUT http://localhost:1080/mockserver/status
       - run:
           name: configure mock server
           command: wget --method=PUT --body-data="$(cat integration-tests/mock-server-config.json)" http://localhost:1080/mockserver/expectation
