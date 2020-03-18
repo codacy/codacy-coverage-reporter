@@ -93,12 +93,12 @@ jobs:
 #      - run:
 #          name: Wait for mock server
 #          command: dockerize -wait http://localhost:1080 -timeout 1m
+      - attach_workspace:
+          at: ~/workdir
       - run: wget --retry-connrefused --method=PUT http://localhost:1080/mockserver/status
       - run:
           name: configure mock server
           command: wget --method=PUT --body-data="$(cat integration-tests/mock-server-config.json)" http://localhost:1080/mockserver/expectation
-      - attach_workspace:
-          at: ~/workdir
       - run: |
           export CODACY_PROJECT_TOKEN=$TEST_CODACY_PROJECT_TOKEN
           export CODACY_TOOL_PATH=$TEST_CODACY_TOOL_PATH
