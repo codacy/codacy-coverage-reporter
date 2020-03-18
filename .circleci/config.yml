@@ -74,24 +74,34 @@ jobs:
           paths:
             - "*"
 
-  test_coverage_script:
+  test_coverage_script_2:
     docker:
       - image: alpine
+      - image: mockserver/mockserver
     working_directory: ~/workdir
-    parameters:
-      token:
-        type: string
     steps:
       - run: |
+          apk --no-cache add openssl wget
           wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
           wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.31-r0/glibc-2.31-r0.apk
           apk add glibc-2.31-r0.apk
+      - run:
+          name: install dockerize
+          command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+          environment:
+            DOCKERIZE_VERSION: v0.3.0
+      - run:
+          name: Wait for mock server
+          command: dockerize -wait tcp://localhost:1080 -timeout 1m
+      - run:
+          name: configure mock server
+          command: wget --method=PUT --body-data="$(cat integration-tests/mock-server-config.json)" http://localhost:1080/mockserver/expectation
       - attach_workspace:
           at: ~/workdir
       - run: |
           export CODACY_PROJECT_TOKEN=<< parameters.token >>
           export CODACY_TOOL_PATH=$TEST_CODACY_TOOL_PATH
-          sh get.sh report --commit-uuid $TEST_COMMIT_UUID -r $TEST_CODACY_REPORT_PATH --skip-send
+          sh get.sh report --commit-uuid $TEST_COMMIT_UUID -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
 
 workflows:
   version: 2
@@ -136,7 +146,7 @@ workflows:
           persist_to_workspace: true
           requires:
             - test_and_coverage
-      - test_coverage_script:
+      - test_coverage_script_2:
           name: it_test_coverage_script
           token: $TEST_CODACY_PROJECT_TOKEN
           requires:
