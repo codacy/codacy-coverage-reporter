@@ -81,26 +81,26 @@ jobs:
     working_directory: ~/workdir
     steps:
       - run:
-        name: install glibc
-        command: |
-          apk --no-cache add openssl wget
-          wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
-          wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.31-r0/glibc-2.31-r0.apk
-          apk add glibc-2.31-r0.apk
+          name: install glibc
+          command: |
+            apk --no-cache add openssl wget
+            wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
+            wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.31-r0/glibc-2.31-r0.apk
+            apk add glibc-2.31-r0.apk
       - attach_workspace:
           at: ~/workdir
       - run:
-        name: wait for mockserver
-        command: wget --retry-connrefused --method=PUT http://localhost:1080/mockserver/status
+          name: wait for mockserver
+          command: wget --retry-connrefused --method=PUT http://localhost:1080/mockserver/status
       - run:
           name: configure mock server
           command: wget --method=PUT --body-data="$(cat integration-tests/mock-server-config.json)" http://localhost:1080/mockserver/expectation
       - run:
-        name: test coverage reporting
-        command: |
-          export CODACY_PROJECT_TOKEN=$TEST_CODACY_PROJECT_TOKEN
-          export CODACY_TOOL_PATH=$TEST_CODACY_TOOL_PATH
-          sh get.sh report --commit-uuid $TEST_COMMIT_UUID -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
+          name: test coverage reporting
+          command: |
+            export CODACY_PROJECT_TOKEN=$TEST_CODACY_PROJECT_TOKEN
+            export CODACY_TOOL_PATH=$TEST_CODACY_TOOL_PATH
+            sh get.sh report --commit-uuid $TEST_COMMIT_UUID -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
 
   it_coverage_script_ubuntu:
     docker:
@@ -111,17 +111,17 @@ jobs:
       - attach_workspace:
           at: ~/workdir
       - run:
-        name: wait for mockserver
-        command: timeout 60 bash -c 'while [[ "$(curl -X PUT -o /dev/null -w ''%{http_code}'' localhost:1080/mockserver/status)" != "200" ]]; do sleep 2; done' || false
+          name: wait for mockserver
+          command: timeout 60 bash -c 'while [[ "$(curl -X PUT -o /dev/null -w ''%{http_code}'' localhost:1080/mockserver/status)" != "200" ]]; do sleep 2; done' || false
       - run:
-        name: configure mock server
-        command: curl -v -X PUT localhost:1080/mockserver/expectation -d "$(cat integration-tests/mock-server-config.json)"
+          name: configure mock server
+          command: curl -v -X PUT localhost:1080/mockserver/expectation -d "$(cat integration-tests/mock-server-config.json)"
       - run:
-        name: test coverage reporting
-        command: |
-          export CODACY_PROJECT_TOKEN=$TEST_CODACY_PROJECT_TOKEN
-          export CODACY_TOOL_PATH=$TEST_CODACY_TOOL_PATH
-          bash get.sh report --commit-uuid $TEST_COMMIT_UUID -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
+          name: test coverage reporting
+          command: |
+            export CODACY_PROJECT_TOKEN=$TEST_CODACY_PROJECT_TOKEN
+            export CODACY_TOOL_PATH=$TEST_CODACY_TOOL_PATH
+            bash get.sh report --commit-uuid $TEST_COMMIT_UUID -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
 
 workflows:
   version: 2
