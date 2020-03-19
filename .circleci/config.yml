@@ -74,7 +74,7 @@ jobs:
           paths:
             - "*"
 
-  test_coverage_script_2:
+  test_coverage_script_alpine:
     docker:
       - image: alpine
       - image: mockserver/mockserver
@@ -85,14 +85,6 @@ jobs:
           wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
           wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.31-r0/glibc-2.31-r0.apk
           apk add glibc-2.31-r0.apk
-#      - run:
-#          name: install dockerize
-#          command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz && tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
-#          environment:
-#            DOCKERIZE_VERSION: v0.6.1
-#      - run:
-#          name: Wait for mock server
-#          command: dockerize -wait http://localhost:1080 -timeout 1m
       - attach_workspace:
           at: ~/workdir
       - run: wget --retry-connrefused --method=PUT http://localhost:1080/mockserver/status
@@ -103,6 +95,21 @@ jobs:
           export CODACY_PROJECT_TOKEN=$TEST_CODACY_PROJECT_TOKEN
           export CODACY_TOOL_PATH=$TEST_CODACY_TOOL_PATH
           sh get.sh report --commit-uuid $TEST_COMMIT_UUID -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
+
+    test_coverage_script_ubuntu:
+      docker:
+        - image: cimg/base:2020.01 # ubuntu based image
+        - image: mockserver/mockserver
+      working_directory: ~/workdir
+      steps:
+        - attach_workspace:
+            at: ~/workdir
+        - run: timeout 60 bash -c 'while [[ "$(curl -X PUT -o /dev/null -w ''%{http_code}'' localhost:1080/mockserver/status)" != "200" ]]; do sleep 2; done' || false
+        - run: curl -v -X PUT localhost:1080/mockserver/expectation -d "$(cat integration-tests/mock-server-config.json)"
+        - run: |
+            export CODACY_PROJECT_TOKEN=$TEST_CODACY_PROJECT_TOKEN
+            export CODACY_TOOL_PATH=$TEST_CODACY_TOOL_PATH
+            bash get.sh report --commit-uuid $TEST_COMMIT_UUID -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
 
 workflows:
   version: 2
@@ -149,16 +156,22 @@ workflows:
           requires:
             - compile
             #- test_and_coverage
-      - test_coverage_script_2:
-          name: it_test_coverage_script
+      - test_coverage_script_alpine:
+          name: it_test_coverage_script_alpine
+          requires:
+            - create_artifacts
+      - test_coverage_script_ubuntu:
+          name: it_test_coverage_script_ubuntu
           requires:
             - create_artifacts
       - package_artifacts:
           requires:
-            - it_test_coverage_script
+            - it_test_coverage_script_alpine
+            - it_test_coverage_script_ubuntu
       - publish_circleci_artifacts:
           requires:
-            - it_test_coverage_script
+            - it_test_coverage_script_alpine
+            - it_test_coverage_script_ubuntu
           filters:
             branches:
               only:
