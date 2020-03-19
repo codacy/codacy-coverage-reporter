@@ -15,13 +15,18 @@ commands:
     parameters:
       executor:
         type: string
+      error_code:
+        type: integer
+        default: 0
     steps:
       - run:
           name: test coverage reporting
           command: |
             export CODACY_PROJECT_TOKEN=$TEST_CODACY_PROJECT_TOKEN
             export CODACY_TOOL_PATH=$TEST_CODACY_TOOL_PATH
+            set +e
             << parameters.executor >> get.sh report --commit-uuid $TEST_COMMIT_UUID -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
+            if [ $? -ne << parameters.error_code >> ]; then exit 1; fi
 
 jobs:
   publish_circleci_artifacts:
@@ -111,12 +116,18 @@ jobs:
           command: wget --method=PUT --body-data="$(cat integration-tests/mock-server-config.json)" http://localhost:1080/mockserver/expectation
       - run_coverage_reporting:
           executor: sh
+          error_code: 0
 
   it_coverage_script_ubuntu:
     docker:
       - image: cimg/base:2020.01 # ubuntu based image
       - image: mockserver/mockserver
     working_directory: ~/workdir
+    parameters:
+      error_code:
+        type: integer
+      config_path:
+        type: string
     steps:
       - attach_workspace:
           at: ~/workdir
@@ -125,9 +136,11 @@ jobs:
           command: timeout 60 bash -c 'while [[ "$(curl -X PUT -o /dev/null -w ''%{http_code}'' localhost:1080/mockserver/status)" != "200" ]]; do sleep 2; done' || false
       - run:
           name: configure mock server
-          command: curl -v -X PUT localhost:1080/mockserver/expectation -d "$(cat integration-tests/mock-server-config.json)"
+          command: curl -v -X PUT localhost:1080/mockserver/expectation -d "$(cat << parameters.config_path >>)"
+          #command: curl -v -X PUT localhost:1080/mockserver/expectation -d "$(cat integration-tests/mock-server-config.json)"
       - run_coverage_reporting:
           executor: bash
+          error_code: << parameters.error_code >>
 
 workflows:
   version: 2
@@ -176,12 +189,22 @@ workflows:
           requires:
             - create_artifacts
       - it_coverage_script_ubuntu:
+          name: it_coverage_script_ubuntu_success
+          error_code: 0
+          config_path: integration-tests/mock-server-config.json
+          requires:
+            - create_artifacts
+      - it_coverage_script_ubuntu:
+          name: it_coverage_script_ubuntu_failure
+          error_code: 1
+          config_path: integration-tests/mock-server-error-config.json
           requires:
             - create_artifacts
       - package_artifacts:
           requires:
             - it_coverage_script_alpine
-            - it_coverage_script_ubuntu
+            - it_coverage_script_ubuntu_success
+            - it_coverage_script_ubuntu_failure
       - publish_circleci_artifacts:
           requires:
             - package_artifacts

@@ -1,0 +1,9 @@
+{
+  "httpRequest": {
+    "path": "/2.0/coverage"
+  },
+  "httpResponse": {
+    "statusCode": 400,
+    "body": { "error": "Error posting coverage" }
+  }
+}
