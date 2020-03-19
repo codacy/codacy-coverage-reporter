@@ -1,6 +1,6 @@
 {
   "httpRequest": {
-    "path": "/2.0/coverage"
+    "path": "/2.0/coverage.*"
   },
   "httpResponse": {
     "statusCode": 400,
