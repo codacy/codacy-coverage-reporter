@@ -96,20 +96,20 @@ jobs:
           export CODACY_TOOL_PATH=$TEST_CODACY_TOOL_PATH
           sh get.sh report --commit-uuid $TEST_COMMIT_UUID -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
 
-    test_coverage_script_ubuntu:
-      docker:
-        - image: cimg/base:2020.01 # ubuntu based image
-        - image: mockserver/mockserver
-      working_directory: ~/workdir
-      steps:
-        - attach_workspace:
-            at: ~/workdir
-        - run: timeout 60 bash -c 'while [[ "$(curl -X PUT -o /dev/null -w ''%{http_code}'' localhost:1080/mockserver/status)" != "200" ]]; do sleep 2; done' || false
-        - run: curl -v -X PUT localhost:1080/mockserver/expectation -d "$(cat integration-tests/mock-server-config.json)"
-        - run: |
-            export CODACY_PROJECT_TOKEN=$TEST_CODACY_PROJECT_TOKEN
-            export CODACY_TOOL_PATH=$TEST_CODACY_TOOL_PATH
-            bash get.sh report --commit-uuid $TEST_COMMIT_UUID -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
+  test_coverage_script_ubuntu:
+    docker:
+      - image: cimg/base:2020.01 # ubuntu based image
+      - image: mockserver/mockserver
+    working_directory: ~/workdir
+    steps:
+      - attach_workspace:
+          at: ~/workdir
+      - run: timeout 60 bash -c 'while [[ "$(curl -X PUT -o /dev/null -w ''%{http_code}'' localhost:1080/mockserver/status)" != "200" ]]; do sleep 2; done' || false
+      - run: curl -v -X PUT localhost:1080/mockserver/expectation -d "$(cat integration-tests/mock-server-config.json)"
+      - run: |
+          export CODACY_PROJECT_TOKEN=$TEST_CODACY_PROJECT_TOKEN
+          export CODACY_TOOL_PATH=$TEST_CODACY_TOOL_PATH
+          bash get.sh report --commit-uuid $TEST_COMMIT_UUID -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
 
 workflows:
   version: 2
