@@ -9,6 +9,20 @@ references:
       - image: circleci/circleci-cli:0.1.5879
     working_directory: ~/workdir
 
+commands:
+  run_coverage_reporting:
+    description: "Runs the coverage reporting using the mock-server as API"
+    parameters:
+      executor:
+        type: string
+    steps:
+      - run:
+          name: test coverage reporting
+          command: |
+            export CODACY_PROJECT_TOKEN=$TEST_CODACY_PROJECT_TOKEN
+            export CODACY_TOOL_PATH=$TEST_CODACY_TOOL_PATH
+            << parameters.executor >> get.sh report --commit-uuid $TEST_COMMIT_UUID -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
+
 jobs:
   publish_circleci_artifacts:
     machine: true
@@ -95,12 +109,8 @@ jobs:
       - run:
           name: configure mock server
           command: wget --method=PUT --body-data="$(cat integration-tests/mock-server-config.json)" http://localhost:1080/mockserver/expectation
-      - run:
-          name: test coverage reporting
-          command: |
-            export CODACY_PROJECT_TOKEN=$TEST_CODACY_PROJECT_TOKEN
-            export CODACY_TOOL_PATH=$TEST_CODACY_TOOL_PATH
-            sh get.sh report --commit-uuid $TEST_COMMIT_UUID -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
+      - run_coverage_reporting:
+          executor: sh
 
   it_coverage_script_ubuntu:
     docker:
@@ -116,12 +126,8 @@ jobs:
       - run:
           name: configure mock server
           command: curl -v -X PUT localhost:1080/mockserver/expectation -d "$(cat integration-tests/mock-server-config.json)"
-      - run:
-          name: test coverage reporting
-          command: |
-            export CODACY_PROJECT_TOKEN=$TEST_CODACY_PROJECT_TOKEN
-            export CODACY_TOOL_PATH=$TEST_CODACY_TOOL_PATH
-            bash get.sh report --commit-uuid $TEST_COMMIT_UUID -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
+      - run_coverage_reporting:
+          executor: bash
 
 workflows:
   version: 2
