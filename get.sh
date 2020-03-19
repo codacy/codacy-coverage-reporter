@@ -14,7 +14,7 @@ codacy_temp_folder=".codacy-coverage"
 
 # Logger
 # This function log messages
-# Usage: fatal <LEVEL> <MESSAGE>
+# Usage: log <LEVEL> <MESSAGE>
 log() {
     echo -e " $1--> $l$2$r"
 }
@@ -117,7 +117,10 @@ codacy_reporter_jar_start_cmd() {
 
 run_command=""
 unamestr=`uname`
-if [ "$unamestr" = "Linux" ]; then
+if [ -n "$CODACY_TOOL_PATH" ]; then
+  log "$i" "Using local coverage reporter at $CODACY_TOOL_PATH"
+  run_command=$CODACY_TOOL_PATH
+elif [ "$unamestr" = "Linux" ]; then
     codacy_reporter_native_start_cmd
 else
     codacy_reporter_jar_start_cmd
