@@ -26,7 +26,8 @@ commands:
             export CODACY_TOOL_PATH=$TEST_CODACY_TOOL_PATH
             set +e
             << parameters.executor >> get.sh report --commit-uuid $TEST_COMMIT_UUID -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
-            if [ $? -ne << parameters.error_code >> ]; then exit 1; fi
+            if [ $? -ne << parameters.error_code >> ]; then echo "expected an error code << parameters.error_code >> and got $? instead"; exit 1; fi
+            echo "test completed with the expected error code: << parameters.error_code >>"
 
 jobs:
   publish_circleci_artifacts:
