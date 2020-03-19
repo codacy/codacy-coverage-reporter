@@ -14,7 +14,7 @@ codacy_temp_folder=".codacy-coverage"
 
 # Logger
 # This function log messages
-# Usage: fatal <LEVEL> <MESSAGE>
+# Usage: log <LEVEL> <MESSAGE>
 log() {
     echo -e " $1--> $l$2$r"
 }

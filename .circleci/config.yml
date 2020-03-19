@@ -9,6 +9,29 @@ references:
       - image: circleci/circleci-cli:0.1.5879
     working_directory: ~/workdir
 
+commands:
+  run_coverage_reporting:
+    description: "Runs the coverage reporting using the mock-server as API"
+    parameters:
+      executor:
+        type: string
+      error_code:
+        type: integer
+        default: 0
+      codacy_tool_path:
+        type: string
+    steps:
+      - run:
+          name: test coverage reporting
+          command: |
+            export CODACY_PROJECT_TOKEN=$TEST_CODACY_PROJECT_TOKEN
+            set +e
+            mkdir -p .codacy-coverage
+            cp "<< parameters.codacy_tool_path >>" ".codacy-coverage"
+            << parameters.executor >> get.sh report --commit-uuid $TEST_COMMIT_UUID  -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
+            if [ $? -ne << parameters.error_code >> ]; then echo "expected an error code << parameters.error_code >> and got $? instead"; exit 1; fi
+            echo "test completed with the expected error code: << parameters.error_code >>"
+
 jobs:
   publish_circleci_artifacts:
     machine: true
@@ -74,6 +97,57 @@ jobs:
           paths:
             - "*"
 
+  it_coverage_script_alpine:
+    docker:
+      - image: alpine:3.9.5
+      - image: mockserver/mockserver
+    working_directory: ~/workdir
+    steps:
+      - run:
+          name: install glibc
+          command: |
+            apk --no-cache add openssl wget
+            wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
+            wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.31-r0/glibc-2.31-r0.apk
+            apk add glibc-2.31-r0.apk
+      - attach_workspace:
+          at: ~/workdir
+      - run:
+          name: wait for mockserver
+          command: wget --retry-connrefused --method=PUT http://localhost:1080/mockserver/status
+      - run:
+          name: configure mock server
+          command: wget --method=PUT --body-data="$(cat integration-tests/mock-server-config.json)" http://localhost:1080/mockserver/expectation
+      - run_coverage_reporting:
+          executor: sh
+          codacy_tool_path: $TEST_CODACY_TOOL_PATH
+          error_code: 0
+
+  it_coverage_script_ubuntu:
+    docker:
+      - image: cimg/base:2020.01 # ubuntu based image
+      - image: mockserver/mockserver
+    working_directory: ~/workdir
+    parameters:
+      error_code:
+        type: integer
+      config_path:
+        type: string
+    steps:
+      - attach_workspace:
+          at: ~/workdir
+      - run:
+          name: wait for mockserver
+          command: timeout 60 bash -c 'while [[ "$(curl -X PUT -o /dev/null -w ''%{http_code}'' localhost:1080/mockserver/status)" != "200" ]]; do sleep 2; done' || false
+      - run:
+          name: configure mock server
+          command: curl -v -X PUT localhost:1080/mockserver/expectation -d "$(cat << parameters.config_path >>)"
+          #command: curl -v -X PUT localhost:1080/mockserver/expectation -d "$(cat integration-tests/mock-server-config.json)"
+      - run_coverage_reporting:
+          executor: bash
+          codacy_tool_path: $TEST_CODACY_TOOL_PATH
+          error_code: << parameters.error_code >>
+
 workflows:
   version: 2
   compile_test_deploy:
@@ -117,9 +191,26 @@ workflows:
           persist_to_workspace: true
           requires:
             - test_and_coverage
-      - package_artifacts:
+      - it_coverage_script_alpine:
           requires:
             - create_artifacts
+      - it_coverage_script_ubuntu:
+          name: it_coverage_script_ubuntu_success
+          error_code: 0
+          config_path: integration-tests/mock-server-config.json
+          requires:
+            - create_artifacts
+      - it_coverage_script_ubuntu:
+          name: it_coverage_script_ubuntu_failure
+          error_code: 1
+          config_path: integration-tests/mock-server-error-config.json
+          requires:
+            - create_artifacts
+      - package_artifacts:
+          requires:
+            - it_coverage_script_alpine
+            - it_coverage_script_ubuntu_success
+            - it_coverage_script_ubuntu_failure
       - publish_circleci_artifacts:
           requires:
             - package_artifacts
