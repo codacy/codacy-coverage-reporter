@@ -99,9 +99,9 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging 
     val projectToken = getValueOrEnvironmentVar(baseCommandConfig.projectToken, envVars, "CODACY_PROJECT_TOKEN")
     val apiToken = getValueOrEnvironmentVar(baseCommandConfig.apiToken, envVars, "CODACY_API_TOKEN")
 
-    if (projectToken.isDefined)
+    if (projectToken.isDefined && projectToken.nonEmpty)
       validateProjectTokenAuth(projectToken)
-    else if (apiToken.isDefined)
+    else if (apiToken.isDefined && apiToken.nonEmpty)
       validateApiTokenAuth(baseCommandConfig, apiToken, envVars)
     else
       Left(errorMessage)

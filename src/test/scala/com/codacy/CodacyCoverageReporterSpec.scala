@@ -41,7 +41,9 @@ class CodacyCoverageReporterSpec extends WordSpec with Matchers {
       }
 
       "using an API token to send coverage" in {
-        val config = getConfig(None, apiToken, username, projectName, commitUuid)
+        // empty projectToken so we skip project token
+        // passing None will pick the token used for the codacy-coverage-reporter project
+        val config = getConfig(Some(""), apiToken, username, projectName, commitUuid)
         val result = CodacyCoverageReporter.sendReport(config)
 
         result shouldBe 'right
@@ -57,7 +59,7 @@ class CodacyCoverageReporterSpec extends WordSpec with Matchers {
       }
 
       "API token is invalid" in {
-        val config = getConfig(None, Some("invalid token"), username, projectName, commitUuid)
+        val config = getConfig(Some(""), Some("invalid token"), username, projectName, commitUuid)
         val result = CodacyCoverageReporter.sendReport(config)
 
         result shouldBe 'left
