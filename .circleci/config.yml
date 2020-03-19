@@ -18,14 +18,17 @@ commands:
       error_code:
         type: integer
         default: 0
+      codacy_tool_path:
+        type: string
     steps:
       - run:
           name: test coverage reporting
           command: |
             export CODACY_PROJECT_TOKEN=$TEST_CODACY_PROJECT_TOKEN
-            export CODACY_TOOL_PATH=$TEST_CODACY_TOOL_PATH
             set +e
-            << parameters.executor >> get.sh report --commit-uuid $TEST_COMMIT_UUID -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
+            mkdir -p .codacy-coverage
+            cp "<< parameters.codacy_tool_path >>" ".codacy-coverage"
+            << parameters.executor >> get.sh report --commit-uuid $TEST_COMMIT_UUID  -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
             if [ $? -ne << parameters.error_code >> ]; then echo "expected an error code << parameters.error_code >> and got $? instead"; exit 1; fi
             echo "test completed with the expected error code: << parameters.error_code >>"
 
@@ -117,6 +120,7 @@ jobs:
           command: wget --method=PUT --body-data="$(cat integration-tests/mock-server-config.json)" http://localhost:1080/mockserver/expectation
       - run_coverage_reporting:
           executor: sh
+          codacy_tool_path: $TEST_CODACY_TOOL_PATH
           error_code: 0
 
   it_coverage_script_ubuntu:
@@ -141,6 +145,7 @@ jobs:
           #command: curl -v -X PUT localhost:1080/mockserver/expectation -d "$(cat integration-tests/mock-server-config.json)"
       - run_coverage_reporting:
           executor: bash
+          codacy_tool_path: $TEST_CODACY_TOOL_PATH
           error_code: << parameters.error_code >>
 
 workflows:
