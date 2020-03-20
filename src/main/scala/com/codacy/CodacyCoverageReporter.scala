@@ -27,7 +27,7 @@ object CodacyCoverageReporter extends ConfigurationParsingApp with StrictLogging
     }
   }
 
-  private[codacy] def sendReport(commandConfig: CommandConfiguration, envVars: Map[String, String]) = {
+  private def sendReport(commandConfig: CommandConfiguration, envVars: Map[String, String]) = {
     val configRules = new ConfigurationRules(commandConfig, envVars)
 
     configRules.validatedConfig.flatMap { validatedConfig =>
