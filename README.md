@@ -88,7 +88,7 @@ The following table contains the formats supported and which coverage tools gene
 | PHP        | [PHPUnit](https://phpunit.readthedocs.io/en/8.5/code-coverage-analysis.html) | PHPUnit XML <br> [Clover](https://confluence.atlassian.com/clover/using-clover-for-php-420973033.html) | coverage-xml/index.xml <br> clover.xml |
 | Ruby       | [SimpleCov](https://github.com/colszowka/simplecov) | [Cobertura](https://github.com/dashingrocket/simplecov-cobertura) <br> [LCOV](https://github.com/fortissimo1997/simplecov-lcov) | cobertura.xml <br> lcov.info, lcov.dat, *.lcov |
 | C#         | [OpenCover](https://github.com/OpenCover/opencover) <br> [DotCover CLI](https://www.jetbrains.com/dotcover/) | OpenCover <br> DotCover-DetailedXML | opencover.xml <br> dotcover.xml |
-| Swift/Objective C     | XCode Coverage | [Check here information about reports for this language](docs/swift_objectivec.md) |  |
+| Swift/Objective-C     | XCode Coverage | [Check here information about reports for this language](docs/swift_objectivec.md) |  |
 
 The reporter assumes the coverage reports filename follow the name convention. Otherwise, you must define the report's location with the flag `-r`.
 

@@ -1,6 +1,6 @@
-## Swift/Objective C
+## Swift/Objective-C
 
-To use Swift/Objective C and XCode coverage reporter, you should use [Slather](https://github.com/SlatherOrg/slather) to convert XCode report into Cobertura format.
+To use Swift/Objective-C and XCode coverage reporter, you should use [Slather](https://github.com/SlatherOrg/slather) to convert XCode report into Cobertura format.
 
 This can be achieve by running this commands on the CI:
 
