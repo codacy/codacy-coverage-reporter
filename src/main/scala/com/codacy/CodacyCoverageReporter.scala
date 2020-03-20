@@ -15,7 +15,7 @@ object CodacyCoverageReporter extends ConfigurationParsingApp with StrictLogging
       logger.info("Skip reporting coverage")
       0
     } else {
-      val result: Either[String, String] = sendReport(commandConfig)
+      val result: Either[String, String] = sendReport(commandConfig, sys.env)
       result match {
         case Right(message) =>
           logger.info(message)
@@ -27,8 +27,8 @@ object CodacyCoverageReporter extends ConfigurationParsingApp with StrictLogging
     }
   }
 
-  private[codacy] def sendReport(commandConfig: CommandConfiguration) = {
-    val configRules = new ConfigurationRules(commandConfig)
+  private[codacy] def sendReport(commandConfig: CommandConfiguration, envVars: Map[String, String]) = {
+    val configRules = new ConfigurationRules(commandConfig, envVars)
 
     configRules.validatedConfig.flatMap { validatedConfig =>
       val components = new Components(validatedConfig)

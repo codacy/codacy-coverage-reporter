@@ -18,7 +18,7 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
   val baseConf = BaseCommandConfig(Some(projToken), None, None, None, Some(apiBaseUrl), None)
   val conf = Report(baseConf, Some("Scala"), coverageReports = Some(coverageFiles), prefix = None)
 
-  val configRules = new ConfigurationRules(conf)
+  val configRules = new ConfigurationRules(conf, Map())
   val validatedConfig = configRules.validatedConfig.right.value
 
   val components = new Components(validatedConfig)
@@ -56,17 +56,19 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
 
     "get an api base url" in {
       val envVars = Map("CODACY_API_BASE_URL" -> apiBaseUrl)
-      val defaultBaseUrl = configRules.publicApiBaseUrl
+      val configRulesWithURL = new ConfigurationRules(conf, envVars)
+      configRulesWithURL.getApiBaseUrl should be(apiBaseUrl)
 
-      configRules.getApiBaseUrl(envVars) should be(apiBaseUrl)
-      configRules.getApiBaseUrl(Map.empty) should be(defaultBaseUrl)
+      val defaultBaseUrl = configRulesWithURL.publicApiBaseUrl
+      val configRulesWithoutURL = new ConfigurationRules(conf, Map())
+      configRulesWithoutURL.getApiBaseUrl should be(defaultBaseUrl)
     }
   }
 
   "validateBaseConfig" should {
     "fail" when {
       def assertFailure(baseCommandConfig: BaseCommandConfig) = {
-        val result = configRules.validateBaseConfig(baseCommandConfig, Map())
+        val result = configRules.validateBaseConfig(baseCommandConfig)
         result should be('left)
         result
       }
@@ -113,7 +115,7 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
       "project token is used" in {
         val baseConfig =
           BaseCommandConfig(Some("token"), None, None, None, Some(apiBaseUrl), Some("CommitUUID"))
-        val result = configRules.validateBaseConfig(baseConfig, Map())
+        val result = configRules.validateBaseConfig(baseConfig)
         result should be('right)
       }
 
@@ -127,7 +129,7 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
             Some(apiBaseUrl),
             Some("CommitUUID")
           )
-        val result = configRules.validateBaseConfig(baseConfig, Map())
+        val result = configRules.validateBaseConfig(baseConfig)
         result should be('right)
       }
 
@@ -135,7 +137,7 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
       "project token and api token are used" in {
         val baseConfig =
           BaseCommandConfig(Some("projectToken"), Some("apiToken"), None, None, Some(apiBaseUrl), Some("CommitUUID"))
-        val result = configRules.validateBaseConfig(baseConfig, Map())
+        val result = configRules.validateBaseConfig(baseConfig)
         result should be('right)
       }
     }
