@@ -181,6 +181,7 @@ workflows:
               sbt test
             else
               sbt ";clean;coverage;test;coverageReport;coverageAggregate;codacyCoverage"
+              sbt ";it:test"
             fi
           requires:
             - compile
