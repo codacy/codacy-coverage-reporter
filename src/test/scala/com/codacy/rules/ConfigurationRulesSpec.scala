@@ -18,7 +18,7 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
   val baseConf = BaseCommandConfig(Some(projToken), None, None, None, Some(apiBaseUrl), None)
   val conf = Report(baseConf, Some("Scala"), coverageReports = Some(coverageFiles), prefix = None)
 
-  val configRules = new ConfigurationRules(conf, Map())
+  val configRules = new ConfigurationRules(conf, Map.empty)
   val validatedConfig = configRules.validatedConfig.right.value
 
   val components = new Components(validatedConfig)
@@ -60,7 +60,7 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
       configRulesWithURL.getApiBaseUrl should be(apiBaseUrl)
 
       val defaultBaseUrl = configRulesWithURL.publicApiBaseUrl
-      val configRulesWithoutURL = new ConfigurationRules(conf, Map())
+      val configRulesWithoutURL = new ConfigurationRules(conf, Map.empty)
       configRulesWithoutURL.getApiBaseUrl should be(defaultBaseUrl)
     }
   }

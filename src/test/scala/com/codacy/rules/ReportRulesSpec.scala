@@ -191,7 +191,7 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
 
     "successfully store report" when {
       def storeValidReport() = {
-        val emptyReport = CoverageReport(0, List(CoverageFileReport("file-name", 0, Map())))
+        val emptyReport = CoverageReport(0, List(CoverageFileReport("file-name", 0, Map.empty)))
         val tempFile = File.createTempFile("storeReport", "not-store")
         components.reportRules.storeReport(emptyReport, tempFile)
       }

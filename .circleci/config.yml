@@ -142,7 +142,6 @@ jobs:
       - run:
           name: configure mock server
           command: curl -v -X PUT localhost:1080/mockserver/expectation -d "$(cat << parameters.config_path >>)"
-          #command: curl -v -X PUT localhost:1080/mockserver/expectation -d "$(cat integration-tests/mock-server-config.json)"
       - run_coverage_reporting:
           executor: bash
           codacy_tool_path: $TEST_CODACY_TOOL_PATH
@@ -160,12 +159,12 @@ workflows:
             - codacy/checkout_and_version
       - codacy/sbt:
           name: populate_cache
-          cmd: sbt ";set scalafmtUseIvy in ThisBuild := false;update"
+          cmd: sbt "set scalafmtUseIvy in ThisBuild := false;update"
           requires:
             - codacy/checkout_and_version
       - codacy/sbt:
           name: check_fmt
-          cmd: sbt ";scalafmt::test;test:scalafmt::test;sbt:scalafmt::test"
+          cmd: sbt "scalafmt::test;test:scalafmt::test;sbt:scalafmt::test"
           requires:
             - populate_cache
       - codacy/sbt:
@@ -180,8 +179,10 @@ workflows:
               echo "CODACY_PROJECT_TOKEN not found. Skipping send coverage to Codacy."
               sbt test
             else
-              sbt ";clean;coverage;test;coverageReport;coverageAggregate;codacyCoverage"
-              sbt ";it:test"
+              sbt clean coverage test coverageReport
+              sbt coverageAggregate
+              bash <(curl -Ls https://coverage.codacy.com/get.sh) report --skip
+              sbt "it:test"
             fi
           requires:
             - compile

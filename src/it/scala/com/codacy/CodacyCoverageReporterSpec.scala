@@ -33,7 +33,7 @@ class CodacyCoverageReporterSpec extends WordSpec with Matchers with EitherValue
       prefix = None
     )
 
-    val configRules = new ConfigurationRules(commandConfig, Map())
+    val configRules = new ConfigurationRules(commandConfig, Map.empty)
     val components = new Components(configRules.validatedConfig.right.value)
 
     configRules.validatedConfig.right.value match {
