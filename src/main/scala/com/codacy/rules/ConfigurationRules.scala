@@ -18,7 +18,7 @@ import com.typesafe.scalalogging.StrictLogging
 
 import scala.util.Try
 
-class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging {
+class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, String]) extends StrictLogging {
   private[rules] val publicApiBaseUrl = "https://api.codacy.com"
 
   lazy val validatedConfig: Either[String, Configuration] = {
@@ -39,7 +39,7 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging 
 
   private def validateFinalConfig(finalConfig: Final): Either[String, FinalConfig] = {
     for {
-      baseConfig <- validateBaseConfig(finalConfig.baseConfig, sys.env)
+      baseConfig <- validateBaseConfig(finalConfig.baseConfig)
     } yield FinalConfig(baseConfig)
   }
 
@@ -55,7 +55,7 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging 
     }
 
     for {
-      baseConfig <- validateBaseConfig(reportConfig.baseConfig, sys.env)
+      baseConfig <- validateBaseConfig(reportConfig.baseConfig)
       validReportFiles <- validateReportFiles(reportConfig.coverageReports)
       reportConf = ReportConfig(
         baseConfig,
@@ -70,15 +70,12 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging 
 
   }
 
-  private[rules] def validateBaseConfig(
-      baseConfig: BaseCommandConfig,
-      envVars: Map[String, String]
-  ): Either[String, BaseConfig] = {
+  private[rules] def validateBaseConfig(baseConfig: BaseCommandConfig): Either[String, BaseConfig] = {
     for {
-      authConfig <- validateAuthConfig(baseConfig, envVars)
+      authConfig <- validateAuthConfig(baseConfig)
       baseConf = BaseConfig(
         authConfig,
-        baseConfig.codacyApiBaseUrl.getOrElse(getApiBaseUrl(sys.env)),
+        baseConfig.codacyApiBaseUrl.getOrElse(getApiBaseUrl),
         baseConfig.commitUUID.map(CommitUUID),
         baseConfig.debugValue
       )
@@ -89,20 +86,17 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging 
     }
   }
 
-  private def validateAuthConfig(
-      baseCommandConfig: BaseCommandConfig,
-      envVars: Map[String, String]
-  ): Either[String, AuthenticationConfig] = {
+  private def validateAuthConfig(baseCommandConfig: BaseCommandConfig): Either[String, AuthenticationConfig] = {
     val errorMessage =
       "Either a project token or an api token must be provided or available in an environment variable"
 
-    val projectToken = getValueOrEnvironmentVar(baseCommandConfig.projectToken, envVars, "CODACY_PROJECT_TOKEN")
-    val apiToken = getValueOrEnvironmentVar(baseCommandConfig.apiToken, envVars, "CODACY_API_TOKEN")
+    val projectToken = getValueOrEnvironmentVar(baseCommandConfig.projectToken, "CODACY_PROJECT_TOKEN")
+    val apiToken = getValueOrEnvironmentVar(baseCommandConfig.apiToken, "CODACY_API_TOKEN")
 
     if (projectToken.isDefined)
       validateProjectTokenAuth(projectToken)
     else if (apiToken.isDefined)
-      validateApiTokenAuth(baseCommandConfig, apiToken, envVars)
+      validateApiTokenAuth(baseCommandConfig, apiToken)
     else
       Left(errorMessage)
   }
@@ -113,22 +107,18 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging 
       case Some(projectToken) => Right(ProjectTokenAuthenticationConfig(projectToken))
     }
 
-  private def validateApiTokenAuth(
-      baseCommandConfig: BaseCommandConfig,
-      apiToken: Option[String],
-      envVars: Map[String, String]
-  ) =
+  private def validateApiTokenAuth(baseCommandConfig: BaseCommandConfig, apiToken: Option[String]) =
     for {
       apiToken <- apiToken.filter(_.nonEmpty).toRight("Empty argument --api-token")
-      username <- getValueOrEnvironmentVar(baseCommandConfig.username, envVars, "CODACY_USERNAME")
+      username <- getValueOrEnvironmentVar(baseCommandConfig.username, "CODACY_USERNAME")
         .filter(_.nonEmpty)
         .toRight("Empty argument --username")
-      projectName <- getValueOrEnvironmentVar(baseCommandConfig.projectName, envVars, "CODACY_PROJECT_NAME")
+      projectName <- getValueOrEnvironmentVar(baseCommandConfig.projectName, "CODACY_PROJECT_NAME")
         .filter(_.nonEmpty)
         .toRight("Empty argument --project-name")
     } yield ApiTokenAuthenticationConfig(apiToken, username, projectName)
 
-  private def getValueOrEnvironmentVar(value: Option[String], envVars: Map[String, String], envVarName: String) =
+  private def getValueOrEnvironmentVar(value: Option[String], envVarName: String) =
     value.orElse(envVars.get(envVarName))
 
   private def validateBaseConfigUrl(baseConfig: BaseConfig) = baseConfig match {
@@ -148,10 +138,9 @@ class ConfigurationRules(cmdConfig: CommandConfiguration) extends StrictLogging 
     *
     * This function try to get the API base URL from environment variables, and if not
     * found, fallback to the public API base URL
-    * @param envVars environment variables
     * @return api base url
     */
-  private[rules] def getApiBaseUrl(envVars: Map[String, String]): String = {
+  private[rules] def getApiBaseUrl: String = {
     envVars.getOrElse("CODACY_API_BASE_URL", publicApiBaseUrl)
   }
 

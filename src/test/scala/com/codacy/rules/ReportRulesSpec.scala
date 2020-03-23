@@ -25,7 +25,7 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
   val coverageReport = CoverageReport(100, Seq(CoverageFileReport("file.scala", 100, Map(10 -> 1))))
   val noLanguageReport = CoverageReport(0, Seq.empty[CoverageFileReport])
 
-  val configRules = new ConfigurationRules(conf)
+  val configRules = new ConfigurationRules(conf, sys.env)
   val validatedConfig = configRules.validatedConfig.right.value
 
   val components = new Components(validatedConfig)
@@ -191,7 +191,7 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
 
     "successfully store report" when {
       def storeValidReport() = {
-        val emptyReport = CoverageReport(0, List(CoverageFileReport("file-name", 0, Map())))
+        val emptyReport = CoverageReport(0, List(CoverageFileReport("file-name", 0, Map.empty)))
         val tempFile = File.createTempFile("storeReport", "not-store")
         components.reportRules.storeReport(emptyReport, tempFile)
       }

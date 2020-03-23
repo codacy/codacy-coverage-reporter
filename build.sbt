@@ -23,7 +23,10 @@ libraryDependencies ++= Seq(
 )
 
 // Test dependencies
-libraryDependencies ++= Seq(scalatest, mockitoScalaScalatest).map(_ % Test)
+libraryDependencies ++= Seq(scalatest % "it,test", mockitoScalaScalatest % Test)
+
+configs(IntegrationTest)
+Defaults.itSettings
 
 mainClass in assembly := Some("com.codacy.CodacyCoverageReporter")
 assemblyMergeStrategy in assembly := {
