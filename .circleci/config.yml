@@ -233,7 +233,8 @@ workflows:
             sudo gu install native-image
             sbt "set graalVMNativeImageGraalVersion := None; set graalVMNativeImageOptions -= \"--static\"; graalvm-native-image:packageBin"
             mkdir -p ~/workdir/artifacts/
-            cp $TEST_CODACY_TOOL_PATH ~/workdir/artifacts/codacy-coverage-reporter-darwin-$(cat .version)
+            # $TEST_CODACY_TOOL_PATH doesn't work
+            cp ./target/graalvm-native-image/codacy-coverage-reporter ~/workdir/artifacts/codacy-coverage-reporter-darwin-$(cat .version)
           persist_to_workspace: true
           requires:
             - test_and_coverage
