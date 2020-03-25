@@ -155,21 +155,19 @@ jobs:
       - attach_workspace:
           at: ~/workdir
       - run:
-          name: install mockserver
-          command: brew install mockserver coreutils
-      - run:
-          name: start mockserver
-          command: nohup mockserver -logLevel INFO -serverPort 1080 &
-      - run:
-          name: wait for mockserver
-          command: gtimeout 60 bash -c 'while [[ "$(curl -X PUT -o /dev/null -w ''%{http_code}'' localhost:1080/mockserver/status)" != "200" ]]; do sleep 2; done' || false
-      - run:
-          name: configure mock server
-          command: curl -X PUT -d "$(cat integration-tests/mock-server-config.json)" http://localhost:1080/mockserver/expectation
-      - run_coverage_reporting:
-          executor: sh
-          codacy_tool_path: $TEST_CODACY_TOOL_PATH
-          error_code: 0
+          name: test on osx
+          command: |
+            brew install mockserver coreutils
+            nohup mockserver -logLevel INFO -serverPort 1080 &
+            gtimeout 60 bash -c 'while [[ "$(curl -X PUT -o /dev/null -w ''%{http_code}'' localhost:1080/mockserver/status)" != "200" ]]; do sleep 2; done' || false
+            curl -X PUT -d "$(cat integration-tests/mock-server-config.json)" http://localhost:1080/mockserver/expectation
+            export CODACY_PROJECT_TOKEN=$TEST_CODACY_PROJECT_TOKEN
+            set +e
+            mkdir -p .codacy-coverage
+            cp "$TEST_CODACY_TOOL_PATH" ".codacy-coverage"
+            sh get.sh report --commit-uuid $TEST_COMMIT_UUID  -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
+            if [ $? -ne 0 ]; then echo "expected an error code 0 and got $? instead"; exit 1; fi
+            echo "test completed with the expected error code: 0"
 
 workflows:
   version: 2
