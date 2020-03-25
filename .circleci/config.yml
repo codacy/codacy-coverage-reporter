@@ -91,7 +91,7 @@ jobs:
       - run: |
           mkdir -p ~/workdir/artifacts/
           mv ~/workdir/target/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/artifacts/
-          upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-linux-$(cat .version) $TEST_CODACY_TOOL_PATH
+          upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-linux-$(cat .version) ~/workdir/target/graalvm-native-image/codacy-coverage-reporter
       - persist_to_workspace:
           root: ~/workdir
           paths:
@@ -247,9 +247,6 @@ workflows:
             export PATH="$PATH:/Library/Java/JavaVirtualMachines/graalvm-ce-java8-$GRAAL_VERSION/Contents/Home/bin"
             sudo gu install native-image
             sbt "set graalVMNativeImageGraalVersion := None; set graalVMNativeImageOptions -= \"--static\"; graalvm-native-image:packageBin"
-            mkdir -p ~/workdir/artifacts/
-            # $TEST_CODACY_TOOL_PATH doesn't work
-            cp ./target/graalvm-native-image/codacy-coverage-reporter ~/workdir/artifacts/codacy-coverage-reporter-darwin-$(cat .version)
           persist_to_workspace: true
           requires:
             - test_and_coverage
