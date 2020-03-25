@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  codacy: codacy/base@dev:2.9.4-sbtosx.e3af878
+  codacy: codacy/base@dev:2.9.4-sbtosx.c2a9caa
 
 references:
   circleci_job: &circleci_job
@@ -197,12 +197,18 @@ workflows:
           name: create_artifacts_for_osx
           cmd: |
             # TODO get graalVM version in a single place
-            wget https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-20.0.0/graalvm-ce-java8-darwin-amd64-20.0.0.tar.gz
-            gunzip -c graalvm-ce-java8-darwin-amd64-20.0.0.tar.gz | tar xopf -
-            sudo mv graalvm-ce-java8-darwin-amd64-20.0.0 /Library/Java/JavaVirtualMachines
+            export GRAAL_VERSION=20.0.0
+            export TARGET_GRAAL="./target/graalvm-$GRAAL_VERSION.tar.gz"
+            mkdir -p target
+            if [[ ! -e $TARGET_GRAAL ]]; then
+              curl "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-$GRAAL_VERSION/graalvm-ce-java8-darwin-amd64-$GRAAL_VERSION.tar.gz" -o "$TARGET_GRAAL"
+            fi
+            sudo tar -xf $TARGET_GRAAL -C /Library/Java/JavaVirtualMachines
             /usr/libexec/java_home -V
-            echo "avanti da qui..."
-            sbt "set graalVMNativeImageGraalVersion := None; graalvm-native-image:packageBin"
+            export PATH="$PATH:/Library/Java/JavaVirtualMachines/graalvm-ce-java8-$GRAAL_VERSION/Contents/Home/bin"
+            gu install native-image
+            sbt "set graalVMNativeImageGraalVersion := None; set graalVMNativeImageOptions -= \"--static\"; graalvm-native-image:packageBin"
+            mv ~/workdir/target/graalvm-native-image/codacy-coverage-reporter-$(cat .version) ~/workdir/artifacts/codacy-coverage-reporter-darwin-$(cat .version)
           persist_to_workspace: true
           requires:
             - test_and_coverage
@@ -223,6 +229,7 @@ workflows:
             - create_artifacts
       - package_artifacts:
           requires:
+            - create_artifacts_for_osx
             - it_coverage_script_alpine
             - it_coverage_script_ubuntu_success
             - it_coverage_script_ubuntu_failure
@@ -238,6 +245,7 @@ workflows:
           name: publish_bintray
           cmd: |
             curl -T ~/workdir/artifacts/codacy-coverage-reporter-linux-$(cat .version) -ucodacy-ci:$BINTRAY_API_KEY -H "X-Bintray-Package:codacy-coverage-reporter" -H "X-Bintray-Version:$(cat .version)" https://api.bintray.com/content/codacy/Binaries/$(cat .version)/codacy-coverage-reporter-linux
+            curl -T ~/workdir/artifacts/codacy-coverage-reporter-darwin-$(cat .version) -ucodacy-ci:$BINTRAY_API_KEY -H "X-Bintray-Package:codacy-coverage-reporter" -H "X-Bintray-Version:$(cat .version)" https://api.bintray.com/content/codacy/Binaries/$(cat .version)/codacy-coverage-reporter-darwin
             curl -T ~/workdir/artifacts/codacy-coverage-reporter-assembly-$(cat .version).jar -ucodacy-ci:$BINTRAY_API_KEY -H "X-Bintray-Package:codacy-coverage-reporter" -H "X-Bintray-Version:$(cat .version)" https://api.bintray.com/content/codacy/Binaries/$(cat .version)/codacy-coverage-reporter-assembly.jar
             curl -X POST -ucodacy-ci:$BINTRAY_API_KEY https://api.bintray.com/content/codacy/Binaries/codacy-coverage-reporter/$(cat .version)/publish
           filters:
