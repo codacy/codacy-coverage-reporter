@@ -156,13 +156,13 @@ jobs:
           at: ~/workdir
       - run:
           name: install mockserver
-          command: brew install mockserver
+          command: brew install mockserver coreutils
       - run:
           name: start mockserver
           command: nohup mockserver -logLevel INFO -serverPort 1080 &
       - run:
           name: wait for mockserver
-          command: curl --retry-connrefused -X PUT http://localhost:1080/mockserver/status
+          command: gtimeout 60 bash -c 'while [[ "$(curl -X PUT -o /dev/null -w ''%{http_code}'' localhost:1080/mockserver/status)" != "200" ]]; do sleep 2; done' || false
       - run:
           name: configure mock server
           command: curl -X PUT -d "$(cat integration-tests/mock-server-config.json)" http://localhost:1080/mockserver/expectation
