@@ -164,9 +164,10 @@ jobs:
             export CODACY_PROJECT_TOKEN=$TEST_CODACY_PROJECT_TOKEN
             set +e
             mkdir -p .codacy-coverage
-            cp "$TEST_CODACY_TOOL_PATH" ".codacy-coverage"
+            cp ./target/graalvm-native-image/codacy-coverage-reporter .codacy-coverage
             sh get.sh report --commit-uuid $TEST_COMMIT_UUID  -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
-            if [ $? -ne 0 ]; then echo "expected an error code 0 and got $? instead"; exit 1; fi
+            export ERROR_CODE=$?
+            if [ $ERROR_CODE -ne 0 ]; then echo "expected an error code 0 and got $ERROR_CODE instead"; exit 1; fi
             echo "test completed with the expected error code: 0"
 
 workflows:
