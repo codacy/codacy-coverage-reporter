@@ -91,7 +91,7 @@ jobs:
       - run: |
           mkdir -p ~/workdir/artifacts/
           mv ~/workdir/target/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/artifacts/
-          upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-linux-$(cat .version) ~/workdir/target/graalvm-native-image/codacy-coverage-reporter
+          upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-linux-$(cat .version) $TEST_CODACY_TOOL_PATH
       - persist_to_workspace:
           root: ~/workdir
           paths:
@@ -155,14 +155,17 @@ jobs:
       - attach_workspace:
           at: ~/workdir
       - run:
+          name: install mockserver
+          command: brew install mockserver
+      - run:
           name: start mockserver
-          command: docker run -d --rm -P mockserver/mockserver
+          command: nohup mockserver -logLevel INFO -serverPort 1080 &
       - run:
           name: wait for mockserver
-          command: wget --retry-connrefused --method=PUT http://localhost:1080/mockserver/status
+          command: curl --retry-connrefused -X PUT http://localhost:1080/mockserver/status
       - run:
           name: configure mock server
-          command: wget --method=PUT --body-data="$(cat integration-tests/mock-server-config.json)" http://localhost:1080/mockserver/expectation
+          command: curl -X PUT -d "$(cat integration-tests/mock-server-config.json)" http://localhost:1080/mockserver/expectation
       - run_coverage_reporting:
           executor: sh
           codacy_tool_path: $TEST_CODACY_TOOL_PATH
@@ -230,7 +233,7 @@ workflows:
             sudo gu install native-image
             sbt "set graalVMNativeImageGraalVersion := None; set graalVMNativeImageOptions -= \"--static\"; graalvm-native-image:packageBin"
             mkdir -p ~/workdir/artifacts/
-            mv ~/workdir/target/graalvm-native-image/codacy-coverage-reporter ~/workdir/artifacts/codacy-coverage-reporter-darwin-$(cat .version)
+            cp $TEST_CODACY_TOOL_PATH ~/workdir/artifacts/codacy-coverage-reporter-darwin-$(cat .version)
           persist_to_workspace: true
           requires:
             - test_and_coverage
