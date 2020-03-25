@@ -217,7 +217,7 @@ workflows:
       - codacy/sbt_osx:
           name: create_artifacts_for_osx
           cmd: |
-            # TODO get graalVM version in a single place
+            # TODO GraalVM version should be in a single place
             export GRAAL_VERSION=20.0.0
             export TARGET_GRAAL="./target/graalvm-$GRAAL_VERSION.tar.gz"
             mkdir -p target
@@ -229,7 +229,8 @@ workflows:
             export PATH="$PATH:/Library/Java/JavaVirtualMachines/graalvm-ce-java8-$GRAAL_VERSION/Contents/Home/bin"
             sudo gu install native-image
             sbt "set graalVMNativeImageGraalVersion := None; set graalVMNativeImageOptions -= \"--static\"; graalvm-native-image:packageBin"
-            mv ~/workdir/target/graalvm-native-image/codacy-coverage-reporter-$(cat .version) ~/workdir/artifacts/codacy-coverage-reporter-darwin-$(cat .version)
+            mkdir -p ~/workdir/artifacts/
+            mv ~/workdir/target/graalvm-native-image/codacy-coverage-reporter ~/workdir/artifacts/codacy-coverage-reporter-darwin-$(cat .version)
           persist_to_workspace: true
           requires:
             - test_and_coverage
@@ -253,6 +254,7 @@ workflows:
             - create_artifacts
       - package_artifacts:
           requires:
+            - create_artifacts_for_osx
             - it_coverage_script_macosx
             - it_coverage_script_alpine
             - it_coverage_script_ubuntu_success
