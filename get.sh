@@ -102,9 +102,12 @@ run() {
     eval "$@"
 }
 
+# Native executable binary
+# This function returns the name of the binary
+# Usage: codacy_reporter_native_start_cmd <OS-NAME>
 codacy_reporter_native_start_cmd() {
     codacy_reporter="$codacy_temp_folder/codacy-coverage-reporter"    
-    download_coverage_reporter "linux"
+    download_coverage_reporter $1
     chmod +x $codacy_reporter
     run_command="$codacy_reporter"
 }
@@ -118,7 +121,9 @@ codacy_reporter_jar_start_cmd() {
 run_command=""
 unamestr=`uname`
 if [ "$unamestr" = "Linux" ]; then
-    codacy_reporter_native_start_cmd
+    codacy_reporter_native_start_cmd "linux"
+elif [ "$unamestr" = "Darwin" ]; then
+    codacy_reporter_native_start_cmd "darwin"
 else
     codacy_reporter_jar_start_cmd
 fi
