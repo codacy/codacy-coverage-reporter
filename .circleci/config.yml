@@ -201,7 +201,7 @@ workflows:
             export TARGET_GRAAL="./target/graalvm-$GRAAL_VERSION.tar.gz"
             mkdir -p target
             if [[ ! -e $TARGET_GRAAL ]]; then
-              curl "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-$GRAAL_VERSION/graalvm-ce-java8-darwin-amd64-$GRAAL_VERSION.tar.gz" -o "$TARGET_GRAAL"
+              curl -L "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-$GRAAL_VERSION/graalvm-ce-java8-darwin-amd64-$GRAAL_VERSION.tar.gz" -o "$TARGET_GRAAL"
             fi
             sudo tar -xf $TARGET_GRAAL -C /Library/Java/JavaVirtualMachines
             /usr/libexec/java_home -V
