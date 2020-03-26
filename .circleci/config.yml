@@ -113,7 +113,7 @@ jobs:
       - persist_to_workspace:
           root: ~/workdir
           paths:
-            - "*"
+            - "artifacts/*"
 
   it_coverage_script_alpine:
     docker:
