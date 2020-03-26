@@ -94,26 +94,27 @@ jobs:
           mkdir -p ~/workdir/artifacts/
           mv ~/workdir/tmp-artifacts/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/artifacts/
           upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-linux-$(cat .version) ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux-$(cat .version)
-      - persist_to_workspace:
-          root: ~/workdir
-          paths:
-            - "*"
-
-  package_artifacts_macosx:
-    macos:
-      xcode: 11.3.1
-    working_directory: ~/workdir
-    steps:
-      - run: brew install upx
-      - attach_workspace:
-          at: ~/workdir
-      - run: |
-          mkdir -p ~/workdir/artifacts/
           upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-darwin-$(cat .version) ~/workdir/tmp-artifacts/codacy-coverage-reporter-darwin-$(cat .version)
       - persist_to_workspace:
           root: ~/workdir
           paths:
-            - "artifacts/*"
+            - artifacts/*
+
+  # package_artifacts_macosx:
+  #   macos:
+  #     xcode: 11.3.1
+  #   working_directory: ~/workdir
+  #   steps:
+  #     - run: brew install upx
+  #     - attach_workspace:
+  #         at: ~/workdir
+  #     - run: |
+  #         mkdir -p ~/workdir/artifacts/
+  #         upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-darwin-$(cat .version) ~/workdir/tmp-artifacts/codacy-coverage-reporter-darwin-$(cat .version)
+  #     - persist_to_workspace:
+  #         root: ~/workdir
+  #         paths:
+  #           - artifacts/*darwin*
 
   it_coverage_script_alpine:
     docker:
@@ -261,12 +262,12 @@ workflows:
       - package_artifacts:
           requires:
             - create_artifacts
-      - package_artifacts_macosx:
-          requires:
+      # - package_artifacts_macosx:
+      #     requires:
             - create_artifacts_for_osx
       - it_coverage_script_macosx:
           requires:
-            - package_artifacts_macosx
+            - package_artifacts
       - it_coverage_script_alpine:
           requires:
             - package_artifacts
