@@ -18,16 +18,16 @@ commands:
       error_code:
         type: integer
         default: 0
-      codacy_tool_path:
-        type: string
     steps:
+      - attach_workspace:
+          at: ~/workdir
       - run:
           name: test coverage reporting
           command: |
             export CODACY_PROJECT_TOKEN=$TEST_CODACY_PROJECT_TOKEN
             set +e
             mkdir -p .codacy-coverage
-            cp "<< parameters.codacy_tool_path >>" ".codacy-coverage"
+            cp "$HOME/workdir/artifacts/codacy-coverage-reporter-linux-$(cat $HOME/workdir/.version)" ".codacy-coverage"
             # the following line ensure that we are using the cached binary
             export CODACY_REPORTER_VERSION=inexistent
             << parameters.executor >> get.sh report --commit-uuid $TEST_COMMIT_UUID  -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
@@ -138,7 +138,6 @@ jobs:
           command: wget --method=PUT --body-data="$(cat integration-tests/mock-server-config.json)" http://localhost:1080/mockserver/expectation
       - run_coverage_reporting:
           executor: sh
-          codacy_tool_path: $HOME/workdir/artifacts/codacy-coverage-reporter-linux-$(cat $HOME/workdir/.version)
           error_code: 0
 
   it_coverage_script_ubuntu:
@@ -162,7 +161,6 @@ jobs:
           command: curl -v -X PUT localhost:1080/mockserver/expectation -d "$(cat << parameters.config_path >>)"
       - run_coverage_reporting:
           executor: bash
-          codacy_tool_path: $HOME/workdir/artifacts/codacy-coverage-reporter-linux-$(cat $HOME/workdir/.version)
           error_code: << parameters.error_code >>
 
   it_coverage_script_macosx:
@@ -310,8 +308,10 @@ workflows:
                 - build_on_osx
           context: CodacyBintray
           requires:
-            - package_artifacts
-            - package_artifacts_macosx
+            - it_coverage_script_macosx
+            - it_coverage_script_alpine
+            - it_coverage_script_ubuntu_success
+            - it_coverage_script_ubuntu_failure
       - codacy/publish_ghr:
           name: publish_ghr
           path: ~/workdir/artifacts/
