@@ -324,7 +324,7 @@ workflows:
                 - master
           requires:
             - package_artifacts
-            - package_artifacts_macosx
+            # - package_artifacts_macosx
       - publish_dev:
           context: CodacyCircleCI
           requires:
