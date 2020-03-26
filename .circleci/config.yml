@@ -91,7 +91,7 @@ jobs:
       - run: |
           mkdir -p ~/workdir/artifacts/
           mv ~/workdir/target/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/artifacts/
-          upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-linux-$(cat .version) ~/workdir/target/graalvm-native-image/codacy-coverage-reporter
+          upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-linux-$(cat .version) ./target/graalvm-native-image/codacy-coverage-reporter
       - persist_to_workspace:
           root: ~/workdir
           paths:
@@ -136,7 +136,7 @@ jobs:
           command: wget --method=PUT --body-data="$(cat integration-tests/mock-server-config.json)" http://localhost:1080/mockserver/expectation
       - run_coverage_reporting:
           executor: sh
-          codacy_tool_path: $TEST_CODACY_TOOL_PATH
+          codacy_tool_path: ./target/graalvm-native-image/codacy-coverage-reporter
           error_code: 0
 
   it_coverage_script_ubuntu:
@@ -160,7 +160,7 @@ jobs:
           command: curl -v -X PUT localhost:1080/mockserver/expectation -d "$(cat << parameters.config_path >>)"
       - run_coverage_reporting:
           executor: bash
-          codacy_tool_path: $TEST_CODACY_TOOL_PATH
+          codacy_tool_path: ./target/graalvm-native-image/codacy-coverage-reporter
           error_code: << parameters.error_code >>
 
   it_coverage_script_macosx:
