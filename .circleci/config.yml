@@ -149,8 +149,7 @@ jobs:
           error_code: << parameters.error_code >>
 
   it_coverage_script_macosx:
-    macos:
-      xcode: 11.3.1
+    executor: codacy/osx
     working_directory: ~/workdir
     steps:
       - attach_workspace:
