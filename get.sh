@@ -73,18 +73,36 @@ if [ -z "$CODACY_REPORTER_VERSION" ]; then
     CODACY_REPORTER_VERSION="latest"
 fi
 
+fail_curl_wget() {
+    fatal "Could not find curl or wget, please install one."
+}
+
+get_version() {
+    if [ "$CODACY_REPORTER_VERSION" == "latest" ]; then
+        if [ -x "$(which curl)" ]; then
+            CODACY_REPORTER_VERSION="$(curl -LSs $1 | download_url)"
+        elif [ -x "$(which wget)" ] ; then
+            CODACY_REPORTER_VERSION="$(wget -O - $1 | download_url)"
+        else
+            fail_curl_wget
+        fi
+    fi
+}
+
 download_url() {
-    grep browser_download_url | grep $1 | cut -d '"' -f 4
+    sed -e 's/.*name.*\([0-9]\+[.][0-9]\+[.][0-9]\+\).*/\1/'
 }
 
 download_using_wget_or_curl() {
-    api_url="https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/$CODACY_REPORTER_VERSION"
+    bintray_latest_api_url="https://api.bintray.com/packages/codacy/Binaries/codacy-coverage-reporter/versions/_latest"
+    get_version $bintray_latest_api_url $1
+    bintray_api_url="https://dl.bintray.com/codacy/Binaries/$CODACY_REPORTER_VERSION/codacy-coverage-reporter-$1"
     if [ -x "$(which curl)" ]; then
-        curl -# -LS -o "$codacy_reporter" "$(curl -LSs $api_url | download_url $1)"
+        curl -# -LS -o "$codacy_reporter" "$bintray_api_url"
     elif [ -x "$(which wget)" ] ; then
-        wget -O "$codacy_reporter" "$(wget -O - $api_url | download_url $1)"
+        wget -O "$codacy_reporter" "$bintray_api_url"
     else
-        fatal "Could not find curl or wget, please install one."
+        fail_curl_wget
     fi
 }
 
