@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  codacy: codacy/base@dev:2.9.4-sbtosx.d0175ae
+  codacy: codacy/base@dev:2.10.0-sbtosx.e14b190
 
 references:
   circleci_job: &circleci_job
@@ -257,6 +257,7 @@ workflows:
             mkdir -p ~/workdir/tmp-artifacts/
             mv ~/workdir/target/graalvm-native-image/codacy-coverage-reporter ~/workdir/tmp-artifacts/codacy-coverage-reporter-darwin-$(cat .version)
           persist_to_workspace: true
+          persist_to_workspace_folder: "artifacts/*"
           requires:
             - test_and_coverage
       - package_artifacts:
