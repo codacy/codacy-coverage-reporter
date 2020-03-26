@@ -257,7 +257,7 @@ workflows:
             mkdir -p ~/workdir/tmp-artifacts/
             mv ~/workdir/target/graalvm-native-image/codacy-coverage-reporter ~/workdir/tmp-artifacts/codacy-coverage-reporter-darwin-$(cat .version)
           persist_to_workspace: true
-          persist_to_workspace_folder: "artifacts/*"
+          persist_to_workspace_folder: "tmp-artifacts/*"
           requires:
             - test_and_coverage
       - package_artifacts:
