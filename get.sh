@@ -75,19 +75,12 @@ fi
 
 download() {
     local url="$1"
-    local output="$2"
+    local output="${2:--}"
+
     if [ -x "$(which curl)" ]; then
-        if [ -z "$output" ]; then
-            curl -LSs "$url"
-        else
-            curl -# -LS -o "$output" "$url"
-        fi
+        curl -# -LS "$url" -o "$output"
     elif [ -x "$(which wget)" ] ; then
-        if [ -z "$output" ]; then
-            wget -O - "$url"
-        else
-            wget -O "$output" "$url"
-        fi
+        wget "$url" -O "$output"
     else
         fatal "Could not find curl or wget, please install one."
     fi
@@ -96,25 +89,22 @@ download() {
 get_version() {
     if [ "$CODACY_REPORTER_VERSION" == "latest" ]; then
         bintray_latest_api_url="https://api.bintray.com/packages/codacy/Binaries/codacy-coverage-reporter/versions/_latest"
-        latest="$(download $bintray_latest_api_url | sed -e 's/.*name.*\([0-9]\+[.][0-9]\+[.][0-9]\+\).*/\1/')"
-        echo $latest
+        download $bintray_latest_api_url | sed -e 's/.*name.*\([0-9]\+[.][0-9]\+[.][0-9]\+\).*/\1/'
     else
         echo "$CODACY_REPORTER_VERSION"
     fi
 }
 
-download_using_wget_or_curl() {
-    local architecture=$1
-    bintray_api_url="https://dl.bintray.com/codacy/Binaries/$(get_version)/codacy-coverage-reporter-$architecture"
-    
-    download "$bintray_api_url" "$codacy_reporter"
-}
-
 download_coverage_reporter() {
+    local binary_name=$1
+
     if [ ! -f "$codacy_reporter" ]
     then
         log "$i" "Download the codacy reporter $1... ($CODACY_REPORTER_VERSION)"
-        download_using_wget_or_curl $1
+
+        bintray_api_url="https://dl.bintray.com/codacy/Binaries/$(get_version)/$binary_name"
+
+        download "$bintray_api_url" "$codacy_reporter"
     else
         log "$i" "Using codacy reporter $1 from cache"
     fi
@@ -126,14 +116,14 @@ run() {
 
 codacy_reporter_native_start_cmd() {
     codacy_reporter="$codacy_temp_folder/codacy-coverage-reporter"    
-    download_coverage_reporter "linux"
+    download_coverage_reporter "codacy-coverage-reporter-linux"
     chmod +x $codacy_reporter
     run_command="$codacy_reporter"
 }
 
 codacy_reporter_jar_start_cmd() {
     codacy_reporter="$codacy_temp_folder/codacy-coverage-reporter-assembly.jar"
-    download_coverage_reporter "jar"
+    download_coverage_reporter "codacy-coverage-reporter-assembly.jar"
     run_command="java -jar \"$codacy_reporter\""
 }
 
