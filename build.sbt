@@ -16,7 +16,7 @@ scalacOptions := Seq(
 
 // Runtime dependencies
 libraryDependencies ++= Seq(
-  "com.codacy" %% "coverage-parser" % "2.5.4",
+  "com.codacy" %% "coverage-parser" % "2.5.6",
   "com.github.alexarchambault" %% "case-app" % "1.2.0",
   logbackClassic,
   scalaLogging
