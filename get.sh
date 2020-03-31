@@ -73,11 +73,21 @@ if [ -z "$CODACY_REPORTER_VERSION" ]; then
     CODACY_REPORTER_VERSION="latest"
 fi
 
-curl_or_wget() {
+download() {
+    local url="$1"
+    local output="$2"
     if [ -x "$(which curl)" ]; then
-        echo "curl -LSs"
+        if [ -z "$output" ]; then
+            curl -LSs "$url"
+        else
+            curl -# -LS -o "$output" "$url"
+        fi
     elif [ -x "$(which wget)" ] ; then
-        echo "wget -O"
+        if [ -z "$output" ]; then
+            wget -O - "$url"
+        else
+            wget -O "$output" "$url"
+        fi
     else
         fatal "Could not find curl or wget, please install one."
     fi
@@ -86,7 +96,7 @@ curl_or_wget() {
 get_version() {
     if [ "$CODACY_REPORTER_VERSION" == "latest" ]; then
         bintray_latest_api_url="https://api.bintray.com/packages/codacy/Binaries/codacy-coverage-reporter/versions/_latest"
-        latest="$($(curl_or_wget) $bintray_latest_api_url | sed -e 's/.*name.*\([0-9]\+[.][0-9]\+[.][0-9]\+\).*/\1/')"
+        latest="$(download $bintray_latest_api_url | sed -e 's/.*name.*\([0-9]\+[.][0-9]\+[.][0-9]\+\).*/\1/')"
         echo $latest
     else
         echo "$CODACY_REPORTER_VERSION"
@@ -94,9 +104,9 @@ get_version() {
 }
 
 download_using_wget_or_curl() {
-    bintray_api_url="https://dl.bintray.com/codacy/Binaries/$(get_version)/codacy-coverage-reporter-$1"
-
-    $($(curl_or_wget) -o "$codacy_reporter" "$bintray_api_url")
+    local architecture=$1
+    bintray_api_url="https://dl.bintray.com/codacy/Binaries/$(get_version)/codacy-coverage-reporter-$architecture"
+    $(download "$bintray_api_url" "$codacy_reporter")
 }
 
 download_coverage_reporter() {
