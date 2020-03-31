@@ -106,7 +106,8 @@ get_version() {
 download_using_wget_or_curl() {
     local architecture=$1
     bintray_api_url="https://dl.bintray.com/codacy/Binaries/$(get_version)/codacy-coverage-reporter-$architecture"
-    $(download "$bintray_api_url" "$codacy_reporter")
+    
+    download "$bintray_api_url" "$codacy_reporter"
 }
 
 download_coverage_reporter() {
