@@ -97,6 +97,7 @@ get_version() {
 
 download_coverage_reporter() {
     local binary_name=$1
+    local codacy_reporter=$2
 
     if [ ! -f "$codacy_reporter" ]
     then
@@ -115,15 +116,15 @@ run() {
 }
 
 codacy_reporter_native_start_cmd() {
-    codacy_reporter="$codacy_temp_folder/codacy-coverage-reporter"    
-    download_coverage_reporter "codacy-coverage-reporter-linux"
+    local codacy_reporter="$codacy_temp_folder/codacy-coverage-reporter"    
+    download_coverage_reporter "codacy-coverage-reporter-linux" "$codacy_reporter"
     chmod +x $codacy_reporter
     run_command="$codacy_reporter"
 }
 
 codacy_reporter_jar_start_cmd() {
-    codacy_reporter="$codacy_temp_folder/codacy-coverage-reporter-assembly.jar"
-    download_coverage_reporter "codacy-coverage-reporter-assembly.jar"
+    local codacy_reporter="$codacy_temp_folder/codacy-coverage-reporter-assembly.jar"
+    download_coverage_reporter "codacy-coverage-reporter-assembly.jar" "$codacy_reporter"
     run_command="java -jar \"$codacy_reporter\""
 }
 
