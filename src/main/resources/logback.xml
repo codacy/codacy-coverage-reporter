@@ -1,6 +1,7 @@
 <configuration>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <withJansi>false</withJansi>
         <encoder>
             <pattern>%date %-16level %-10.-10logger %message %n</pattern>
         </encoder>
