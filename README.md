@@ -69,7 +69,7 @@ You can find all versions in the [Releases tab](https://github.com/codacy/codacy
 
 Using GitHub Actions? Check out the [codacy/coverage-coverage-reporter action](https://github.com/codacy/codacy-coverage-reporter-action#codacy-coverage-reporter-action).
 
-If the automated script does not cover your use case, [check the manual installation methods](docs/installation.md).
+If the automated script does not cover your use case, [check the manual installation methods](docs/installation.md#manually-downloading-the-native-binary).
 
 ## CircleCI Orb
 
