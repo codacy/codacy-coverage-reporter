@@ -89,7 +89,7 @@ download() {
 get_version() {
     if [ "$CODACY_REPORTER_VERSION" == "latest" ]; then
         bintray_latest_api_url="https://api.bintray.com/packages/codacy/Binaries/codacy-coverage-reporter/versions/_latest"
-        download $bintray_latest_api_url | sed -e 's/.*name.*\([0-9]\+[.][0-9]\+[.][0-9]\+\).*/\1/'
+        download $bintray_latest_api_url | sed -e 's/.*name[^0-9]*\([0-9]\{1,\}[.][0-9]\{1,\}[.][0-9]\{1,\}\).*/\1/'
     else
         echo "$CODACY_REPORTER_VERSION"
     fi
