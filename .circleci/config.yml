@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  codacy: codacy/base@2.4.1
+  codacy: codacy/base@2.12.1
 
 references:
   circleci_job: &circleci_job
@@ -19,6 +19,8 @@ commands:
         type: integer
         default: 0
     steps:
+      - attach_workspace:
+          at: ~/workdir
       - run:
           name: test coverage reporting
           command: |
@@ -91,12 +93,13 @@ jobs:
           at: ~/workdir
       - run: |
           mkdir -p ~/workdir/artifacts/
-          mv ~/workdir/target/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/artifacts/
-          upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-linux-$(cat .version) ~/workdir/target/graalvm-native-image/codacy-coverage-reporter
+          mv ~/workdir/tmp-artifacts/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/artifacts/
+          upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-linux-$(cat .version) ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux
+          upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-darwin-$(cat .version) ~/workdir/tmp-artifacts/codacy-coverage-reporter-darwin
       - persist_to_workspace:
           root: ~/workdir
           paths:
-            - "*"
+            - artifacts/*
 
   it_coverage_script_alpine:
     docker:
@@ -146,6 +149,36 @@ jobs:
           executor: bash
           error_code: << parameters.error_code >>
 
+  it_coverage_script_macosx:
+    executor: codacy/osx
+    working_directory: ~/workdir
+    steps:
+      - attach_workspace:
+          at: ~/workdir
+      - run:
+          name: prepare the environment
+          command: |
+            brew install mockserver coreutils
+            mkdir -p .codacy-coverage
+            cp $HOME/workdir/artifacts/codacy-coverage-reporter-darwin-$(cat $HOME/workdir/.version) .codacy-coverage/codacy-coverage-reporter
+      - run:
+          name: test on osx
+          command: |
+            echo "Start and provision the mockserver"
+            nohup mockserver -logLevel INFO -serverPort 1080 &
+            gtimeout 60 bash -c 'while [[ "$(curl -X PUT -o /dev/null -w ''%{http_code}'' localhost:1080/mockserver/status)" != "200" ]]; do sleep 2; done' || false
+            curl -X PUT -d "$(cat integration-tests/mock-server-config.json)" http://localhost:1080/mockserver/expectation
+
+            echo "Run the test"
+            set +e
+            # the following line ensure that we are using the cached binary
+            export CODACY_REPORTER_VERSION=inexistent
+            export CODACY_PROJECT_TOKEN=$TEST_CODACY_PROJECT_TOKEN
+            sh get.sh report --commit-uuid $TEST_COMMIT_UUID  -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
+            export ERROR_CODE=$?
+            if [ $ERROR_CODE -ne 0 ]; then echo "expected an error code 0 and got $ERROR_CODE instead"; exit 1; fi
+            echo "test completed with the expected error code: 0"
+        
 workflows:
   version: 2
   compile_test_deploy:
@@ -189,12 +222,40 @@ workflows:
           name: create_artifacts
           cmd: |
             sbt "assembly;graalvm-native-image:packageBin"
+            mkdir -p ~/workdir/tmp-artifacts
+            mv target/graalvm-native-image/codacy-coverage-reporter ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux
+            mv target/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/tmp-artifacts
           persist_to_workspace: true
+          requires:
+            - test_and_coverage
+      - codacy/sbt_osx:
+          name: create_artifacts_for_osx
+          cmd: |
+            # TODO GraalVM version should be in a single place
+            export GRAAL_VERSION=20.0.0
+            export TARGET_GRAAL="./target/graalvm-$GRAAL_VERSION.tar.gz"
+            mkdir -p target
+            if [[ ! -e $TARGET_GRAAL ]]; then
+              curl -L "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-$GRAAL_VERSION/graalvm-ce-java8-darwin-amd64-$GRAAL_VERSION.tar.gz" -o "$TARGET_GRAAL"
+            fi
+            sudo tar -xf $TARGET_GRAAL -C /Library/Java/JavaVirtualMachines
+            /usr/libexec/java_home -V
+            export PATH="$PATH:/Library/Java/JavaVirtualMachines/graalvm-ce-java8-$GRAAL_VERSION/Contents/Home/bin"
+            sudo gu install native-image
+            sbt "set graalVMNativeImageGraalVersion := None; set graalVMNativeImageOptions -= \"--static\"; graalvm-native-image:packageBin"
+            mkdir -p  ~/workdir/tmp-artifacts
+            mv $HOME/workdir/target/graalvm-native-image/codacy-coverage-reporter $HOME/workdir/tmp-artifacts/codacy-coverage-reporter-darwin
+          persist_to_workspace: true
+          persist_to_workspace_path: "tmp-artifacts/codacy-coverage-reporter-darwin"
           requires:
             - test_and_coverage
       - package_artifacts:
           requires:
             - create_artifacts
+            - create_artifacts_for_osx
+      - it_coverage_script_macosx:
+          requires:
+            - package_artifacts
       - it_coverage_script_alpine:
           requires:
             - package_artifacts
@@ -212,6 +273,7 @@ workflows:
             - package_artifacts
       - publish_circleci_artifacts:
           requires:
+            - it_coverage_script_macosx
             - it_coverage_script_alpine
             - it_coverage_script_ubuntu_success
             - it_coverage_script_ubuntu_failure
@@ -224,6 +286,7 @@ workflows:
           name: publish_bintray
           cmd: |
             curl -T ~/workdir/artifacts/codacy-coverage-reporter-linux-$(cat .version) -ucodacy-ci:$BINTRAY_API_KEY -H "X-Bintray-Package:codacy-coverage-reporter" -H "X-Bintray-Version:$(cat .version)" https://api.bintray.com/content/codacy/Binaries/$(cat .version)/codacy-coverage-reporter-linux
+            curl -T ~/workdir/artifacts/codacy-coverage-reporter-darwin-$(cat .version) -ucodacy-ci:$BINTRAY_API_KEY -H "X-Bintray-Package:codacy-coverage-reporter" -H "X-Bintray-Version:$(cat .version)" https://api.bintray.com/content/codacy/Binaries/$(cat .version)/codacy-coverage-reporter-darwin
             curl -T ~/workdir/artifacts/codacy-coverage-reporter-assembly-$(cat .version).jar -ucodacy-ci:$BINTRAY_API_KEY -H "X-Bintray-Package:codacy-coverage-reporter" -H "X-Bintray-Version:$(cat .version)" https://api.bintray.com/content/codacy/Binaries/$(cat .version)/codacy-coverage-reporter-assembly.jar
             curl -X POST -ucodacy-ci:$BINTRAY_API_KEY https://api.bintray.com/content/codacy/Binaries/codacy-coverage-reporter/$(cat .version)/publish
           filters:
@@ -232,7 +295,10 @@ workflows:
                 - master
           context: CodacyBintray
           requires:
-            - package_artifacts
+            - it_coverage_script_macosx
+            - it_coverage_script_alpine
+            - it_coverage_script_ubuntu_success
+            - it_coverage_script_ubuntu_failure
       - codacy/publish_ghr:
           name: publish_ghr
           path: ~/workdir/artifacts/
@@ -242,7 +308,10 @@ workflows:
               only:
                 - master
           requires:
-            - package_artifacts
+            - it_coverage_script_macosx
+            - it_coverage_script_alpine
+            - it_coverage_script_ubuntu_success
+            - it_coverage_script_ubuntu_failure
       - publish_dev:
           context: CodacyCircleCI
           requires:

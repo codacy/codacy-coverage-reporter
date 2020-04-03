@@ -116,8 +116,9 @@ run() {
 }
 
 codacy_reporter_native_start_cmd() {
+    local suffix=$1
     local codacy_reporter="$codacy_temp_folder/codacy-coverage-reporter"    
-    download_coverage_reporter "codacy-coverage-reporter-linux" "$codacy_reporter"
+    download_coverage_reporter "codacy-coverage-reporter-$suffix" "$codacy_reporter"
     chmod +x $codacy_reporter
     run_command="$codacy_reporter"
 }
@@ -131,7 +132,9 @@ codacy_reporter_jar_start_cmd() {
 run_command=""
 unamestr=`uname`
 if [ "$unamestr" = "Linux" ]; then
-    codacy_reporter_native_start_cmd
+    codacy_reporter_native_start_cmd "linux"
+elif [ "$unamestr" = "Darwin" ]; then
+    codacy_reporter_native_start_cmd "darwin"
 else
     codacy_reporter_jar_start_cmd
 fi
