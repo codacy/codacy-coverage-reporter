@@ -128,7 +128,7 @@ For a complete list of commands and options: `--help`
 
 ## Troubleshooting
 
-### JsonParseException while uploading C# coverage data
+### `JsonParseException` while uploading C# coverage data
 
 If you're using dotCover to generate coverage reports for your C# projects, you should [filter out xUnit files](https://www.jetbrains.com/help/dotcover/Running_Coverage_Analysis_from_the_Command_LIne.html#filters_cmd) from the coverage analysis as follows:
 
