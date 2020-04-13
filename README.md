@@ -128,6 +128,16 @@ For a complete list of commands and options: `--help`
 
 ## Troubleshooting
 
+### `JsonParseException` while uploading C# coverage data
+
+If you're using dotCover to generate coverage reports for your C# projects, you should [exclude xUnit files](https://www.jetbrains.com/help/dotcover/Running_Coverage_Analysis_from_the_Command_LIne.html#filters_cmd) from the coverage analysis as follows:
+
+```bash
+dotCover.exe cover ... /Filters=-:xunit*
+```
+
+By default, dotCover includes xUnit files in the coverage analysis and this results in larger coverage reports. This filter helps ensure that the resulting coverage data does not exceed the size limit accepted by the Codacy API when uploading the results.
+
 ### `Failed to upload report: Not Found`
 
 Error when running the command, then you'll probably have codacy-coverage-reporter 1.0.3 installed.
