@@ -85,7 +85,7 @@ The following table contains the formats supported and which coverage tools gene
 | Scala      | [sbt-jacoco](https://www.scala-sbt.org/sbt-jacoco/) <br> [scoverage](http://scoverage.org/) | JaCoCo <br> Cobertura | jacoco*.xml <br> cobertura.xml |
 | Javascript | [Istanbul](https://github.com/gotwarlost/istanbul) <br> [Poncho](https://github.com/deepsweet/poncho) <br> [Mocha](http://mochajs.org/) + [Blanket.js](https://github.com/alex-seville/blanket) | LCOV | lcov.info, lcov.dat, *.lcov |
 | Python     | [Coverage.py](https://coverage.readthedocs.io/en/coverage-5.0.3/) | Cobertura                 | cobertura.xml |
-| PHP        | [PHPUnit](https://phpunit.readthedocs.io/en/8.5/code-coverage-analysis.html) | PHPUnit XML <br> [Clover](https://confluence.atlassian.com/clover/using-clover-for-php-420973033.html) | coverage-xml/index.xml <br> clover.xml |
+| PHP        | [PHPUnit](https://phpunit.readthedocs.io/en/8.5/code-coverage-analysis.html) | PHPUnit XML (version <= 4) <br> [Clover](https://confluence.atlassian.com/clover/using-clover-for-php-420973033.html) | coverage-xml/index.xml <br> clover.xml |
 | Ruby       | [SimpleCov](https://github.com/colszowka/simplecov) | [Cobertura](https://github.com/dashingrocket/simplecov-cobertura) <br> [LCOV](https://github.com/fortissimo1997/simplecov-lcov) | cobertura.xml <br> lcov.info, lcov.dat, *.lcov |
 | C#         | [OpenCover](https://github.com/OpenCover/opencover) <br> [DotCover CLI](https://www.jetbrains.com/dotcover/) | OpenCover <br> DotCover-DetailedXML | opencover.xml <br> dotcover.xml |
 | Swift/Objective-C     | XCode Coverage | [Check here information about reports for this language](docs/swift_objectivec.md) |  |
@@ -178,6 +178,13 @@ If you are experiencing segmentation faults uploading the coverage (due to [orac
 ```sh
 echo "$(dig +short api.codacy.com | tail -n1) api.codacy.com" >> /etc/hosts
 ```
+
+### `coverage-xml/index.xml generated an empty result`
+
+If you are using PHPUnit version 5 or above to generate your coverage report, you must output the report using the clover format. The codacy-coverage-reporter supports the PHPUnit xml format only for versions equal or lower than 4.
+You can change the output format by replacing the `--coverage-xml <dir>` flag by `--coverage-clover <file>`.
+
+For more information on the PHPUnit command line check [here](https://phpunit.readthedocs.io/en/9.1/textui.html).
 
 ## What is Codacy?
 
