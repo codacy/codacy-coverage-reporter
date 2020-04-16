@@ -179,6 +179,13 @@ If you are experiencing segmentation faults uploading the coverage (due to [orac
 echo "$(dig +short api.codacy.com | tail -n1) api.codacy.com" >> /etc/hosts
 ```
 
+### `coverage-xml/index.xml generated an empty result`
+
+If you are using PHPUnit version 5 or above to generate your coverage report, you must output the report using the clover format. The codacy-coverage-reporter supports the PHPUnit xml format only for versions equal or lower than 4.
+You can change the output format by replacing the `--coverage-xml <dir>` flag by `--coverage-clover <file>`.
+
+For more information on the PHPUnit command line check [here](https://phpunit.readthedocs.io/en/9.1/textui.html).
+
 ## What is Codacy?
 
 [Codacy](https://www.codacy.com/) is an Automated Code Review Tool that monitors your technical debt, helps you improve your code quality, teaches best practices to your developers, and helps you save time in Code Reviews.
