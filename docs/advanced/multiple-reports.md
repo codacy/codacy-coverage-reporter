@@ -2,18 +2,22 @@
 
 In order to send multiple reports for the same language, you need to upload each report separately with the flag `--partial` and then notify Codacy, after all reports were sent, with the `final` command.
 
-**_Example_**
+Example:
 
-1. `codacy-coverage-reporter report -l Java -r report1.xml --partial`
-1. `codacy-coverage-reporter report -l Java -r report2.xml --partial`
-1. `codacy-coverage-reporter final`
+```bash
+codacy-coverage-reporter report -l Java -r report1.xml --partial
+codacy-coverage-reporter report -l Java -r report2.xml --partial
+codacy-coverage-reporter final
+```
 
-**_Using the script_**
+Using the script:
 
-1. `bash <(curl -Ls https://coverage.codacy.com/get.sh) report -l Java -r report1.xml --partial`
-1. `bash <(curl -Ls https://coverage.codacy.com/get.sh) report -l Java -r report2.xml --partial`
-1. `bash <(curl -Ls https://coverage.codacy.com/get.sh) final`
+```bash
+bash <(curl -Ls https://coverage.codacy.com/get.sh) report -l Java -r report1.xml --partial
+bash <(curl -Ls https://coverage.codacy.com/get.sh) report -l Java -r report2.xml --partial
+bash <(curl -Ls https://coverage.codacy.com/get.sh) final
+```
 
 If you are sending reports with the partial flag for a certain language you should use it in all reports for that language to ensure the correct calculation of the coverage.
 
-It might also be possible to merge the reports before uploading them to Codacy, since most coverage tools support merge/aggregation, example: http://www.eclemma.org/jacoco/trunk/doc/merge-mojo.html.
+It might also be possible to merge the reports before uploading them to Codacy, since most coverage tools support merge/aggregation, for example: <http://www.eclemma.org/jacoco/trunk/doc/merge-mojo.html>.

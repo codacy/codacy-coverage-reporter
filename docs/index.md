@@ -2,27 +2,26 @@
 
 ## Authentication
 
-1. Find and copy a *Project API Token*. You can find the token within a repository *Settings* → *Integrations* → *Project API*.
-1. Set the *Project API Token* in your terminal, replacing `%Project_Token%` with your own:
+1.  Find and copy a *Project API Token*. You can find the token within a repository *Settings* → *Integrations* → *Project API*.
 
-```bash
-export CODACY_PROJECT_TOKEN=%Project_Token%
-```
+    !!! warning
+        You should keep your API token well protected, as it grants owner permissions to your projects.
 
-!!! warning
-    You should keep your API token well protected, as it grants owner permissions to your projects.
+1.  Set the *Project API Token* in your terminal, replacing `%Project_Token%` with your token:
+
+    ```bash
+    export CODACY_PROJECT_TOKEN=%Project_Token%
+    ```
+
+    To upload coverage to a self-hosted installation of Codacy you also need to set your installation URL, replacing `%Codacy_instance_URL%` with your URL:
+
+    ```bash
+    export CODACY_API_BASE_URL=%Codacy_instance_URL%:16006
+    ```
 
 !!! hint
     If you'd like to automate this process for multiple repositories you can [authenticate using an Account API Token](advanced/authenticating-using-account-token.md).
 
-!!! note
-    To upload coverage to a self-hosted installation of Codacy you need to set your installation URL:
-
-    ```bash
-    export CODACY_API_BASE_URL=<Codacy_instance_URL>:16006
-    ```
-
-    Or use the flag: `--codacy-api-base-url <Codacy_instance_URL>:16006`.
 
 ## Running Codacy Coverage Reporter
 
@@ -33,6 +32,7 @@ bash <(curl -Ls https://coverage.codacy.com/get.sh)
 ```
 
 ### Choose a specific version
+
 The script uses by default the latest version.
 
 If you want to specify a coverage reporter version, use `CODACY_REPORTER_VERSION` environment variable.
