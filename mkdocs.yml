@@ -23,6 +23,6 @@ nav:
       - "advanced/multiple-reports.md"
       - "advanced/installation-methods.md"
   - "Troubleshooting":
-      - "Common issues": "troubleshooting/common-issues.md"
-      - "Commit detection": "troubleshooting/commit-detection.md"
-      - "Swift & Objective-C support": "troubleshooting/swift-objectivec.md"
+      - "troubleshooting/common-issues.md"
+      - "troubleshooting/commit-detection.md"
+      - "troubleshooting/swift-objectivec.md"
