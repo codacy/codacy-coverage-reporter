@@ -9,7 +9,7 @@ Multi-language coverage reporter for Codacy https://www.codacy.com
 
 ## Setup
 
-[Get started](http://docs.dev.codacy.org/coverage-reporter)
+[Get started](https://github.com/codacy/codacy-coverage-reporter/tree/master/docs/index.md)
 
 ## What is Codacy?
 
