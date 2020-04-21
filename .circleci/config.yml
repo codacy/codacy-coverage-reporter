@@ -178,21 +178,7 @@ jobs:
             export ERROR_CODE=$?
             if [ $ERROR_CODE -ne 0 ]; then echo "expected an error code 0 and got $ERROR_CODE instead"; exit 1; fi
             echo "test completed with the expected error code: 0"
-
-  build_mkdocs:
-    docker:
-      - image: circleci/python:3.6.4
-    working_directory: ~/workdir
-    steps:
-      - attach_workspace:
-          at: ~/workdir
-      - run:
-          name: install dependencies
-          command: sudo pip install -r requirements.txt
-      - run:
-          name: build mkdocs
-          command: mkdocs build
-
+        
 workflows:
   version: 2
   compile_test_deploy:
@@ -201,9 +187,6 @@ workflows:
           write_sbt_version: true
       - pack_and_validate:
           context: CodacyCircleCI
-          requires:
-            - codacy/checkout_and_version
-      - build_mkdocs:
           requires:
             - codacy/checkout_and_version
       - codacy/sbt:
@@ -337,7 +320,7 @@ workflows:
           filters:
             branches:
               ignore:
-                - master
+              - master
       - publish_prod:
           context: CodacyCircleCI
           requires:
