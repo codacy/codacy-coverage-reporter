@@ -1,27 +1,21 @@
-# Installation methods
+# Installation
 
-## Automatic script (recommended)
+## Automatic script
 
-For Ubuntu:
+Requirements: bash, curl, glibc.
 
-```curl
+```bash
 bash <(curl -Ls https://coverage.codacy.com/get.sh)
 ```
 
-For Alpine Linux:
-
-```sh
-wget -qO - https://coverage.codacy.com/get.sh | sh
-```
-
-> To specify a coverage reporter version, use `CODACY_REPORTER_VERSION` environment variable.
+To specify a coverage reporter version, use `CODACY_REPORTER_VERSION` environment variable.
 
 ## CircleCI orb
 
 If you want to use Codacy with CircleCI and report coverage generated from your tests ran in CircleCI, you can use our [coverage reporter orb](https://circleci.com/orbs/registry/orb/codacy/coverage-reporter):
 
-!!! example
-  ```yaml
+Example:
+
     jobs:
       send-coverage-report:
         steps:
@@ -33,7 +27,6 @@ If you want to use Codacy with CircleCI and report coverage generated from your 
       coverage-example:
         jobs:
           - send-coverage-report
-  ```
 
 ## GitHub Action
 
