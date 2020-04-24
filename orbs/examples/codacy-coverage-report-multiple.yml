@@ -1,0 +1,26 @@
+description: Send multiple coverage reports to Codacy
+usage:
+  jobs:
+    codacy-coverage-report-1:
+      docker:
+        - image: circleci/openjdk:8-jdk
+      steps:
+        - checkout
+        - "run commands to generate the coverage result 1"
+        - coverage-reporter/send_report:
+            args: "report -l Java -r report1.xml --partial"
+    codacy-coverage-report-2:
+      docker:
+        - image: circleci/openjdk:8-jdk
+      steps:
+        - checkout
+        - "run commands to generate the coverage result 2"
+        - coverage-reporter/send_report:
+            args: "report -l Java -r report2.xml --partial"
+    codacy-coverage-report-final:
+      docker:
+        - image: circleci/openjdk:8-jdk
+      steps:
+        - coverage-reporter/send_report:
+            args: "final"
+  version: 2.1

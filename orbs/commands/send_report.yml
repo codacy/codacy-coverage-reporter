@@ -5,8 +5,12 @@ parameters:
     type: string
     default: latest
     description: "Specify Codacy's coverage reporter tool version"
+  args:
+    type: string
+    default: ""
+    description: "Specify Codacy's coverage reporter additional arguments"
 steps:
   - run:
       command: |
         export CODACY_REPORTER_VERSION=<< parameters.tool_version >>
-        bash <(curl -Ls https://coverage.codacy.com/get.sh)
+        bash <(curl -Ls https://coverage.codacy.com/get.sh) << parameters.args >>
