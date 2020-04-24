@@ -96,7 +96,7 @@ The reporter assumes the coverage reports filename follow the name convention. O
 
 ### Unsuported Languages
 
-If your language is not in the list of supported languages, you can still send coverage to Codacy. You can do it by providing the correct `--language` name and then add the `--force-language` flag.
+If your language is not in the list of supported languages, you can still send coverage to Codacy. You can do it by providing the correct `--language` name and then add the `--force-language` flag. For example: `bash <(curl -Ls https://coverage.codacy.com/get.sh) report --language Kotlin --force-language`.
 
 ## Commit SHA hash detection
 
