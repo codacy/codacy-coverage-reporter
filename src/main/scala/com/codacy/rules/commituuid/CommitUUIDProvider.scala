@@ -116,6 +116,7 @@ object CommitUUIDProvider extends StrictLogging {
       new CodefreshCIProvider,
       new CodeshipCIProvider,
       new DockerProvider,
+      new GitHubActionProvider,
       new GitlabProvider,
       new GreenhouseCIProvider,
       new HerokuCIProvider,
