@@ -9,8 +9,6 @@ e="\033[0;31m" # error
 l="\033[0;90m" # log test
 r="\033[0m" # reset
 
-# Temporary folder for downloaded files
-codacy_temp_folder=".codacy-coverage"
 
 # Logger
 # This function log messages
@@ -67,7 +65,11 @@ exit_trap() {
 trap exit_trap EXIT
 trap 'fatal Interrupted' INT
 
-mkdir -p "$codacy_temp_folder"
+# Temporary folder for downloaded files
+if [ -z "$CODACY_REPORTER_TMP_FOLDER" ]; then
+    CODACY_REPORTER_TMP_FOLDER=".codacy-coverage"
+fi
+mkdir -p "$CODACY_REPORTER_TMP_FOLDER"
 
 if [ -z "$CODACY_REPORTER_VERSION" ]; then
     CODACY_REPORTER_VERSION="latest"
@@ -117,14 +119,14 @@ run() {
 
 codacy_reporter_native_start_cmd() {
     local suffix=$1
-    local codacy_reporter="$codacy_temp_folder/codacy-coverage-reporter"    
+    local codacy_reporter="$CODACY_REPORTER_TMP_FOLDER/codacy-coverage-reporter"
     download_coverage_reporter "codacy-coverage-reporter-$suffix" "$codacy_reporter"
     chmod +x $codacy_reporter
     run_command="$codacy_reporter"
 }
 
 codacy_reporter_jar_start_cmd() {
-    local codacy_reporter="$codacy_temp_folder/codacy-coverage-reporter-assembly.jar"
+    local codacy_reporter="$CODACY_REPORTER_TMP_FOLDER/codacy-coverage-reporter-assembly.jar"
     download_coverage_reporter "codacy-coverage-reporter-assembly.jar" "$codacy_reporter"
     run_command="java -jar \"$codacy_reporter\""
 }
@@ -140,7 +142,7 @@ else
 fi
 
 if [ -z "$run_command" ]
-then 
+then
     fatal "Codacy coverage reporter command could not be found."
 fi
 

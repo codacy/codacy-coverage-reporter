@@ -32,7 +32,7 @@ Or use the flag: `--codacy-api-base-url <Codacy_instance_URL>:16006`.
 
 ## Running Codacy Coverage Reporter
 
-### Requirements 
+### Requirements
 
 - `bash` or `sh` (Use `bash` on Ubuntu)
 - `curl` or `wget`
@@ -121,6 +121,10 @@ In order to send multiple reports for the same language, you need to upload each
 If you are sending reports with the partial flag for a certain language you should use it in all reports for that language to ensure the correct calculation of the coverage.
 
 It might also be possible to merge the reports before uploading them to Codacy, since most coverage tools support merge/aggregation, example: http://www.eclemma.org/jacoco/trunk/doc/merge-mojo.html.
+
+## Caching
+
+The reporter downloads itself to a new folder named `.codacy-coverage` in the current working directory. To prevent downloading the reporter for every command, you can add this folder to your CI cache. You can specify your cache folder by setting the `CODACY_REPORTER_TMP_FOLDER` variable. For example: `CODACY_REPORTER_TMP_FOLDER=/tmp/.codacy-coverage`.
 
 ## Other commands
 
