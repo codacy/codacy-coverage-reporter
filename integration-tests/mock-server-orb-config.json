@@ -1,0 +1,11 @@
+{
+  "httpRequest": {
+    "path": "/commit/.*/coverageFinal"
+  },
+  "httpResponse": {
+    "statusCode": 200,
+    "body": {
+      "success": "Report sent!"
+    }
+  }
+}

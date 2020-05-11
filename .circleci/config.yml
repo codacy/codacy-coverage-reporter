@@ -35,6 +35,22 @@ commands:
             if [ $ERROR_CODE -ne << parameters.error_code >> ]; then echo "expected an error code << parameters.error_code >> and got $ERROR_CODE instead"; exit 1; fi
             echo "test completed with the expected error code: << parameters.error_code >>"
 
+  start_mockserver_curl:
+    description: "Starts the mockserver"
+    parameters:
+      config_path:
+        type: string
+      error_code:
+        type: integer
+        default: 0
+    steps:
+      - run:
+          name: wait for mockserver
+          command: timeout 60 bash -c 'while [[ "$(curl -X PUT -o /dev/null -w ''%{http_code}'' localhost:1080/mockserver/status)" != "200" ]]; do sleep 2; done' || false
+      - run:
+          name: configure mock server
+          command: curl -v -X PUT localhost:1080/mockserver/expectation -d "$(cat << parameters.config_path >>)"
+
 jobs:
   publish_circleci_artifacts:
     machine: true
@@ -139,12 +155,8 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/workdir
-      - run:
-          name: wait for mockserver
-          command: timeout 60 bash -c 'while [[ "$(curl -X PUT -o /dev/null -w ''%{http_code}'' localhost:1080/mockserver/status)" != "200" ]]; do sleep 2; done' || false
-      - run:
-          name: configure mock server
-          command: curl -v -X PUT localhost:1080/mockserver/expectation -d "$(cat << parameters.config_path >>)"
+      - start_mockserver_curl:
+          config_path: << parameters.config_path >>
       - run_coverage_reporting:
           executor: bash
           error_code: << parameters.error_code >>
@@ -178,7 +190,25 @@ jobs:
             export ERROR_CODE=$?
             if [ $ERROR_CODE -ne 0 ]; then echo "expected an error code 0 and got $ERROR_CODE instead"; exit 1; fi
             echo "test completed with the expected error code: 0"
-        
+  it_circleci_orb:
+    machine: true
+    working_directory: ~/workdir
+    steps:
+      - attach_workspace:
+          at: ~/workdir
+      - run: docker run -d -p 1080:1080 mockserver/mockserver
+      - start_mockserver_curl:
+          config_path: integration-tests/mock-server-orb-config.json
+      - run: curl https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh --fail --show-error | sudo bash
+      - run:
+          name: Add coverage reporter published orb version to integration test
+          command: |
+            echo "" >> integration-tests/config.yml
+            echo "orbs:" >> integration-tests/config.yml
+            echo "  codacy-coverage-reporter: codacy/coverage-reporter@dev:$(cat .version)" >> integration-tests/config.yml
+      - run: sudo usermod -aG docker $USER
+      - run: sudo circleci local execute --skip-checkout true --config integration-tests/config.yml --job send-coverage-report
+
 workflows:
   version: 2
   compile_test_deploy:
@@ -330,3 +360,10 @@ workflows:
             branches:
               only:
                 - master
+      - it_circleci_orb:
+          requires:
+            - publish_dev
+          filters:
+            branches:
+              ignore:
+              - master

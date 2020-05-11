@@ -1,0 +1,21 @@
+## This is a test only file
+version: 2.1
+jobs:
+  send-coverage-report:
+    docker:
+      - image: circleci/openjdk:8-jdk
+    environment:
+      - CODACY_API_BASE_URL: http://localhost:1080 # mockserver port
+    steps:
+      - checkout
+      - codacy-coverage-reporter/send_report:
+          coverage-reports: integration-tests/test_dotcover.xml
+          project-token: token
+workflows:
+  version: 2
+  compile_test_deploy:
+    jobs:
+      - send-coverage-report
+### Coverage reporter orb name/version is added on CircleCI build
+# orbs:
+  # codacy-coverage-reporter: codacy/coverage-reporter@dev:8.0.0-featuresendcoverageorb.f83e70d
