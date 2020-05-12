@@ -4,7 +4,7 @@
 
 If you'd like to automate uploading coverage for multiple repositories you can authenticate using an Account API Token:
 
-1. Create an Account API token on Codacy. You can find the token in *Your account* → *API tokens*
+1. Create an Account API token on Codacy. You can find the token in *Your account* → *Access Management*
 1. Set the API token in your terminal, replacing *%API_Token%* with your own token
 1. Set your repository name in your terminal, replacing *%Repo_Name%*
 1. Set your username in your terminal, replacing *%Username%*
