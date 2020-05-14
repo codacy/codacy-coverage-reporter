@@ -132,6 +132,18 @@ For a complete list of commands and options: `--help`
 
 ## Troubleshooting
 
+### Exception in thread "main" java.net.UnknownHostException
+
+One of the requirements for coverage reporter to send results to Codacy is `glibc`. 
+To install it on Alpine Linux:
+
+```
+apk --no-cache add openssl wget
+wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
+wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.31-r0/glibc-2.31-r0.apk
+apk add glibc-2.31-r0.apk
+```
+
 ### `JsonParseException` while uploading C# coverage data
 
 If you're using dotCover to generate coverage reports for your C# projects, you should [exclude xUnit files](https://www.jetbrains.com/help/dotcover/Running_Coverage_Analysis_from_the_Command_LIne.html#filters_cmd) from the coverage analysis as follows:
