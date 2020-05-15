@@ -2,7 +2,7 @@ import codacy.libs._
 
 name := "codacy-coverage-reporter"
 
-scalaVersion := "2.12.10"
+scalaVersion := "2.12.11"
 
 scalacOptions := Seq(
   "-deprecation",
@@ -18,8 +18,7 @@ scalacOptions := Seq(
 libraryDependencies ++= Seq(
   "com.codacy" %% "coverage-parser" % "2.5.6",
   "com.github.alexarchambault" %% "case-app" % "1.2.0",
-  logbackClassic,
-  scalaLogging
+  "org.wvlet.airframe" %% "airframe-log" % "20.5.1"
 )
 
 // Test dependencies
@@ -54,9 +53,14 @@ scmInfo := Some(
 fork in Test := true
 cancelable in Global := true
 
+javacOptions ++= Seq("-source", "11", "-target", "11")
+
 enablePlugins(GraalVMNativeImagePlugin)
-graalVMNativeImageGraalVersion := Some("20.0.0-java8")
+graalVMNativeImageGraalVersion := Some("20.0.0-java11")
+
 graalVMNativeImageOptions := Seq(
+  "--verbose",
+  "--no-server",
   "--enable-http",
   "--enable-https",
   "--enable-url-protocols=http,https,file,jar",
@@ -67,5 +71,21 @@ graalVMNativeImageOptions := Seq(
   "-H:+ReportExceptionStackTraces",
   "--no-fallback",
   "--initialize-at-build-time",
-  "--report-unsupported-elements-at-runtime"
+  "--report-unsupported-elements-at-runtime",
+  "-H:IncludeResources=\"logback.xml\"",
+  "-H:UseMuslC=/opt/graalvm/stage/resources/bundle/"
 )
+
+val getMuslBundle = taskKey[Unit]("Fetch Musl bundle")
+
+getMuslBundle := {
+  import scala.sys.process._
+
+  // this has to be done in Java
+  if (!(baseDirectory.value / "src" / "graal" / "bundle").exists) {
+    "curl -L -o musl.tar.gz https://github.com/gradinac/musl-bundle-example/releases/download/v1.0/musl.tar.gz".!
+    "tar -xvzf musl.tar.gz --directory src/graal".!
+  }
+}
+
+GraalVMNativeImage / packageBin := (GraalVMNativeImage / packageBin).dependsOn(getMuslBundle).value

@@ -16,13 +16,13 @@ import com.codacy.model.configuration.{
 }
 import com.codacy.parsers.CoverageParser
 import com.codacy.transformation.PathPrefixer
-import com.typesafe.scalalogging.StrictLogging
 import com.codacy.plugins.api.languages.Languages
 import com.codacy.rules.commituuid.CommitUUIDProvider
+import wvlet.log.LogSupport
 
 import scala.collection.JavaConverters._
 
-class ReportRules(coverageServices: => CoverageServices) extends StrictLogging {
+class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
 
   private val rootProjectDir = new File(System.getProperty("user.dir"))
   private val rootProjectDirIterator = Files

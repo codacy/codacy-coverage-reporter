@@ -1,6 +1,6 @@
 resolvers := Seq(DefaultMavenRepository, Resolver.jcenterRepo, Resolver.sonatypeRepo("releases"))
 
-addSbtPlugin("com.typesafe.sbt" % "sbt-native-packager" % "1.6.1")
+addSbtPlugin("com.typesafe.sbt" % "sbt-native-packager" % "1.7.2")
 addSbtPlugin("com.codacy" % "codacy-sbt-plugin" % "18.0.3")
 
 // Publish
