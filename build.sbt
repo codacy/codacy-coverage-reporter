@@ -1,3 +1,5 @@
+import java.net.URL
+
 import codacy.libs._
 
 name := "codacy-coverage-reporter"
@@ -72,19 +74,17 @@ graalVMNativeImageOptions := Seq(
   "--no-fallback",
   "--initialize-at-build-time",
   "--report-unsupported-elements-at-runtime",
-  "-H:IncludeResources=\"logback.xml\"",
   "-H:UseMuslC=/opt/graalvm/stage/resources/bundle/"
 )
 
 val getMuslBundle = taskKey[Unit]("Fetch Musl bundle")
 
 getMuslBundle := {
-  import scala.sys.process._
-
-  // this has to be done in Java
   if (!(baseDirectory.value / "src" / "graal" / "bundle").exists) {
-    "curl -L -o musl.tar.gz https://github.com/gradinac/musl-bundle-example/releases/download/v1.0/musl.tar.gz".!
-    "tar -xvzf musl.tar.gz --directory src/graal".!
+    TarDownloader.downloadAndExtract(
+      new URL("https://github.com/gradinac/musl-bundle-example/releases/download/v1.0/musl.tar.gz"),
+      baseDirectory.value / "src" / "graal"
+    )
   }
 }
 
