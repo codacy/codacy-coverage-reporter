@@ -4,7 +4,7 @@ import java.io.File
 
 import com.codacy.rules.commituuid.providers._
 import com.codacy.model.configuration.CommitUUID
-import com.typesafe.scalalogging.StrictLogging
+import wvlet.log.LogSupport
 
 import com.codacy.api.helpers.vcs.{CommitInfo, GitClient}
 import scala.util.{Failure, Success}
@@ -61,7 +61,7 @@ trait CommitUUIDProvider {
   *
   * This object provides a commit uuid from various providers
   */
-object CommitUUIDProvider extends StrictLogging {
+object CommitUUIDProvider extends LogSupport {
 
   /** Get from all providers
     *

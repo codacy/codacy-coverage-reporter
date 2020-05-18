@@ -14,11 +14,11 @@ import com.codacy.model.configuration.{
   ProjectTokenAuthenticationConfig,
   ReportConfig
 }
-import com.typesafe.scalalogging.StrictLogging
+import wvlet.log.LogSupport
 
 import scala.util.Try
 
-class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, String]) extends StrictLogging {
+class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, String]) extends LogSupport {
   private[rules] val publicApiBaseUrl = "https://api.codacy.com"
 
   lazy val validatedConfig: Either[String, Configuration] = {

@@ -2,12 +2,13 @@ package com.codacy
 
 import com.codacy.configuration.parser.{CommandConfiguration, ConfigurationParsingApp}
 import com.codacy.di.Components
-import com.codacy.helpers.LoggerHelper
 import com.codacy.model.configuration.{FinalConfig, ReportConfig}
-import com.typesafe.scalalogging.StrictLogging
 import com.codacy.rules.ConfigurationRules
+import wvlet.airframe.log
+import wvlet.log.{LogSupport, Logger}
 
-object CodacyCoverageReporter extends ConfigurationParsingApp with StrictLogging {
+object CodacyCoverageReporter extends ConfigurationParsingApp with LogSupport {
+  log.initNoColor
 
   def run(commandConfig: CommandConfiguration): Int = {
     val noAvailableTokens = commandConfig.baseConfig.projectToken.isEmpty && commandConfig.baseConfig.apiToken.isEmpty
@@ -32,9 +33,10 @@ object CodacyCoverageReporter extends ConfigurationParsingApp with StrictLogging
 
     configRules.validatedConfig.flatMap { validatedConfig =>
       val components = new Components(validatedConfig)
-      LoggerHelper.setLoggerLevel(logger, validatedConfig.baseConfig.debug)
 
-      logger.debug(validatedConfig.toString)
+      if (validatedConfig.baseConfig.debug) {
+        Logger("com.codacy").setLogLevel(wvlet.log.LogLevel.DEBUG)
+      }
 
       validatedConfig match {
         case config: ReportConfig =>
