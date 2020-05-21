@@ -20,9 +20,7 @@ abstract class ConfigurationParsingApp extends CommandAppWithPreCommand[BaseComm
 
 @AppName("codacy-coverage-reporter")
 @AppVersion(Option(BaseCommand.getClass.getPackage.getImplementationVersion).getOrElse("dev"))
-@ProgName(
-  s"java -cp codacy-coverage-reporter-assembly-${Option(BaseCommand.getClass.getPackage.getImplementationVersion).getOrElse("dev")}.jar"
-)
+@ProgName("codacy-coverage-reporter")
 case class BaseCommand()
 
 sealed trait CommandConfiguration {
