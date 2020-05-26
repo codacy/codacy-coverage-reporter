@@ -24,13 +24,14 @@ commands:
       - run:
           name: test coverage reporting
           command: |
-            export CODACY_PROJECT_TOKEN=$TEST_CODACY_PROJECT_TOKEN
+            export CODACY_PROJECT_TOKEN='TEST_CODACY_PROJECT_TOKEN'
+            export TEST_CODACY_REPORT_PATH='integration-tests/test_dotcover.xml'
             set +e
             mkdir -p .codacy-coverage
             cp "$HOME/workdir/artifacts/codacy-coverage-reporter-linux-$(cat $HOME/workdir/.version)" ".codacy-coverage/codacy-coverage-reporter"
             # the following line ensure that we are using the cached binary
             export CODACY_REPORTER_VERSION=inexistent
-            << parameters.executor >> get.sh report --commit-uuid $TEST_COMMIT_UUID  -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
+            << parameters.executor >> get.sh report --commit-uuid 'TEST_COMMIT_UUID'  -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
             export ERROR_CODE=$?
             if [ $ERROR_CODE -ne << parameters.error_code >> ]; then echo "expected an error code << parameters.error_code >> and got $ERROR_CODE instead"; exit 1; fi
             echo "test completed with the expected error code: << parameters.error_code >>"
@@ -173,8 +174,9 @@ jobs:
             set +e
             # the following line ensure that we are using the cached binary
             export CODACY_REPORTER_VERSION=inexistent
-            export CODACY_PROJECT_TOKEN=$TEST_CODACY_PROJECT_TOKEN
-            sh get.sh report --commit-uuid $TEST_COMMIT_UUID  -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
+            export CODACY_PROJECT_TOKEN='TEST_CODACY_PROJECT_TOKEN'
+            export TEST_CODACY_REPORT_PATH='integration-tests/test_dotcover.xml'
+            sh get.sh report --commit-uuid 'TEST_COMMIT_UUID'  -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
             export ERROR_CODE=$?
             if [ $ERROR_CODE -ne 0 ]; then echo "expected an error code 0 and got $ERROR_CODE instead"; exit 1; fi
             echo "test completed with the expected error code: 0"
@@ -186,7 +188,6 @@ workflows:
       - codacy/checkout_and_version:
           write_sbt_version: true
       - pack_and_validate:
-          context: CodacyCircleCI
           requires:
             - codacy/checkout_and_version
       - codacy/sbt:
