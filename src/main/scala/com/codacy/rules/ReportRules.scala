@@ -92,16 +92,14 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
     if (report.fileReports.isEmpty)
       Left(s"The provided coverage report ${file.getAbsolutePath} generated an empty result.")
     else {
-      val codacyReportFilename =
-        s"${file.getAbsoluteFile.getParent}${File.separator}codacy-coverage.json"
-      logger.debug(s"Saving parsed report to $codacyReportFilename")
-      val codacyReportFile = new File(codacyReportFilename)
+      val codacyReportFile = File.createTempFile("codacy-coverage-", ".json")
 
+      logger.debug(s"Saving parsed report to ${codacyReportFile.getAbsolutePath}")
       logger.debug(report.toString)
       FileHelper.writeJsonToFile(codacyReportFile, report)
 
       logUploadedFileInfo(codacyReportFile)
-      Right(codacyReportFilename)
+      Right(codacyReportFile.getAbsolutePath)
     }
   }
 
