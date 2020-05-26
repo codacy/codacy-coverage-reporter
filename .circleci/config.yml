@@ -188,6 +188,7 @@ workflows:
       - codacy/checkout_and_version:
           write_sbt_version: true
       - pack_and_validate:
+          context: CodacyCircleCI
           requires:
             - codacy/checkout_and_version
       - codacy/sbt:
