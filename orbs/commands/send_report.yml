@@ -16,6 +16,7 @@ parameters:
 
 steps:
   - run:
+      name: Upload Coverage Results to Codacy
       command: |
         export CODACY_REPORTER_VERSION=<< parameters.tool_version >>
         export CODACY_PROJECT_TOKEN=<< parameters.project-token >>
