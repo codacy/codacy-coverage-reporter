@@ -144,6 +144,13 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
     coverageResponse match {
       case SuccessfulResponse(value) =>
         logger.info(s"Coverage data uploaded. ${value.success}")
+        if (config.partial) {
+          logger.info(
+            "To complete the reporting process, call the coverage-reporter with a final flag. " +
+              "check https://github.com/codacy/codacy-coverage-reporter#multiple-coverage-reports-for-the-same-language " +
+              "for more information."
+          )
+        }
         Right(())
       case failed: FailedResponse =>
         val message = handleFailedResponse(failed)
