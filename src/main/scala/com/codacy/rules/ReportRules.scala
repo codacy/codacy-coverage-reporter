@@ -38,7 +38,7 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
       val filesEither = guessReportFiles(config.coverageReports, rootProjectDirIterator)
 
       filesEither.flatMap { files =>
-        def sendFilesReport(partial: Boolean) = {
+        def sendFilesReport(partial: Boolean = config.partial) = {
           val finalConfig = config.copy(partial = partial)
           files
             .map { file =>
@@ -63,7 +63,7 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
             f <- finalReport(FinalConfig(config.baseConfig))
           } yield f
         } else {
-          sendFilesReport(partial = true)
+          sendFilesReport()
         }
       }
     }
