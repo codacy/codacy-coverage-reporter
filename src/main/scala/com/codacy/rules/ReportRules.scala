@@ -38,26 +38,33 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
       val filesEither = guessReportFiles(config.coverageReports, rootProjectDirIterator)
 
       filesEither.flatMap { files =>
-        val finalConfig = if (files.length > 1 && !config.partial) {
+        def sendFilesReport(partial: Boolean) = {
+          val finalConfig = config.copy(partial = partial)
+          files
+            .map { file =>
+              logger.info(s"Parsing coverage data from: ${file.getAbsolutePath} ...")
+              for {
+                _ <- validateFileAccess(file)
+                report <- CoverageParser.parse(rootProjectDir, file).map(transform(_)(finalConfig))
+                _ <- storeReport(report, file)
+                language <- guessReportLanguage(finalConfig.languageOpt, report)
+                success <- sendReport(report, language, finalConfig, commitUUID, file)
+              } yield { success }
+            }
+            .collectFirst {
+              case Left(l) => Left(l)
+            }
+            .getOrElse(Right("All coverage data uploaded."))
+        }
+        if (files.length > 1 && !config.partial) {
           logger.info("More than one file. Considering a partial report")
-          config.copy(partial = true)
-        } else config
-
-        files
-          .map { file =>
-            logger.info(s"Parsing coverage data from: ${file.getAbsolutePath} ...")
-            for {
-              _ <- validateFileAccess(file)
-              report <- CoverageParser.parse(rootProjectDir, file).map(transform(_)(finalConfig))
-              _ <- storeReport(report, file)
-              language <- guessReportLanguage(finalConfig.languageOpt, report)
-              success <- sendReport(report, language, finalConfig, commitUUID, file)
-            } yield { success }
-          }
-          .collectFirst {
-            case Left(l) => Left(l)
-          }
-          .getOrElse(Right("All coverage data uploaded."))
+          for {
+            _ <- sendFilesReport(partial = true)
+            f <- finalReport(FinalConfig(config.baseConfig))
+          } yield f
+        } else {
+          sendFilesReport(partial = true)
+        }
       }
     }
   }
