@@ -133,7 +133,9 @@ object CommitUUIDProvider extends LogSupport {
     val validUUID = providersList.collectFirst {
       case provider if provider.validate(environmentVars) =>
         logger.trace(s"Using ${provider.name}")
-        provider.getUUID(environmentVars)
+        val uuid = provider.getUUID(environmentVars)
+        uuid.foreach(u => logger.info(s"Provider ${provider.name} found Commit UUID ${u.value}"))
+        uuid
     }
 
     validUUID
