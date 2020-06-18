@@ -1,7 +1,7 @@
 package com.codacy.rules.commituuid.providers
 
 import java.nio.file.Files
-import java.io.File
+import java.io.{File, IOException}
 
 import com.codacy.rules.commituuid.CommitUUIDProvider
 import com.codacy.model.configuration.CommitUUID
@@ -36,12 +36,17 @@ class GitHubActionProvider extends CommitUUIDProvider with LazyLogger {
     } yield CommitUUID(sha)
   }
 
-  private def readFile(path: String): Either[String, String] =
-    Try(Files.readString(new File(path).toPath)).toEither.left
-      .map { t =>
-        logger.error("Failed to read event file", t)
-        s"Failed to read event file with error: ${t.getMessage}"
-      }
+  private def readFile(path: String): Either[String, String] = {
+    val contentTry = Try {
+      val fileBytes = Files.readAllBytes(new File(path).toPath)
+      new String(fileBytes)
+    }
+
+    contentTry.toEither.left.map { ex =>
+      logger.error("Failed to read event file", ex)
+      s"Failed to read event file with error: ${ex.getMessage}"
+    }
+  }
 
   private def extractHeadSHA(event: String) = {
     val eventJson = ujson.read(event)
