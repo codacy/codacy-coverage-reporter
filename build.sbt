@@ -20,7 +20,8 @@ scalacOptions := Seq(
 libraryDependencies ++= Seq(
   "com.codacy" %% "coverage-parser" % "2.5.6",
   "com.github.alexarchambault" %% "case-app" % "1.2.0",
-  "org.wvlet.airframe" %% "airframe-log" % "20.5.1"
+  "org.wvlet.airframe" %% "airframe-log" % "20.5.1",
+  "com.lihaoyi" %% "ujson" % "1.1.0"
 )
 
 // Test dependencies
