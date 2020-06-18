@@ -1,10 +1,10 @@
 package com.codacy.rules.commituuid.providers
 
+import java.io.File
 import java.nio.file.Files
-import java.io.{File, IOException}
 
-import com.codacy.rules.commituuid.CommitUUIDProvider
 import com.codacy.model.configuration.CommitUUID
+import com.codacy.rules.commituuid.CommitUUIDProvider
 import wvlet.log.LazyLogger
 
 import scala.util.Try
