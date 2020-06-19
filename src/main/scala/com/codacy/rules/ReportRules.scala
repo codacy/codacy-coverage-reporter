@@ -31,6 +31,30 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
     .asScala
     .map(_.toFile)
 
+  private def sendFilesReportForCommit(
+      files: List[File],
+      config: ReportConfig,
+      partial: Boolean,
+      commitUUID: String
+  ): Either[String, String] = {
+    val finalConfig = config.copy(partial = partial)
+    files
+      .map { file =>
+        logger.info(s"Parsing coverage data from: ${file.getAbsolutePath} ...")
+        for {
+          _ <- validateFileAccess(file)
+          report <- CoverageParser.parse(rootProjectDir, file).map(transform(_)(finalConfig))
+          _ <- storeReport(report, file)
+          language <- guessReportLanguage(finalConfig.languageOpt, report)
+          success <- sendReport(report, language, finalConfig, commitUUID, file)
+        } yield { success }
+      }
+      .collectFirst {
+        case Left(l) => Left(l)
+      }
+      .getOrElse(Right("All coverage data uploaded."))
+  }
+
   def codacyCoverage(config: ReportConfig): Either[String, String] = {
     withCommitUUID(config.baseConfig) { commitUUID =>
       logAuthenticationToken(config)
@@ -38,26 +62,15 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
       val filesEither = guessReportFiles(config.coverageReports, rootProjectDirIterator)
 
       filesEither.flatMap { files =>
-        val finalConfig = if (files.length > 1 && !config.partial) {
+        if (files.length > 1 && !config.partial) {
           logger.info("More than one file. Considering a partial report")
-          config.copy(partial = true)
-        } else config
-
-        files
-          .map { file =>
-            logger.info(s"Parsing coverage data from: ${file.getAbsolutePath} ...")
-            for {
-              _ <- validateFileAccess(file)
-              report <- CoverageParser.parse(rootProjectDir, file).map(transform(_)(finalConfig))
-              _ <- storeReport(report, file)
-              language <- guessReportLanguage(finalConfig.languageOpt, report)
-              success <- sendReport(report, language, finalConfig, commitUUID, file)
-            } yield { success }
-          }
-          .collectFirst {
-            case Left(l) => Left(l)
-          }
-          .getOrElse(Right("All coverage data uploaded."))
+          for {
+            _ <- sendFilesReportForCommit(files, config, partial = true, commitUUID)
+            f <- finalReport(FinalConfig(config.baseConfig))
+          } yield f
+        } else {
+          sendFilesReportForCommit(files, config, partial = config.partial, commitUUID)
+        }
       }
     }
   }
