@@ -61,7 +61,7 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
 
       val filesEither = guessReportFiles(config.coverageReports, rootProjectDirIterator)
 
-      filesEither.flatMap { files =>
+      val operationResult = filesEither.flatMap { files =>
         if (files.length > 1 && !config.partial) {
           logger.info("More than one file. Considering a partial report")
           for {
@@ -72,6 +72,14 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
           sendFilesReportForCommit(files, config, partial = config.partial, commitUUID)
         }
       }
+      if (config.partial) {
+        logger.info(
+          "To complete the reporting process, call the coverage-reporter with a final flag. " +
+            "check https://github.com/codacy/codacy-coverage-reporter#multiple-coverage-reports-for-the-same-language " +
+            "for more information."
+        )
+      }
+      operationResult
     }
   }
 
@@ -144,13 +152,6 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
     coverageResponse match {
       case SuccessfulResponse(value) =>
         logger.info(s"Coverage data uploaded. ${value.success}")
-        if (config.partial) {
-          logger.info(
-            "To complete the reporting process, call the coverage-reporter with a final flag. " +
-              "check https://github.com/codacy/codacy-coverage-reporter#multiple-coverage-reports-for-the-same-language " +
-              "for more information."
-          )
-        }
         Right(())
       case failed: FailedResponse =>
         val message = handleFailedResponse(failed)

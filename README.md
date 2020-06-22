@@ -120,17 +120,7 @@ In order to send multiple reports for the same language, you need to upload each
 
 If you are sending reports with the partial flag for a certain language you should use it in all reports for that language to ensure the correct calculation of the coverage.
 
-**_Without specifying reports_**
-
-1. `codacy-coverage-reporter report` - sends more than one report
-1. `codacy-coverage-reporter final`
-
-If no reports are specified when using the reporter, the tool will try to find reports based on file names as explained [here](#supported-formats).
-If more than one file meets the criteria, all the reports will be sent as they would if the `--partial` flag was used.
-This message will also be printed if this happens: `More than one file. Considering a partial report`.
-If this happens, it's required to send the `final`.
-
-**Note:** It might also be possible to merge the reports before uploading them to Codacy, since most coverage tools support merge/aggregation, example: http://www.eclemma.org/jacoco/trunk/doc/merge-mojo.html.
+It might also be possible to merge the reports before uploading them to Codacy, since most coverage tools support merge/aggregation, example: http://www.eclemma.org/jacoco/trunk/doc/merge-mojo.html.
 
 ## Caching
 
