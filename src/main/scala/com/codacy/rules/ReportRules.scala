@@ -74,9 +74,9 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
       }
       if (config.partial) {
         logger.info(
-          "To complete the reporting process, call the coverage-reporter with a final flag. " +
-            "check https://github.com/codacy/codacy-coverage-reporter#multiple-coverage-reports-for-the-same-language " +
-            "for more information."
+          """To complete the reporting process, call the coverage-reporter with a final flag.
+          | Check https://github.com/codacy/codacy-coverage-reporter#multiple-coverage-reports-for-the-same-language
+          | for more information.""".stripMargin
         )
       }
       operationResult
