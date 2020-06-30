@@ -118,6 +118,10 @@ task sendCoverageToCodacy(type: JavaExec, dependsOn: jacocoTestReport) {
 
 ## Manually downloading the native binary
 
+If you prefer, you can manually download and run the native `codacy-coverage-reporter` binary, either for the latest version or a specific one.
+
+You can use the scripts below to automatically check for the latest version of the binaries, download the binaries from either Bintray or GitHub, and run them.
+
 ### Linux amd64
 
 Download the latest binary and use it to post the coverage to Codacy
