@@ -13,6 +13,7 @@ Codacy automatically detects a commit SHA hash from several sources in the follo
 - Docker
 - Gitlab
 - Greenhouse CI
+- Heroku CI
 - Jenkins
 - Magnum CI
 - Semaphore CI

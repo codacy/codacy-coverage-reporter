@@ -16,13 +16,13 @@ import com.codacy.model.configuration.{
 }
 import com.codacy.parsers.CoverageParser
 import com.codacy.transformation.PathPrefixer
-import com.typesafe.scalalogging.StrictLogging
 import com.codacy.plugins.api.languages.Languages
 import com.codacy.rules.commituuid.CommitUUIDProvider
+import wvlet.log.LogSupport
 
 import scala.collection.JavaConverters._
 
-class ReportRules(coverageServices: => CoverageServices) extends StrictLogging {
+class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
 
   private val rootProjectDir = new File(System.getProperty("user.dir"))
   private val rootProjectDirIterator = Files
@@ -31,34 +31,55 @@ class ReportRules(coverageServices: => CoverageServices) extends StrictLogging {
     .asScala
     .map(_.toFile)
 
+  private def sendFilesReportForCommit(
+      files: List[File],
+      config: ReportConfig,
+      partial: Boolean,
+      commitUUID: String
+  ): Either[String, String] = {
+    val finalConfig = config.copy(partial = partial)
+    files
+      .map { file =>
+        logger.info(s"Parsing coverage data from: ${file.getAbsolutePath} ...")
+        for {
+          _ <- validateFileAccess(file)
+          report <- CoverageParser.parse(rootProjectDir, file).map(transform(_)(finalConfig))
+          _ <- storeReport(report, file)
+          language <- guessReportLanguage(finalConfig.languageOpt, report)
+          success <- sendReport(report, language, finalConfig, commitUUID, file)
+        } yield { success }
+      }
+      .collectFirst {
+        case Left(l) => Left(l)
+      }
+      .getOrElse(Right("All coverage data uploaded."))
+  }
+
   def codacyCoverage(config: ReportConfig): Either[String, String] = {
     withCommitUUID(config.baseConfig) { commitUUID =>
       logAuthenticationToken(config)
 
       val filesEither = guessReportFiles(config.coverageReports, rootProjectDirIterator)
 
-      filesEither.flatMap { files =>
-        val finalConfig = if (files.length > 1 && !config.partial) {
+      val operationResult = filesEither.flatMap { files =>
+        if (files.length > 1 && !config.partial) {
           logger.info("More than one file. Considering a partial report")
-          config.copy(partial = true)
-        } else config
-
-        files
-          .map { file =>
-            logger.info(s"Parsing coverage data from: ${file.getAbsolutePath} ...")
-            for {
-              _ <- validateFileAccess(file)
-              report <- CoverageParser.parse(rootProjectDir, file).map(transform(_)(finalConfig))
-              _ <- storeReport(report, file)
-              language <- guessReportLanguage(finalConfig.languageOpt, report)
-              success <- sendReport(report, language, finalConfig, commitUUID, file)
-            } yield { success }
-          }
-          .collectFirst {
-            case Left(l) => Left(l)
-          }
-          .getOrElse(Right("All coverage data uploaded."))
+          for {
+            _ <- sendFilesReportForCommit(files, config, partial = true, commitUUID)
+            f <- finalReport(FinalConfig(config.baseConfig))
+          } yield f
+        } else {
+          sendFilesReportForCommit(files, config, partial = config.partial, commitUUID)
+        }
       }
+      if (config.partial) {
+        logger.info(
+          """To complete the reporting process, call coverage-reporter with the final flag.
+          | Check https://github.com/codacy/codacy-coverage-reporter#multiple-coverage-reports-for-the-same-language
+          | for more information.""".stripMargin
+        )
+      }
+      operationResult
     }
   }
 
@@ -92,16 +113,14 @@ class ReportRules(coverageServices: => CoverageServices) extends StrictLogging {
     if (report.fileReports.isEmpty)
       Left(s"The provided coverage report ${file.getAbsolutePath} generated an empty result.")
     else {
-      val codacyReportFilename =
-        s"${file.getAbsoluteFile.getParent}${File.separator}codacy-coverage.json"
-      logger.debug(s"Saving parsed report to $codacyReportFilename")
-      val codacyReportFile = new File(codacyReportFilename)
+      val codacyReportFile = File.createTempFile("codacy-coverage-", ".json")
 
+      logger.debug(s"Saving parsed report to ${codacyReportFile.getAbsolutePath}")
       logger.debug(report.toString)
       FileHelper.writeJsonToFile(codacyReportFile, report)
 
       logUploadedFileInfo(codacyReportFile)
-      Right(codacyReportFilename)
+      Right(codacyReportFile.getAbsolutePath)
     }
   }
 

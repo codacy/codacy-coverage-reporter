@@ -5,8 +5,34 @@ parameters:
     type: string
     default: latest
     description: "Specify Codacy's coverage reporter tool version"
+  project-token:
+    type: string
+    default: ${CODACY_PROJECT_TOKEN}
+    description: Specify Codacy's project token
+  coverage-reports:
+    type: string
+    description: 'Optional comma separated list of coverage reports to send to Codacy'
+    default: ''
+
 steps:
   - run:
+      name: Upload Coverage Results to Codacy
       command: |
         export CODACY_REPORTER_VERSION=<< parameters.tool_version >>
-        bash <(curl -Ls https://coverage.codacy.com/get.sh)
+        export CODACY_PROJECT_TOKEN=<< parameters.project-token >>
+        # comma separated list of report files
+        report_list=<< parameters.coverage-reports >>
+
+        IFS=','
+        report_array=$report_list
+        params=''
+        for report in $report_array
+        do
+            if [ ! -z "$report" ]
+            then
+                params="$params -r $report"
+            fi
+        done
+
+        bash <(curl -Ls https://coverage.codacy.com/get.sh) report $params --partial &&\
+        bash <(curl -Ls https://coverage.codacy.com/get.sh) final

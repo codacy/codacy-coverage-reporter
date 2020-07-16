@@ -24,13 +24,14 @@ commands:
       - run:
           name: test coverage reporting
           command: |
-            export CODACY_PROJECT_TOKEN=$TEST_CODACY_PROJECT_TOKEN
+            export CODACY_PROJECT_TOKEN='TEST_CODACY_PROJECT_TOKEN'
+            export TEST_CODACY_REPORT_PATH='integration-tests/test_dotcover.xml'
             set +e
             mkdir -p .codacy-coverage
             cp "$HOME/workdir/artifacts/codacy-coverage-reporter-linux-$(cat $HOME/workdir/.version)" ".codacy-coverage/codacy-coverage-reporter"
             # the following line ensure that we are using the cached binary
             export CODACY_REPORTER_VERSION=inexistent
-            << parameters.executor >> get.sh report --commit-uuid $TEST_COMMIT_UUID  -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
+            << parameters.executor >> get.sh report --commit-uuid 'TEST_COMMIT_UUID'  -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
             export ERROR_CODE=$?
             if [ $ERROR_CODE -ne << parameters.error_code >> ]; then echo "expected an error code << parameters.error_code >> and got $ERROR_CODE instead"; exit 1; fi
             echo "test completed with the expected error code: << parameters.error_code >>"
@@ -173,8 +174,9 @@ jobs:
             set +e
             # the following line ensure that we are using the cached binary
             export CODACY_REPORTER_VERSION=inexistent
-            export CODACY_PROJECT_TOKEN=$TEST_CODACY_PROJECT_TOKEN
-            sh get.sh report --commit-uuid $TEST_COMMIT_UUID  -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
+            export CODACY_PROJECT_TOKEN='TEST_CODACY_PROJECT_TOKEN'
+            export TEST_CODACY_REPORT_PATH='integration-tests/test_dotcover.xml'
+            sh get.sh report --commit-uuid 'TEST_COMMIT_UUID'  -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
             export ERROR_CODE=$?
             if [ $ERROR_CODE -ne 0 ]; then echo "expected an error code 0 and got $ERROR_CODE instead"; exit 1; fi
             echo "test completed with the expected error code: 0"
@@ -259,7 +261,7 @@ workflows:
             /usr/libexec/java_home -V
             export PATH="$PATH:/Library/Java/JavaVirtualMachines/graalvm-ce-java8-$GRAAL_VERSION/Contents/Home/bin"
             sudo gu install native-image
-            sbt "set graalVMNativeImageGraalVersion := None; set graalVMNativeImageOptions -= \"--static\"; graalvm-native-image:packageBin"
+            sbt "set graalVMNativeImageGraalVersion := None; set graalVMNativeImageOptions --= Seq(\"--static\", \"-H:UseMuslC=/opt/graalvm/stage/resources/bundle/\"); graalvm-native-image:packageBin"
             mkdir -p  ~/workdir/tmp-artifacts
             mv $HOME/workdir/target/graalvm-native-image/codacy-coverage-reporter $HOME/workdir/tmp-artifacts/codacy-coverage-reporter-darwin
           persist_to_workspace: true

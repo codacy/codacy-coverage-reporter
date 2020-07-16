@@ -28,4 +28,7 @@ codacy-coverage-reporter-darwin-*
 classes/
 src/test/resources/codacy-coverage.json
 /.codacy-coverage/
+musl.tar.gz
+src/graal/bundle
+project/metals.sbt
 site

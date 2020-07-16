@@ -7,5 +7,7 @@ usage:
       steps:
         - checkout
         - "run commands to generate the coverage result"
-        - coverage-reporter/send_report
+        - coverage-reporter/send_report:
+            coverage-reports: "report.xml,coverage.info"
+            project-token: $CODACY_PROJECT_TOKEN
   version: 2.1

@@ -4,7 +4,7 @@ import java.io.File
 
 import com.codacy.rules.commituuid.providers._
 import com.codacy.model.configuration.CommitUUID
-import com.typesafe.scalalogging.StrictLogging
+import wvlet.log.LogSupport
 
 import com.codacy.api.helpers.vcs.{CommitInfo, GitClient}
 import scala.util.{Failure, Success}
@@ -61,7 +61,7 @@ trait CommitUUIDProvider {
   *
   * This object provides a commit uuid from various providers
   */
-object CommitUUIDProvider extends StrictLogging {
+object CommitUUIDProvider extends LogSupport {
 
   /** Get from all providers
     *
@@ -116,8 +116,10 @@ object CommitUUIDProvider extends StrictLogging {
       new CodefreshCIProvider,
       new CodeshipCIProvider,
       new DockerProvider,
+      new GitHubActionProvider,
       new GitlabProvider,
       new GreenhouseCIProvider,
+      new HerokuCIProvider,
       new JenkinsProvider,
       new MagnumCIProvider,
       new SemaphoreCIProvider,
@@ -131,7 +133,9 @@ object CommitUUIDProvider extends StrictLogging {
     val validUUID = providersList.collectFirst {
       case provider if provider.validate(environmentVars) =>
         logger.trace(s"Using ${provider.name}")
-        provider.getUUID(environmentVars)
+        val uuid = provider.getUUID(environmentVars)
+        uuid.foreach(u => logger.info(s"Provider ${provider.name} found Commit UUID ${u.value}"))
+        uuid
     }
 
     validUUID

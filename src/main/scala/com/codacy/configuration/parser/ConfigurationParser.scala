@@ -20,10 +20,25 @@ abstract class ConfigurationParsingApp extends CommandAppWithPreCommand[BaseComm
 
 @AppName("codacy-coverage-reporter")
 @AppVersion(Option(BaseCommand.getClass.getPackage.getImplementationVersion).getOrElse("dev"))
-@ProgName(
-  s"java -cp codacy-coverage-reporter-assembly-${Option(BaseCommand.getClass.getPackage.getImplementationVersion).getOrElse("dev")}.jar"
-)
+@ProgName(BaseCommand.runToolCommand)
 case class BaseCommand()
+
+object BaseCommand {
+
+  private def runningOnNativeImage: Boolean = {
+    val graalVMFlag = Option(System.getProperty("org.graalvm.nativeimage.kind"))
+    graalVMFlag.map(p => p == "executable" || p == "shared").getOrElse(false)
+  }
+
+  def runToolCommand = {
+    if (runningOnNativeImage) {
+      "codacy-coverage-reporter"
+    } else {
+      s"java -jar codacy-coverage-reporter-assembly-${Option(BaseCommand.getClass.getPackage.getImplementationVersion)
+        .getOrElse("dev")}.jar"
+    }
+  }
+}
 
 sealed trait CommandConfiguration {
   def baseConfig: BaseCommandConfig
