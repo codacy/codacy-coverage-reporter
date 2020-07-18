@@ -1,0 +1,28 @@
+site_name: coverage-reporter
+
+strict: true
+
+theme:
+  name: "material"
+
+markdown_extensions:
+  - admonition
+  - codehilite:
+      guess_lang: false
+      linenums: true
+  - footnotes
+  - meta
+  - pymdownx.superfences
+  - toc:
+      permalink: true
+
+nav:
+  - "index.md"
+  - "Advanced":
+      - "advanced/authenticating-using-account-token.md"
+      - "advanced/multiple-reports.md"
+      - "advanced/installation-methods.md"
+  - "Troubleshooting":
+      - "troubleshooting/common-issues.md"
+      - "troubleshooting/commit-detection.md"
+      - "troubleshooting/swift-objectivec.md"

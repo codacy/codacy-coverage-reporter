@@ -31,3 +31,4 @@ src/test/resources/codacy-coverage.json
 musl.tar.gz
 src/graal/bundle
 project/metals.sbt
+site
