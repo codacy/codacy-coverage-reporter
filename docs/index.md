@@ -77,7 +77,7 @@ Codacy automatically detects a commit SHA hash from CI workflows, the git reposi
 
 ## Multiple coverage reports for the same language
 
-You can upload multiple reports if your test suite is split in different modules or ran in parallel. See [how to uploasd multiple coverage reports](advanced/multiple-reports.md).
+You can upload multiple reports if your test suite is split in different modules or ran in parallel. See [how to upload multiple coverage reports](advanced/multiple-reports.md).
 
 ## Other commands
 
