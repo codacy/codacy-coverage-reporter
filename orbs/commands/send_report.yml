@@ -13,6 +13,10 @@ parameters:
     type: string
     description: 'Optional comma separated list of coverage reports to send to Codacy'
     default: ''
+  skip:
+    type: boolean
+    description: Skip if token isn't defined. Useful to let forks CI pass without passing secrets
+    default: false
 
 steps:
   - run:
@@ -34,5 +38,12 @@ steps:
             fi
         done
 
-        bash <(curl -Ls https://coverage.codacy.com/get.sh) report $params --partial &&\
-        bash <(curl -Ls https://coverage.codacy.com/get.sh) final
+        if [ << parameters.skip >> ]
+        then
+            skip_option="--skip"
+        else
+            skip_option=""
+        fi
+
+        bash <(curl -Ls https://coverage.codacy.com/get.sh) report $params --partial $skip_option &&\
+        bash <(curl -Ls https://coverage.codacy.com/get.sh) $skip_option final
