@@ -68,9 +68,9 @@ trap 'fatal Interrupted' INT
 # Temporary folder for downloaded files
 if [ -z "$CODACY_REPORTER_TMP_FOLDER" ]; then
     if [ "$unamestr" = "Linux" ]; then
-        CODACY_REPORTER_TMP_FOLDER="~/.cache/codacy"
+        CODACY_REPORTER_TMP_FOLDER="$HOME/.cache/codacy"
     elif [ "$unamestr" = "Darwin" ]; then
-        CODACY_REPORTER_TMP_FOLDER="~/Library/Caches/Codacy"
+        CODACY_REPORTER_TMP_FOLDER="$HOME/Library/Caches/Codacy"
     else
         CODACY_REPORTER_TMP_FOLDER=".codacy-coverage"
 fi
