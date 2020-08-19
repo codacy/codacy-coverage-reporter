@@ -14,6 +14,12 @@ On Alpine Linux, run:
 wget -qO - https://coverage.codacy.com/get.sh | sh
 ```
 
+The self-contained script is able to cache the binary. To avoid having to download it everytime,
+you need to add one of the following directories to your CI cached folders:
+
+- `$HOME/.cache/codacy` on Linux
+- `$HOME/Library/Caches/Codacy` on Mac OS X
+
 To use a specific version of the Codacy Coverage Reporter, set the following environment variable to one of the [released versions](https://github.com/codacy/codacy-coverage-reporter/releases):
 
 ```bash
