@@ -73,6 +73,7 @@ if [ -z "$CODACY_REPORTER_TMP_FOLDER" ]; then
         CODACY_REPORTER_TMP_FOLDER="$HOME/Library/Caches/Codacy"
     else
         CODACY_REPORTER_TMP_FOLDER=".codacy-coverage"
+    fi
 fi
 mkdir -p "$CODACY_REPORTER_TMP_FOLDER"
 
