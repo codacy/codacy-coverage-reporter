@@ -65,6 +65,8 @@ exit_trap() {
 trap exit_trap EXIT
 trap 'fatal Interrupted' INT
 
+unamestr=$(uname)
+
 # Temporary folder for downloaded files
 if [ -z "$CODACY_REPORTER_TMP_FOLDER" ]; then
     if [ "$unamestr" = "Linux" ]; then
@@ -138,7 +140,6 @@ codacy_reporter_jar_start_cmd() {
 }
 
 run_command=""
-unamestr=`uname`
 if [ "$unamestr" = "Linux" ]; then
     codacy_reporter_native_start_cmd "linux"
 elif [ "$unamestr" = "Darwin" ]; then
