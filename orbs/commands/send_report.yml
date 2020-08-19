@@ -46,4 +46,4 @@ steps:
         fi
 
         bash <(curl -Ls https://coverage.codacy.com/get.sh) report $params --partial $skip_option &&\
-        bash <(curl -Ls https://coverage.codacy.com/get.sh) $skip_option final
+        bash <(curl -Ls https://coverage.codacy.com/get.sh) final $skip_option
