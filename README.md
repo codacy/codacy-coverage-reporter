@@ -9,7 +9,13 @@ Multi-language coverage reporter for Codacy https://www.codacy.com
 
 ## Setup
 
-[Get started](https://github.com/codacy/codacy-coverage-reporter/tree/master/docs/index.md)
+Follow the instructions on how to [add coverage to your repository](https://docs.codacy.com/coverage-reporter/).
+
+For a complete list of commands and options, run:
+
+```bash
+bash <(curl -Ls https://coverage.codacy.com/get.sh) --help
+```
 
 ## What is Codacy?
 
