@@ -38,8 +38,7 @@ steps:
             fi
         done
 
-        if [ << parameters.skip >> ]
-        then
+        if << parameters.skip >>; then
             skip_option="--skip"
         else
             skip_option=""
