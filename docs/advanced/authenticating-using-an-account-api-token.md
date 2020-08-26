@@ -1,4 +1,4 @@
-# Authenticating using an Account API token
+# Authenticating using an Account API Token
 
 If you'd like to automate uploading coverage for multiple repositories you can authenticate using an Account API Token:
 

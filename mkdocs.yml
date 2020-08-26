@@ -19,7 +19,7 @@ markdown_extensions:
 nav:
   - "index.md"
   - "Advanced":
-      - "advanced/authenticating-using-account-token.md"
+      - "advanced/authenticating-using-an-account-api-token.md"
       - "advanced/multiple-reports.md"
       - "advanced/installation-methods.md"
   - "Troubleshooting":
