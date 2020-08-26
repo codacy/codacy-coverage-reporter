@@ -1,5 +1,85 @@
 # Getting started
 
+## Add coverage to your repo
+
+You can configure repositories to show code coverage reports directly in Codacy.
+
+Follow [this guide](https://github.com/codacy/codacy-coverage-reporter/blob/master/docs/index.md) to set up code coverage for your repository.
+
+If your report format is not yet supported check some of the community's projects, e.g., [schrej/godacov](https://github.com/schrej/godacov), or contribute to our [coverage-parser](https://github.com/codacy/coverage-parser) project.
+
+We also support partial coverage reports. See [here](https://github.com/codacy/codacy-coverage-reporter/blob/master/docs/advanced/multiple-reports.md) on how to send multiple coverage reports for the same language.
+
+## Generate coverage
+
+Code coverage is a metric used to describe the degree to which the source code of a program is tested.
+
+A program with high code coverage has been more thoroughly tested and has a lower chance of containing software bugs than a program with low code coverage.
+
+There are many tools to generate coverage. We have a few suggestions:
+
+-   Java - [JaCoCo](http://eclemma.org/jacoco)
+-   JavaScript - [Istanbul](https://github.com/gotwarlost/istanbul)
+-   PHP - [PHPUnit](https://phpunit.de)
+-   Python - [Coverage.py](http://coverage.readthedocs.io/en/latest/)
+-   C# - [OpenCover](https://github.com/OpenCover/opencover/) and [dotCover](https://www.jetbrains.com/dotcover/)
+-   Scala - [Scoverage](https://github.com/scoverage/scalac-scoverage-plugin)
+-   Ruby - [SimpleCov](https://github.com/colszowka/simplecov)
+
+## How to set up coverage
+
+For the next steps, we assume you already have tests and coverage for your repository. If you don't have coverage and need help, take a look at our article on how to generate coverage.
+
+Repositories can be configured to show code coverage reports directly in Codacy. Codacy reads the source coverage reports, converts them to a smaller JSON file and uploads them, showing all results integrated into your [Repository Dashboard](/repositories/repository-dashboard-overview.md).
+
+### Project API Token
+
+To set up coverage reporting you'll need a Project API token. You can find it in your repository settings 'Integrations' tab.
+
+<img src="/images/Jun-06-2017_14-30-02.gif" width="650" />
+
+#### Token security
+
+You should keep your API token well protected, as it grants owner permissions to your repositories. If you use CircleCI or Travis CI, you should use your token as an environment variable. **Don't put your keys in your configuration files**, check your service settings on how to set environment variables.
+
+#### Setting token as environment variable
+
+```bash
+export CODACY_PROJECT_TOKEN=%Project_Token%
+```
+
+(replacing %Project_Token% with your token)
+
+### Setup
+
+Check [here](https://github.com/codacy/codacy-coverage-reporter/blob/master/docs/index.md) for detailed instructions on how to set up the coverage reporter plugin.
+
+### Submitting coverage for unsupported languages or tools
+
+If your language or build tool isn't supported yet, you can send the coverage data directly through the Codacy API. You can check the endpoint in the [API documentation](https://api.codacy.com/swagger#savecoverage) and an example of the JSON payload below.
+
+```json
+{
+  "total": 23,
+  "fileReports": [
+    {
+      "filename": "src/Codacy/Coverage/Parser/CloverParser.php",
+      "total": 54,
+      "coverage": {
+        "3": 3,
+        "5": 0,
+        "7": 1
+      }
+    }
+  ]
+}
+```
+
+!!! note
+In case the token was retrieved from the Repository integrations tab, the header should be `project-token`. If it is an account token, the header should be `api-token` and you must call [this API method](https://api.codacy.com/swagger#savecoveragewithprojectname) instead.
+
+Also, note all _coverable_ lines should be present on the "coverage" variable of the JSON payload. In the example, you can see that "5": 0, meaning that line 5 is not covered.
+
 ## Authentication
 
 1.  Find and copy a *Project API Token*. You can find the token within a repository *Settings* → *Integrations* → *Project API*.
