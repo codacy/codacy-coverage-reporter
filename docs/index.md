@@ -50,6 +50,22 @@ There are many tools that you can use to generate coverage for your projects. Th
     !!! hint
         If you would like to automate this process for multiple repositories you should [authenticate using an Account API Token](advanced/authenticating-using-an-account-api-token.md) instead.
 
+    If you'd like to automate uploading coverage for multiple repositories you can authenticate using an Account API Token:
+
+    1. Create an Account API token on Codacy. You can find the token in *Your account* → *API tokens*.
+    1. Set the API token in your terminal, replacing `%API_Token%` with your own token.
+    1. Set your repository name in your terminal, replacing `%Repo_Name%`.
+    1. Set your username in your terminal, replacing `%Username%`.
+
+    ```bash
+    export CODACY_API_TOKEN=%API_Token%
+    export CODACY_PROJECT_NAME=%Repo_Name%
+    export CODACY_USERNAME=%Username%
+    ```
+
+    !!! warning
+        You should keep your API token well protected, as it grants owner permissions to your projects.
+
 1.  **If you are using Codacy Self-hosted** you must set your installation URL, replacing `%Codacy_instance_URL%` with your Codacy installation URL:
 
     ```bash
