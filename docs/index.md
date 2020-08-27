@@ -48,7 +48,7 @@ There are many tools that you can use to generate coverage for your projects. Th
     ```
 
     !!! hint
-        If you would like to automate this process for multiple repositories you should [authenticate using an Account API Token](advanced/authenticating-using-account-token.md) instead.
+        If you would like to automate this process for multiple repositories you should [authenticate using an Account API Token](advanced/authenticating-using-an-account-api-token.md) instead.
 
 1.  To upload coverage to a self-hosted installation of Codacy you also need to set your installation URL, replacing `%Codacy_instance_URL%` with your URL:
 
@@ -62,7 +62,7 @@ There are many tools that you can use to generate coverage for your projects. Th
     bash <(curl -Ls https://coverage.codacy.com/get.sh)
     ```
 
-    The reporter assumes the coverage reports filename follow the name convention. Otherwise, you must define the report's location with the flag `-r`.
+    The reporter assumes the coverage reports filename follow the name convention. Otherwise, you must define the report's location with the flag `--coverage-reports`.
 
 ## Extra information
 
