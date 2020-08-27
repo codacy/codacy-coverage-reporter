@@ -42,13 +42,25 @@ slather coverage -x --output-directory <report-output-dir> --scheme <project-nam
 ```
 
 This will generate a `cobertura.xml` inside `<report-output-dir>` folder.
+
 After this, call our script:
 
 ```bash
 bash <(curl -Ls https://coverage.codacy.com/get.sh)
 ```
 
-## `JsonParseException` while uploading C# coverage data
+## Can't guess any report due to no matching
+
+  Codacy Coverage Reporter automatically searches for coverage reports that match [these file name conventions](index.md#generating-coverage).
+  
+  However, if Codacy Coverage Reporter does not find your coverage report, you must define the report file name explicitly with the flag `--coverage-reports`. For example:
+
+  ```bash
+  bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
+      --coverage-reports <my report>
+  ```
+
+## JsonParseException while uploading C# coverage data
 
 If you're using dotCover to generate coverage reports for your C# projects, you should [exclude xUnit files](https://www.jetbrains.com/help/dotcover/Running_Coverage_Analysis_from_the_Command_LIne.html#filters_cmd) from the coverage analysis as follows:
 
@@ -58,7 +70,7 @@ dotCover.exe cover ... /Filters=-:xunit*
 
 By default, dotCover includes xUnit files in the coverage analysis and this results in larger coverage reports. This filter helps ensure that the resulting coverage data does not exceed the size limit accepted by the Codacy API when uploading the results.
 
-## `SubstrateSegfaultHandler caught signal 11`
+## SubstrateSegfaultHandler caught signal 11
 
 If you are experiencing segmentation faults uploading the coverage (due to [oracle/graal#624](https://github.com/oracle/graal/issues/624)), do this before running the reporter, as a workaround:
 
@@ -66,7 +78,7 @@ If you are experiencing segmentation faults uploading the coverage (due to [orac
 echo "$(dig +short api.codacy.com | tail -n1) api.codacy.com" >> /etc/hosts
 ```
 
-## `coverage-xml/index.xml generated an empty result`
+## coverage-xml/index.xml generated an empty result
 
 If you are using PHPUnit version 5 or above to generate your coverage report, you must output the report using the clover format. The codacy-coverage-reporter supports the PHPUnit xml format only for versions equal or lower than 4.
 You can change the output format by replacing the `--coverage-xml <dir>` flag by `--coverage-clover <file>`.
