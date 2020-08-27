@@ -7,6 +7,7 @@ theme:
 
 markdown_extensions:
   - admonition
+  - attr_list
   - codehilite:
       guess_lang: false
       linenums: true
@@ -19,9 +20,6 @@ markdown_extensions:
 nav:
   - "index.md"
   - "alternative-ways-of-running-coverage-reporter.md"
-  - "Advanced":
-      - "advanced/authenticating-using-an-account-api-token.md"
   - "Troubleshooting":
       - "troubleshooting/common-issues.md"
-      - "troubleshooting/commit-detection.md"
       - "troubleshooting/swift-objectivec.md"

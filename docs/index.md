@@ -48,7 +48,7 @@ There are many tools that you can use to generate coverage for your projects. Th
     ```
 
     !!! hint
-        If you would like to automate this process for multiple repositories you should [authenticate using an Account API Token](advanced/authenticating-using-an-account-api-token.md) instead.
+        If you would like to automate this process for multiple repositories you should authenticate using an Account API Token instead.
 
     If you'd like to automate uploading coverage for multiple repositories you can authenticate using an Account API Token:
 
@@ -82,7 +82,7 @@ There are many tools that you can use to generate coverage for your projects. Th
 
     -   You can upload multiple reports if your test suite is split in different modules or ran in parallel. See [how to upload multiple coverage reports](#multiple-coverage-reports-for-the-same-language).
 
-    -   Codacy automatically detects a commit SHA hash from CI workflows, the git repository or command line arguments. See [all supported environments](troubleshooting/commit-detection.md).
+    -   Codacy automatically detects a commit SHA hash from CI workflows, the git repository or command line arguments. See [all supported environments](#commit-detection).
 
     -   See [alternative ways of running Codacy Coverage Reporter](alternative-ways-of-running-coverage-reporter.md) to manually install the binary or for other ways of running Codacy Coverage Reporter (such as when using Circle CI or GitHub actions).
 
@@ -109,6 +109,47 @@ bash <(curl -Ls https://coverage.codacy.com/get.sh) final
 If you are sending reports with the partial flag for a certain language you should use it in all reports for that language to ensure the correct calculation of the coverage.
 
 It might also be possible to merge the reports before uploading them to Codacy, since most coverage tools support merge/aggregation, for example: <http://www.eclemma.org/jacoco/trunk/doc/merge-mojo.html>.
+
+### Commit SHA hash detection {: id="commit-detection"}
+
+Codacy Coverage Reporter automatically detects a commit SHA hash from several sources in the following order:
+
+1.  **CI/CD platforms**
+
+    -   Appveyor
+    -   Bitrise
+    -   Buildkite
+    -   Circle CI
+    -   Codefresh
+    -   Codeship
+    -   Docker
+    -   Gitlab
+    -   Greenhouse CI
+    -   Heroku CI
+    -   Jenkins
+    -   Magnum CI
+    -   Semaphore CI
+    -   Shippable CI
+    -   Solano CI
+    -   TeamCity CI
+    -   Travis CI
+    -   Wercker CI
+
+2.  **Git repository directory**
+
+    If Codacy Coverage Reporter finds a Git repository directory it will use the current commit.
+
+3.  **Forcing a specific commit SHA hash**
+
+    You can force using a specific commit SHA hash with the flag `--commit-uuid`.
+    
+    For example:
+
+    ```bash
+    bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
+            --language Java \
+            --commit-uuid cd4d000083a744cf1617d46af4ec108b79e06bed
+    ```
 
 
 ## Extra
