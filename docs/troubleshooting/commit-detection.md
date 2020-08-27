@@ -1,36 +1,40 @@
 # Commit SHA hash detection
 
-Codacy automatically detects a commit SHA hash from several sources in the following order:
+Codacy Coverage Reporter automatically detects a commit SHA hash from several sources in the following order:
 
-**CI providers**
+1.  **CI/CD platforms**
 
-- Appveyor
-- Bitrise
-- Buildkite
-- Circle CI
-- Codefresh
-- Codeship
-- Docker
-- Gitlab
-- Greenhouse CI
-- Heroku CI
-- Jenkins
-- Magnum CI
-- Semaphore CI
-- Shippable CI
-- Solano CI
-- TeamCity CI
-- Travis CI
-- Wercker CI
+    -   Appveyor
+    -   Bitrise
+    -   Buildkite
+    -   Circle CI
+    -   Codefresh
+    -   Codeship
+    -   Docker
+    -   Gitlab
+    -   Greenhouse CI
+    -   Heroku CI
+    -   Jenkins
+    -   Magnum CI
+    -   Semaphore CI
+    -   Shippable CI
+    -   Solano CI
+    -   TeamCity CI
+    -   Travis CI
+    -   Wercker CI
 
-**Git repository directory**
+2.  **Git repository directory**
 
-- If it finds a git directory it will get current commit.
+    If Codacy Coverage Reporter finds a Git repository directory it will use the current commit.
 
-**Force commit SHA hash**
+3.  **Forcing a specific commit SHA hash**
 
-- You can force using a specific commit SHA hash with:
+    You can force using a specific commit SHA hash with the flag `--commit-uuid`.
+    
+    For example:
 
-```
-codacy-coverage-reporter report -l Java --commit-uuid "my_commit_hash" -r coverage.xml
-```
+    ```bash
+    bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
+            --language Java \
+            --commit-uuid cd4d000083a744cf1617d46af4ec108b79e06bed
+    ```
