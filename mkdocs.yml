@@ -21,7 +21,6 @@ nav:
   - "alternative-ways-of-running-coverage-reporter.md"
   - "Advanced":
       - "advanced/authenticating-using-an-account-api-token.md"
-      - "advanced/multiple-reports.md"
   - "Troubleshooting":
       - "troubleshooting/common-issues.md"
       - "troubleshooting/commit-detection.md"
