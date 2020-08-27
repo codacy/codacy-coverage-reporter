@@ -68,7 +68,7 @@ There are many tools that you can use to generate coverage for your projects. Th
 
     -   Codacy automatically detects a commit SHA hash from CI workflows, the git repository or command line arguments. See [all supported environments](troubleshooting/commit-detection.md).
 
-    -   To manually install the binary or for alternative ways of running codacy-coverage reporter (such as when using Circle CI or GitHub actions) see [installation methods](advanced/installation-methods.md).
+    -   See [alternative ways of running Codacy Coverage Reporter](alternative-ways-of-running-coverage-reporter.md) to manually install the binary or for other ways of running Codacy Coverage Reporter (such as when using Circle CI or GitHub actions).
 
 ## Extra
 

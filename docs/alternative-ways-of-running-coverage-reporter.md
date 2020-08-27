@@ -1,4 +1,4 @@
-# Installation methods
+# Alternative ways of running Coverage Reporter
 
 ## Automatic script (recommended)
 
