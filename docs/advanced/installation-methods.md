@@ -14,7 +14,13 @@ For Alpine Linux:
 wget -qO - https://coverage.codacy.com/get.sh | sh
 ```
 
-> To specify a coverage reporter version, use `CODACY_REPORTER_VERSION` environment variable.
+### Choose a specific version
+
+The script uses by default the latest version.
+
+If you want to specify a coverage reporter version, use `CODACY_REPORTER_VERSION` environment variable.
+
+You can find all versions in the [Releases tab](https://github.com/codacy/codacy-coverage-reporter/releases).
 
 ## CircleCI orb
 

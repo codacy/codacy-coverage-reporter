@@ -50,7 +50,7 @@ There are many tools that you can use to generate coverage for your projects. Th
     !!! hint
         If you would like to automate this process for multiple repositories you should [authenticate using an Account API Token](advanced/authenticating-using-an-account-api-token.md) instead.
 
-1.  To upload coverage to a self-hosted installation of Codacy you also need to set your installation URL, replacing `%Codacy_instance_URL%` with your URL:
+1.  **If you are using Codacy Self-hosted** you must set your installation URL, replacing `%Codacy_instance_URL%` with your Codacy installation URL:
 
     ```bash
     export CODACY_API_BASE_URL=%Codacy_instance_URL%:16006
@@ -64,23 +64,9 @@ There are many tools that you can use to generate coverage for your projects. Th
 
     The reporter assumes the coverage reports filename follow the name convention. Otherwise, you must define the report's location with the flag `--coverage-reports`.
 
-## Extra information
+To manually install the binary or for alternative ways of running codacy-coverage reporter (such as when using Circle CI or GitHub actions) see [installation methods](advanced/installation-methods.md).
 
-### Choose a specific version
-
-The script uses by default the latest version.
-
-If you want to specify a coverage reporter version, use `CODACY_REPORTER_VERSION` environment variable.
-
-You can find all versions in the [Releases tab](https://github.com/codacy/codacy-coverage-reporter/releases).
-
-### Manual Installation
-
-Using CircleCI? Check out the [codacy/coverage-reporter orb](advanced/installation-methods.md#circleci-orb).
-
-Using GitHub Actions? Check out the [codacy/coverage-coverage-reporter action](https://github.com/codacy/codacy-coverage-reporter-action#codacy-coverage-reporter-action).
-
-If the automated script does not cover your use case, [check the manual installation methods](advanced/installation-methods.md#manually-downloading-the-native-binary).
+## Extra
 
 ### Unsupported Languages
 
