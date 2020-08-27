@@ -59,12 +59,16 @@ There are many tools that you can use to generate coverage for your projects. Th
 1.  The easiest way to get starting is by using the self-contained script that downloads and runs the reporter:
 
     ```bash
-    bash <(curl -Ls https://coverage.codacy.com/get.sh)
+    bash <(curl -Ls https://coverage.codacy.com/get.sh) report
     ```
 
-    The reporter assumes the coverage reports filename follow the name convention. Otherwise, you must define the report's location with the flag `--coverage-reports`.
+    -   The reporter assumes the coverage reports filename follow the name convention. Otherwise, you must define the report's location with the flag `--coverage-reports`.
 
-To manually install the binary or for alternative ways of running codacy-coverage reporter (such as when using Circle CI or GitHub actions) see [installation methods](advanced/installation-methods.md).
+    -   You can upload multiple reports if your test suite is split in different modules or ran in parallel. See [how to upload multiple coverage reports](advanced/multiple-reports.md).
+
+    -   Codacy automatically detects a commit SHA hash from CI workflows, the git repository or command line arguments. See [all supported environments](troubleshooting/commit-detection.md).
+
+    -   To manually install the binary or for alternative ways of running codacy-coverage reporter (such as when using Circle CI or GitHub actions) see [installation methods](advanced/installation-methods.md).
 
 ## Extra
 
@@ -97,11 +101,3 @@ If your language or build tool isn't supported yet, you can send the coverage da
     In case the token was retrieved from the Repository integrations tab, the header should be `project-token`. If it is an account token, the header should be `api-token` and you must call [this API method](https://api.codacy.com/swagger#savecoveragewithprojectname) instead.
 
 Also, note all _coverable_ lines should be present on the "coverage" variable of the JSON payload. In the example, you can see that "5": 0, meaning that line 5 is not covered.
-
-### Commit SHA hash detection
-
-Codacy automatically detects a commit SHA hash from CI workflows, the git repository or command line arguments. See [all supported environments](troubleshooting/commit-detection.md).
-
-### Multiple coverage reports for the same language
-
-You can upload multiple reports if your test suite is split in different modules or ran in parallel. See [how to upload multiple coverage reports](advanced/multiple-reports.md).
