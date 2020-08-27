@@ -20,6 +20,4 @@ markdown_extensions:
 nav:
   - "index.md"
   - "alternative-ways-of-running-coverage-reporter.md"
-  - "Troubleshooting":
-      - "troubleshooting/common-issues.md"
-      - "troubleshooting/swift-objectivec.md"
+  - "troubleshooting-common-issues.md"

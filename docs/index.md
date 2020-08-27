@@ -27,7 +27,7 @@ There are many tools that you can use to generate coverage for your projects. Th
 | PHP               | [PHPUnit](https://phpunit.readthedocs.io/en/8.5/code-coverage-analysis.html)                                                                                                                  | PHPUnit XML (version &lt;= 4)<br/>[Clover](https://confluence.atlassian.com/clover/using-clover-for-php-420973033.html)        | coverage-xml/index.xml<br/>clover.xml          |
 | Ruby              | [SimpleCov](https://github.com/colszowka/simplecov)                                                                                                                                           | [Cobertura](https://github.com/dashingrocket/simplecov-cobertura)<br/>[LCOV](https://github.com/fortissimo1997/simplecov-lcov) | cobertura.xml<br/>lcov.info, lcov.dat, \*.lcov |
 | C#                | [OpenCover](https://github.com/OpenCover/opencover)<br/>[DotCover CLI](https://www.jetbrains.com/dotcover/)                                                                                   | OpenCover<br/>DotCover-DetailedXML                                                                                             | opencover.xml<br/>dotcover.xml                 |
-| Swift/Objective-C | XCode Coverage                                                                                                                                                                                | [Check here information about reports for this language](troubleshooting/swift-objectivec.md)                                  |                                                |
+| Swift/Objective-C | XCode Coverage                                                                                                                                                                                | [Check here information about reports for this language](troubleshooting-common-issues.md#swift-objectivec-support)                                  |                                                |
 
 !!! tip
     If you are generating a report format that is not yet supported, try to generate a supported format using community projects such as [schrej/godacov](https://github.com/schrej/godacov) and [danielpalme/ReportGenerator](https://github.com/danielpalme/ReportGenerator), or alternatively contribute to our [codacy/coverage-parser](https://github.com/codacy/coverage-parser) project.
@@ -150,36 +150,3 @@ Codacy Coverage Reporter automatically detects a commit SHA hash from several so
             --language Java \
             --commit-uuid cd4d000083a744cf1617d46af4ec108b79e06bed
     ```
-
-
-## Extra
-
-### Unsupported Languages
-
-If your language is not in the list of supported languages, you can still send coverage to Codacy. You can do it by providing the correct `--language` name and then add the `--force-language` flag.
-
-### Submitting coverage for unsupported languages or tools
-
-If your language or build tool isn't supported yet, you can send the coverage data directly through the Codacy API. You can check the endpoint in the [API documentation](https://api.codacy.com/swagger#savecoverage) and an example of the JSON payload below.
-
-```json
-{
-  "total": 23,
-  "fileReports": [
-    {
-      "filename": "src/Codacy/Coverage/Parser/CloverParser.php",
-      "total": 54,
-      "coverage": {
-        "3": 3,
-        "5": 0,
-        "7": 1
-      }
-    }
-  ]
-}
-```
-
-!!! note
-    In case the token was retrieved from the Repository integrations tab, the header should be `project-token`. If it is an account token, the header should be `api-token` and you must call [this API method](https://api.codacy.com/swagger#savecoveragewithprojectname) instead.
-
-Also, note all _coverable_ lines should be present on the "coverage" variable of the JSON payload. In the example, you can see that "5": 0, meaning that line 5 is not covered.
