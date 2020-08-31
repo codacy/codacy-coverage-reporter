@@ -36,25 +36,6 @@ The following is an example of the JSON payload:
 
 Note that all "coverable" lines should be present on the `coverage` node of the JSON payload. In the example you can see `"5": 0`, meaning that line 5 is not covered.
 
-## Swift and Objective-C support {: id="swift-objectivec-support"}
-
-To use Swift and Objective-C with Xcode coverage reports, use [Slather](https://github.com/SlatherOrg/slather) to convert the Xcode output into the Cobertura format.
-
-To do this, execute the following commands on the CI:
-
-```bash
-gem install slather
-slather coverage -x --output-directory <report-output-dir> --scheme <project-name> <project-name>.xcodeproj
-```
-
-This will generate a file `cobertura.xml` inside the folder `<report-output-dir>`.
-
-After this, run Codacy Coverage Reporter:
-
-```bash
-bash <(curl -Ls https://coverage.codacy.com/get.sh)
-```
-
 ## Can't guess any report due to no matching
 
 Codacy Coverage Reporter automatically searches for coverage reports matching the [file name conventions for supported formats](index.md#generating-coverage).

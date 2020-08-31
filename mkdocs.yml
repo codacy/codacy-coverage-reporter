@@ -20,4 +20,5 @@ markdown_extensions:
 nav:
   - "index.md"
   - "alternative-ways-of-running-coverage-reporter.md"
+  - "generating-coverage-reports.md"
   - "troubleshooting-common-issues.md"
