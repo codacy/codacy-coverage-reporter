@@ -73,10 +73,8 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
         }
       }
       if (config.partial) {
-        logger.info(
-          """To complete the reporting process, call coverage-reporter with the final flag.
-          | Check http://docs.codacy.com/coverage-reporter/#multiple-reports for more information.""".stripMargin
-        )
+        logger.info("""To complete the reporting process, call coverage-reporter with the final flag.
+          | Check http://docs.codacy.com/coverage-reporter/#multiple-reports for more information.""".stripMargin)
       }
       operationResult
     }
