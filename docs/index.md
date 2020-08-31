@@ -68,14 +68,14 @@ See the sections below for more advanced functionality.
 
 If your test suite is split in different modules or runs in parallel, you will need to upload multiple coverage reports for the same language.
 
-To do this, upload each separate report with the flag `--partial` and notify Codacy with the `final` command after all reports were uploaded. For example:
+To do this, upload each separate report with the flags `--partial`, `--language` (to specify the language), and `--coverge-reports` (to specify each partial report). Then, after all reports were uploaded, notify Codacy with the `final` command. For example:
 
 ```bash
 bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
     --language Java --coverage-reports report1.xml --partial
 bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
     --language Java --coverage-reports report2.xml --partial
-bash <(curl -Ls https://coverage.codacy.com/get.sh) report final
+bash <(curl -Ls https://coverage.codacy.com/get.sh) final
 ```
 
 !!! important
