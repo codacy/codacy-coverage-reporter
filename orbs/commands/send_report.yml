@@ -26,7 +26,7 @@ steps:
         export CODACY_PROJECT_TOKEN=<< parameters.project-token >>
         # comma separated list of report files
         # reference from https://stackoverflow.com/a/918931/7898052
-        IFS=',' read -ra report_array <<< "<< parameters.coverage-reports >>"
+        IFS=',' read -ra report_array \<<< "<< parameters.coverage-reports >>"
         
         params=''
         for report in "${report_array[@]}"
