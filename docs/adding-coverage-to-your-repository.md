@@ -47,7 +47,7 @@ After having coverage reports set up for your repository, you must use Codacy Co
 2.  **If you are using Codacy Self-hosted** set the following environment variable to specify your Codacy instance URL:
 
     ```bash
-    export CODACY_API_BASE_URL=<your Codacy instance URL>:16006
+    export CODACY_API_BASE_URL=<your Codacy instance URL>
     ```
 
 3.  Run Codacy Coverage Reporter to upload the coverage results to Codacy.
