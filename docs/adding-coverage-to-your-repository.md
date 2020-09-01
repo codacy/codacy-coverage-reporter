@@ -44,13 +44,13 @@ After having coverage reports set up for your repository, you must use Codacy Co
 
         We recommend that you set the API Tokens as environment variables. Check the documentation of your CI/CD platform on how to do this.
 
-2.  **If you are using Codacy Self-hosted** set the following environment variable to specify your Codacy instance URL:
+1.  **If you are using Codacy Self-hosted** set the following environment variable to specify your Codacy instance URL:
 
     ```bash
     export CODACY_API_BASE_URL=<your Codacy instance URL>
     ```
 
-3.  Run Codacy Coverage Reporter to upload the coverage results to Codacy.
+1.  Run Codacy Coverage Reporter to upload the coverage results to Codacy.
 
     The recommended way to do this is using a self-contained script that automatically downloads and runs the most recent version of Codacy Coverage Reporter:
 
@@ -59,6 +59,8 @@ After having coverage reports set up for your repository, you must use Codacy Co
     ```
 
     See [alternative ways of running Codacy Coverage Reporter](alternative-ways-of-running-coverage-reporter.md) for other ways of running Codacy Coverage Reporter, such as when using Circle CI or GitHub actions, or to install the binary manually.
+
+1.  Optionally, [add a Codacy badge](https://docs.codacy.com/repositories/badges/) to the README of your repository to display the current code coverage.
 
 See the sections below for more advanced functionality.
 
