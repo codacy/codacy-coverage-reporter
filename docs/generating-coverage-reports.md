@@ -1,5 +1,7 @@
 # Generating coverage reports
 
+Code coverage is a metric used to describe the degree to which the source code of a program is tested. A program with high code coverage has been more thoroughly tested and has a lower chance of containing software bugs than a program with low code coverage.
+
 There are many tools that you can use to generate coverage reports for the languages used in your repositories. The following table contains example coverage tools that generate reports in formats that Codacy supports:
 
 | Language          | Example coverage tools                                                                                                                                                                        | Report formats                                                                     |

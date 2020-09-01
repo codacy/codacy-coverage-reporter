@@ -18,7 +18,7 @@ markdown_extensions:
       permalink: true
 
 nav:
-  - "index.md"
-  - "alternative-ways-of-running-coverage-reporter.md"
   - "generating-coverage-reports.md"
+  - "adding-coverage-to-your-repository.md"
+  - "alternative-ways-of-running-coverage-reporter.md"
   - "troubleshooting-common-issues.md"

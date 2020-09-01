@@ -1,7 +1,5 @@
 # Adding coverage to your repository
 
-Code coverage is a metric used to describe the degree to which the source code of a program is tested. A program with high code coverage has been more thoroughly tested and has a lower chance of containing software bugs than a program with low code coverage.
-
 Before setting up Codacy to display code coverage metrics for your repository you must have tests and use tools to generate coverage reports for the languages in your repositories. If you need help on getting started see [how to generate coverage reports](generating-coverage-reports.md).
 
 Codacy supports the following coverage report formats:
@@ -19,7 +17,7 @@ Codacy supports the following coverage report formats:
 !!! tip
     If you are generating a report format that Codacy does not yet support, try using community projects such as [schrej/godacov](https://github.com/schrej/godacov) and [danielpalme/ReportGenerator](https://github.com/danielpalme/ReportGenerator), or alternatively contribute to our [codacy/coverage-parser](https://github.com/codacy/coverage-parser) project.
 
-After having coverage reports set up for your repository, you must use Codacy Coverage Reporter to convert the reports to a smaller JSON file and upload this file to Codacy:
+After having coverage reports set up for your repository, you must use Codacy Coverage Reporter to convert the reports to smaller JSON files and upload these files to Codacy:
 
 1.  You must set up an API token to allow Codacy Coverage Reporter to authenticate on Codacy.
 
