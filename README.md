@@ -9,7 +9,7 @@ Multi-language coverage reporter for Codacy https://www.codacy.com
 
 ## Setup
 
-Follow the instructions on how to [add coverage to your repository](https://docs.codacy.com/coverage-reporter/).
+Follow the instructions on how to [add coverage to your repository](https://docs.codacy.com/coverage-reporter/adding-coverage-to-your-repository/).
 
 For a complete list of commands and options, run:
 
