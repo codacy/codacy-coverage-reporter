@@ -20,7 +20,9 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
   val commitUUID = CommitUUID("commitUUID")
 
   val baseConf = BaseCommandConfig(Some(projToken), None, None, None, Some(apiBaseUrl), None)
-  val conf = Report(baseConf, Some("Scala"), coverageReports = Some(coverageFiles), prefix = None)
+
+  val conf =
+    Report(baseConf, Some("Scala"), coverageReports = Some(coverageFiles), prefix = None, forceCoverageParser = None)
 
   val coverageReport = CoverageReport(100, Seq(CoverageFileReport("file.scala", 100, Map(10 -> 1))))
   val noLanguageReport = CoverageReport(0, Seq.empty[CoverageFileReport])
@@ -43,7 +45,8 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
           forceLanguage = false,
           coverageReports = coverageReports.map(new File(_)),
           partial = false,
-          prefix = ""
+          prefix = "",
+          forceCoverageParser = None
         )
       val result = reportRules.codacyCoverage(reportConfig)
 

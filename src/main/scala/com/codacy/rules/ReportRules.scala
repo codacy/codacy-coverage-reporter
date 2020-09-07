@@ -43,7 +43,11 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
         logger.info(s"Parsing coverage data from: ${file.getAbsolutePath} ...")
         for {
           _ <- validateFileAccess(file)
-          report <- CoverageParser.parse(rootProjectDir, file).map(transform(_)(finalConfig))
+          report <- CoverageParser.parse(rootProjectDir, file, forceParser = config.forceCoverageParser).map {
+            coverageResult =>
+              logger.info(s"Coverage parser used is ${coverageResult.parser}")
+              transform(coverageResult.report)(finalConfig)
+          }
           _ <- storeReport(report, file)
           language <- guessReportLanguage(finalConfig.languageOpt, report)
           success <- sendReport(report, language, finalConfig, commitUUID, file)

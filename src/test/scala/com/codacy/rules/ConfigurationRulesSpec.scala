@@ -16,7 +16,9 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
   val apiBaseUrl = "https://example.com"
 
   val baseConf = BaseCommandConfig(Some(projToken), None, None, None, Some(apiBaseUrl), None)
-  val conf = Report(baseConf, Some("Scala"), coverageReports = Some(coverageFiles), prefix = None)
+
+  val conf =
+    Report(baseConf, Some("Scala"), coverageReports = Some(coverageFiles), prefix = None, forceCoverageParser = None)
 
   val configRules = new ConfigurationRules(conf, Map.empty)
   val validatedConfig = configRules.validatedConfig.right.value
