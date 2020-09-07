@@ -20,6 +20,7 @@ Codacy supports the following coverage report formats:
 After having coverage reports set up for your repository, you must use Codacy Coverage Reporter to convert the reports to smaller JSON files and upload these files to Codacy. The recommended way to do this is using a CI/CD platform that automatically runs tests, generates coverage, and uses Codacy Coverage Reporter to upload the coverage report information for every commit.
 
 1.  You must set up an API token to allow Codacy Coverage Reporter to authenticate on Codacy.
+    {: id="authenticate"}
 
     -   **If you're setting up coverage for one repository**, obtain the [project API Token](/repositories-configure/integrations/project-api/) from the page **Integrations** in your Codacy repository settings.
 

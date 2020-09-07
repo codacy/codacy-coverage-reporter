@@ -49,7 +49,7 @@ after_success:
   - java -jar codacy-coverage-reporter-assembly.jar report -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
 ```
 
-Make sure that you also [set your project or account API Token](adding-coverage-to-your-repository.md#2-uploading-coverage-reports-to-codacy) as an environment variable in your Travis CI job.
+Make sure that you also [set your project or account API Token](adding-coverage-to-your-repository.md#authenticate) as an environment variable in your Travis CI job.
 
 ### Gradle task
 
