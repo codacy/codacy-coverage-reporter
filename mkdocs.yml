@@ -7,6 +7,7 @@ theme:
 
 markdown_extensions:
   - admonition
+  - attr_list
   - codehilite:
       guess_lang: false
       linenums: true
@@ -17,12 +18,7 @@ markdown_extensions:
       permalink: true
 
 nav:
-  - "index.md"
-  - "Advanced":
-      - "advanced/authenticating-using-account-token.md"
-      - "advanced/multiple-reports.md"
-      - "advanced/installation-methods.md"
-  - "Troubleshooting":
-      - "troubleshooting/common-issues.md"
-      - "troubleshooting/commit-detection.md"
-      - "troubleshooting/swift-objectivec.md"
+  - "generating-coverage-reports.md"
+  - "adding-coverage-to-your-repository.md"
+  - "alternative-ways-of-running-coverage-reporter.md"
+  - "troubleshooting-common-issues.md"
