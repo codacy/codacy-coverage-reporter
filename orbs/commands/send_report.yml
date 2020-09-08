@@ -25,10 +25,10 @@ steps:
         export CODACY_REPORTER_VERSION=<< parameters.tool_version >>
         export CODACY_PROJECT_TOKEN=<< parameters.project-token >>
         # comma separated list of report files
-        report_list=<< parameters.coverage-reports >>
+        # reference from https://unix.stackexchange.com/a/191125
+        # plus https://stackoverflow.com/a/20323801/7898052
+        report_array=$(printf "<< parameters.coverage-reports >>" | cut -d',' -f1)
 
-        IFS=','
-        report_array=$report_list
         params=''
         for report in $report_array
         do
@@ -44,5 +44,14 @@ steps:
             skip_option=""
         fi
 
-        bash <(curl -Ls https://coverage.codacy.com/get.sh) report $params --partial $skip_option &&\
-        bash <(curl -Ls https://coverage.codacy.com/get.sh) final $skip_option
+
+        if [ -x "$(which curl)" ]; then
+            curl -Ls https://coverage.codacy.com/get.sh > get.sh
+        elif [ -x "$(which wget)" ] ; then
+            wget -qO - https://coverage.codacy.com/get.sh > get.sh
+        else
+            printf "Could not find curl or wget, please install one."
+        fi
+        
+        source get.sh report $params --partial $skip_option &&\
+        source get.sh final $skip_option
