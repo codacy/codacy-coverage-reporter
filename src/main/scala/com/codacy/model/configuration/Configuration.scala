@@ -2,6 +2,7 @@ package com.codacy.model.configuration
 
 import java.io.File
 
+import com.codacy.parsers.CoverageParser
 import com.codacy.plugins.api.languages.{Language, Languages}
 
 sealed trait Configuration {
@@ -14,7 +15,8 @@ case class ReportConfig(
     forceLanguage: Boolean,
     coverageReports: List[File],
     partial: Boolean,
-    prefix: String
+    prefix: String,
+    forceCoverageParser: Option[CoverageParser]
 ) extends Configuration {
 
   lazy val language: Option[Language] = languageOpt.flatMap(Languages.fromName)

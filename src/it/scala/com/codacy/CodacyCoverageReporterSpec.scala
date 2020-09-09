@@ -30,7 +30,8 @@ class CodacyCoverageReporterSpec extends WordSpec with Matchers with EitherValue
       baseConfig = baseConfig,
       language = None,
       coverageReports = Some(List(new File("src/test/resources/dotcover-example.xml"))),
-      prefix = None
+      prefix = None,
+      forceCoverageParser = None
     )
 
     val configRules = new ConfigurationRules(commandConfig, Map.empty)

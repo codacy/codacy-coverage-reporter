@@ -63,7 +63,8 @@ class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, S
         reportConfig.forceLanguageValue,
         validReportFiles,
         reportConfig.partialValue,
-        reportConfig.prefix.getOrElse("")
+        reportConfig.prefix.getOrElse(""),
+        reportConfig.forceCoverageParser
       )
       validatedConfig <- validate(reportConf)
     } yield validatedConfig
