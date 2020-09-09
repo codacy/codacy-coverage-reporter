@@ -73,7 +73,7 @@ object CommitUUIDProvider extends LogSupport {
     getFromEnvironment(environmentVars) match {
       case Left(msg) =>
         logger.info(msg)
-        logger.info("Trying to get commit from local Git directory")
+        logger.info("Trying to get commit UUID from local Git directory")
         getFromGit()
       case uuid => uuid
     }
