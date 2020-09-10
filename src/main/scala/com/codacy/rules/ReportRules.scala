@@ -67,7 +67,7 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
 
       val operationResult = filesEither.flatMap { files =>
         if (files.length > 1 && !config.partial) {
-          logger.info("More than one file. Considering a partial report")
+          logger.info("More than one file. Considering a partial coverage report")
           for {
             _ <- sendFilesReportForCommit(files, config, partial = true, commitUUID)
             f <- finalReport(FinalConfig(config.baseConfig))
@@ -79,7 +79,8 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
       if (config.partial) {
         logger.info(
           """To complete the reporting process, call coverage-reporter with the final flag.
-          | Check http://docs.codacy.com/coverage-reporter/adding-coverage-to-your-repository/#multiple-reports for more information.""".stripMargin
+          | Check https://docs.codacy.com/coverage-reporter/adding-coverage-to-your-repository/#multiple-reports
+          | for more information.""".stripMargin
         )
       }
       operationResult
@@ -89,7 +90,7 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
   private def logAuthenticationToken(config: ReportConfig): Unit = {
     config.baseConfig.authentication match {
       case ProjectTokenAuthenticationConfig(projectToken) => logger.debug(s"Project token: $projectToken")
-      case ApiTokenAuthenticationConfig(apiToken, _, _) => logger.debug(s"Api token: $apiToken")
+      case ApiTokenAuthenticationConfig(apiToken, _, _) => logger.debug(s"API token: $apiToken")
     }
   }
 
@@ -98,7 +99,7 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
       case file if !file.exists =>
         Left(s"File ${file.getAbsolutePath} does not exist.")
       case file if !file.canRead =>
-        Left(s"Missing read permissions for report file: ${file.getAbsolutePath}")
+        Left(s"Missing read permissions for coverage report file: ${file.getAbsolutePath}")
       case _ =>
         Right(())
     }
@@ -118,7 +119,7 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
     else {
       val codacyReportFile = File.createTempFile("codacy-coverage-", ".json")
 
-      logger.debug(s"Saving parsed report to ${codacyReportFile.getAbsolutePath}")
+      logger.debug(s"Saving parsed coverage report to ${codacyReportFile.getAbsolutePath}")
       logger.debug(report.toString)
       FileHelper.writeJsonToFile(codacyReportFile, report)
 
@@ -158,7 +159,7 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
         Right(())
       case failed: FailedResponse =>
         val message = handleFailedResponse(failed)
-        Left(s"Failed to upload report ${file.getAbsolutePath}: $message")
+        Left(s"Failed to upload coverage report ${file.getAbsolutePath}: $message")
     }
   }
 
@@ -179,10 +180,10 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
       case Some(l) => Right(l)
       case None =>
         report.fileReports.headOption match {
-          case None => Left("Can't guess the language due to empty report")
+          case None => Left("Can't guess the language due to empty coverage report")
           case Some(fileReport) =>
             Languages.forPath(fileReport.filename) match {
-              case None => Left("Can't guess the language due invalid path")
+              case None => Left("Can't guess the language due to invalid path")
               case Some(value) => Right(value.toString)
             }
         }
@@ -224,7 +225,7 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
           )
           .toList
         if (foundFiles.isEmpty)
-          Left("Can't guess any report due to no matching! Try to specify the report with -r")
+          Left("Can't detect any coverage report automatically. Specify the report with the flag -r")
         else
           Right(foundFiles)
       case value =>
@@ -243,7 +244,7 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
     val fileSize = ((codacyReportFile.length / 1024.0) * 100).toInt / 100.0
     val filePath = codacyReportFile.getAbsolutePath
 
-    logger.info(s"Generated report: $filePath ($fileSize kB)")
+    logger.info(s"Generated coverage report: $filePath ($fileSize kB)")
     logger.info("Uploading coverage data...")
   }
 
@@ -256,7 +257,7 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
     */
   private[rules] def handleFailedResponse(response: FailedResponse): String = {
     if (response.message.contains("not found")) {
-      "Request URL not found. (Check if the token you are using or the API base URL are valid)"
+      "Request URL not found. Check if the API Token you are using and the API base URL are valid."
     } else {
       response.message
     }

@@ -79,7 +79,7 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
         val baseConfig =
           BaseCommandConfig(None, None, Some("username"), Some("projectName"), Some(apiBaseUrl), Some("CommitUUID"))
         val result = assertFailure(baseConfig)
-        result.left.value should include("project token or an api token")
+        result.left.value should include("project or account API token")
       }
 
       "project token is empty" in {
