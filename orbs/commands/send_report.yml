@@ -9,6 +9,14 @@ parameters:
     type: string
     default: ${CODACY_PROJECT_TOKEN}
     description: Specify Codacy's project token
+  project-name:
+    type: string
+    default: ${CIRCLE_PROJECT_REPONAME}
+    description: Specify Codacy's project name
+  project-user:
+    type: string
+    default: ${CIRCLE_PROJECT_USERNAME}
+    description: Specify Codacy's project username
   coverage-reports:
     type: string
     description: 'Optional comma separated list of coverage reports to send to Codacy'
@@ -23,12 +31,13 @@ steps:
       name: Upload Coverage Results to Codacy
       command: |
         export CODACY_REPORTER_VERSION=<< parameters.tool_version >>
-        export CODACY_PROJECT_TOKEN=<< parameters.project-token >>
+        <<# parameters.project-name>>export CODACY_PROJECT_NAME=<< parameters.project-name >><</ parameters.project-name>>
+        <<# parameters.project-token>>export CODACY_PROJECT_TOKEN=<< parameters.project-token >><</ parameters.project-token>>
+        <<# parameters.project-user>>export CODACY_USERNAME=<< parameters.project-user >><</ parameters.project-user>>
         # comma separated list of report files
         # reference from https://unix.stackexchange.com/a/191125
         # plus https://stackoverflow.com/a/20323801/7898052
         report_array=$(printf "<< parameters.coverage-reports >>" | cut -d',' -f1)
-
         params=''
         for report in $report_array
         do
@@ -37,14 +46,11 @@ steps:
                 params="$params -r $report"
             fi
         done
-
         if << parameters.skip >>; then
             skip_option="--skip"
         else
             skip_option=""
         fi
-
-
         if [ -x "$(which curl)" ]; then
             curl -Ls https://coverage.codacy.com/get.sh > get.sh
         elif [ -x "$(which wget)" ] ; then
@@ -52,6 +58,6 @@ steps:
         else
             printf "Could not find curl or wget, please install one."
         fi
-        
+
         source get.sh report $params --partial $skip_option &&\
         source get.sh final $skip_option
