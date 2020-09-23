@@ -75,11 +75,11 @@ case class Report(
 case class BaseCommandConfig(
     @Name("t") @ValueDescription("your project API token")
     projectToken: Option[String],
-    @Name("a") @ValueDescription("your api token")
+    @Name("a") @ValueDescription("your api token") @Hidden
     apiToken: Option[String],
-    @Name("u") @ValueDescription("your username")
+    @Name("u") @ValueDescription("your username") @Hidden
     username: Option[String],
-    @Name("p") @ValueDescription("project name")
+    @Name("p") @ValueDescription("project name") @Hidden
     projectName: Option[String],
     @ValueDescription("the base URL for the Codacy API")
     codacyApiBaseUrl: Option[String],
