@@ -251,7 +251,7 @@ workflows:
           name: create_artifacts_for_osx
           cmd: |
             # TODO GraalVM version should be in a single place
-            export GRAAL_VERSION=20.0.0
+            export GRAAL_VERSION=20.2.0
             export TARGET_GRAAL="./target/graalvm-$GRAAL_VERSION.tar.gz"
             mkdir -p target
             if [[ ! -e $TARGET_GRAAL ]]; then
@@ -261,7 +261,7 @@ workflows:
             /usr/libexec/java_home -V
             export PATH="$PATH:/Library/Java/JavaVirtualMachines/graalvm-ce-java8-$GRAAL_VERSION/Contents/Home/bin"
             sudo gu install native-image
-            sbt "set graalVMNativeImageGraalVersion := None; set graalVMNativeImageOptions --= Seq(\"--static\", \"-H:UseMuslC=/opt/graalvm/stage/resources/bundle/\"); graalvm-native-image:packageBin"
+            sbt "set graalVMNativeImageGraalVersion := None; set graalVMNativeImageOptions --= Seq(\"--static\", \"--libc=musl\"); graalvm-native-image:packageBin"
             mkdir -p  ~/workdir/tmp-artifacts
             mv $HOME/workdir/target/graalvm-native-image/codacy-coverage-reporter $HOME/workdir/tmp-artifacts/codacy-coverage-reporter-darwin
           persist_to_workspace: true
