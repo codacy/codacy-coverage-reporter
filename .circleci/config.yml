@@ -27,8 +27,9 @@ commands:
             export CODACY_PROJECT_TOKEN='TEST_CODACY_PROJECT_TOKEN'
             export TEST_CODACY_REPORT_PATH='integration-tests/test_dotcover.xml'
             set +e
-            mkdir -p .codacy-coverage
-            cp "$HOME/workdir/artifacts/codacy-coverage-reporter-linux-$(cat $HOME/workdir/.version)" ".codacy-coverage/codacy-coverage-reporter"
+            export CODACY_REPORTER_TMP_FOLDER=".codacy-coverage"
+            mkdir -p $CODACY_REPORTER_TMP_FOLDER
+            cp "$HOME/workdir/artifacts/codacy-coverage-reporter-linux-$(cat $HOME/workdir/.version)" "$CODACY_REPORTER_TMP_FOLDER/codacy-coverage-reporter"
             # the following line ensure that we are using the cached binary
             export CODACY_REPORTER_VERSION=inexistent
             << parameters.executor >> get.sh report --commit-uuid 'TEST_COMMIT_UUID'  -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
@@ -160,8 +161,9 @@ jobs:
           name: prepare the environment
           command: |
             brew install mockserver coreutils
-            mkdir -p .codacy-coverage
-            cp $HOME/workdir/artifacts/codacy-coverage-reporter-darwin-$(cat $HOME/workdir/.version) .codacy-coverage/codacy-coverage-reporter
+            export CODACY_REPORTER_TMP_FOLDER=".codacy-coverage"
+            mkdir -p $CODACY_REPORTER_TMP_FOLDER
+            cp $HOME/workdir/artifacts/codacy-coverage-reporter-darwin-$(cat $HOME/workdir/.version) $CODACY_REPORTER_TMP_FOLDER/codacy-coverage-reporter
       - run:
           name: test on osx
           command: |
@@ -176,6 +178,7 @@ jobs:
             export CODACY_REPORTER_VERSION=inexistent
             export CODACY_PROJECT_TOKEN='TEST_CODACY_PROJECT_TOKEN'
             export TEST_CODACY_REPORT_PATH='integration-tests/test_dotcover.xml'
+            export CODACY_REPORTER_TMP_FOLDER=".codacy-coverage"
             sh get.sh report --commit-uuid 'TEST_COMMIT_UUID'  -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
             export ERROR_CODE=$?
             if [ $ERROR_CODE -ne 0 ]; then echo "expected an error code 0 and got $ERROR_CODE instead"; exit 1; fi
