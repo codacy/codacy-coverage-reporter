@@ -257,7 +257,7 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
     */
   private[rules] def handleFailedResponse(response: FailedResponse): String = {
     if (response.message.contains("not found")) {
-      "Request URL not found. Check if the API Token you are using and the API base URL are valid."
+      "Request URL not found. Check if the project API Token you are using and the API base URL are valid."
     } else {
       response.message
     }
