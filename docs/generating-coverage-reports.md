@@ -28,8 +28,4 @@ slather coverage -x --output-directory <report-output-dir> --scheme <project-nam
 
 This will generate a file `cobertura.xml` inside the folder `<report-output-dir>`.
 
-After this, run Codacy Coverage Reporter:
-
-```bash
-bash <(curl -Ls https://coverage.codacy.com/get.sh)
-```
+After this, run Codacy Coverage Reporter to [upload the coverage results to Codacy](adding-coverage-to-your-repository.md).

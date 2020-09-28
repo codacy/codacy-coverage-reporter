@@ -20,7 +20,7 @@ trait CommitUUIDProvider {
   val name: String
 
   /** Default error message */
-  val defaultErrorMessage = s"Can't find $name commit SHA."
+  val defaultErrorMessage = s"Can't find $name commit UUID."
 
   /** Get with error message
     *
@@ -73,7 +73,7 @@ object CommitUUIDProvider extends LogSupport {
     getFromEnvironment(environmentVars) match {
       case Left(msg) =>
         logger.info(msg)
-        logger.info("Trying to get commit from git")
+        logger.info("Trying to get commit UUID from local Git directory")
         getFromGit()
       case uuid => uuid
     }
@@ -89,10 +89,10 @@ object CommitUUIDProvider extends LogSupport {
     val currentPath = new File(System.getProperty("user.dir"))
     new GitClient(currentPath).latestCommitInfo match {
       case Failure(e) =>
-        Left("Commit UUID not provided and could not retrieve it from current directory")
+        Left("Commit UUID not provided and could not retrieve it from local Git directory")
       case Success(CommitInfo(uuid, authorName, authorEmail, date)) =>
         val info =
-          s"""Commit UUID not provided, using latest commit of current directory:
+          s"""Commit UUID not provided, using latest commit of local Git directory:
             |$uuid $authorName <$authorEmail> $date""".stripMargin
 
         logger.info(info)
@@ -134,12 +134,12 @@ object CommitUUIDProvider extends LogSupport {
       case provider if provider.validate(environmentVars) =>
         logger.trace(s"Using ${provider.name}")
         val uuid = provider.getUUID(environmentVars)
-        uuid.foreach(u => logger.info(s"Provider ${provider.name} found Commit UUID ${u.value}"))
+        uuid.foreach(u => logger.info(s"CI/CD provider ${provider.name} found Commit UUID ${u.value}"))
         uuid
     }
 
     validUUID
-      .toRight("Can't find any provider.")
+      .toRight("Can't find commit UUID from any supported CI/CD provider.")
       .flatMap(identity)
   }
 }

@@ -14,6 +14,11 @@ On Alpine Linux, run:
 wget -qO - https://coverage.codacy.com/get.sh | sh
 ```
 
+The self-contained script is able to cache the binary. To avoid downloading the binary every time that the script runs, add one of the following directories to your CI cached folders:
+
+-   `$HOME/.cache/codacy` on Linux
+-   `$HOME/Library/Caches/Codacy` on Mac OS X
+
 To use a specific version of the Codacy Coverage Reporter, set the following environment variable to one of the [released versions](https://github.com/codacy/codacy-coverage-reporter/releases):
 
 ```bash
@@ -49,7 +54,7 @@ after_success:
   - java -jar codacy-coverage-reporter-assembly.jar report -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
 ```
 
-Make sure that you also [set your project or account API Token](adding-coverage-to-your-repository.md#authenticate) as an environment variable in your Travis CI job.
+Make sure that you also [set your project API Token](adding-coverage-to-your-repository.md#authenticate) as an environment variable in your Travis CI job.
 
 ### Gradle task
 

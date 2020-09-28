@@ -5,6 +5,8 @@ import java.io.File
 import caseapp._
 import caseapp.core.ArgParser
 import com.codacy.configuration.parser.ConfigArgumentParsers._
+import com.codacy.parsers.CoverageParser
+import com.codacy.parsers.implementation._
 // Intellij keeps removing this import, I'll leave it here for future reference
 // import com.codacy.configuration.parser.ConfigArgumentParsers._
 
@@ -61,7 +63,10 @@ case class Report(
     @ValueDescription("if the report is partial")
     partial: Int @@ Counter = Tag.of(0),
     @ValueDescription("the project path prefix")
-    prefix: Option[String]
+    prefix: Option[String],
+    @ValueDescription("your coverage parser")
+    @HelpMessage(s"Available parsers are: ${ConfigArgumentParsers.parsersMap.keys.mkString(",")}")
+    forceCoverageParser: Option[CoverageParser]
 ) extends CommandConfiguration {
   val partialValue: Boolean = partial.## > 0
   val forceLanguageValue: Boolean = forceLanguage.## > 0
@@ -70,11 +75,11 @@ case class Report(
 case class BaseCommandConfig(
     @Name("t") @ValueDescription("your project API token")
     projectToken: Option[String],
-    @Name("a") @ValueDescription("your api token")
+    @Name("a") @ValueDescription("your api token") @Hidden
     apiToken: Option[String],
-    @Name("u") @ValueDescription("your username")
+    @Name("u") @ValueDescription("your username") @Hidden
     username: Option[String],
-    @Name("p") @ValueDescription("project name")
+    @Name("p") @ValueDescription("project name") @Hidden
     projectName: Option[String],
     @ValueDescription("the base URL for the Codacy API")
     codacyApiBaseUrl: Option[String],
@@ -92,4 +97,25 @@ case class BaseCommandConfig(
 object ConfigArgumentParsers {
 
   implicit val fileParser: ArgParser[File] = ArgParser.instance("file")(a => Right(new File(a)))
+
+  val parsersMap = Map(
+    "cobertura" -> CoberturaParser,
+    "jacoco" -> JacocoParser,
+    "clover" -> CloverParser,
+    "opencover" -> OpenCoverParser,
+    "dotcover" -> DotcoverParser,
+    "phpunit" -> PhpUnitXmlParser,
+    "lcov" -> LCOVParser
+  )
+
+  implicit val coverageParser: ArgParser[CoverageParser] = ArgParser.instance("parser") { v =>
+    val value = v.trim.toLowerCase
+    parsersMap.get(value) match {
+      case Some(parser) => Right(parser)
+      case _ =>
+        Left(
+          s"${value} is an unsupported/unrecognized coverage parser. (Available patterns are: ${parsersMap.keys.mkString(",")})"
+        )
+    }
+  }
 }

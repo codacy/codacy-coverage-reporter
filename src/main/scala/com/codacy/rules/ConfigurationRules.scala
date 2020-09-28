@@ -63,7 +63,8 @@ class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, S
         reportConfig.forceLanguageValue,
         validReportFiles,
         reportConfig.partialValue,
-        reportConfig.prefix.getOrElse("")
+        reportConfig.prefix.getOrElse(""),
+        reportConfig.forceCoverageParser
       )
       validatedConfig <- validate(reportConf)
     } yield validatedConfig
@@ -88,7 +89,7 @@ class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, S
 
   private def validateAuthConfig(baseCommandConfig: BaseCommandConfig): Either[String, AuthenticationConfig] = {
     val errorMessage =
-      "Either a project token or an api token must be provided or available in an environment variable"
+      "A project API token must be provided or available in an environment variable"
 
     val projectToken = getValueOrEnvironmentVar(baseCommandConfig.projectToken, "CODACY_PROJECT_TOKEN")
     val apiToken = getValueOrEnvironmentVar(baseCommandConfig.apiToken, "CODACY_API_TOKEN")

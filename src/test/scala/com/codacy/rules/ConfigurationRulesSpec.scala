@@ -16,7 +16,9 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
   val apiBaseUrl = "https://example.com"
 
   val baseConf = BaseCommandConfig(Some(projToken), None, None, None, Some(apiBaseUrl), None)
-  val conf = Report(baseConf, Some("Scala"), coverageReports = Some(coverageFiles), prefix = None)
+
+  val conf =
+    Report(baseConf, Some("Scala"), coverageReports = Some(coverageFiles), prefix = None, forceCoverageParser = None)
 
   val configRules = new ConfigurationRules(conf, Map.empty)
   val validatedConfig = configRules.validatedConfig.right.value
@@ -77,7 +79,7 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
         val baseConfig =
           BaseCommandConfig(None, None, Some("username"), Some("projectName"), Some(apiBaseUrl), Some("CommitUUID"))
         val result = assertFailure(baseConfig)
-        result.left.value should include("project token or an api token")
+        result.left.value should include("project API token")
       }
 
       "project token is empty" in {
