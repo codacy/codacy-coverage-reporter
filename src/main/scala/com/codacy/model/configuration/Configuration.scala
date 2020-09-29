@@ -2,8 +2,11 @@ package com.codacy.model.configuration
 
 import java.io.File
 
+import com.codacy.model.configuration.CommitUUID.regex
 import com.codacy.parsers.CoverageParser
 import com.codacy.plugins.api.languages.{Language, Languages}
+
+import scala.util.matching.Regex
 
 sealed trait Configuration {
   def baseConfig: BaseConfig
@@ -38,4 +41,15 @@ case class BaseConfig(
     debug: Boolean
 )
 
-case class CommitUUID(value: String) extends AnyVal
+case class CommitUUID(value: String) extends AnyVal {
+
+  def isValid: Boolean = value.length == CommitUUID.length && regex.findFirstIn(value).isDefined
+}
+
+object CommitUUID {
+  /* The number of characters in a commit UUID. */
+  val length: Int = 40
+
+  /* Regex to help detect a commit UUID. */
+  val regex: Regex = s"[0-9a-fA-F]{$length}".r
+}

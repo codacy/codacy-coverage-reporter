@@ -9,22 +9,22 @@ import wvlet.log.LazyLogger
 
 import scala.util.Try
 
-class GitHubActionProvider extends CommitUUIDProvider with LazyLogger {
+object GitHubActionProvider extends CommitUUIDProvider with LazyLogger {
   val name: String = "GitHub Actions"
 
-  override def validate(envVars: Map[String, String]): Boolean = {
-    envVars.get("CI").contains("true") && envVars.get("GITHUB_ACTIONS").contains("true")
+  override def validateEnvironment(environment: Map[String, String]): Boolean = {
+    environment.get("CI").contains("true") && environment.get("GITHUB_ACTIONS").contains("true")
   }
 
-  override def getUUID(envVars: Map[String, String]): Either[String, CommitUUID] = {
+  override def getValidCommitUUID(environment: Map[String, String]): Either[String, CommitUUID] = {
     // if the event is a pull request the GITHUB_SHA will have a different commit UUID (the id of a merge commit)
     // https://help.github.com/en/actions/reference/events-that-trigger-workflows
     // for this reason, we need to fetch it from the event details that GitHub provides
     // equivalent to doing ${{github.event.pull_request.head.sha}} in a GitHub action workflow
-    if (envVars.get("GITHUB_EVENT_NAME").contains("pull_request")) {
-      getPullRequestCommit(envVars)
+    if (environment.get("GITHUB_EVENT_NAME").contains("pull_request")) {
+      getPullRequestCommit(environment)
     } else {
-      withErrorMessage(envVars.get("GITHUB_SHA"))
+      parseEnvironmentVariable(environment.get("GITHUB_SHA"))
     }
   }
 

@@ -77,7 +77,7 @@ class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, S
       baseConf = BaseConfig(
         authConfig,
         baseConfig.codacyApiBaseUrl.getOrElse(getApiBaseUrl),
-        baseConfig.commitUUID.map(CommitUUID),
+        baseConfig.commitUUID.map(CommitUUID.apply),
         baseConfig.debugValue
       )
       validatedConfig <- validateBaseConfigUrl(baseConf)
@@ -131,6 +131,14 @@ class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, S
       }
       Left(s"""$error
               |$help""".stripMargin)
+
+    case config if !config.commitUUID.forall(_.isValid) =>
+      val error = s"Invalid commit SHA: ${config.commitUUID}"
+      val help = "Make sure the commit SHA consists of 40 hexadecimal characters"
+
+      Left(s"""$error
+           |$help""".stripMargin)
+
     case config => Right(config)
   }
 

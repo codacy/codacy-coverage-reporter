@@ -4,13 +4,13 @@ import com.codacy.model.configuration.CommitUUID
 import com.codacy.rules.commituuid.CommitUUIDProvider
 
 /** Jenkins CI provider */
-class JenkinsProvider extends CommitUUIDProvider {
+object JenkinsProvider extends CommitUUIDProvider {
   val name: String = "Jenkins CI"
 
-  override def validate(a: Map[String, String]): Boolean = {
-    a.get("JENKINS_URL").isDefined
+  override def validateEnvironment(environment: Map[String, String]): Boolean = {
+    environment.contains("JENKINS_URL")
   }
 
-  override def getUUID(a: Map[String, String]): Either[String, CommitUUID] =
-    withErrorMessage(a.get("GIT_COMMIT"))
+  override def getValidCommitUUID(environment: Map[String, String]): Either[String, CommitUUID] =
+    parseEnvironmentVariable(environment.get("GIT_COMMIT"))
 }

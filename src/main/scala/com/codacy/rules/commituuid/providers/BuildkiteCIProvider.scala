@@ -4,13 +4,13 @@ import com.codacy.model.configuration.CommitUUID
 import com.codacy.rules.commituuid.CommitUUIDProvider
 
 /** Buildkite CI provider */
-class BuildkiteCIProvider extends CommitUUIDProvider {
+object BuildkiteCIProvider extends CommitUUIDProvider {
   val name: String = "Buildkite CI"
 
-  override def validate(a: Map[String, String]): Boolean = {
-    a.get("CI").contains("true") && a.get("BUILDKITE").contains("true")
+  override def validateEnvironment(environment: Map[String, String]): Boolean = {
+    environment.get("CI").contains("true") && environment.get("BUILDKITE").contains("true")
   }
 
-  override def getUUID(a: Map[String, String]): Either[String, CommitUUID] =
-    withErrorMessage(a.get("BUILDKITE_COMMIT"))
+  override def getValidCommitUUID(environment: Map[String, String]): Either[String, CommitUUID] =
+    parseEnvironmentVariable(environment.get("BUILDKITE_COMMIT"))
 }

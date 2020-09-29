@@ -4,13 +4,13 @@ import com.codacy.model.configuration.CommitUUID
 import com.codacy.rules.commituuid.CommitUUIDProvider
 
 /** Codefresh CI provider */
-class CodefreshCIProvider extends CommitUUIDProvider {
+object CodefreshCIProvider extends CommitUUIDProvider {
   val name: String = "Codefresh CI"
 
-  override def validate(a: Map[String, String]): Boolean = {
-    a.get("CF_BUILD_URL").isDefined && a.get("CF_BUILD_ID").isDefined
+  override def validateEnvironment(environment: Map[String, String]): Boolean = {
+    environment.contains("CF_BUILD_URL") && environment.contains("CF_BUILD_ID")
   }
 
-  override def getUUID(a: Map[String, String]): Either[String, CommitUUID] =
-    withErrorMessage(a.get("CF_REVISION"))
+  override def getValidCommitUUID(environment: Map[String, String]): Either[String, CommitUUID] =
+    parseEnvironmentVariable(environment.get("CF_REVISION"))
 }
