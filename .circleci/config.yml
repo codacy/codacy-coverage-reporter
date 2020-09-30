@@ -32,7 +32,7 @@ commands:
             cp "$HOME/workdir/artifacts/codacy-coverage-reporter-linux-$(cat $HOME/workdir/.version)" "$CODACY_REPORTER_TMP_FOLDER/codacy-coverage-reporter"
             # the following line ensure that we are using the cached binary
             export CODACY_REPORTER_VERSION=inexistent
-            << parameters.executor >> get.sh report --commit-uuid 'TEST_COMMIT_UUID'  -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
+            << parameters.executor >> get.sh report --commit-uuid 'e9bef8a69a439bd601c37c0557277572425203a7'  -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
             export ERROR_CODE=$?
             if [ $ERROR_CODE -ne << parameters.error_code >> ]; then echo "expected an error code << parameters.error_code >> and got $ERROR_CODE instead"; exit 1; fi
             echo "test completed with the expected error code: << parameters.error_code >>"
@@ -179,7 +179,7 @@ jobs:
             export CODACY_PROJECT_TOKEN='TEST_CODACY_PROJECT_TOKEN'
             export TEST_CODACY_REPORT_PATH='integration-tests/test_dotcover.xml'
             export CODACY_REPORTER_TMP_FOLDER=".codacy-coverage"
-            sh get.sh report --commit-uuid 'TEST_COMMIT_UUID'  -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
+            sh get.sh report --commit-uuid 'e9bef8a69a439bd601c37c0557277572425203a7'  -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
             export ERROR_CODE=$?
             if [ $ERROR_CODE -ne 0 ]; then echo "expected an error code 0 and got $ERROR_CODE instead"; exit 1; fi
             echo "test completed with the expected error code: 0"
