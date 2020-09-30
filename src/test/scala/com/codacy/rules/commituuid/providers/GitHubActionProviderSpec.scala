@@ -1,6 +1,5 @@
 package com.codacy.rules.commituuid.providers
 
-import com.codacy.model.configuration.CommitUUID
 import org.scalatest.{EitherValues, Matchers, WordSpec}
 
 class GitHubActionProviderSpec extends WordSpec with Matchers with EitherValues {
@@ -35,7 +34,7 @@ class GitHubActionProviderSpec extends WordSpec with Matchers with EitherValues 
         val envVars = Map("GITHUB_EVENT_NAME" -> "push", "GITHUB_SHA" -> validCommitUuid)
         val commitUuidEither = provider.getValidCommitUUID(envVars)
         commitUuidEither should be('right)
-        commitUuidEither.right.value should be(CommitUUID(validCommitUuid))
+        commitUuidEither.right.value.value should be(validCommitUuid)
       }
       "even is pull request and json file includes needed information" in {
         val provider = GitHubActionProvider
@@ -46,7 +45,7 @@ class GitHubActionProviderSpec extends WordSpec with Matchers with EitherValues 
         )
         val commitUuidEither = provider.getValidCommitUUID(envVars)
         commitUuidEither should be('right)
-        commitUuidEither.right.value should be(CommitUUID(validCommitUuid))
+        commitUuidEither.right.value.value should be(validCommitUuid)
       }
     }
   }

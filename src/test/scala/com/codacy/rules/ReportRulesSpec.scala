@@ -7,7 +7,7 @@ import com.codacy.api.service.CoverageServices
 import com.codacy.api.{CoverageFileReport, CoverageReport}
 import com.codacy.configuration.parser.{BaseCommandConfig, Report}
 import com.codacy.di.Components
-import com.codacy.model.configuration.{BaseConfig, CommitUUID, ProjectTokenAuthenticationConfig, ReportConfig}
+import com.codacy.model.configuration.{BaseConfig, ProjectTokenAuthenticationConfig, ReportConfig}
 import com.codacy.plugins.api.languages.Languages
 import org.mockito.scalatest.IdiomaticMockito
 import org.scalatest._
@@ -16,8 +16,6 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
   val projToken = "1234adasdsdw333"
   val coverageFiles = List(new File("coverage.xml"))
   val apiBaseUrl = "https://api.codacy.com"
-
-  val commitUUID = CommitUUID("commitUUID")
 
   val baseConf = BaseCommandConfig(Some(projToken), None, None, None, Some(apiBaseUrl), None)
 
@@ -34,7 +32,7 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
 
   "codacyCoverage" should {
     val baseConfig =
-      BaseConfig(ProjectTokenAuthenticationConfig(projToken), apiBaseUrl, Some(commitUUID), debug = false)
+      BaseConfig(ProjectTokenAuthenticationConfig(projToken), apiBaseUrl, None, debug = false)
 
     def assertCodacyCoverage(coverageServices: CoverageServices, coverageReports: List[String], success: Boolean) = {
       val reportRules = new ReportRules(coverageServices)

@@ -33,7 +33,8 @@ object GitHubActionProvider extends CommitUUIDProvider with LazyLogger {
       eventPath <- envVars.get("GITHUB_EVENT_PATH").toRight("Could not find event description file path")
       eventContent <- readFile(eventPath)
       sha <- extractHeadSHA(eventContent)
-    } yield CommitUUID(sha)
+      commitUUID <- CommitUUID.fromString(sha)
+    } yield commitUUID
   }
 
   private def readFile(path: String): Either[String, String] = {

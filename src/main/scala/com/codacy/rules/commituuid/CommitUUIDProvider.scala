@@ -32,8 +32,7 @@ trait CommitUUIDProvider {
     */
   protected def parseEnvironmentVariable(environmentVariable: Option[String]): Either[String, CommitUUID] =
     environmentVariable match {
-      case Some(c) if CommitUUID(c).isValid => Right(CommitUUID(c))
-      case Some(_) => Left(commitNotValidMessage)
+      case Some(commitUUID) => CommitUUID.fromString(commitUUID)
       case None => Left(commitNotFoundMessage)
     }
 
@@ -113,7 +112,7 @@ object CommitUUIDProvider extends LogSupport {
             |$uuid $authorName <$authorEmail> $date""".stripMargin
 
         logger.info(info)
-        Right(CommitUUID(uuid))
+        CommitUUID.fromString(uuid)
     }
   }
 
