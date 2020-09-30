@@ -4,7 +4,7 @@ Before setting up Codacy to display code coverage metrics for your repository yo
 
 Codacy supports the following coverage report formats:
 
-| Report formats                | Report file names            |
+| Report format                 | Report file name             |
 | ----------------------------- | ---------------------------- |
 | Clover                        | clover.xml                   |
 | Cobertura                     | cobertura.xml                |
@@ -17,9 +17,9 @@ Codacy supports the following coverage report formats:
 !!! note
     If you are generating a report format that Codacy does not yet support, see [submitting coverage from unsupported report formats](troubleshooting-common-issues.md#unsupported-report-formats).
 
-After having coverage reports set up for your repository, you must use Codacy Coverage Reporter to convert the reports to smaller JSON files and upload these files to Codacy:
+After having coverage reports set up for your repository, you must use Codacy Coverage Reporter to convert the reports to smaller JSON files and upload these files to Codacy. The recommended way to do this is using a CI/CD platform that automatically runs tests, generates coverage, and uses Codacy Coverage Reporter to upload the coverage report information for every commit.
 
-1.  You must set up an API token to allow Codacy Coverage Reporter to authenticate on Codacy.
+1.  Set up an API token to allow Codacy Coverage Reporter to authenticate on Codacy.
     {: id="authenticate"}
 
     Obtain the [project API Token](/repositories-configure/integrations/project-api/) from the page **Integrations** in your Codacy repository settings. Then, set the following environment variable to specify your project API Token:
