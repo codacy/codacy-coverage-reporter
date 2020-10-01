@@ -4,13 +4,13 @@ import com.codacy.model.configuration.CommitUUID
 import com.codacy.rules.commituuid.CommitUUIDProvider
 
 /** Gitlab CI provider */
-class GitlabProvider extends CommitUUIDProvider {
+object GitlabProvider extends CommitUUIDProvider {
   val name: String = "Gitlab CI"
 
-  override def validate(a: Map[String, String]): Boolean = {
-    a.get("GITLAB_CI").isDefined
+  override def validateEnvironment(environment: Map[String, String]): Boolean = {
+    environment.contains("GITLAB_CI")
   }
 
-  override def getUUID(a: Map[String, String]): Either[String, CommitUUID] =
-    withErrorMessage(a.get("CI_COMMIT_SHA") orElse a.get("CI_BUILD_REF"))
+  override def getValidCommitUUID(environment: Map[String, String]): Either[String, CommitUUID] =
+    parseEnvironmentVariable(environment.get("CI_COMMIT_SHA") orElse environment.get("CI_BUILD_REF"))
 }

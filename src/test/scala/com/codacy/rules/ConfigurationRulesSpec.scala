@@ -77,38 +77,86 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
 
       "no token is used" in {
         val baseConfig =
-          BaseCommandConfig(None, None, Some("username"), Some("projectName"), Some(apiBaseUrl), Some("CommitUUID"))
+          BaseCommandConfig(
+            None,
+            None,
+            Some("username"),
+            Some("projectName"),
+            Some(apiBaseUrl),
+            Some("ad7ce1b9973d31a2794565f892b6ae4cab575d7c")
+          )
         val result = assertFailure(baseConfig)
         result.left.value should include("project API token")
       }
 
       "project token is empty" in {
         val baseConfig =
-          BaseCommandConfig(Some(""), None, None, None, Some(apiBaseUrl), Some("CommitUUID"))
+          BaseCommandConfig(
+            Some(""),
+            None,
+            None,
+            None,
+            Some(apiBaseUrl),
+            Some("ad7ce1b9973d31a2794565f892b6ae4cab575d7c")
+          )
         assertFailure(baseConfig)
       }
 
       "api token is empty" in {
         val baseConfig =
-          BaseCommandConfig(None, Some(""), None, None, Some(apiBaseUrl), Some("CommitUUID"))
+          BaseCommandConfig(
+            None,
+            Some(""),
+            None,
+            None,
+            Some(apiBaseUrl),
+            Some("ad7ce1b9973d31a2794565f892b6ae4cab575d7c")
+          )
         assertFailure(baseConfig)
       }
 
       "api token is used and username is not" in {
         val baseConfig =
-          BaseCommandConfig(None, Some("token"), None, Some("projectName"), Some(apiBaseUrl), Some("CommitUUID"))
+          BaseCommandConfig(
+            None,
+            Some("token"),
+            None,
+            Some("projectName"),
+            Some(apiBaseUrl),
+            Some("ad7ce1b9973d31a2794565f892b6ae4cab575d7c")
+          )
         assertFailure(baseConfig)
       }
 
       "api token is used and project name is not" in {
         val baseConfig =
-          BaseCommandConfig(None, Some("token"), Some("username"), None, Some(apiBaseUrl), Some("CommitUUID"))
+          BaseCommandConfig(
+            None,
+            Some("token"),
+            Some("username"),
+            None,
+            Some(apiBaseUrl),
+            Some("ad7ce1b9973d31a2794565f892b6ae4cab575d7c")
+          )
         assertFailure(baseConfig)
       }
 
       "API URL is invalid" in {
         val baseConfig =
-          BaseCommandConfig(Some("projectToken"), None, None, None, Some("Invalid URL"), Some("CommitUUID"))
+          BaseCommandConfig(
+            Some("projectToken"),
+            None,
+            None,
+            None,
+            Some("Invalid URL"),
+            Some("ad7ce1b9973d31a2794565f892b6ae4cab575d7c")
+          )
+        assertFailure(baseConfig)
+      }
+
+      "commit UUID is not valid" in {
+        val baseConfig =
+          BaseCommandConfig(Some("token"), None, None, None, Some(apiBaseUrl), Some("Commit UUID"))
         assertFailure(baseConfig)
       }
     }
@@ -116,7 +164,14 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
     "succeed" when {
       "project token is used" in {
         val baseConfig =
-          BaseCommandConfig(Some("token"), None, None, None, Some(apiBaseUrl), Some("CommitUUID"))
+          BaseCommandConfig(
+            Some("token"),
+            None,
+            None,
+            None,
+            Some(apiBaseUrl),
+            Some("ad7ce1b9973d31a2794565f892b6ae4cab575d7c")
+          )
         val result = configRules.validateBaseConfig(baseConfig)
         result should be('right)
       }
@@ -129,7 +184,7 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
             Some("username"),
             Some("projectName"),
             Some(apiBaseUrl),
-            Some("CommitUUID")
+            Some("ad7ce1b9973d31a2794565f892b6ae4cab575d7c")
           )
         val result = configRules.validateBaseConfig(baseConfig)
         result should be('right)
@@ -138,7 +193,14 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
       // it should use the project token only
       "project token and api token are used" in {
         val baseConfig =
-          BaseCommandConfig(Some("projectToken"), Some("apiToken"), None, None, Some(apiBaseUrl), Some("CommitUUID"))
+          BaseCommandConfig(
+            Some("projectToken"),
+            Some("apiToken"),
+            None,
+            None,
+            Some(apiBaseUrl),
+            Some("ad7ce1b9973d31a2794565f892b6ae4cab575d7c")
+          )
         val result = configRules.validateBaseConfig(baseConfig)
         result should be('right)
       }

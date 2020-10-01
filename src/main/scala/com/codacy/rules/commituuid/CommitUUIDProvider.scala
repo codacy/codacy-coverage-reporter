@@ -10,9 +10,7 @@ import com.codacy.api.helpers.vcs.{CommitInfo, GitClient}
 import scala.util.{Failure, Success}
 
 /**
-  * Commit UUID provider
-  *
-  * This trait is used to implement a provider of a commit UUID.
+  * Trait for a provider that can get a [[CommitUUID]] from environment variables.
   */
 trait CommitUUIDProvider {
 
@@ -20,40 +18,39 @@ trait CommitUUIDProvider {
   val name: String
 
   /** Default error message */
-  val defaultErrorMessage = s"Can't find $name commit UUID."
+  protected val commitNotFoundMessage = s"Can't find $name commit UUID in the environment."
 
-  /** Get with error message
+  protected val commitNotValidMessage =
+    "Commit UUID is not valid. Make sure the commit SHA consists of 40 hexadecimal characters."
+
+  /** Parses `environmentVariable` as a [[CommitUUID]], validates it and returns it, as a [[Right]].
     *
-    * This function gets an option and transform to an either with an error
-    * message.
+    * If the parsing or validation fail, return an error message, as a [[Left]].
     *
-    * @param opt commit uuid
-    * @param errorMessage error message
-    * @return commit uuid or an error message
+    * @param environmentVariable An option for the value of an environment variable.
+    * @return Commit uuid or an error message
     */
-  def withErrorMessage(opt: Option[String], errorMessage: String = defaultErrorMessage): Either[String, CommitUUID] =
-    opt match {
-      case Some(c) => Right(CommitUUID(c))
-      case None => Left(errorMessage)
+  protected def parseEnvironmentVariable(environmentVariable: Option[String]): Either[String, CommitUUID] =
+    environmentVariable match {
+      case Some(commitUUID) => CommitUUID.fromString(commitUUID)
+      case None => Left(commitNotFoundMessage)
     }
 
-  /** Validate provider
+  /** Validates if the environment has the expected variables for this provider.
     *
-    * This function validate if this is the selected provider.
-    *
-    * @param envVars environment variables
-    * @return true if its valid, false otherwise
+    * @param environment environment variables.
+    * @return `true` if all variables are defined, `false` otherwise.
     */
-  def validate(envVars: Map[String, String]): Boolean
+  def validateEnvironment(environment: Map[String, String]): Boolean
 
-  /** Get commit UUID
+  /** Gets a **valid** commit UUID, as [[Right]], from the environment if one exists under the
+    * expected name and [[CommitUUID.isValid is valid]].
+    * Otherwise, get an error message, as [[Left]], to present to the user.
     *
-    * This function try to get the commit uuid.
-    *
-    * @param envVars environment variables
-    * @return commit uuid or an error message
+    * @param environment environment variables.
+    * @return Either a **valid** commit UUID or an error message.
     */
-  def getUUID(envVars: Map[String, String]): Either[String, CommitUUID]
+  def getValidCommitUUID(environment: Map[String, String]): Either[String, CommitUUID]
 }
 
 /**
@@ -63,29 +60,48 @@ trait CommitUUIDProvider {
   */
 object CommitUUIDProvider extends LogSupport {
 
-  /** Get from all providers
+  private val providers = List(
+    AppveyorProvider,
+    BitriseCIProvider,
+    BuildkiteCIProvider,
+    CircleCIProvider,
+    CodefreshCIProvider,
+    CodeshipCIProvider,
+    DockerProvider,
+    GitHubActionProvider,
+    GitlabProvider,
+    GreenhouseCIProvider,
+    HerokuCIProvider,
+    JenkinsProvider,
+    MagnumCIProvider,
+    SemaphoreCIProvider,
+    ShippableCIProvider,
+    SolanoCIProvider,
+    TeamCityProvider,
+    TravisCIProvider,
+    WerckerCIProvider
+  )
+
+  /** Try to get a commit UUID from all available providers.
     *
-    * This function is to get a commit uuid from all providers available
-    * @param environmentVars environment variables
-    * @return commit uuid or an error message
+    * @param environment environment variables.
+    * @return Either a commit uuid or an error message.
     */
-  def getFromAll(environmentVars: Map[String, String]): Either[String, CommitUUID] = {
-    getFromEnvironment(environmentVars) match {
+  def getFromAll(environment: Map[String, String]): Either[String, CommitUUID] = {
+    getFromEnvironment(environment) match {
       case Left(msg) =>
         logger.info(msg)
         logger.info("Trying to get commit UUID from local Git directory")
-        getFromGit()
+        getLatestFromGit()
       case uuid => uuid
     }
   }
 
-  /** Get from git
+  /** Gets the latest commit uuid from the local git directory.
     *
-    * This function get a commit uuid from git
-    *
-    * @return commit uuid or an error message
+    * @return Either a commit uuid or an error message.
     */
-  def getFromGit(): Either[String, CommitUUID] = {
+  def getLatestFromGit(): Either[String, CommitUUID] = {
     val currentPath = new File(System.getProperty("user.dir"))
     new GitClient(currentPath).latestCommitInfo match {
       case Failure(e) =>
@@ -96,50 +112,27 @@ object CommitUUIDProvider extends LogSupport {
             |$uuid $authorName <$authorEmail> $date""".stripMargin
 
         logger.info(info)
-        Right(CommitUUID(uuid))
+        CommitUUID.fromString(uuid)
     }
   }
 
-  /** Get from environment variables
+  /** Get a commit UUID from the first provider that can find a valid commit UUID in `environment`.
     *
-    * This function gets a commit uuid using environment variables
+    * @param environment environment variables.
     *
-    * @param environmentVars environment variables
-    * @return commit uuid or an error message
+    * @see [[providers]] to check the order for which providers are tested.
     */
-  def getFromEnvironment(environmentVars: Map[String, String]): Either[String, CommitUUID] = {
-    val providersList = List(
-      new AppveyorProvider,
-      new BitriseCIProvider,
-      new BuildkiteCIProvider,
-      new CircleCIProvider,
-      new CodefreshCIProvider,
-      new CodeshipCIProvider,
-      new DockerProvider,
-      new GitHubActionProvider,
-      new GitlabProvider,
-      new GreenhouseCIProvider,
-      new HerokuCIProvider,
-      new JenkinsProvider,
-      new MagnumCIProvider,
-      new SemaphoreCIProvider,
-      new ShippableCIProvider,
-      new SolanoCIProvider,
-      new TeamCityProvider,
-      new TravisCIProvider,
-      new WerckerCIProvider
-    )
+  def getFromEnvironment(environment: Map[String, String]): Either[String, CommitUUID] = {
 
-    val validUUID = providersList.collectFirst {
-      case provider if provider.validate(environmentVars) =>
-        logger.trace(s"Using ${provider.name}")
-        val uuid = provider.getUUID(environmentVars)
+    val validUUID = providers.collectFirst {
+      case provider if provider.validateEnvironment(environment) && provider.getValidCommitUUID(environment).isRight =>
+        val uuid = provider.getValidCommitUUID(environment)
         uuid.foreach(u => logger.info(s"CI/CD provider ${provider.name} found Commit UUID ${u.value}"))
         uuid
     }
 
     validUUID
-      .toRight("Can't find commit UUID from any supported CI/CD provider.")
+      .toRight("Can't find or validate commit UUID from any supported CI/CD provider.")
       .flatMap(identity)
   }
 }

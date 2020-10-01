@@ -74,10 +74,11 @@ class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, S
   private[rules] def validateBaseConfig(baseConfig: BaseCommandConfig): Either[String, BaseConfig] = {
     for {
       authConfig <- validateAuthConfig(baseConfig)
+      commitUUID <- validateCommitUUIDConfig(baseConfig)
       baseConf = BaseConfig(
         authConfig,
         baseConfig.codacyApiBaseUrl.getOrElse(getApiBaseUrl),
-        baseConfig.commitUUID.map(CommitUUID),
+        commitUUID,
         baseConfig.debugValue
       )
       validatedConfig <- validateBaseConfigUrl(baseConf)
@@ -100,6 +101,14 @@ class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, S
       validateApiTokenAuth(baseCommandConfig, apiToken)
     else
       Left(errorMessage)
+  }
+
+  private def validateCommitUUIDConfig(baseCommandConfig: BaseCommandConfig): Either[String, Option[CommitUUID]] = {
+    val emptyCommitUUID: Either[String, Option[CommitUUID]] = Right(None)
+
+    baseCommandConfig.commitUUID.fold(emptyCommitUUID) { commitUUIDStr =>
+      CommitUUID.fromString(commitUUIDStr).map(Option(_))
+    }
   }
 
   private def validateProjectTokenAuth(projectToken: Option[String]) =
@@ -131,6 +140,7 @@ class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, S
       }
       Left(s"""$error
               |$help""".stripMargin)
+
     case config => Right(config)
   }
 

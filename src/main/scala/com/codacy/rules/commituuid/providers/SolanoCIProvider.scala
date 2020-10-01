@@ -4,13 +4,13 @@ import com.codacy.model.configuration.CommitUUID
 import com.codacy.rules.commituuid.CommitUUIDProvider
 
 /** Solano CI provider */
-class SolanoCIProvider extends CommitUUIDProvider {
+object SolanoCIProvider extends CommitUUIDProvider {
   val name: String = "Solano CI"
 
-  override def validate(a: Map[String, String]): Boolean = {
-    a.get("TDDIUM").contains("true")
+  override def validateEnvironment(environment: Map[String, String]): Boolean = {
+    environment.get("TDDIUM").contains("true")
   }
 
-  override def getUUID(a: Map[String, String]): Either[String, CommitUUID] =
-    withErrorMessage(a.get("TDDIUM_CURRENT_COMMIT"))
+  override def getValidCommitUUID(environment: Map[String, String]): Either[String, CommitUUID] =
+    parseEnvironmentVariable(environment.get("TDDIUM_CURRENT_COMMIT"))
 }
