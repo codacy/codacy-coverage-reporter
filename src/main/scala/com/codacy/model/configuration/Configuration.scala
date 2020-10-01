@@ -40,7 +40,7 @@ case class BaseConfig(
     debug: Boolean
 )
 
-trait CommitUUID extends Any {
+sealed trait CommitUUID extends Any {
   def value: String
 }
 
