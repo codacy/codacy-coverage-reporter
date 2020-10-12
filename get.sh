@@ -87,9 +87,9 @@ download() {
     local url="$1"
     local output="${2:--}"
 
-    if [ -x "$(which curl)" ]; then
+    if command -v curl > /dev/null 2>&1; then
         curl -# -LS "$url" -o "$output"
-    elif [ -x "$(which wget)" ] ; then
+    elif command -v wget > /dev/null 2>&1; then
         wget "$url" -O "$output"
     else
         fatal "Could not find curl or wget, please install one."
