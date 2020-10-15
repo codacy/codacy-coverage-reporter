@@ -111,9 +111,9 @@ fi
 # Temporary folder for downloaded files
 if [ -z "$CODACY_REPORTER_TMP_FOLDER" ]; then
     if [ "$os_name" = "Linux" ]; then
-        CODACY_REPORTER_TMP_FOLDER="$HOME/.cache/codacy"
+        CODACY_REPORTER_TMP_FOLDER="$HOME/.cache/codacy/coverage-reporter"
     elif [ "$os_name" = "Darwin" ]; then
-        CODACY_REPORTER_TMP_FOLDER="$HOME/Library/Caches/Codacy"
+        CODACY_REPORTER_TMP_FOLDER="$HOME/Library/Caches/Codacy/coverage-reporter"
     else
         CODACY_REPORTER_TMP_FOLDER=".codacy-coverage"
     fi
