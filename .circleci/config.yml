@@ -224,7 +224,7 @@ workflows:
           cmd: |
             sbt coverage test
             sbt coverageAggregate
-            bash <(curl -Ls https://coverage.codacy.com/get.sh) report --skip
+            ./get.sh report --skip
           requires:
             - scalafmt_and_compile
       - codacy/sbt:
