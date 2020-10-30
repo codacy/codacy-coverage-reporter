@@ -238,7 +238,7 @@ workflows:
             mv target/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/tmp-artifacts
           persist_to_workspace: true
           requires:
-            - test_and_coverage
+            - scalafmt_and_compile
       - codacy/sbt_osx:
           name: create_artifacts_for_osx
           cmd: |
@@ -259,7 +259,7 @@ workflows:
           persist_to_workspace: true
           persist_to_workspace_path: "tmp-artifacts/codacy-coverage-reporter-darwin"
           requires:
-            - test_and_coverage
+            - scalafmt_and_compile
       - package_artifacts:
           requires:
             - create_artifacts
