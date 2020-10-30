@@ -28,7 +28,7 @@ commands:
             export TEST_CODACY_REPORT_PATH='integration-tests/test_dotcover.xml'
             set +e
             export CODACY_REPORTER_TMP_FOLDER=".codacy-coverage"
-            mkdir -p $CODACY_REPORTER_TMP_FOLDER
+            mkdir -p $CODACY_REPORTER_TMP_FOLDER/$CODACY_REPORTER_VERSION
             export CODACY_REPORTER_VERSION=$(cat .version)
             cp "$HOME/workdir/artifacts/codacy-coverage-reporter-linux-$CODACY_REPORTER_VERSION" "$CODACY_REPORTER_TMP_FOLDER/$CODACY_REPORTER_VERSION/codacy-coverage-reporter"
             # the following line ensure that we are using the cached binary
@@ -165,8 +165,9 @@ jobs:
           command: |
             brew install mockserver coreutils
             export CODACY_REPORTER_TMP_FOLDER=".codacy-coverage"
-            mkdir -p $CODACY_REPORTER_TMP_FOLDER
-            cp $HOME/workdir/artifacts/codacy-coverage-reporter-darwin-$(cat $HOME/workdir/.version) $CODACY_REPORTER_TMP_FOLDER/codacy-coverage-reporter
+            version=$(cat .version)
+            mkdir -p $CODACY_REPORTER_TMP_FOLDER/$version
+            cp $HOME/workdir/artifacts/codacy-coverage-reporter-darwin-$version $CODACY_REPORTER_TMP_FOLDER/$version/codacy-coverage-reporter
       - run:
           name: test on osx
           command: |
@@ -178,7 +179,7 @@ jobs:
             echo "Run the test"
             set +e
             # the following line ensure that we are using the cached binary
-            export CODACY_REPORTER_VERSION=inexistent
+            export CODACY_REPORTER_VERSION=$(cat .version)
             export CODACY_PROJECT_TOKEN='TEST_CODACY_PROJECT_TOKEN'
             export TEST_CODACY_REPORT_PATH='integration-tests/test_dotcover.xml'
             export CODACY_REPORTER_TMP_FOLDER=".codacy-coverage"
