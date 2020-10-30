@@ -47,7 +47,7 @@ jobs:
       - store_artifacts:
           path: ~/workdir/artifacts/
 
-  pack_and_validate:
+  pack_and_validate_orb:
     <<: *circleci_job
     steps:
       - attach_workspace:
@@ -204,7 +204,7 @@ workflows:
     jobs:
       - codacy/checkout_and_version:
           write_sbt_version: true
-      - pack_and_validate:
+      - pack_and_validate_orb:
           context: CodacyCircleCI
           requires:
             - codacy/checkout_and_version
@@ -212,34 +212,23 @@ workflows:
           requires:
             - codacy/checkout_and_version
       - codacy/sbt:
-          name: populate_cache
-          cmd: sbt "set scalafmtUseIvy in ThisBuild := false;update"
+          name: scalafmt_and_compile
+          cmd: sbt "scalafmt::test;test:scalafmt::test;sbt:scalafmt::test;test:compile;it:compile"
           requires:
             - codacy/checkout_and_version
       - codacy/sbt:
-          name: check_fmt
-          cmd: sbt "scalafmt::test;test:scalafmt::test;sbt:scalafmt::test"
-          requires:
-            - populate_cache
-      - codacy/sbt:
-          name: compile
-          cmd: sbt compile
-          requires:
-            - check_fmt
-      - codacy/sbt:
           name: test_and_coverage
           cmd: |
-            if [ -z ${CODACY_PROJECT_TOKEN+x} ]; then
-              echo "CODACY_PROJECT_TOKEN not found. Skipping send coverage to Codacy."
-              sbt test
-            else
-              sbt clean coverage test coverageReport
-              sbt coverageAggregate
-              bash <(curl -Ls https://coverage.codacy.com/get.sh) report --skip
-              sbt "it:test"
-            fi
+            sbt coverage test
+            sbt coverageAggregate
+            bash <(curl -Ls https://coverage.codacy.com/get.sh) report --skip
           requires:
-            - compile
+            - scalafmt_and_compile
+      - codacy/sbt:
+          name: integration_tests
+          cmd: sbt it:test
+          requires:
+            - scalafmt_and_compile
       - codacy/sbt:
           name: create_artifacts
           cmd: |
@@ -338,7 +327,7 @@ workflows:
           context: CodacyCircleCI
           requires:
             - publish_ghr
-            - pack_and_validate
+            - pack_and_validate_orb
           filters:
             branches:
               ignore:
@@ -347,7 +336,7 @@ workflows:
           context: CodacyCircleCI
           requires:
             - publish_ghr
-            - pack_and_validate
+            - pack_and_validate_orb
           filters:
             branches:
               only:
