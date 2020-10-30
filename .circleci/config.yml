@@ -229,6 +229,7 @@ workflows:
           cmd: sbt it:test
           requires:
             - scalafmt_and_compile
+          persist_to_workspace: true
       - codacy/sbt:
           name: create_artifacts
           cmd: |
