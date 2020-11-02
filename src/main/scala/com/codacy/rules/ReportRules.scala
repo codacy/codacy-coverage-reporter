@@ -39,9 +39,9 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
   ): Either[String, String] = {
     val finalConfig = config.copy(partial = partial)
     files
-      .map { file =>
+      .flatMap { file =>
         logger.info(s"Parsing coverage data from: ${file.getAbsolutePath} ...")
-        for {
+        val res: Either[String, Seq[Either[String, Unit]]] = for {
           _ <- validateFileAccess(file)
           report <- CoverageParser.parse(rootProjectDir, file, forceParser = config.forceCoverageParser).map {
             coverageResult =>
@@ -49,9 +49,21 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
               transform(coverageResult.report)(finalConfig)
           }
           _ <- storeReport(report, file)
-          language <- guessReportLanguage(finalConfig.languageOpt, report)
-          success <- sendReport(report, language, finalConfig, commitUUID, file)
-        } yield { success }
+        } yield
+          finalConfig.languageOpt match {
+            case Some(language) =>
+              Seq(sendReport(report, language, finalConfig, commitUUID, file))
+            case None =>
+              splitReportByLanguages(report)
+                .map {
+                  _.map {
+                    case (language, report) =>
+                      sendReport(report, language, finalConfig, commitUUID, file)
+                  }
+                }
+                .fold(l => Seq(Left(l)), r => r)
+          }
+        res.fold(l => Seq(Left(l)), r => r)
       }
       .collectFirst {
         case Left(l) => Left(l)
@@ -145,7 +157,7 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
       config: ReportConfig,
       commitUUID: String,
       file: File
-  ) = {
+  ): Either[String, Unit] = {
     val coverageResponse = config.baseConfig.authentication match {
       case _: ProjectTokenAuthenticationConfig =>
         coverageServices.sendReport(commitUUID, language, report, config.partial)
@@ -164,29 +176,28 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
   }
 
   /**
-    * Guess report language
+    * Split report by languages
     *
-    * This function try to guess the report language using the first filename on
-    * the report file.
-    * @param languageOpt language option provided by the config
+    * This function splits a report into multiple reports with the same language
+    * guessed by the file extension.
+    * We skip files that have extensions not recognised by Languages.forPath
+    * We generate multiple coverage reports that share the same total and have
+    * split FileCoverageReports since we can't know to split total between multiple
+    * reports so we assume they get the same score.
     * @param report coverage report
-    * @return the guessed language name on the right or an error on the left.
+    * @return Either a Map from the languages to the partial coverage report or an error
+    *         message when there are no fileReports
     */
-  private[rules] def guessReportLanguage(
-      languageOpt: Option[String],
-      report: CoverageReport
-  ): Either[String, String] = {
-    languageOpt match {
-      case Some(l) => Right(l)
-      case None =>
-        report.fileReports.headOption match {
-          case None => Left("Can't guess the language due to empty coverage report")
-          case Some(fileReport) =>
-            Languages.forPath(fileReport.filename) match {
-              case None => Left("Can't guess the language due to invalid path")
-              case Some(value) => Right(value.toString)
-            }
-        }
+  private[rules] def splitReportByLanguages(report: CoverageReport): Either[String, Seq[(String, CoverageReport)]] = {
+    if (report.fileReports.isEmpty) Left("Can't guess the language due to empty coverage report")
+    else {
+      Right(
+        report.fileReports
+          .groupBy(r => Languages.forPath(r.filename).map(_.name))
+          .collect {
+            case (Some(language), fileReports) => language -> CoverageReport(report.total, fileReports)
+          }(collection.breakOut)
+      )
     }
   }
 
