@@ -31,6 +31,10 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
     .asScala
     .map(_.toFile)
 
+  private def flatten[T](v: Either[String, Seq[Either[String, T]]]): Seq[Either[String, T]] = {
+    v.left.map(l => Seq(Left(l))).merge
+  }
+
   private def sendFilesReportForCommit(
       files: List[File],
       config: ReportConfig,
@@ -54,16 +58,15 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
             case Some(language) =>
               Seq(sendReport(report, language, finalConfig, commitUUID, file))
             case None =>
-              splitReportByLanguages(report)
-                .map {
-                  _.map {
+              flatten(
+                splitReportByLanguages(report)
+                  .map(_.map {
                     case (language, report) =>
                       sendReport(report, language, finalConfig, commitUUID, file)
-                  }
-                }
-                .fold(l => Seq(Left(l)), r => r)
+                  })
+              )
           }
-        res.fold(l => Seq(Left(l)), r => r)
+        flatten(res)
       }
       .collectFirst {
         case Left(l) => Left(l)
