@@ -99,22 +99,35 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
   }
 
   "guessReportLanguage" should {
-    "provide the available language" in {
-      val langEither = components.reportRules.guessReportLanguage(conf.language, noLanguageReport)
-
-      langEither should be('right)
-      langEither.right.value should be(conf.language.get)
-    }
-
     "provide the Scala language from report" in {
-      val langEither = components.reportRules.guessReportLanguage(None, coverageReport)
+      val reports = components.reportRules.splitReportByLanguages(coverageReport)
 
-      langEither should be('right)
-      langEither.right.value should be(Languages.Scala.name)
+      reports should be('right)
+      reports.right.value should have size 1
+      reports.right.value.head._1 should be(Languages.Scala.name)
     }
 
     "not provide the language from an empty report" in {
-      components.reportRules.guessReportLanguage(None, noLanguageReport) should be('left)
+      components.reportRules.splitReportByLanguages(noLanguageReport) should be('left)
+    }
+
+    "split the report into partials for every language" in {
+      val total = 30
+      val scala = CoverageFileReport("file.scala", 100, Map(10 -> 1))
+      val c = CoverageFileReport("file.c", 80, Map(10 -> 1))
+      val js1 = CoverageFileReport("file.js", 30, Map(10 -> 1))
+      val js2 = CoverageFileReport("file2.js", 20, Map(1 -> 1))
+
+      val multipleLanguagesReport = CoverageReport(total, Seq(scala, c, js1, js2))
+      val expected = Seq(
+        "Scala" -> CoverageReport(total, Seq(scala)),
+        "Javascript" -> CoverageReport(total, Seq(js1, js2)),
+        "C" -> CoverageReport(total, Seq(c))
+      )
+      val result = components.reportRules.splitReportByLanguages(multipleLanguagesReport)
+
+      result should be('right)
+      result.right.value should contain theSameElementsAs expected
     }
   }
 
