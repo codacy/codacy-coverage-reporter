@@ -179,13 +179,9 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
     languageOpt match {
       case Some(l) => Right(l)
       case None =>
-        report.fileReports.headOption match {
-          case None => Left("Can't guess the language due to empty coverage report")
-          case Some(fileReport) =>
-            Languages.forPath(fileReport.filename) match {
-              case None => Left("Can't guess the language due to invalid path")
-              case Some(value) => Right(value.toString)
-            }
+        report.fileReports.flatMap(file => Languages.forPath(file.filename)).headOption match {
+          case None => Left("Can't guess the report language")
+          case Some(value) => Right(value.name)
         }
     }
   }
