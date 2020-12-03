@@ -13,18 +13,20 @@ class CloverParserTest extends WordSpec with Matchers with EitherValues {
 
       "the report file does not exist" in {
         // Arrange
-        val nonExistentReportPath = "src/test/resources/non-existent.xml"
+        val nonExistentReportPath = "coverage-parser/src/test/resources/non-existent.xml"
 
         // Act
         val parseResult = CloverParser.parse(new File("."), new File(nonExistentReportPath))
 
         // Assert
-        parseResult shouldBe Left("Unparseable report. src/test/resources/non-existent.xml (No such file or directory)")
+        parseResult shouldBe Left(
+          "Unparseable report. coverage-parser/src/test/resources/non-existent.xml (No such file or directory)"
+        )
       }
 
       "the report is not in the Clover format" in {
         // Arrange
-        val reportNotInCloverFormat = "src/test/resources/test_cobertura.xml"
+        val reportNotInCloverFormat = "coverage-parser/src/test/resources/test_cobertura.xml"
 
         // Act
         val parseResult = CloverParser.parse(new File("."), new File(reportNotInCloverFormat))
@@ -35,7 +37,7 @@ class CloverParserTest extends WordSpec with Matchers with EitherValues {
 
       "the report is missing the statements attribute in the file metrics tag" in {
         // Arrange
-        val invalidCloverReportPath = "src/test/resources/test_invalid_clover.xml"
+        val invalidCloverReportPath = "coverage-parser/src/test/resources/test_invalid_clover.xml"
 
         // Act
         val parseResult = CloverParser.parse(new File("."), new File(invalidCloverReportPath))
@@ -48,8 +50,8 @@ class CloverParserTest extends WordSpec with Matchers with EitherValues {
 
     }
 
-    val cloverReportPath = "src/test/resources/test_clover.xml"
-    val cloverWithoutPackagesFilePath = "src/test/resources/test_clover_without_packages.xml"
+    val cloverReportPath = "coverage-parser/src/test/resources/test_clover.xml"
+    val cloverWithoutPackagesFilePath = "coverage-parser/src/test/resources/test_clover_without_packages.xml"
 
     "succeed to parse a valid report" when {
 
@@ -76,7 +78,7 @@ class CloverParserTest extends WordSpec with Matchers with EitherValues {
 
       "reports contain both name and path attributes in file tags" in {
         // Arrange
-        val cloverWithPaths = new File("src/test/resources/test_clover_with_paths.xml")
+        val cloverWithPaths = new File("coverage-parser/src/test/resources/test_clover_with_paths.xml")
 
         // Act
         val parsedReportFilePaths =

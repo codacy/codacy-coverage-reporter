@@ -6,8 +6,8 @@ import com.codacy.parsers.implementation._
 import org.scalatest.{BeforeAndAfterAll, EitherValues, Matchers, WordSpec}
 
 class CoverageParserTest extends WordSpec with BeforeAndAfterAll with Matchers with EitherValues {
-  private val coberturaReportPath = "src/test/resources/test_cobertura.xml"
-  private val cloverReportPath = "src/test/resources/test_clover.xml"
+  private val coberturaReportPath = "coverage-parser/src/test/resources/test_cobertura.xml"
+  private val cloverReportPath = "coverage-parser/src/test/resources/test_clover.xml"
 
   "parse" should {
     "return the specific error" when {

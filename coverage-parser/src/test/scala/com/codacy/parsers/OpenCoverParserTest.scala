@@ -7,9 +7,9 @@ import com.codacy.parsers.implementation.OpenCoverParser
 import org.scalatest.{BeforeAndAfterAll, EitherValues, Matchers, WordSpec}
 
 class OpenCoverParserTest extends WordSpec with BeforeAndAfterAll with Matchers with EitherValues {
-  private val openCoverReportPath = "src/test/resources/test_opencover.xml"
-  private val nonExistentReportPath = "src/test/resources/non_existent.xml"
-  private val coberturaReportPath = "src/test/resources/test_cobertura.xml"
+  private val openCoverReportPath = "coverage-parser/src/test/resources/test_opencover.xml"
+  private val nonExistentReportPath = "coverage-parser/src/test/resources/non_existent.xml"
+  private val coberturaReportPath = "coverage-parser/src/test/resources/test_cobertura.xml"
   "parse" should {
     "return an invalid report" when {
       "report file does not exist" in {

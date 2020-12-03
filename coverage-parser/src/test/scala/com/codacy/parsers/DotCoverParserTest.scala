@@ -7,9 +7,9 @@ import com.codacy.parsers.implementation.DotcoverParser
 import org.scalatest.{BeforeAndAfterAll, EitherValues, Matchers, WordSpec}
 
 class DotCoverParserTest extends WordSpec with BeforeAndAfterAll with Matchers with EitherValues {
-  private val nonExistentFile = "src/test/resources/non-existent.xml"
-  private val dotCoverReport = "src/test/resources/test_dotcover.xml"
-  private val differentFormatReport = "src/test/resources/test_cobertura.xml"
+  private val nonExistentFile = "coverage-parser/src/test/resources/non-existent.xml"
+  private val dotCoverReport = "coverage-parser/src/test/resources/test_dotcover.xml"
+  private val differentFormatReport = "coverage-parser/src/test/resources/test_cobertura.xml"
   "parse" should {
     "return an invalid report" when {
       "report file does not exist" in {

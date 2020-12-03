@@ -2,7 +2,7 @@
     <packages>
         <package line-rate="0.87" name="com.github.theon.coveralls">
             <classes>
-                <class line-rate="0.87" name="TestSourceFile" filename="src/test/resources/TestSourceFile.scala">
+                <class line-rate="0.87" name="TestSourceFile" filename="coverage-parser/src/test/resources/TestSourceFile.scala">
                     <methods/>
                     <lines>
                         <line number="3" hits="0"/>
@@ -11,14 +11,14 @@
                         <line number="6" hits="2"/>
                     </lines>
                 </class>
-                <class line-rate="0.87" name="TestSourceFile" filename="src/test/resources/TestSourceFile.scala">
+                <class line-rate="0.87" name="TestSourceFile" filename="coverage-parser/src/test/resources/TestSourceFile.scala">
                     <methods/>
                     <lines>
                         <line number="9" hits="1"/>
                         <line number="10" hits="1"/>
                     </lines>
                 </class>
-                <class line-rate="0.87" name="TestSourceFile2" filename="src/test/resources/TestSourceFile2.scala">
+                <class line-rate="0.87" name="TestSourceFile2" filename="coverage-parser/src/test/resources/TestSourceFile2.scala">
                     <methods/>
                     <lines>
                         <line number="1" hits="1"/>
