@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1600681358311" clover="3.2.0">
+    <project timestamp="1600681358311" name="All files">
+        <metrics statements="125730" coveredstatements="31001" conditionals="5769" coveredconditionals="3154" methods="3409" coveredmethods="1092" elements="134908" coveredelements="35247" complexity="0" loc="125730" ncloc="125730" packages="822" files="2465" classes="2465"/>
+        <package name="pages">
+            <metrics statements="1164" coveredstatements="0" conditionals="20" coveredconditionals="0" methods="20" coveredmethods="0"/>
+            <file name="file.js" path="/Users/username/workspace/repository/src/app/file.js">
+                <metrics statements="9" coveredstatements="1" conditionals="1" coveredconditionals="0" methods="1" coveredmethods="0"/>
+                <line num="1" count="0" type="cond" truecount="0" falsecount="1"/>
+                <line num="2" count="0" type="stmt"/>
+                <line num="3" count="0" type="stmt"/>
+                <line num="4" count="0" type="stmt"/>
+                <line num="5" count="1" type="stmt"/>
+                <line num="6" count="0" type="stmt"/>
+                <line num="7" count="0" type="stmt"/>
+                <line num="8" count="0" type="stmt"/>
+                <line num="9" count="0" type="stmt"/>
+            </file>
+        </package>
+    </project>
+</coverage>

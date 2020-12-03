@@ -1,0 +1,9 @@
+SF:coverage-parser/src/test/resources/TestSourceFile.scala
+DA:3,0
+DA:4,1
+DA:5,1
+DA:6,2
+SF:coverage-parser/src/test/resources/TestSourceFile2.scala
+DA:1,1
+DA:2,1
+DA:3,1
