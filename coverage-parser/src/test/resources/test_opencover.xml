@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CoverageSession xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Modules>
+        <Module>
+            <Files>
+                <File uid="1" fullPath="foo.cs" />
+                <File uid="2" fullPath="bar.cs" />
+                <File uid="3" fullPath="foobar.cs" />
+            </Files>
+            <Classes>
+                <Class>
+                    <Summary sequenceCoverage="100" />
+                    <Methods>
+                        <Method>
+                            <FileRef uid="1"/>
+                            <SequencePoints>
+                                <SequencePoint sl="10" vc="1" />
+                            </SequencePoints>
+                        </Method>
+                    </Methods>
+                </Class>
+                <Class>
+                    <Summary sequenceCoverage="0" />
+                    <Methods>
+                        <Method>
+                            <FileRef uid="2"/>
+                            <SequencePoints>
+                                <SequencePoint sl="10" vc="0" />
+                            </SequencePoints>
+                        </Method>
+                    </Methods>
+                </Class>
+                <Class>
+                    <Summary sequenceCoverage="50" />
+                    <Methods>
+                        <Method>
+                            <FileRef uid="3"/>
+                            <SequencePoints>
+                                <SequencePoint sl="10" vc="0" />
+                                <SequencePoint sl="20" vc="1" />
+                            </SequencePoints>
+                        </Method>
+                    </Methods>
+                </Class>
+                <!-- Dummy class (will not appear on the coverage result) -->
+                <Class>
+                    <Summary sequenceCoverage="0" />
+                    <Methods>
+                        <Method>
+                            <!-- Invalid File id -->
+                            <FileRef uid="0"/>
+                            <SequencePoints>
+                                <SequencePoint sl="1" vc="0" />
+                            </SequencePoints>
+                        </Method>
+                        <Method>
+                            <!-- No FileRef tag -->
+                            <SequencePoints>
+                                <SequencePoint sl="1" vc="0" />
+                            </SequencePoints>
+                        </Method>
+                    </Methods>
+                </Class>
+            </Classes>
+        </Module>
+    </Modules>
+</CoverageSession>

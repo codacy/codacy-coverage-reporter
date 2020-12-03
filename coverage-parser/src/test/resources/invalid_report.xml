@@ -1,0 +1,9 @@
+<coverageReport>
+    <files>
+        <file name="test.scala">
+            <lines>
+                <line id="2">3</line>
+            </lines>
+        </file>
+    </files>
+</coverageReport>

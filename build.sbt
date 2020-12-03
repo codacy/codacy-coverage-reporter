@@ -2,23 +2,25 @@ import java.net.URL
 
 import codacy.libs._
 
-name := "codacy-coverage-reporter"
-
-scalaVersion := "2.12.11"
-
-scalacOptions := Seq(
-  "-deprecation",
-  "-feature",
-  "-unchecked",
-  "-Ywarn-adapted-args",
-  "-Xlint",
-  "-Xfatal-warnings",
-  "-Ypartial-unification"
+inThisBuild(
+  Seq(
+    scalaVersion := "2.12.11",
+    scalacOptions := Seq(
+      "-deprecation",
+      "-feature",
+      "-unchecked",
+      "-Ywarn-adapted-args",
+      "-Xlint",
+      "-Xfatal-warnings",
+      "-Ypartial-unification"
+    )
+  )
 )
+
+name := "codacy-coverage-reporter"
 
 // Runtime dependencies
 libraryDependencies ++= Seq(
-  "com.codacy" %% "coverage-parser" % "4.4.1",
   "com.github.alexarchambault" %% "case-app" % "1.2.0",
   "org.wvlet.airframe" %% "airframe-log" % "20.5.1",
   "com.lihaoyi" %% "ujson" % "1.1.0"
@@ -90,3 +92,16 @@ getMuslBundle := {
 }
 
 GraalVMNativeImage / packageBin := (GraalVMNativeImage / packageBin).dependsOn(getMuslBundle).value
+
+dependsOn(coverageParser)
+
+lazy val coverageParser = project
+  .in(file("coverage-parser"))
+  .settings(
+    libraryDependencies ++= Seq(
+      "com.codacy" %% "codacy-api-scala" % "4.3.0",
+      "com.codacy" %% "codacy-plugins-api" % "3.0.293",
+      "org.scala-lang.modules" %% "scala-xml" % "1.1.1",
+      scalatest % Test
+    )
+  )
