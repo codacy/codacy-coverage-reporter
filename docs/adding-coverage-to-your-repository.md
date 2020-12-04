@@ -29,7 +29,7 @@ After having coverage reports set up for your repository, you must use Codacy Co
     ```
 
     !!! warning
-        **Never write API Tokens on your configuration files** and keep your API Tokens well protected, as they grant owner permissions to your projects.
+        **Never write API Tokens on your configuration files** and keep your API Tokens well protected, as they grant owner permissions to your Codacy repositories.
 
         We recommend that you set the API Tokens as environment variables. Check the documentation of your CI/CD platform on how to do this.
 
