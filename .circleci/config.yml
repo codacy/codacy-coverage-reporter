@@ -218,6 +218,7 @@ workflows:
       - codacy/sbt:
           name: scalafmt_and_compile
           cmd: sbt "scalafmt::test;test:scalafmt::test;sbt:scalafmt::test;test:compile;it:compile"
+          persist_to_workspace: true
           requires:
             - codacy/checkout_and_version
       - codacy/sbt:
