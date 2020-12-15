@@ -82,6 +82,7 @@ Codacy Coverage Reporter automatically detects the commit SHA hash to associate 
     Codacy Coverage Reporter supports the following CI/CD platforms:
 
     -   Appveyor
+    -   Azure Pipelines
     -   Bitrise
     -   Buildkite
     -   Circle CI
