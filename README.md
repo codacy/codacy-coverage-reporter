@@ -11,6 +11,8 @@ Multi-language coverage reporter for Codacy https://www.codacy.com
 
 Follow the instructions on how to [add coverage to your repository](https://docs.codacy.com/coverage-reporter/adding-coverage-to-your-repository/).
 
+If necessary, see [alternative ways of running Codacy Coverage Reporter](https://docs.codacy.com/coverage-reporter/alternative-ways-of-running-coverage-reporter/) for other ways of running Codacy Coverage Reporter, such as by installing the binary manually or using a CircleCI Orb or GitHub Action.
+
 For a complete list of commands and options, run the Codacy Coverage Reporter with the flag `--help`. For example:
 
 ```bash
