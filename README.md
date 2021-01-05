@@ -13,6 +13,8 @@ Follow the instructions on how to [add coverage to your repository](https://docs
 
 If necessary, see [alternative ways of running Codacy Coverage Reporter](https://docs.codacy.com/coverage-reporter/alternative-ways-of-running-coverage-reporter/) for other ways of running Codacy Coverage Reporter, such as by installing the binary manually or using a CircleCI Orb or GitHub Action.
 
+**NOTE: If you're using macOS Big Sur** you must [use the Java binary](https://docs.codacy.com/coverage-reporter/alternative-ways-of-running-coverage-reporter/#java) to run Codacy Coverage Reporter. For more details, see the issue [#276](https://github.com/codacy/codacy-coverage-reporter/issues/276).
+
 For a complete list of commands and options, run the Codacy Coverage Reporter with the flag `--help`. For example:
 
 ```bash

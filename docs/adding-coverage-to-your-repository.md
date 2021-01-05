@@ -49,6 +49,9 @@ After having coverage reports set up for your repository, you must use Codacy Co
 
     See [alternative ways of running Codacy Coverage Reporter](alternative-ways-of-running-coverage-reporter.md) for other ways of running Codacy Coverage Reporter, such as by installing the binary manually or using a CircleCI Orb or GitHub Action.
 
+    !!! warning
+        **If you're using macOS Big Sur** you must [use the Java binary](alternative-ways-of-running-coverage-reporter.md#java) to run Codacy Coverage Reporter. For more details, see the issue [#276](https://github.com/codacy/codacy-coverage-reporter/issues/276).
+
 1.  Optionally, [add a Codacy badge](https://docs.codacy.com/repositories/badges/) to the README of your repository to display the current code coverage.
 
 See the sections below for more advanced functionality.
