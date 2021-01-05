@@ -11,10 +11,35 @@ Multi-language coverage reporter for Codacy https://www.codacy.com
 
 Follow the instructions on how to [add coverage to your repository](https://docs.codacy.com/coverage-reporter/adding-coverage-to-your-repository/).
 
-For a complete list of commands and options, run:
+For a complete list of commands and options, run the Codacy Coverage Reporter with the flag `--help`. For example:
 
 ```bash
-bash <(curl -Ls https://coverage.codacy.com/get.sh) --help
+$ bash <(curl -Ls https://coverage.codacy.com/get.sh) report --help
+     ______          __
+    / ____/___  ____/ /___ ________  __
+   / /   / __ \/ __  / __ `/ ___/ / / /
+  / /___/ /_/ / /_/ / /_/ / /__/ /_/ /
+  \____/\____/\__,_/\__,_/\___/\__, /
+                              /____/
+
+  Codacy Coverage Reporter
+
+ --> Using codacy reporter codacy-coverage-reporter-linux from cache
+Command: report
+Usage: codacy-coverage-reporter report 
+  --project-token | -t  <your project API token>
+  --codacy-api-base-url  <the base URL for the Codacy API>
+  --commit-uuid  <your commitUUID>
+  --skip | -s  <skip if token isn't defined>
+  --language | -l  <your project language>
+  --coverage-reports | -r  <your project coverage file name>
+  --partial  <if the report is partial>
+  --prefix  <the project path prefix>
+  --force-coverage-parser  <your coverage parser>
+        Available parsers are: opencover,clover,lcov,phpunit,jacoco,dotcover,cobertura
+
+
+ --> Succeeded!
 ```
 
 ## What is Codacy?
