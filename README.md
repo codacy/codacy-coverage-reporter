@@ -11,10 +11,39 @@ Multi-language coverage reporter for Codacy https://www.codacy.com
 
 Follow the instructions on how to [add coverage to your repository](https://docs.codacy.com/coverage-reporter/adding-coverage-to-your-repository/).
 
-For a complete list of commands and options, run:
+If necessary, see [alternative ways of running Codacy Coverage Reporter](https://docs.codacy.com/coverage-reporter/alternative-ways-of-running-coverage-reporter/) for other ways of running Codacy Coverage Reporter, such as by installing the binary manually or using a CircleCI Orb or GitHub Action.
+
+**NOTE: If you're using macOS Big Sur** you must [use the Java binary](https://docs.codacy.com/coverage-reporter/alternative-ways-of-running-coverage-reporter/#java) to run Codacy Coverage Reporter. For more details, see the issue [#276](https://github.com/codacy/codacy-coverage-reporter/issues/276).
+
+For a complete list of commands and options, run the Codacy Coverage Reporter with the flag `--help`. For example:
 
 ```bash
-bash <(curl -Ls https://coverage.codacy.com/get.sh) --help
+$ bash <(curl -Ls https://coverage.codacy.com/get.sh) report --help
+     ______          __
+    / ____/___  ____/ /___ ________  __
+   / /   / __ \/ __  / __ `/ ___/ / / /
+  / /___/ /_/ / /_/ / /_/ / /__/ /_/ /
+  \____/\____/\__,_/\__,_/\___/\__, /
+                              /____/
+
+  Codacy Coverage Reporter
+
+ --> Using codacy reporter codacy-coverage-reporter-linux from cache
+Command: report
+Usage: codacy-coverage-reporter report 
+  --project-token | -t  <your project API token>
+  --codacy-api-base-url  <the base URL for the Codacy API>
+  --commit-uuid  <your commitUUID>
+  --skip | -s  <skip if token isn't defined>
+  --language | -l  <your project language>
+  --coverage-reports | -r  <your project coverage file name>
+  --partial  <if the report is partial>
+  --prefix  <the project path prefix>
+  --force-coverage-parser  <your coverage parser>
+        Available parsers are: opencover,clover,lcov,phpunit,jacoco,dotcover,cobertura
+
+
+ --> Succeeded!
 ```
 
 ## What is Codacy?
@@ -24,10 +53,10 @@ bash <(curl -Ls https://coverage.codacy.com/get.sh) --help
 ### Among Codacy’s features:
 
 - Identify new Static Analysis issues
-- Commit and Pull Request Analysis with GitHub, BitBucket/Stash, GitLab (and also direct git repositories)
+- Commit and Pull Request Analysis with GitHub, GitLab, and Bitbucket
 - Auto-comments on Commits and Pull Requests
-- Integrations with Slack, HipChat, Jira, YouTrack
-- Track issues Code Style, Security, Error Proneness, Performance, Unused Code and other categories
+- Integrations with Slack and Jira
+- Track issues in Code Style, Security, Error Proneness, Performance, Unused Code and other categories
 
 Codacy also helps keep track of Code Coverage, Code Duplication, and Code Complexity.
 
