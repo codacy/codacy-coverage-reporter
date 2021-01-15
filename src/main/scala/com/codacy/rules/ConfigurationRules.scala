@@ -77,7 +77,7 @@ class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, S
       commitUUID <- validateCommitUUIDConfig(baseConfig)
       baseConf = BaseConfig(
         authConfig,
-        baseConfig.codacyApiBaseUrl.getOrElse(getApiBaseUrl),
+        baseConfig.codacyApiBaseUrl.getOrElse(getApiBaseUrl).replaceAll("/$", ""),
         commitUUID,
         baseConfig.debugValue
       )
