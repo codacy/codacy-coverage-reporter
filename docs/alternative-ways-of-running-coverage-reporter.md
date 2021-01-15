@@ -103,7 +103,7 @@ If you are having any issues with your installation, you can also build the cove
 
 ## Docker
 
-You can use Docker to run our codacy-coverage-reporter:
+You can use Docker to run Codacy Coverage Reporter:
 
 ```bash
 docker run -v $PWD:/code codacy/codacy-coverage-reporter:<version> report
