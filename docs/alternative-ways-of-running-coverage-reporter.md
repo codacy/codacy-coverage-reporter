@@ -30,6 +30,14 @@ export CODACY_REPORTER_VERSION=<version>
 
 The sections below provide details on alternative ways to run or install Codacy Coverage Reporter.
 
+## Docker
+
+You can use Docker to run Codacy Coverage Reporter:
+
+```bash
+docker run -v $PWD:/code codacy/codacy-coverage-reporter:<version> report
+```
+
 ## Manually downloading the binary
 
 ### Linux amd64

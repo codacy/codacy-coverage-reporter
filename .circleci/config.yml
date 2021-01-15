@@ -283,6 +283,24 @@ workflows:
           config_path: integration-tests/mock-server-error-config.json
           requires:
             - package_artifacts
+      - codacy/shell:
+          name: build_publish_docker_image
+          context: CodacyDocker
+          cmd: |
+            docker build --build-arg nativeImageLocation=artifacts/codacy-coverage-reporter-linux-$(cat .version) -t codacy-coverage-reporter .
+            docker tag codacy-coverage-reporter codacy/$CIRCLE_PROJECT_REPONAME:$(cat .version)
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker push codacy/$CIRCLE_PROJECT_REPONAME:$(cat .version)
+          persist_to_workspace: true
+          requires:
+            - it_coverage_script_macosx
+            - it_coverage_script_alpine
+            - it_coverage_script_ubuntu_success
+            - it_coverage_script_ubuntu_failure
+          filters:
+            branches:
+              only:
+                - master
       - publish_circleci_artifacts:
           requires:
             - it_coverage_script_macosx
