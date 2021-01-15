@@ -101,6 +101,14 @@ If you are having any issues with your installation, you can also build the cove
     <path>/java-project$ java -jar ../codacy-coverage-reporter/target/codacy-coverage-reporter-assembly-<version>.jar report
     ```
 
+## Docker
+
+You can use Docker to run our codacy-coverage-reporter:
+
+```bash
+docker run -v $PWD:/code codacy/codacy-coverage-reporter:<version> report
+```
+
 ## CircleCI orb
 
 If you are using CircleCI to report coverage, you can use our orb [codacy/coverage-reporter](https://circleci.com/orbs/registry/orb/codacy/coverage-reporter).
