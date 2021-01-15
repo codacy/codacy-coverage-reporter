@@ -30,6 +30,14 @@ export CODACY_REPORTER_VERSION=<version>
 
 The sections below provide details on alternative ways to run or install Codacy Coverage Reporter.
 
+## Docker
+
+You can use Docker to run Codacy Coverage Reporter:
+
+```bash
+docker run -v $PWD:/code codacy/codacy-coverage-reporter:<version> report
+```
+
 ## Manually downloading the binary
 
 ### Linux amd64
@@ -100,14 +108,6 @@ If you are having any issues with your installation, you can also build the cove
     ```bash
     <path>/java-project$ java -jar ../codacy-coverage-reporter/target/codacy-coverage-reporter-assembly-<version>.jar report
     ```
-
-## Docker
-
-You can use Docker to run Codacy Coverage Reporter:
-
-```bash
-docker run -v $PWD:/code codacy/codacy-coverage-reporter:<version> report
-```
 
 ## CircleCI orb
 
