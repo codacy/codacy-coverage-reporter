@@ -8,7 +8,7 @@ Codacy supports the following coverage report formats:
 | ----------------------------- | ---------------------------- |
 | Clover                        | clover.xml                   |
 | Cobertura                     | cobertura.xml                |
-| dotCover XML                  | dotcover.xml                 |
+| dotCover detailedXML          | dotcover.xml                 |
 | JaCoCo                        | jacoco\*.xml                 |
 | LCOV                          | lcov.info, lcov.dat, \*.lcov |
 | OpenCover                     | opencover.xml                |
