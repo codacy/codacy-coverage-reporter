@@ -51,6 +51,14 @@ bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
     -r <my report>
 ```
 
+## Report generated an empty result while uploading C# coverage data
+
+If you are using dotCover to generate coverage reports for your C# projects, you must use the dotCover detailedXML report format as follows:
+
+```bash
+dotCover.exe cover ... --reportType=DetailedXml
+```
+
 ## JsonParseException while uploading C# coverage data
 
 If you are using dotCover to generate coverage reports for your C# projects, you should [exclude xUnit files](https://www.jetbrains.com/help/dotcover/Running_Coverage_Analysis_from_the_Command_LIne.html#filters_cmd) from the coverage analysis as follows:
