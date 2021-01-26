@@ -51,7 +51,7 @@ bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
     -r <my report>
 ```
 
-## Report generated an empty result while uploading C# coverage data
+## Report generated an empty result while uploading C# coverage data {: id="detailedxml"}
 
 If you are using dotCover to generate coverage reports for your C# projects, you must use the dotCover detailedXML report format as follows:
 

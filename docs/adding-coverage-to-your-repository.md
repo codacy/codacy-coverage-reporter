@@ -4,15 +4,15 @@ Before setting up Codacy to display code coverage metrics for your repository yo
 
 Codacy supports the following coverage report formats:
 
-| Report format                 | Report file name             |
-| ----------------------------- | ---------------------------- |
-| Clover                        | clover.xml                   |
-| Cobertura                     | cobertura.xml                |
-| dotCover detailedXML          | dotcover.xml                 |
-| JaCoCo                        | jacoco\*.xml                 |
-| LCOV                          | lcov.info, lcov.dat, \*.lcov |
-| OpenCover                     | opencover.xml                |
-| PHPUnit XML (version &lt;= 4) | coverage-xml/index.xml       |
+| Report format                                                        | Report file name             |
+| -------------------------------------------------------------------- | ---------------------------- |
+| Clover                                                               | clover.xml                   |
+| Cobertura                                                            | cobertura.xml                |
+| dotCover [detailedXML](troubleshooting-common-issues.md#detailedxml) | dotcover.xml                 |
+| JaCoCo                                                               | jacoco\*.xml                 |
+| LCOV                                                                 | lcov.info, lcov.dat, \*.lcov |
+| OpenCover                                                            | opencover.xml                |
+| PHPUnit XML (version &lt;= 4)                                        | coverage-xml/index.xml       |
 
 !!! note
     If you are generating a report format that Codacy does not yet support, see [submitting coverage from unsupported report formats](troubleshooting-common-issues.md#unsupported-report-formats).
