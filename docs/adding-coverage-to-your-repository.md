@@ -54,7 +54,7 @@ After having coverage reports set up for your repository, you must use Codacy Co
 
 1.  Optionally, [add a Codacy badge](https://docs.codacy.com/repositories/badges/) to the README of your repository to display the current code coverage.
 
-See the sections below for more advanced functionality.
+See the sections below for more advanced functionality, or [check the troubleshooting page](troubleshooting-common-issues.md) if you found an issue during the setup process.
 
 ## Uploading multiple coverage reports for the same language {: id="multiple-reports"}
 
