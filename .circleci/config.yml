@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  codacy: codacy/base@5.1.3
+  codacy: codacy/base@dev:5.1.4-deletesyslinks.1.718b87c
 
 references:
   circleci_job: &circleci_job
