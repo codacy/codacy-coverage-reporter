@@ -14,9 +14,6 @@ The recommended way to run Codacy Coverage Reporter is using a self-contained sc
     wget -qO - https://coverage.codacy.com/get.sh | sh
     ```
 
-!!! warning
-    **If you're using macOS Big Sur** you must [use the Java binary](#java) to run Codacy Coverage Reporter. For more details, see the issue [#276](https://github.com/codacy/codacy-coverage-reporter/issues/276).
-
 The self-contained script can cache the binary. To avoid downloading the binary every time that the script runs, add one of the following directories to your CI cached folders:
 
 -   `$HOME/.cache/codacy` on Linux
