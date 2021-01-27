@@ -4,15 +4,15 @@ Before setting up Codacy to display code coverage metrics for your repository yo
 
 Codacy supports the following coverage report formats:
 
-| Report format                 | Report file name             |
-| ----------------------------- | ---------------------------- |
-| Clover                        | clover.xml                   |
-| Cobertura                     | cobertura.xml                |
-| dotCover detailedXML          | dotcover.xml                 |
-| JaCoCo                        | jacoco\*.xml                 |
-| LCOV                          | lcov.info, lcov.dat, \*.lcov |
-| OpenCover                     | opencover.xml                |
-| PHPUnit XML (version &lt;= 4) | coverage-xml/index.xml       |
+| Report format                                                        | Report file name             |
+| -------------------------------------------------------------------- | ---------------------------- |
+| Clover                                                               | clover.xml                   |
+| Cobertura                                                            | cobertura.xml                |
+| dotCover [detailedXML](troubleshooting-common-issues.md#detailedxml) | dotcover.xml                 |
+| JaCoCo                                                               | jacoco\*.xml                 |
+| LCOV                                                                 | lcov.info, lcov.dat, \*.lcov |
+| OpenCover                                                            | opencover.xml                |
+| PHPUnit XML (version &lt;= 4)                                        | coverage-xml/index.xml       |
 
 !!! note
     If you are generating a report format that Codacy does not yet support, see [submitting coverage from unsupported report formats](troubleshooting-common-issues.md#unsupported-report-formats).
@@ -54,7 +54,7 @@ After having coverage reports set up for your repository, you must use Codacy Co
 
 1.  Optionally, [add a Codacy badge](https://docs.codacy.com/repositories/badges/) to the README of your repository to display the current code coverage.
 
-See the sections below for more advanced functionality.
+See the sections below for more advanced functionality, or [check the troubleshooting page](troubleshooting-common-issues.md) if you found an issue during the setup process.
 
 ## Uploading multiple coverage reports for the same language {: id="multiple-reports"}
 
