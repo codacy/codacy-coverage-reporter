@@ -61,37 +61,24 @@ cancelable in Global := true
 javacOptions ++= Seq("-source", "11", "-target", "11")
 
 enablePlugins(GraalVMNativeImagePlugin)
-graalVMNativeImageGraalVersion := Some("20.0.0-java11")
+GraalVMNativeImage / containerBuildImage := Some("graavlm:latest")
 
 graalVMNativeImageOptions := Seq(
   "--verbose",
   "--no-server",
   "--enable-http",
   "--enable-https",
-  "--enable-url-protocols=http,https,file,jar",
+  "--enable-url-protocols=http,https,jar",
   "--enable-all-security-services",
   "-H:+JNI",
-  "--static",
   "-H:IncludeResourceBundles=com.sun.org.apache.xerces.internal.impl.msg.XMLMessages",
   "-H:+ReportExceptionStackTraces",
   "--no-fallback",
   "--initialize-at-build-time",
   "--report-unsupported-elements-at-runtime",
-  "-H:UseMuslC=/opt/graalvm/stage/resources/bundle/"
+  "--static",
+  "--libc=musl"
 )
-
-val getMuslBundle = taskKey[Unit]("Fetch Musl bundle")
-
-getMuslBundle := {
-  if (!(baseDirectory.value / "src" / "graal" / "bundle").exists) {
-    TarDownloader.downloadAndExtract(
-      new URL("https://github.com/gradinac/musl-bundle-example/releases/download/v1.0/musl.tar.gz"),
-      baseDirectory.value / "src" / "graal"
-    )
-  }
-}
-
-GraalVMNativeImage / packageBin := (GraalVMNativeImage / packageBin).dependsOn(getMuslBundle).value
 
 dependsOn(coverageParser)
 
