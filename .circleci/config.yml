@@ -214,7 +214,7 @@ workflows:
       - codacy/sbt:
           name: scalafmt_and_compile
           cmd: sbt "scalafmt::test;test:scalafmt::test;sbt:scalafmt::test;test:compile;it:compile"
-          cache_prefix: sbt-cache-26012021
+          cache_prefix: sbt-cache-27012021
           requires:
             - codacy/checkout_and_version
       - codacy/sbt:
@@ -223,14 +223,14 @@ workflows:
             sbt coverage test
             sbt coverageAggregate
             bash <(curl -Ls https://coverage.codacy.com/get.sh) report --skip
-          cache_prefix: sbt-cache-26012021
+          cache_prefix: sbt-cache-27012021
           requires:
             - scalafmt_and_compile
       - codacy/sbt:
           name: integration_tests
           cmd: sbt it:test
           persist_to_workspace: true
-          cache_prefix: sbt-cache-26012021
+          cache_prefix: sbt-cache-27012021
           requires:
             - scalafmt_and_compile
       - codacy/sbt:
@@ -242,7 +242,7 @@ workflows:
             mv target/graalvm-native-image/codacy-coverage-reporter ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux
             mv target/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/tmp-artifacts
           persist_to_workspace: true
-          cache_prefix: sbt-cache-26012021
+          cache_prefix: sbt-cache-27012021
           requires:
             - scalafmt_and_compile
       - codacy/sbt_osx:
@@ -264,7 +264,7 @@ workflows:
             mv $HOME/workdir/target/graalvm-native-image/codacy-coverage-reporter $HOME/workdir/tmp-artifacts/codacy-coverage-reporter-darwin
           persist_to_workspace: true
           persist_to_workspace_path: "tmp-artifacts/codacy-coverage-reporter-darwin"
-          cache_prefix: sbt-cache-26012021
+          cache_prefix: sbt-cache-27012021
           requires:
             - scalafmt_and_compile
       - package_artifacts:
