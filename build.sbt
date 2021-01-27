@@ -4,7 +4,7 @@ import codacy.libs._
 
 inThisBuild(
   Seq(
-    scalaVersion := "2.12.13",
+    scalaVersion := "2.12.11",
     scalacOptions := Seq(
       "-deprecation",
       "-feature",
