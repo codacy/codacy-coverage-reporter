@@ -46,8 +46,8 @@ class OpenCoverParserTest extends WordSpec with BeforeAndAfterAll with Matchers 
       reader.right.value shouldBe CoverageReport(
         50,
         List(
-          CoverageFileReport("foo.cs", 100, Map(10 -> 1)),
           CoverageFileReport("bar.cs", 0, Map(10 -> 0)),
+          CoverageFileReport("foo.cs", 100, Map(10 -> 1)),
           CoverageFileReport("foobar.cs", 50, Map(10 -> 0, 20 -> 1))
         )
       )
