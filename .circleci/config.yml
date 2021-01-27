@@ -24,12 +24,12 @@ commands:
       - run:
           name: test coverage reporting
           command: |
+            set +e
             export CODACY_PROJECT_TOKEN='TEST_CODACY_PROJECT_TOKEN'
             export TEST_CODACY_REPORT_PATH='integration-tests/test_dotcover.xml'
-            set +e
             export CODACY_REPORTER_TMP_FOLDER=".codacy-coverage"
-            mkdir -p $CODACY_REPORTER_TMP_FOLDER/$CODACY_REPORTER_VERSION
             export CODACY_REPORTER_VERSION=$(cat .version)
+            mkdir -p $CODACY_REPORTER_TMP_FOLDER/$CODACY_REPORTER_VERSION
             cp "$HOME/workdir/artifacts/codacy-coverage-reporter-linux-$CODACY_REPORTER_VERSION" "$CODACY_REPORTER_TMP_FOLDER/$CODACY_REPORTER_VERSION/codacy-coverage-reporter"
             # the following line ensure that we are using the cached binary
             << parameters.executor >> get.sh report --commit-uuid 'e9bef8a69a439bd601c37c0557277572425203a7' -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
