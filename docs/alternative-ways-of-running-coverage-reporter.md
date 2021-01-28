@@ -125,12 +125,11 @@ Thanks to the amazing job of [Gavin Mogan](https://github.com/halkeye) you can n
 If you are using Travis CI to report coverage, update your file `.travis.yml` to include the following blocks:
 
 ```yaml
-before_install:
-  - sudo apt-get install jq
-  - curl -LSs "$(curl -LSs https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r '.assets | map({name, browser_download_url} | select(.name | endswith(".jar"))) | .[0].browser_download_url')" -o codacy-coverage-reporter-assembly.jar
+before_script:
+  - bash <(curl -Ls https://coverage.codacy.com/get.sh) download
 
 after_success:
-  - java -jar codacy-coverage-reporter-assembly.jar report -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
+  - bash <(curl -Ls https://coverage.codacy.com/get.sh)
 ```
 
 Make sure that you also [set your project API Token](adding-coverage-to-your-repository.md#authenticate) as an environment variable in your Travis CI job.

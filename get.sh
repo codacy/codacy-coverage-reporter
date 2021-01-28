@@ -65,24 +65,6 @@ exit_trap() {
 trap exit_trap EXIT
 trap 'fatal Interrupted' INT
 
-unamestr=$(uname)
-
-# Temporary folder for downloaded files
-if [ -z "$CODACY_REPORTER_TMP_FOLDER" ]; then
-    if [ "$unamestr" = "Linux" ]; then
-        CODACY_REPORTER_TMP_FOLDER="$HOME/.cache/codacy"
-    elif [ "$unamestr" = "Darwin" ]; then
-        CODACY_REPORTER_TMP_FOLDER="$HOME/Library/Caches/Codacy"
-    else
-        CODACY_REPORTER_TMP_FOLDER=".codacy-coverage"
-    fi
-fi
-mkdir -p "$CODACY_REPORTER_TMP_FOLDER"
-
-if [ -z "$CODACY_REPORTER_VERSION" ]; then
-    CODACY_REPORTER_VERSION="latest"
-fi
-
 download() {
     local url="$1"
     local output="${2:--}"
@@ -96,66 +78,83 @@ download() {
     fi
 }
 
-get_version() {
-    if [ "$CODACY_REPORTER_VERSION" == "latest" ]; then
-        bintray_latest_api_url="https://api.bintray.com/packages/codacy/Binaries/codacy-coverage-reporter/versions/_latest"
-        download $bintray_latest_api_url | sed -e 's/.*name[^0-9]*\([0-9]\{1,\}[.][0-9]\{1,\}[.][0-9]\{1,\}\).*/\1/'
+download_reporter() {
+    if [ "$os_name" = "Linux" ] || [ "$os_name" = "Darwin" ]; then
+        # OS name lower case
+        suffix=$(echo "$os_name" | tr '[:upper:]' '[:lower:]')
     else
-        echo "$CODACY_REPORTER_VERSION"
+        suffix="assembly.jar"
     fi
-}
+    local binary_name="codacy-coverage-reporter-$suffix"
+    local reporter_path=$1
 
-download_coverage_reporter() {
-    local binary_name=$1
-    local codacy_reporter=$2
-
-    if [ ! -f "$codacy_reporter" ]
+    if [ ! -f "$reporter_path" ]
     then
-        log "$i" "Download the codacy reporter $1... ($CODACY_REPORTER_VERSION)"
+        log "$i" "Downloading the codacy reporter $binary_name... ($CODACY_REPORTER_VERSION)"
 
-        bintray_api_url="https://dl.bintray.com/codacy/Binaries/$(get_version)/$binary_name"
+        bintray_api_url="https://dl.bintray.com/codacy/Binaries/$CODACY_REPORTER_VERSION/$binary_name"
 
-        download "$bintray_api_url" "$codacy_reporter"
+        download "$bintray_api_url" "$reporter_path"
     else
-        log "$i" "Using codacy reporter $1 from cache"
+        log "$i" "Codacy reporter $binary_name already in cache"
     fi
 }
 
-run() {
-    eval "$@"
-}
+os_name=$(uname)
 
-codacy_reporter_native_start_cmd() {
-    local suffix=$1
-    local codacy_reporter="$CODACY_REPORTER_TMP_FOLDER/codacy-coverage-reporter"
-    download_coverage_reporter "codacy-coverage-reporter-$suffix" "$codacy_reporter"
-    chmod +x $codacy_reporter
-    run_command="$codacy_reporter"
-}
+# Find the latest version in case is not specified
+if [ -z "$CODACY_REPORTER_VERSION" ]; then
+    bintray_latest_api_url="https://api.bintray.com/packages/codacy/Binaries/codacy-coverage-reporter/versions/_latest"
+    CODACY_REPORTER_VERSION=$(download $bintray_latest_api_url | sed -e 's/.*name[^0-9]*\([0-9]\{1,\}[.][0-9]\{1,\}[.][0-9]\{1,\}\).*/\1/')
+fi
 
-codacy_reporter_jar_start_cmd() {
-    local codacy_reporter="$CODACY_REPORTER_TMP_FOLDER/codacy-coverage-reporter-assembly.jar"
-    download_coverage_reporter "codacy-coverage-reporter-assembly.jar" "$codacy_reporter"
-    run_command="java -jar \"$codacy_reporter\""
-}
+# Temporary folder for downloaded files
+if [ -z "$CODACY_REPORTER_TMP_FOLDER" ]; then
+    if [ "$os_name" = "Linux" ]; then
+        CODACY_REPORTER_TMP_FOLDER="$HOME/.cache/codacy/coverage-reporter"
+    elif [ "$os_name" = "Darwin" ]; then
+        CODACY_REPORTER_TMP_FOLDER="$HOME/Library/Caches/Codacy/coverage-reporter"
+    else
+        CODACY_REPORTER_TMP_FOLDER=".codacy-coverage"
+    fi
+fi
 
-run_command=""
-if [ "$unamestr" = "Linux" ]; then
-    codacy_reporter_native_start_cmd "linux"
-elif [ "$unamestr" = "Darwin" ]; then
-    codacy_reporter_native_start_cmd "darwin"
+# Set binary name
+if [ "$os_name" = "Linux" ] || [ "$os_name" = "Darwin" ]; then
+    reporter_filename="codacy-coverage-reporter"
 else
-    codacy_reporter_jar_start_cmd
+    reporter_filename="codacy-coverage-reporter-assembly.jar"
+fi
+
+# Folder containing the binary
+reporter_folder="$CODACY_REPORTER_TMP_FOLDER"/"$CODACY_REPORTER_VERSION"
+
+# Create the reporter folder if not exists
+mkdir -p "$reporter_folder"
+
+# Set binary path
+reporter_path="$reporter_folder"/"$reporter_filename"
+
+download_reporter "$reporter_path"
+
+if [ "$os_name" = "Linux" ] || [ "$os_name" = "Darwin" ]; then
+    chmod +x "$reporter_path"
+    run_command="$reporter_path"
+else
+    run_command="java -jar \"$reporter_path\""
 fi
 
 if [ -z "$run_command" ]
 then
-    fatal "Codacy coverage reporter command could not be found."
+    fatal "Codacy coverage reporter binary could not be found."
 fi
 
-if [ "$#" -gt 0 ];
+if [ "$#" -eq 1 ] && [ "$1" = "download" ];
 then
-    run "$run_command $@"
+    log "$g" "Codacy reporter download succeded";
+elif [ "$#" -gt 0 ];
+then
+    eval "$run_command $*"
 else
-    run "$run_command \"report\""
+    eval "$run_command \"report\""
 fi

@@ -24,15 +24,14 @@ commands:
       - run:
           name: test coverage reporting
           command: |
+            set +e
             export CODACY_PROJECT_TOKEN='TEST_CODACY_PROJECT_TOKEN'
             export TEST_CODACY_REPORT_PATH='integration-tests/test_dotcover.xml'
-            set +e
             export CODACY_REPORTER_TMP_FOLDER=".codacy-coverage"
-            mkdir -p $CODACY_REPORTER_TMP_FOLDER
-            cp "$HOME/workdir/artifacts/codacy-coverage-reporter-linux-$(cat $HOME/workdir/.version)" "$CODACY_REPORTER_TMP_FOLDER/codacy-coverage-reporter"
-            # the following line ensure that we are using the cached binary
-            export CODACY_REPORTER_VERSION=inexistent
-            << parameters.executor >> get.sh report --commit-uuid 'e9bef8a69a439bd601c37c0557277572425203a7'  -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
+            export CODACY_REPORTER_VERSION=$(cat .version)
+            mkdir -p $CODACY_REPORTER_TMP_FOLDER/$CODACY_REPORTER_VERSION
+            cp "$HOME/workdir/artifacts/codacy-coverage-reporter-linux-$CODACY_REPORTER_VERSION" "$CODACY_REPORTER_TMP_FOLDER/$CODACY_REPORTER_VERSION/codacy-coverage-reporter"
+            << parameters.executor >> get.sh report --commit-uuid 'e9bef8a69a439bd601c37c0557277572425203a7' -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
             export ERROR_CODE=$?
             if [ $ERROR_CODE -ne << parameters.error_code >> ]; then echo "expected an error code << parameters.error_code >> and got $ERROR_CODE instead"; exit 1; fi
             echo "test completed with the expected error code: << parameters.error_code >>"
@@ -165,8 +164,9 @@ jobs:
           command: |
             brew install mockserver coreutils
             export CODACY_REPORTER_TMP_FOLDER=".codacy-coverage"
-            mkdir -p $CODACY_REPORTER_TMP_FOLDER
-            cp $HOME/workdir/artifacts/codacy-coverage-reporter-darwin-$(cat $HOME/workdir/.version) $CODACY_REPORTER_TMP_FOLDER/codacy-coverage-reporter
+            version=$(cat .version)
+            mkdir -p $CODACY_REPORTER_TMP_FOLDER/$version
+            cp $HOME/workdir/artifacts/codacy-coverage-reporter-darwin-$version $CODACY_REPORTER_TMP_FOLDER/$version/codacy-coverage-reporter
       - run:
           name: test on osx
           command: |
@@ -177,8 +177,8 @@ jobs:
 
             echo "Run the test"
             set +e
-            # the following line ensure that we are using the cached binary
-            export CODACY_REPORTER_VERSION=inexistent
+
+            export CODACY_REPORTER_VERSION=$(cat .version)
             export CODACY_PROJECT_TOKEN='TEST_CODACY_PROJECT_TOKEN'
             export TEST_CODACY_REPORT_PATH='integration-tests/test_dotcover.xml'
             export CODACY_REPORTER_TMP_FOLDER=".codacy-coverage"
@@ -217,6 +217,7 @@ workflows:
       - codacy/sbt:
           name: scalafmt_and_compile
           cmd: sbt "scalafmt::test;test:scalafmt::test;sbt:scalafmt::test;test:compile;it:compile"
+          persist_to_workspace: true
           requires:
             - codacy/checkout_and_version
       - codacy/sbt:
@@ -224,7 +225,7 @@ workflows:
           cmd: |
             sbt coverage test
             sbt coverageAggregate
-            bash <(curl -Ls https://coverage.codacy.com/get.sh) report --skip
+            ./get.sh report --skip
           requires:
             - scalafmt_and_compile
       - codacy/sbt:
