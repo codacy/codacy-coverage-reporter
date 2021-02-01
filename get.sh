@@ -103,7 +103,7 @@ download_reporter() {
 os_name=$(uname)
 
 # Find the latest version in case is not specified
-if [ -z "$CODACY_REPORTER_VERSION" ]; then
+if [ -z "$CODACY_REPORTER_VERSION" ] || [ "$CODACY_REPORTER_VERSION" = "latest" ]; then
     bintray_latest_api_url="https://api.bintray.com/packages/codacy/Binaries/codacy-coverage-reporter/versions/_latest"
     CODACY_REPORTER_VERSION=$(download $bintray_latest_api_url | sed -e 's/.*name[^0-9]*\([0-9]\{1,\}[.][0-9]\{1,\}[.][0-9]\{1,\}\).*/\1/')
 fi

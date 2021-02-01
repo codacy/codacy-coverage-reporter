@@ -22,10 +22,7 @@ steps:
   - run:
       name: Upload Coverage Results to Codacy
       command: |
-        if [ -n "<< parameters.tool_version >>" ]
-        then
-          export CODACY_REPORTER_VERSION=<< parameters.tool_version >>
-        fi
+        export CODACY_REPORTER_VERSION=<< parameters.tool_version >>
 
         export CODACY_PROJECT_TOKEN=<< parameters.project-token >>
         # comma separated list of report files
