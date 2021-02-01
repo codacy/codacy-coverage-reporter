@@ -60,9 +60,9 @@ class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, S
       reportConf = ReportConfig(
         baseConfig,
         reportConfig.language,
-        reportConfig.forceLanguageValue,
+        reportConfig.forceLanguage,
         validReportFiles,
-        reportConfig.partialValue,
+        reportConfig.partial,
         reportConfig.prefix.getOrElse(""),
         reportConfig.forceCoverageParser
       )
@@ -79,7 +79,7 @@ class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, S
         authConfig,
         baseConfig.codacyApiBaseUrl.getOrElse(getApiBaseUrl),
         commitUUID,
-        baseConfig.debugValue
+        baseConfig.debug
       )
       validatedConfig <- validateBaseConfigUrl(baseConf)
     } yield {

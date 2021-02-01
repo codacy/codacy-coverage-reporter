@@ -2,28 +2,9 @@ package com.codacy.configuration.parser
 
 import java.io.File
 
-import caseapp._
-import caseapp.core.ArgParser
-import com.codacy.configuration.parser.ConfigArgumentParsers._
+import mainargs._
 import com.codacy.parsers.CoverageParser
 import com.codacy.parsers.implementation._
-// Intellij keeps removing this import, I'll leave it here for future reference
-// import com.codacy.configuration.parser.ConfigArgumentParsers._
-
-abstract class ConfigurationParsingApp extends CommandAppWithPreCommand[BaseCommand, CommandConfiguration] {
-  override final def run(options: CommandConfiguration, remainingArgs: RemainingArgs): Unit = {
-    sys.exit(run(options))
-  }
-
-  def run(config: CommandConfiguration): Int
-
-  override def beforeCommand(options: BaseCommand, remainingArgs: Seq[String]): Unit = ()
-}
-
-@AppName("codacy-coverage-reporter")
-@AppVersion(Option(BaseCommand.getClass.getPackage.getImplementationVersion).getOrElse("dev"))
-@ProgName(BaseCommand.runToolCommand)
-case class BaseCommand()
 
 object BaseCommand {
 
@@ -42,61 +23,52 @@ object BaseCommand {
   }
 }
 
+@main
 sealed trait CommandConfiguration {
   def baseConfig: BaseCommandConfig
 }
 
-case class Final(
-    @Recurse
-    baseConfig: BaseCommandConfig
+@main
+case class Final(baseConfig: BaseCommandConfig) extends CommandConfiguration
+
+@main
+case class Report(
+    baseConfig: BaseCommandConfig,
+    @arg(short = 'l', doc = "your project language")
+    language: Option[String],
+    @arg(short = 'f')
+    forceLanguage: Boolean = false,
+    @arg(name = "coverage-reports", short = 'r', doc = "your project coverage file name")
+    coverageReports: Option[List[File]],
+    @arg(doc = "if the report is partial")
+    partial: Boolean = false,
+    @arg(doc = "the project path prefix")
+    prefix: Option[String],
+    @arg(name = "force-coverage-parser", doc = "your coverage parser")
+    forceCoverageParser: Option[CoverageParser]
 ) extends CommandConfiguration
 
-case class Report(
-    @Recurse
-    baseConfig: BaseCommandConfig,
-    @Name("l") @ValueDescription("your project language")
-    language: Option[String],
-    @Hidden @Name("f")
-    forceLanguage: Int @@ Counter = Tag.of(0),
-    @Name("r") @ValueDescription("your project coverage file name")
-    coverageReports: Option[List[File]],
-    @ValueDescription("if the report is partial")
-    partial: Int @@ Counter = Tag.of(0),
-    @ValueDescription("the project path prefix")
-    prefix: Option[String],
-    @ValueDescription("your coverage parser")
-    @HelpMessage(s"Available parsers are: ${ConfigArgumentParsers.parsersMap.keys.mkString(",")}")
-    forceCoverageParser: Option[CoverageParser]
-) extends CommandConfiguration {
-  val partialValue: Boolean = partial.## > 0
-  val forceLanguageValue: Boolean = forceLanguage.## > 0
-}
-
+@main
 case class BaseCommandConfig(
-    @Name("t") @ValueDescription("your project API token")
+    @arg(name = "project-token", short = 't', doc = "your project API token")
     projectToken: Option[String],
-    @Name("a") @ValueDescription("your api token") @Hidden
+    @arg(name = "api-token", short = 'a', doc = "your api token")
     apiToken: Option[String],
-    @Name("u") @ValueDescription("your username") @Hidden
+    @arg(short = 'u', doc = "your username")
     username: Option[String],
-    @Name("p") @ValueDescription("project name") @Hidden
+    @arg(name = "project-name", short = 'p', doc = "project name")
     projectName: Option[String],
-    @ValueDescription("the base URL for the Codacy API")
+    @arg(name = "codacy-api-base-url", doc = "the base URL for the Codacy API")
     codacyApiBaseUrl: Option[String],
-    @ValueDescription("your commitUUID")
+    @arg(name = "commit-uuid", doc = "your commitUUID")
     commitUUID: Option[String],
-    @Name("s") @ValueDescription("skip if token isn't defined")
-    skip: Int @@ Counter = Tag.of(0),
-    @Hidden
-    debug: Int @@ Counter = Tag.of(0)
-) {
-  val skipValue: Boolean = skip.## > 0
-  val debugValue: Boolean = debug.## > 0
-}
+    @arg(short = 's', doc = "skip if token isn't defined")
+    skip: Boolean = false,
+    @arg
+    debug: Boolean = false
+)
 
 object ConfigArgumentParsers {
-
-  implicit val fileParser: ArgParser[File] = ArgParser.instance("file")(a => Right(new File(a)))
 
   val parsersMap = Map(
     "cobertura" -> CoberturaParser,
@@ -108,14 +80,22 @@ object ConfigArgumentParsers {
     "lcov" -> LCOVParser
   )
 
-  implicit val coverageParser: ArgParser[CoverageParser] = ArgParser.instance("parser") { v =>
-    val value = v.trim.toLowerCase
-    parsersMap.get(value) match {
-      case Some(parser) => Right(parser)
-      case _ =>
-        Left(
-          s"${value} is an unsupported/unrecognized coverage parser. (Available patterns are: ${parsersMap.keys.mkString(",")})"
-        )
+  implicit val CoverageParserTokensReader = new TokensReader[CoverageParser](
+    "parser",
+    strings => {
+      val value = strings.head.trim.toLowerCase
+
+      parsersMap.get(value) match {
+        case Some(parser) => Right(parser)
+        case _ =>
+          Left(
+            s"${value} is an unsupported/unrecognized coverage parser. (Available patterns are: ${parsersMap.keys.mkString(",")})"
+          )
+      }
     }
-  }
+  )
+  implicit val fileTokensReader = new TokensReader[java.io.File]("file", a => Right(new File(a.head)))
+  implicit val baseCommandConfigParser = ParserForClass[BaseCommandConfig]
+  implicit val reportParser = ParserForClass[Report]
+  implicit val finalParser = ParserForClass[Final]
 }
