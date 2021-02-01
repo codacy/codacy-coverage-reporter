@@ -3,7 +3,7 @@ description: "Download Codacy's coverage reporter and run it"
 parameters:
   tool_version:
     type: string
-    default: latest
+    default: ''
     description: "Specify Codacy's coverage reporter tool version"
   project-token:
     type: string
@@ -22,7 +22,11 @@ steps:
   - run:
       name: Upload Coverage Results to Codacy
       command: |
-        export CODACY_REPORTER_VERSION=<< parameters.tool_version >>
+        if [ -n "<< parameters.tool_version >>" ]
+        then
+          export CODACY_REPORTER_VERSION=<< parameters.tool_version >>
+        fi
+
         export CODACY_PROJECT_TOKEN=<< parameters.project-token >>
         # comma separated list of report files
         # reference from https://unix.stackexchange.com/a/191125
