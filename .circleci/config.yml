@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  codacy: codacy/base@2.12.1
+  codacy: codacy/base@dev:5.2.0-publishs3orb.5.f8ae95c
 
 references:
   circleci_job: &circleci_job
@@ -30,7 +30,7 @@ commands:
             export CODACY_REPORTER_TMP_FOLDER=".codacy-coverage"
             export CODACY_REPORTER_VERSION=$(cat .version)
             mkdir -p $CODACY_REPORTER_TMP_FOLDER/$CODACY_REPORTER_VERSION
-            cp "$HOME/workdir/artifacts/codacy-coverage-reporter-linux-$CODACY_REPORTER_VERSION" "$CODACY_REPORTER_TMP_FOLDER/$CODACY_REPORTER_VERSION/codacy-coverage-reporter"
+            cp "$HOME/workdir/artifacts/codacy-coverage-reporter-linux" "$CODACY_REPORTER_TMP_FOLDER/$CODACY_REPORTER_VERSION/codacy-coverage-reporter"
             << parameters.executor >> get.sh report --commit-uuid 'e9bef8a69a439bd601c37c0557277572425203a7' -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
             export ERROR_CODE=$?
             if [ $ERROR_CODE -ne << parameters.error_code >> ]; then echo "expected an error code << parameters.error_code >> and got $ERROR_CODE instead"; exit 1; fi
@@ -94,12 +94,12 @@ jobs:
           at: ~/workdir
       - run: |
           mkdir -p ~/workdir/artifacts/
-          mv ~/workdir/tmp-artifacts/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/artifacts/
-          upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-linux-$(cat .version) ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux
+          mv ~/workdir/tmp-artifacts/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/artifacts/codacy-coverage-reporter-assembly.jar
+          upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-linux ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux
           # upx binaries don't work on Mac OS Big Sur https://github.com/upx/upx/issues/424
           # use upx again once the bug is fixed
-          # upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-darwin-$(cat .version) ~/workdir/tmp-artifacts/codacy-coverage-reporter-darwin
-          cp ~/workdir/tmp-artifacts/codacy-coverage-reporter-darwin ~/workdir/artifacts/codacy-coverage-reporter-darwin-$(cat .version)
+          # upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-darwin ~/workdir/tmp-artifacts/codacy-coverage-reporter-darwin
+          cp ~/workdir/tmp-artifacts/codacy-coverage-reporter-darwin ~/workdir/artifacts/codacy-coverage-reporter-darwin
       - persist_to_workspace:
           root: ~/workdir
           paths:
@@ -292,7 +292,7 @@ workflows:
           name: build_publish_docker_image
           context: CodacyDocker
           cmd: |
-            docker build --build-arg nativeImageLocation=artifacts/codacy-coverage-reporter-linux-$(cat .version) -t codacy-coverage-reporter .
+            docker build --build-arg nativeImageLocation=artifacts/codacy-coverage-reporter-linux -t codacy-coverage-reporter .
             docker tag codacy-coverage-reporter codacy/$CIRCLE_PROJECT_REPONAME:$(cat .version)
             docker login -u $DOCKER_USER -p $DOCKER_PASS
             docker push codacy/$CIRCLE_PROJECT_REPONAME:$(cat .version)
@@ -316,19 +316,15 @@ workflows:
             branches:
               only:
                 - master
-      #TODO: Add bintray orb
-      - codacy/shell:
-          name: publish_bintray
-          cmd: |
-            curl -T ~/workdir/artifacts/codacy-coverage-reporter-linux-$(cat .version) -ucodacy-ci:$BINTRAY_API_KEY -H "X-Bintray-Package:codacy-coverage-reporter" -H "X-Bintray-Version:$(cat .version)" https://api.bintray.com/content/codacy/Binaries/$(cat .version)/codacy-coverage-reporter-linux
-            curl -T ~/workdir/artifacts/codacy-coverage-reporter-darwin-$(cat .version) -ucodacy-ci:$BINTRAY_API_KEY -H "X-Bintray-Package:codacy-coverage-reporter" -H "X-Bintray-Version:$(cat .version)" https://api.bintray.com/content/codacy/Binaries/$(cat .version)/codacy-coverage-reporter-darwin
-            curl -T ~/workdir/artifacts/codacy-coverage-reporter-assembly-$(cat .version).jar -ucodacy-ci:$BINTRAY_API_KEY -H "X-Bintray-Package:codacy-coverage-reporter" -H "X-Bintray-Version:$(cat .version)" https://api.bintray.com/content/codacy/Binaries/$(cat .version)/codacy-coverage-reporter-assembly.jar
-            curl -X POST -ucodacy-ci:$BINTRAY_API_KEY https://api.bintray.com/content/codacy/Binaries/codacy-coverage-reporter/$(cat .version)/publish
+      - codacy/publish_s3:
+          public: true
+          path: codacy/binaries/codacy-coverage-reporter
+          files: artifacts/codacy-coverage-reporter-linux artifacts/codacy-coverage-reporter-darwin artifacts/codacy-coverage-reporter-assembly.jar
           filters:
             branches:
               only:
                 - master
-          context: CodacyBintray
+          context: CodacyAWS
           requires:
             - it_coverage_script_macosx
             - it_coverage_script_alpine

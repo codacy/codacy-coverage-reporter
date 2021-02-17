@@ -92,9 +92,9 @@ download_reporter() {
     then
         log "$i" "Downloading the codacy reporter $binary_name... ($CODACY_REPORTER_VERSION)"
 
-        bintray_api_url="https://dl.bintray.com/codacy/Binaries/$CODACY_REPORTER_VERSION/$binary_name"
+        binary_url="https://artifacts.codacy.com/codacy/binaries/codacy-coverage-reporter/$CODACY_REPORTER_VERSION/$binary_name"
 
-        download "$bintray_api_url" "$reporter_path"
+        download "$binary_url" "$reporter_path"
     else
         log "$i" "Codacy reporter $binary_name already in cache"
     fi
