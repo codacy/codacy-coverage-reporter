@@ -166,7 +166,7 @@ jobs:
             export CODACY_REPORTER_TMP_FOLDER=".codacy-coverage"
             version=$(cat .version)
             mkdir -p $CODACY_REPORTER_TMP_FOLDER/$version
-            cp $HOME/workdir/artifacts/codacy-coverage-reporter-darwin-$version $CODACY_REPORTER_TMP_FOLDER/$version/codacy-coverage-reporter
+            cp $HOME/workdir/artifacts/codacy-coverage-reporter-darwin $CODACY_REPORTER_TMP_FOLDER/$version/codacy-coverage-reporter
       - run:
           name: test on osx
           command: |
