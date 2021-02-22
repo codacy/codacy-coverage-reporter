@@ -41,7 +41,7 @@ docker run -v $PWD:/code codacy/codacy-coverage-reporter:<version> report
 
 If you prefer, you can manually download and run the native `codacy-coverage-reporter` binary, either for the latest version or a specific one.
 
-You can use the scripts below to automatically check for the latest version of the binaries, download the binaries from either our public S3 or GitHub, and run them.
+You can use the scripts below to automatically check for the latest version of the binaries, download the binaries from either Codacy's public store or GitHub, and run them.
 
 -   Using Codacy's public S3:
 
@@ -64,13 +64,13 @@ You can use the scripts below to automatically check for the latest version of t
 
 Use the Java binary to run Codacy Coverage reporter on other platforms, such as Linux x86, macOS, Windows, etc.
 
-You can use the scripts below to automatically check for the latest version of the Java binaries, download the binaries from either our public S3 or GitHub, and run them.
+You can use the scripts below to automatically check for the latest version of the Java binaries, download the binaries from either Codacy's public store or GitHub, and run them.
 
--   Using Codacy's public S3:
+-   Using Codacy's public store:
 
     ```bash
-    LATEST_VERSION="$(curl -Ls https://artifacts.codacy.com/binaries/codacy-coverage-reporter/latest)"
-    curl -Ls -o codacy-coverage-reporter-assembly.jar "https://artifacts.codacy.com/binaries/codacy-coverage-reporter/${LATEST_VERSION}/codacy-coverage-reporter-assembly.jar"
+    LATEST_VERSION="$(curl -Ls https://artifacts.codacy.com/bin/codacy-coverage-reporter/latest)"
+    curl -Ls -o codacy-coverage-reporter-assembly.jar "https://artifacts.codacy.com/bin/codacy-coverage-reporter/${LATEST_VERSION}/codacy-coverage-reporter-assembly.jar"
     java -jar codacy-coverage-reporter-assembly.jar report
     ```
 

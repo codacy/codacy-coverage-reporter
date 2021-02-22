@@ -92,7 +92,7 @@ download_reporter() {
     then
         log "$i" "Downloading the codacy reporter $binary_name... ($CODACY_REPORTER_VERSION)"
 
-        binary_url="https://artifacts.codacy.com/binaries/codacy-coverage-reporter/$CODACY_REPORTER_VERSION/$binary_name"
+        binary_url="https://artifacts.codacy.com/bin/codacy-coverage-reporter/$CODACY_REPORTER_VERSION/$binary_name"
 
         download "$binary_url" "$reporter_path"
     else
@@ -104,7 +104,7 @@ os_name=$(uname)
 
 # Find the latest version in case is not specified
 if [ -z "$CODACY_REPORTER_VERSION" ] || [ "$CODACY_REPORTER_VERSION" = "latest" ]; then
-    CODACY_REPORTER_VERSION=$(download "https://artifacts.codacy.com/binaries/codacy-coverage-reporter/latest")
+    CODACY_REPORTER_VERSION=$(download "https://artifacts.codacy.com/bin/codacy-coverage-reporter/latest")
 fi
 
 # Temporary folder for downloaded files
