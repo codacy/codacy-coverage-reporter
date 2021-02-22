@@ -317,9 +317,9 @@ workflows:
               only:
                 - master
       - codacy/publish_s3:
-          name: publish_bintray	          
-          path: binaries/codacy-coverage-reporter
-          files: artifacts/codacy-coverage-reporter-linux artifacts/codacy-coverage-reporter-darwin artifacts/codacy-coverage-reporter-assembly.jar	          
+          name: publish_bintray
+          path: bin/codacy-coverage-reporter
+          files: artifacts/codacy-coverage-reporter-linux artifacts/codacy-coverage-reporter-darwin artifacts/codacy-coverage-reporter-assembly.jar
           filters:
             branches:
               only:
