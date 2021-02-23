@@ -92,9 +92,9 @@ download_reporter() {
     then
         log "$i" "Downloading the codacy reporter $binary_name... ($CODACY_REPORTER_VERSION)"
 
-        bintray_api_url="https://dl.bintray.com/codacy/Binaries/$CODACY_REPORTER_VERSION/$binary_name"
+        binary_url="https://artifacts.codacy.com/bin/codacy-coverage-reporter/$CODACY_REPORTER_VERSION/$binary_name"
 
-        download "$bintray_api_url" "$reporter_path"
+        download "$binary_url" "$reporter_path"
     else
         log "$i" "Codacy reporter $binary_name already in cache"
     fi
@@ -104,8 +104,7 @@ os_name=$(uname)
 
 # Find the latest version in case is not specified
 if [ -z "$CODACY_REPORTER_VERSION" ] || [ "$CODACY_REPORTER_VERSION" = "latest" ]; then
-    bintray_latest_api_url="https://api.bintray.com/packages/codacy/Binaries/codacy-coverage-reporter/versions/_latest"
-    CODACY_REPORTER_VERSION=$(download $bintray_latest_api_url | sed -e 's/.*name[^0-9]*\([0-9]\{1,\}[.][0-9]\{1,\}[.][0-9]\{1,\}\).*/\1/')
+    CODACY_REPORTER_VERSION=$(download "https://artifacts.codacy.com/bin/codacy-coverage-reporter/latest")
 fi
 
 # Temporary folder for downloaded files
