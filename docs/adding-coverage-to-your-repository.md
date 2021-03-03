@@ -84,39 +84,34 @@ bash <(curl -Ls https://coverage.codacy.com/get.sh) final
 
 ## Commit SHA hash detection {: id="commit-detection"}
 
-Codacy Coverage Reporter automatically detects the commit SHA hash to associate with the coverage data from several sources, in the following order:
+The Codacy Coverage Reporter automatically detects the commit SHA hash to associate with the coverage data from the following CI/CD platforms:
 
-1.  **CI workflow context**
+-   Appveyor
+-   Azure Pipelines
+-   Bitrise
+-   Buildkite
+-   Circle CI
+-   Codefresh
+-   Codeship
+-   Docker
+-   GitLab
+-   Greenhouse CI
+-   Heroku CI
+-   Jenkins
+-   Magnum CI
+-   Semaphore CI
+-   Shippable CI
+-   Solano CI
+-   TeamCity CI
+-   Travis CI
+-   Wercker CI
 
-    Codacy Coverage Reporter supports the following CI/CD platforms:
-
-    -   Appveyor
-    -   Azure Pipelines
-    -   Bitrise
-    -   Buildkite
-    -   Circle CI
-    -   Codefresh
-    -   Codeship
-    -   Docker
-    -   GitLab
-    -   Greenhouse CI
-    -   Heroku CI
-    -   Jenkins
-    -   Magnum CI
-    -   Semaphore CI
-    -   Shippable CI
-    -   Solano CI
-    -   TeamCity CI
-    -   Travis CI
-    -   Wercker CI
-
-2.  **Git repository directory**
-
-    If Codacy Coverage Reporter finds a Git repository directory it will use the current commit.
+If the Codacy Coverage Reporter fails to detect the current commit from the CI workflow context, it will use the current commit from the local Git repository instead.
 
 However, you can also force using a specific commit SHA hash with the flag `--commit-uuid`. For example:
 
 ```bash
 bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
+    -r report.xml \
     --commit-uuid cd4d000083a744cf1617d46af4ec108b79e06bed
 ```
