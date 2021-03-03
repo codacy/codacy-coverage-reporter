@@ -39,15 +39,16 @@ After having coverage reports set up for your repository, you must use Codacy Co
     export CODACY_API_BASE_URL=<your Codacy instance URL>
     ```
 
-1.  Run Codacy Coverage Reporter to upload the coverage results to Codacy.
-
-    The recommended way to do this is using a self-contained script that automatically downloads and runs the most recent version of Codacy Coverage Reporter:
+1.  Run Codacy Coverage Reporter **on the root of the locally checked out branch of your Git repository**, specifying the relative path to the coverage report to upload. For example:
 
     ```bash
-    bash <(curl -Ls https://coverage.codacy.com/get.sh) report
+    bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r report.xml
     ```
 
-    See [alternative ways of running Codacy Coverage Reporter](alternative-ways-of-running-coverage-reporter.md) for other ways of running Codacy Coverage Reporter, such as by installing the binary manually or using a CircleCI Orb or GitHub Action.
+    !!! tip
+        The recommended self-contained script automatically downloads and runs the most recent version of Codacy Coverage Reporter.
+
+        See [alternative ways of running Codacy Coverage Reporter](alternative-ways-of-running-coverage-reporter.md) for other ways of running Codacy Coverage Reporter, such as by installing the binary manually or using a GitHub Action or CircleCI Orb.
 
 1.  Optionally, [add a Codacy badge](https://docs.codacy.com/repositories/badges/) to the README of your repository to display the current code coverage.
 
