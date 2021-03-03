@@ -103,6 +103,6 @@ However, you can also force using a specific commit SHA hash with the flag `--co
 
 ```bash
 bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
-    -l report.xml \
+    -r report.xml \
     --commit-uuid cd4d000083a744cf1617d46af4ec108b79e06bed
 ```
