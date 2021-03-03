@@ -55,15 +55,23 @@ See the sections below for more advanced functionality, or [check the troublesho
 
 ## Uploading multiple coverage reports for the same language {: id="multiple-reports"}
 
-If your test suite is split in different modules or runs in parallel, you will need to upload multiple coverage reports for the same language.
+If your test suite is split on different modules or runs in parallel, you will need to upload multiple coverage reports for the same language:
 
-To do this, upload each separate report with the flags `--partial`, `-l` (to specify the language), and `--coverge-reports` (to specify each partial report). Then, after all reports were uploaded, notify Codacy with the `final` command. For example:
+1.  Upload each separate report with the following flags:
+
+    - `--partial`
+    - `-l <language>`
+    - `-r <partial report>`
+
+2.  After uploading all reports, notify Codacy with the `final` command.
+
+For example:
 
 ```bash
 bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
-    -l Java -r report1.xml --partial
+    --partial -l Java -r report1.xml
 bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
-    -l Java -r report2.xml --partial
+    --partial -l Java -r report2.xml
 bash <(curl -Ls https://coverage.codacy.com/get.sh) final
 ```
 
