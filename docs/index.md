@@ -57,7 +57,7 @@ Codacy supports the following coverage report formats:
 | PHPUnit XML (version &lt;= 4)                                        | coverage-xml/index.xml       |
 
 !!! note
-    If you are generating a report format that Codacy does not yet support, see [submitting coverage from unsupported report formats](troubleshooting-common-issues.md#unsupported-report-formats).
+    If you're generating a report format that Codacy does not support yet, see [submitting coverage from unsupported report formats](troubleshooting-common-issues.md#unsupported-report-formats).
 
 ## 2. Uploading coverage data to Codacy
 
