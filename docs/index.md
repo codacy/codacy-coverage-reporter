@@ -1,6 +1,36 @@
 # Adding coverage to your repository
 
-Before setting up Codacy to display code coverage metrics for your repository you must have tests and use tools to generate coverage reports for the languages in your repositories. If you need help on getting started see [how to generate coverage reports](generating-coverage-reports.md).
+Code coverage is a metric used to describe the degree to which the source code of a program is tested. A program with high code coverage has been more thoroughly tested and has a lower chance of containing software bugs than a program with low code coverage. You can read more about the [basics of code coverage](https://blog.codacy.com/a-guide-to-code-coverage-part-1-code-coverage-explained/) on our blog.
+
+# 1. Generating coverage reports
+
+Before setting up Codacy to display code coverage metrics for your repository you must have tests and use tools to generate coverage reports for the languages in your repositories.
+
+There are many tools that you can use to generate coverage reports for the languages used in your repositories. The following table contains example coverage tools that generate reports in formats that Codacy supports:
+
+| Language          | Example coverage tools                                                                                                                                                                        | Report formats                                                                     |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| C#                | [OpenCover](https://github.com/OpenCover/opencover)<br/>[dotCover CLI](https://www.jetbrains.com/help/dotcover/Running_Coverage_Analysis_from_the_Command_LIne.html)                          | OpenCover<br/>dotCover [detailedXML](troubleshooting-common-issues.md#detailedxml) |
+| Java              | [JaCoCo](http://eclemma.org/jacoco/)<br/>[Cobertura](http://cobertura.github.io/cobertura/)                                                                                                   | JaCoCo<br/>Cobertura                                                               |
+| JavaScript        | [Istanbul](https://github.com/gotwarlost/istanbul)<br/>[Poncho](https://github.com/deepsweet/poncho)<br/>[Mocha](http://mochajs.org/) + [Blanket.js](https://github.com/alex-seville/blanket) | LCOV                                                                               |
+| PHP               | [PHPUnit](https://phpunit.readthedocs.io/en/9.3/code-coverage-analysis.html)                                                                                                                  | PHPUnit XML (version &lt;= 4)<br/>Clover                                           |
+| Python            | [Coverage.py](https://coverage.readthedocs.io/en/coverage-5.0.3/)                                                                                                                             | Cobertura                                                                          |
+| Ruby              | [SimpleCov](https://github.com/simplecov-ruby/simplecov)                                                                                                                                      | Cobertura<br/>LCOV                                                                 |
+| Scala             | [sbt-jacoco](https://www.scala-sbt.org/sbt-jacoco/)<br/>[scoverage](http://scoverage.org/)                                                                                                    | JaCoCo<br/>Cobertura                                                               |
+| Swift/Objective-C | [Xcode](https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/testing_with_xcode/chapters/07-code_coverage.html) Code Coverage                                  | See below on how to generate coverage reports with Xcode |
+
+!!! tip
+    To use Swift and Objective-C with Xcode coverage reports, use [Slather](https://github.com/SlatherOrg/slather) to convert the Xcode output into the Cobertura format.
+    {: id="swift-objectivec-support"}
+
+    To do this, execute the following commands on the CI:
+
+    ```bash
+    gem install slather
+    slather coverage -x --output-directory <report-output-dir> --scheme <project-name> <project-name>.xcodeproj
+    ```
+
+    This will generate a file `cobertura.xml` inside the folder `<report-output-dir>`.
 
 Codacy supports the following coverage report formats:
 
@@ -16,6 +46,8 @@ Codacy supports the following coverage report formats:
 
 !!! note
     If you are generating a report format that Codacy does not yet support, see [submitting coverage from unsupported report formats](troubleshooting-common-issues.md#unsupported-report-formats).
+
+## 2. Uploading coverage data to Codacy
 
 After having coverage reports set up for your repository, you must use Codacy Coverage Reporter to convert the reports to smaller JSON files and upload these files to Codacy. The recommended way to do this is using a CI/CD platform that automatically runs tests, generates coverage, and uses Codacy Coverage Reporter to upload the coverage report information for every commit.
 
