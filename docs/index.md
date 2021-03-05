@@ -14,7 +14,7 @@ To set up coverage on Codacy you must complete these main steps:
 
 The next sections include detailed instructions on how to complete each step of the setup process.
 
-# 1. Generating coverage reports
+# 1. Generating coverage reports {: id="generating-coverage"}
 
 Before setting up Codacy to display code coverage metrics for your repository you must have tests and use tools to generate coverage reports for the languages in your repositories.
 
@@ -104,7 +104,7 @@ There are many tools that you can use to generate coverage reports for the langu
 !!! note
     If you're generating a report format that Codacy does not support yet, see [submitting coverage from unsupported report formats](troubleshooting-common-issues.md#unsupported-report-formats).
 
-## 2. Uploading coverage data to Codacy
+## 2. Uploading coverage data to Codacy {: id="uploading-coverage"}
 
 After having coverage reports set up for your repository, you must use Codacy Coverage Reporter to convert the reports to smaller JSON files and upload these files to Codacy. The recommended way to do this is using a CI/CD platform that automatically runs tests, generates coverage, and uses Codacy Coverage Reporter to upload the coverage report information for every push to your repository.
 
