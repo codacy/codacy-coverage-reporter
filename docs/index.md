@@ -2,6 +2,18 @@
 
 Code coverage is a metric used to describe the degree to which the source code of a program is tested. A program with high code coverage has been more thoroughly tested and has a lower chance of containing software bugs than a program with low code coverage. You can read more about the [basics of code coverage](https://blog.codacy.com/a-guide-to-code-coverage-part-1-code-coverage-explained/) on our blog.
 
+To set up coverage on Codacy you must complete these main steps:
+
+1.  **Generating coverage reports**
+
+    Ensure that you're generating one of the test coverage report formats supported by Codacy on each push to your repository.
+
+1.  **Uploading coverage data to Codacy**
+
+    After each push to your repository, run the Codacy Coverage Reporter to parse your report file and upload the coverage data to Codacy.
+
+The next sections include detailed instructions on how to complete each step of the setup process.
+
 # 1. Generating coverage reports
 
 Before setting up Codacy to display code coverage metrics for your repository you must have tests and use tools to generate coverage reports for the languages in your repositories.
