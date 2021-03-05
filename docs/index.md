@@ -14,7 +14,7 @@ To set up coverage on Codacy you must complete these main steps:
 
 The next sections include detailed instructions on how to complete each step of the setup process.
 
-# 1. Generating coverage reports {: id="generating-coverage"}
+## 1. Generating coverage reports {: id="generating-coverage"}
 
 Before setting up Codacy to display code coverage metrics for your repository you must have tests and use tools to generate coverage reports for the languages in your repositories.
 
