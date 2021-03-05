@@ -132,7 +132,7 @@ after_success:
   - bash <(curl -Ls https://coverage.codacy.com/get.sh)
 ```
 
-Make sure that you also [set your project API Token](adding-coverage-to-your-repository.md#authenticate) as an environment variable in your Travis CI job.
+Make sure that you also [set your project API Token](index.md#authenticate) as an environment variable in your Travis CI job.
 
 ### Gradle task
 

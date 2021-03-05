@@ -42,7 +42,7 @@ Note that all "coverable" lines should be present on the `coverage` node of the 
 
 ## Can't guess any report due to no matching
 
-Codacy Coverage Reporter automatically searches for coverage reports matching the [file name conventions for supported formats](generating-coverage-reports.md).
+Codacy Coverage Reporter automatically searches for coverage reports matching the [file name conventions for supported formats](index.md#generating-coverage).
 
 However, if Codacy Coverage Reporter does not find your coverage report, you can explicitly define the report file name with the flag `-r`. For example:
 
