@@ -83,7 +83,7 @@ There are many tools that you can use to generate coverage reports for the langu
 <tr>
     <td>Swift/Objective-C</td>
     <td><a href="https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/testing_with_xcode/chapters/07-code_coverage.html">Xcode</a> Code Coverage</td>
-    <td>See below on how to generate coverage reports with Xcode</td>
+    <td>See below how to generate coverage reports with Xcode</td>
 </tr>
 </tbody>
 </table>
