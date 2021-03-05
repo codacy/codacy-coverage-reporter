@@ -20,16 +20,73 @@ Before setting up Codacy to display code coverage metrics for your repository yo
 
 There are many tools that you can use to generate coverage reports for the languages used in your repositories. The following table contains example coverage tools that generate reports in formats that Codacy supports:
 
-| Language          | Example coverage tools                                                                                                                                                                        | Report formats                                                                     |
-| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| C#                | [OpenCover](https://github.com/OpenCover/opencover)<br/>[dotCover CLI](https://www.jetbrains.com/help/dotcover/Running_Coverage_Analysis_from_the_Command_LIne.html)                          | OpenCover<br/>dotCover [detailedXML](troubleshooting-common-issues.md#detailedxml) |
-| Java              | [JaCoCo](http://eclemma.org/jacoco/)<br/>[Cobertura](http://cobertura.github.io/cobertura/)                                                                                                   | JaCoCo<br/>Cobertura                                                               |
-| JavaScript        | [Istanbul](https://github.com/gotwarlost/istanbul)<br/>[Poncho](https://github.com/deepsweet/poncho)<br/>[Mocha](http://mochajs.org/) + [Blanket.js](https://github.com/alex-seville/blanket) | LCOV                                                                               |
-| PHP               | [PHPUnit](https://phpunit.readthedocs.io/en/9.3/code-coverage-analysis.html)                                                                                                                  | PHPUnit XML (version &lt;= 4)<br/>Clover                                           |
-| Python            | [Coverage.py](https://coverage.readthedocs.io/en/coverage-5.0.3/)                                                                                                                             | Cobertura                                                                          |
-| Ruby              | [SimpleCov](https://github.com/simplecov-ruby/simplecov)                                                                                                                                      | Cobertura<br/>LCOV                                                                 |
-| Scala             | [sbt-jacoco](https://www.scala-sbt.org/sbt-jacoco/)<br/>[scoverage](http://scoverage.org/)                                                                                                    | JaCoCo<br/>Cobertura                                                               |
-| Swift/Objective-C | [Xcode](https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/testing_with_xcode/chapters/07-code_coverage.html) Code Coverage                                  | See below on how to generate coverage reports with Xcode |
+<table>
+<thead>
+<tr>
+<th>Language</th>
+<th>Example coverage tools</th>
+<th>Report files</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+    <td rowspan="2">C#</td>
+    <td><a href="https://github.com/OpenCover/opencover">OpenCover</a></td>
+    <td><code>opencover.xml</code> (OpenCover)</td>
+</tr>
+<tr>
+    <td><a href="https://www.jetbrains.com/help/dotcover/Running_Coverage_Analysis_from_the_Command_LIne.html">dotCover CLI</a></td>
+    <td><code>dotcover.xml</code> (dotCover <a href="troubleshooting-common-issues/#detailedxml">detailedXML</a>)</td>
+</tr>
+<tr>
+    <td rowspan="2">Java</td>
+    <td><a href="http://eclemma.org/jacoco/">JaCoCo</a></td>
+    <td><code>jacoco\*.xml</code> (JaCoCo)</td>
+</tr>
+<tr>
+    <td><a href="http://cobertura.github.io/cobertura/">Cobertura</a></td>
+    <td><code>cobertura.xml</code> (Cobertura)</td>
+</tr>
+<tr>
+    <td>JavaScript</td>
+    <td><a href="https://github.com/gotwarlost/istanbul">Istanbul</a><br/>
+        <a href="https://github.com/deepsweet/poncho">Poncho</a><br/>
+        <a href="http://mochajs.org/">Mocha</a> + <a href="https://github.com/alex-seville/blanket">Blanket.js</a></td>
+    <td><code>lcov.info</code>, <code>lcov.dat</code>, <code>\*.lcov</code> (LCOV)</td>
+</tr>
+<tr>
+    <td>PHP</td>
+    <td><a href="https://phpunit.readthedocs.io/en/9.3/code-coverage-analysis.html">PHPUnit</a></td>
+    <td><code>coverage-xml/index.xml</code> (PHPUnit XML version &lt;= 4)<br/>
+        <code>clover.xml</code> (Clover)</td>
+</tr>
+<tr>
+    <td>Python</td>
+    <td><a href="https://coverage.readthedocs.io/en/coverage-5.0.3/">Coverage.py</a></td>
+    <td><code>cobertura.xml</code> (Cobertura)</td>
+</tr>
+<tr>
+    <td>Ruby</td>
+    <td><a href="https://github.com/simplecov-ruby/simplecov">SimpleCov</a></td>
+    <td><code>cobertura.xml</code> (Cobertura)<br/>
+        <code>lcov.info</code>, <code>lcov.dat</code>, <code>\*.lcov</code> (LCOV)</td>
+</tr>
+<tr>
+    <td  rowspan="2">Scala</td>
+    <td><a href="https://www.scala-sbt.org/sbt-jacoco/">sbt-jacoco</a></td>
+    <td><code>jacoco\*.xml</code> (JaCoCo)</td>
+</tr>
+<tr>
+    <td><a href="http://scoverage.org/">scoverage</a></td>
+    <td><code>cobertura.xml</code> (Cobertura)</td>
+</tr>
+<tr>
+    <td>Swift/Objective-C</td>
+    <td><a href="https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/testing_with_xcode/chapters/07-code_coverage.html">Xcode</a> Code Coverage</td>
+    <td>See below on how to generate coverage reports with Xcode</td>
+</tr>
+</tbody>
+</table>
 
 !!! tip
     To use Swift and Objective-C with Xcode coverage reports, use [Slather](https://github.com/SlatherOrg/slather) to convert the Xcode output into the Cobertura format.
@@ -43,18 +100,6 @@ There are many tools that you can use to generate coverage reports for the langu
     ```
 
     This will generate a file `cobertura.xml` inside the folder `<report-output-dir>`.
-
-Codacy supports the following coverage report formats:
-
-| Report format                                                        | Report file name             |
-| -------------------------------------------------------------------- | ---------------------------- |
-| Clover                                                               | clover.xml                   |
-| Cobertura                                                            | cobertura.xml                |
-| dotCover [detailedXML](troubleshooting-common-issues.md#detailedxml) | dotcover.xml                 |
-| JaCoCo                                                               | jacoco\*.xml                 |
-| LCOV                                                                 | lcov.info, lcov.dat, \*.lcov |
-| OpenCover                                                            | opencover.xml                |
-| PHPUnit XML (version &lt;= 4)                                        | coverage-xml/index.xml       |
 
 !!! note
     If you're generating a report format that Codacy does not support yet, see [submitting coverage from unsupported report formats](troubleshooting-common-issues.md#unsupported-report-formats).
