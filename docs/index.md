@@ -154,7 +154,7 @@ bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
     -l Java -r report1.xml -r report2.xml -r report3.xml
 ```
 
-You can also specify the reports to upload dynamically using the command `find`. For example:
+You can also upload all your reports dynamically using the command `find`. For example:
 
 ```bash
 bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
