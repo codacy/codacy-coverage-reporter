@@ -41,7 +41,7 @@ There are many tools that you can use to generate coverage reports for the langu
 <tr>
     <td rowspan="2">Java</td>
     <td><a href="http://eclemma.org/jacoco/">JaCoCo</a></td>
-    <td><code>jacoco\*.xml</code> (JaCoCo)</td>
+    <td><code>jacoco*.xml</code> (JaCoCo)</td>
 </tr>
 <tr>
     <td><a href="http://cobertura.github.io/cobertura/">Cobertura</a></td>
@@ -52,7 +52,7 @@ There are many tools that you can use to generate coverage reports for the langu
     <td><a href="https://github.com/gotwarlost/istanbul">Istanbul</a><br/>
         <a href="https://github.com/deepsweet/poncho">Poncho</a><br/>
         <a href="https://mochajs.org/">Mocha</a> + <a href="https://github.com/alex-seville/blanket">Blanket.js</a></td>
-    <td><code>lcov.info</code>, <code>lcov.dat</code>, <code>\*.lcov</code> (LCOV)</td>
+    <td><code>lcov.info</code>, <code>lcov.dat</code>, <code>*.lcov</code> (LCOV)</td>
 </tr>
 <tr>
     <td>PHP</td>
@@ -69,12 +69,12 @@ There are many tools that you can use to generate coverage reports for the langu
     <td>Ruby</td>
     <td><a href="https://github.com/simplecov-ruby/simplecov">SimpleCov</a></td>
     <td><code>cobertura.xml</code> (Cobertura)<br/>
-        <code>lcov.info</code>, <code>lcov.dat</code>, <code>\*.lcov</code> (LCOV)</td>
+        <code>lcov.info</code>, <code>lcov.dat</code>, <code>*.lcov</code> (LCOV)</td>
 </tr>
 <tr>
     <td  rowspan="2">Scala</td>
     <td><a href="https://www.scala-sbt.org/sbt-jacoco/">sbt-jacoco</a></td>
-    <td><code>jacoco\*.xml</code> (JaCoCo)</td>
+    <td><code>jacoco*.xml</code> (JaCoCo)</td>
 </tr>
 <tr>
     <td><a href="http://scoverage.org/">scoverage</a></td>
