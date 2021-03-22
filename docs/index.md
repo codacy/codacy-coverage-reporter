@@ -51,7 +51,7 @@ There are many tools that you can use to generate coverage reports for the langu
     <td>JavaScript</td>
     <td><a href="https://github.com/gotwarlost/istanbul">Istanbul</a><br/>
         <a href="https://github.com/deepsweet/poncho">Poncho</a><br/>
-        <a href="http://mochajs.org/">Mocha</a> + <a href="https://github.com/alex-seville/blanket">Blanket.js</a></td>
+        <a href="https://mochajs.org/">Mocha</a> + <a href="https://github.com/alex-seville/blanket">Blanket.js</a></td>
     <td><code>lcov.info</code>, <code>lcov.dat</code>, <code>*.lcov</code> (LCOV)</td>
 </tr>
 <tr>
