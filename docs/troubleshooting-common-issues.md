@@ -15,7 +15,11 @@ See the [list of languages](https://github.com/codacy/codacy-plugins-api/blob/ma
 
 ## Submitting coverage from unsupported report formats {: id="unsupported-report-formats"}
 
-If you are generating a report format that Codacy does not yet support, try using community projects such as [t-yuki/gocover-cobertura](https://github.com/t-yuki/gocover-cobertura) and [danielpalme/ReportGenerator](https://github.com/danielpalme/ReportGenerator), or alternatively contribute to our [codacy/coverage-parser](https://github.com/codacy/coverage-parser) project.
+If you are generating a report format that Codacy does not yet support, try using the community projects below or contribute to our [codacy/coverage-parser](https://github.com/codacy/coverage-parser) project:
+
+-   [danielpalme/ReportGenerator](https://github.com/danielpalme/ReportGenerator): convert between different report formats 
+-   [dariodf/lcov_ex](https://github.com/dariodf/lcov_ex): generate LCOV reports for Elixir projects
+-   [t-yuki/gocover-cobertura](https://github.com/t-yuki/gocover-cobertura): generate Cobertura reports from [Go cover](https://golang.org/pkg/cmd/cover/) reports
 
 As a workaround, you can also send the coverage data directly by calling the Codacy API endpoint [saveCoverage](https://api.codacy.com/swagger#savecoverage).
 
