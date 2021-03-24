@@ -145,28 +145,34 @@ See the sections below for more advanced functionality, or [check the troublesho
 
 ## Uploading multiple coverage reports for the same language {: id="multiple-reports"}
 
-If your test suite is split on different modules or runs in parallel, you will need to upload multiple coverage reports for the same language:
+If your test suite is split on different modules or runs in parallel, you will need to upload multiple coverage reports for the same language.
 
-1.  Upload each separate report with the following flags:
-
-    - `--partial`
-    - `-l <language>`
-    - `-r <partial report>`
-
-2.  After uploading all reports, notify Codacy with the `final` command.
-
-For example:
+To do this, specify multiple reports by repeating the flag `-r`. For example:
 
 ```bash
 bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
-    --partial -l Java -r report1.xml
-bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
-    --partial -l Java -r report2.xml
-bash <(curl -Ls https://coverage.codacy.com/get.sh) final
+    -l Java -r report1.xml -r report2.xml -r report3.xml
 ```
 
-!!! important
-    If you are sending reports for a language with the flag `--partial`, you should use the flag in all reports for that language to ensure the correct calculation of the coverage.
+You can also upload all your reports dynamically using the command `find`. For example:
+
+```bash
+bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
+    -l Java $(find **/jacoco*.xml -printf '-r %p ')
+```
+
+!!! note
+    Altenatively, you can upload each report separately with the flag `--partial` and notify Codacy with the `final` command after uploading all reports. For example:
+
+    ```bash
+    bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
+        --partial -l Java -r report1.xml
+    bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
+        --partial -l Java -r report2.xml
+    bash <(curl -Ls https://coverage.codacy.com/get.sh) final
+    ```
+
+    If you're sending reports for a language with the flag `--partial`, you should use the flag in all reports for that language to ensure the correct calculation of the coverage.
 
 !!! tip
     It might also be possible to merge the reports before uploading them to Codacy, since most coverage tools support merge/aggregation. For example, <http://www.eclemma.org/jacoco/trunk/doc/merge-mojo.html>.
