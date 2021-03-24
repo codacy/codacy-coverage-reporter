@@ -159,7 +159,7 @@ bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
 ```
 
 !!! tip
-    You can also upload all your reports dynamically using the command `find`. For example:
+    You can also find and upload all your reports dynamically using the command `find` with a regular expression. For example:
 
     ```bash
     bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
