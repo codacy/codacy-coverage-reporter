@@ -1,3 +1,7 @@
+---
+description: Alternative ways of running or installing Codacy Coverage Reporter including running a Docker image, downloading a binary for your operating system, or building the binary from source.
+---
+
 # Alternative ways of running Coverage Reporter
 
 The recommended way to run Codacy Coverage Reporter is using a self-contained script that automatically downloads and runs the most recent version of Codacy Coverage Reporter:
