@@ -1,3 +1,7 @@
+---
+description: Instructions or workarounds to overcome common issues while using Codacy Coverage Reporter.
+---
+
 # Troubleshooting common issues
 
 The sections below provide instructions or workarounds to overcome common issues while using Codacy Coverage Reporter.
