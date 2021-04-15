@@ -101,7 +101,7 @@ If you are having any issues with your installation, you can also build the cove
     cd codacy-coverage-reporter
     sbt assembly
     ```
-   
+
     This will produce a file `target/codacy-coverage-reporter-assembly-<version>.jar` that you can run.
 
 1.  Execute this `.jar` in the repository where you want to upload the coverage. For example:
@@ -136,7 +136,7 @@ after_success:
   - bash <(curl -Ls https://coverage.codacy.com/get.sh)
 ```
 
-Make sure that you also [set your project API Token](index.md#authenticate) as an environment variable in your Travis CI job.
+Make sure that you also [set your project API Token or account API Token](index.md#authenticate) as an environment variable in your Travis CI job.
 
 ### Gradle task
 
