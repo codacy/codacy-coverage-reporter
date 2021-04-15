@@ -2,6 +2,7 @@ package com.codacy
 
 import java.io.File
 
+import com.codacy.api.OrganizationProvider
 import com.codacy.configuration.parser.{BaseCommandConfig, Report}
 import com.codacy.di.Components
 import com.codacy.model.configuration.ReportConfig
@@ -19,12 +20,13 @@ class CodacyCoverageReporterSpec extends WordSpec with Matchers with EitherValue
   private def runCoverageReport(
       projectToken: Option[String],
       apiToken: Option[String],
+      organizationProvider: Option[OrganizationProvider.Value],
       username: Option[String],
       projectName: Option[String],
       commitUuid: Option[String]
   ) = {
     val baseConfig =
-      BaseCommandConfig(projectToken, apiToken, username, projectName, apiBaseUrl, commitUuid)
+      BaseCommandConfig(projectToken, apiToken, organizationProvider, username, projectName, apiBaseUrl, commitUuid)
 
     val commandConfig = Report(
       baseConfig = baseConfig,
@@ -46,7 +48,7 @@ class CodacyCoverageReporterSpec extends WordSpec with Matchers with EitherValue
   "run" should {
     "be successful" when {
       "using a project token to send coverage" in {
-        val result = runCoverageReport(projectToken, None, None, None, commitUuid)
+        val result = runCoverageReport(projectToken, None, None, None, None, commitUuid)
 
         result shouldBe 'right
       }
@@ -54,7 +56,8 @@ class CodacyCoverageReporterSpec extends WordSpec with Matchers with EitherValue
       "using an API token to send coverage" in {
         // empty projectToken so we skip project token
         // passing None will pick the token used for the codacy-coverage-reporter project
-        val result = runCoverageReport(None, apiToken, username, projectName, commitUuid)
+        val result =
+          runCoverageReport(None, apiToken, Option(OrganizationProvider.gh), username, projectName, commitUuid)
 
         result shouldBe 'right
       }
@@ -62,13 +65,20 @@ class CodacyCoverageReporterSpec extends WordSpec with Matchers with EitherValue
 
     "fail" when {
       "project token is invalid" in {
-        val result = runCoverageReport(Some("invalid token"), None, None, None, commitUuid)
+        val result = runCoverageReport(Some("invalid token"), None, None, None, None, commitUuid)
 
         result shouldBe 'left
       }
 
       "API token is invalid" in {
-        val result = runCoverageReport(None, Some("invalid token"), username, projectName, commitUuid)
+        val result = runCoverageReport(
+          None,
+          Some("invalid token"),
+          Option(OrganizationProvider.gh),
+          username,
+          projectName,
+          commitUuid
+        )
 
         result shouldBe 'left
       }

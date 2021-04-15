@@ -11,7 +11,7 @@ class Components(private val validatedConfig: Configuration) {
   lazy private val (projectToken, apiToken) = validatedConfig.baseConfig.authentication match {
     case ProjectTokenAuthenticationConfig(projectToken) =>
       (Some(projectToken), None)
-    case ApiTokenAuthenticationConfig(apiToken, _, _) =>
+    case ApiTokenAuthenticationConfig(apiToken, _, _, _) =>
       (None, Some(apiToken))
   }
 

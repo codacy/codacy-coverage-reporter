@@ -30,6 +30,10 @@ $ bash <(curl -Ls https://coverage.codacy.com/get.sh) report --help
 Command: report
 Usage: codacy-coverage-reporter report 
   --project-token | -t  <your project API token>
+  --api-token | -t  <your account API token>
+  --organization-provider  <the project organization provider> (manual, gh, bb, ghe, bbe, gl, gle)
+  --username | -u  <the project owner name>
+  --project-name | -p  <your project name>
   --codacy-api-base-url  <the base URL for the Codacy API>
   --commit-uuid  <your commitUUID>
   --skip | -s  <skip if token isn't defined>

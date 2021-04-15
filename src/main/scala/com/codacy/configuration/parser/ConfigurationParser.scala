@@ -1,9 +1,9 @@
 package com.codacy.configuration.parser
 
 import java.io.File
-
 import caseapp._
 import caseapp.core.ArgParser
+import com.codacy.api.OrganizationProvider
 import com.codacy.configuration.parser.ConfigArgumentParsers._
 import com.codacy.parsers.CoverageParser
 import com.codacy.parsers.implementation._
@@ -75,11 +75,13 @@ case class Report(
 case class BaseCommandConfig(
     @Name("t") @ValueDescription("your project API token")
     projectToken: Option[String],
-    @Name("a") @ValueDescription("your api token") @Hidden
+    @Name("a") @ValueDescription("your account api token")
     apiToken: Option[String],
-    @Name("u") @ValueDescription("your username") @Hidden
+    @ValueDescription("organization provider")
+    organizationProvider: Option[OrganizationProvider.Value],
+    @Name("u") @ValueDescription("your username")
     username: Option[String],
-    @Name("p") @ValueDescription("project name") @Hidden
+    @Name("p") @ValueDescription("project name")
     projectName: Option[String],
     @ValueDescription("the base URL for the Codacy API")
     codacyApiBaseUrl: Option[String],
@@ -118,4 +120,17 @@ object ConfigArgumentParsers {
         )
     }
   }
+
+  implicit val organizationProvider: ArgParser[OrganizationProvider.Value] =
+    ArgParser.instance("organizationProvider") { v =>
+      val value = v.trim.toLowerCase
+      OrganizationProvider.values.find(_.toString == value) match {
+        case Some(provider) => Right(provider)
+        case _ =>
+          Left(
+            s"${value} is an unsupported/unrecognized organization provider. (Available organization provider are: ${OrganizationProvider.values
+              .mkString(",")})"
+          )
+      }
+    }
 }

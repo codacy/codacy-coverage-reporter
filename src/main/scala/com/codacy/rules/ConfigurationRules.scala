@@ -1,22 +1,14 @@
 package com.codacy.rules
 
-import java.net.URL
 import java.io.File
-
-import com.codacy.configuration.parser.{BaseCommandConfig, CommandConfiguration, Final, Report}
-import com.codacy.model.configuration.{
-  ApiTokenAuthenticationConfig,
-  AuthenticationConfig,
-  BaseConfig,
-  CommitUUID,
-  Configuration,
-  FinalConfig,
-  ProjectTokenAuthenticationConfig,
-  ReportConfig
-}
-import wvlet.log.LogSupport
+import java.net.URL
 
 import scala.util.Try
+
+import wvlet.log.LogSupport
+
+import com.codacy.configuration.parser.{BaseCommandConfig, CommandConfiguration, Final, Report}
+import com.codacy.model.configuration._
 
 class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, String]) extends LogSupport {
   private[rules] val publicApiBaseUrl = "https://api.codacy.com"
@@ -117,16 +109,18 @@ class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, S
       case Some(projectToken) => Right(ProjectTokenAuthenticationConfig(projectToken))
     }
 
-  private def validateApiTokenAuth(baseCommandConfig: BaseCommandConfig, apiToken: Option[String]) =
+  private def validateApiTokenAuth(baseCommandConfig: BaseCommandConfig, apiToken: Option[String]) = {
     for {
       apiToken <- apiToken.filter(_.nonEmpty).toRight("Empty argument --api-token")
+      organizationProvider <- baseCommandConfig.organizationProvider.toRight("Empty argument --organization-provider")
       username <- getValueOrEnvironmentVar(baseCommandConfig.username, "CODACY_USERNAME")
         .filter(_.nonEmpty)
         .toRight("Empty argument --username")
       projectName <- getValueOrEnvironmentVar(baseCommandConfig.projectName, "CODACY_PROJECT_NAME")
         .filter(_.nonEmpty)
         .toRight("Empty argument --project-name")
-    } yield ApiTokenAuthenticationConfig(apiToken, username, projectName)
+    } yield ApiTokenAuthenticationConfig(apiToken, organizationProvider, username, projectName)
+  }
 
   private def getValueOrEnvironmentVar(value: Option[String], envVarName: String) =
     value.orElse(envVars.get(envVarName))
@@ -138,8 +132,8 @@ class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, S
       val help = if (!config.codacyApiBaseUrl.startsWith("http")) {
         "Maybe you forgot the http:// or https:// ?"
       }
-      Left(s"""$error
-              |$help""".stripMargin)
+      Left(s"""|$error
+               |$help""".stripMargin)
 
     case config => Right(config)
   }
@@ -149,6 +143,7 @@ class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, S
     *
     * This function try to get the API base URL from environment variables, and if not
     * found, fallback to the public API base URL
+    *
     * @return api base url
     */
   private[rules] def getApiBaseUrl: String = {
@@ -159,6 +154,7 @@ class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, S
     * Validate an URL
     *
     * This function check if the url is valid or not
+    *
     * @param baseUrl base url
     * @return true for valid url, false if not
     */
@@ -170,6 +166,7 @@ class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, S
     * Validate report files option
     *
     * This function check if the report files option is valid or not.
+    *
     * @param filesOpt files option
     * @return list of files if validated on the right or an error message if not on the left
     */

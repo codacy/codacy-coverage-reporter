@@ -51,7 +51,9 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
           _ <- storeReport(report, file)
           language <- guessReportLanguage(finalConfig.languageOpt, report)
           success <- sendReport(report, language, finalConfig, commitUUID, file)
-        } yield { success }
+        } yield {
+          success
+        }
       }
       .collectFirst {
         case Left(l) => Left(l)
@@ -77,11 +79,9 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
         }
       }
       if (config.partial) {
-        logger.info(
-          """To complete the reporting process, call coverage-reporter with the final flag.
-          | Check https://docs.codacy.com/coverage-reporter/adding-coverage-to-your-repository/#multiple-reports
-          | for more information.""".stripMargin
-        )
+        logger.info("""To complete the reporting process, call coverage-reporter with the final flag.
+            | Check https://docs.codacy.com/coverage-reporter/#multiple-reports
+            | for more information.""".stripMargin)
       }
       operationResult
     }
@@ -90,7 +90,7 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
   private def logAuthenticationToken(config: ReportConfig): Unit = {
     config.baseConfig.authentication match {
       case ProjectTokenAuthenticationConfig(projectToken) => logger.debug(s"Project token: $projectToken")
-      case ApiTokenAuthenticationConfig(apiToken, _, _) => logger.debug(s"API token: $apiToken")
+      case ApiTokenAuthenticationConfig(apiToken, _, _, _) => logger.debug(s"API token: $apiToken")
     }
   }
 
@@ -109,8 +109,9 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
     * Store Report
     *
     * Store the parsed report for troubleshooting purposes
+    *
     * @param report coverage report to be stored
-    * @param file report file
+    * @param file   report file
     * @return either an error message or nothing
     */
   private[rules] def storeReport(report: CoverageReport, file: File) = {
@@ -132,11 +133,12 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
     * Send Report
     *
     * Send the parsed report to coverage services with the given language and commitUUID
-    * @param report coverage report to be sent
-    * @param language language detected in files or specified by user input
-    * @param config configuration
+    *
+    * @param report     coverage report to be sent
+    * @param language   language detected in files or specified by user input
+    * @param config     configuration
     * @param commitUUID unique id of commit being reported
-    * @param file report file
+    * @param file       report file
     * @return either an error message or nothing
     */
   private def sendReport(
@@ -150,8 +152,16 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
       case _: ProjectTokenAuthenticationConfig =>
         coverageServices.sendReport(commitUUID, language, report, config.partial)
 
-      case ApiTokenAuthenticationConfig(_, username, projectName) =>
-        coverageServices.sendReportWithProjectName(username, projectName, commitUUID, language, report, config.partial)
+      case ApiTokenAuthenticationConfig(_, organizationProvider, username, projectName) =>
+        coverageServices.sendReportWithProjectName(
+          organizationProvider,
+          username,
+          projectName,
+          commitUUID,
+          language,
+          report,
+          config.partial
+        )
     }
     coverageResponse match {
       case SuccessfulResponse(value) =>
@@ -168,8 +178,9 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
     *
     * This function try to guess the report language using the first filename on
     * the report file.
+    *
     * @param languageOpt language option provided by the config
-    * @param report coverage report
+    * @param report      coverage report
     * @return the guessed language name on the right or an error on the left.
     */
   private[rules] def guessReportLanguage(
@@ -190,7 +201,8 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
     * Guess the report file
     *
     * This function try to guess the report language based on common report file names.
-    * @param files coverage file option provided by the config
+    *
+    * @param files        coverage file option provided by the config
     * @param pathIterator path iterator to search the files
     * @return the guessed report files on the right or an error on the left.
     */
@@ -233,6 +245,7 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
     * Log uploaded file information
     *
     * This function log some summary information about the uploaded coverage file.
+    *
     * @param codacyReportFile coverage report file
     */
   private def logUploadedFileInfo(codacyReportFile: File): Unit = {
@@ -248,6 +261,7 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
     * Handle failed response
     *
     * This function handle failed response and transform it to a user readable message.
+    *
     * @param response failed response
     * @return user readable message
     */
@@ -268,7 +282,14 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
 
   def finalReport(config: FinalConfig): Either[String, String] = {
     withCommitUUID(config.baseConfig) { commitUUID =>
-      coverageServices.sendFinalNotification(commitUUID) match {
+      val coverageResponse = config.baseConfig.authentication match {
+        case _: ProjectTokenAuthenticationConfig =>
+          coverageServices.sendFinalNotification(commitUUID)
+
+        case ApiTokenAuthenticationConfig(_, organizationProvider, username, projectName) =>
+          coverageServices.sendFinalWithProjectName(organizationProvider, username, projectName, commitUUID)
+      }
+      coverageResponse match {
         case SuccessfulResponse(value) =>
           Right(s"Final coverage notification sent. ${value.success}")
         case FailedResponse(message) =>
