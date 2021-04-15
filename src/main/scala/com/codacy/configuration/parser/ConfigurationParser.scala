@@ -77,7 +77,7 @@ case class BaseCommandConfig(
     projectToken: Option[String],
     @Name("a") @ValueDescription("your account api token")
     apiToken: Option[String],
-    @Name("o") @ValueDescription("organization provider")
+    @ValueDescription("organization provider")
     organizationProvider: Option[OrganizationProvider.Value],
     @Name("u") @ValueDescription("your username")
     username: Option[String],

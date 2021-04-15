@@ -1,22 +1,14 @@
 package com.codacy.rules
 
-import java.net.URL
 import java.io.File
-
-import com.codacy.configuration.parser.{BaseCommandConfig, CommandConfiguration, Final, Report}
-import com.codacy.model.configuration.{
-  ApiTokenAuthenticationConfig,
-  AuthenticationConfig,
-  BaseConfig,
-  CommitUUID,
-  Configuration,
-  FinalConfig,
-  ProjectTokenAuthenticationConfig,
-  ReportConfig
-}
-import wvlet.log.LogSupport
+import java.net.URL
 
 import scala.util.Try
+
+import wvlet.log.LogSupport
+
+import com.codacy.configuration.parser.{BaseCommandConfig, CommandConfiguration, Final, Report}
+import com.codacy.model.configuration._
 
 class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, String]) extends LogSupport {
   private[rules] val publicApiBaseUrl = "https://api.codacy.com"
@@ -140,8 +132,8 @@ class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, S
       val help = if (!config.codacyApiBaseUrl.startsWith("http")) {
         "Maybe you forgot the http:// or https:// ?"
       }
-      Left(s"""$error
-           |$help""".stripMargin)
+      Left(s"""|$error
+               |$help""".stripMargin)
 
     case config => Right(config)
   }

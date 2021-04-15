@@ -1,8 +1,8 @@
 package com.codacy
 
-import com.codacy.api.OrganizationProvider
-
 import java.io.File
+
+import com.codacy.api.OrganizationProvider
 import com.codacy.configuration.parser.{BaseCommandConfig, Report}
 import com.codacy.di.Components
 import com.codacy.model.configuration.ReportConfig

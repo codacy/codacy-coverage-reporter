@@ -1,12 +1,12 @@
 package com.codacy.model.configuration
 
-import com.codacy.api.OrganizationProvider
-
 import java.io.File
-import com.codacy.parsers.CoverageParser
-import com.codacy.plugins.api.languages.{Language, Languages}
 
 import scala.util.matching.Regex
+
+import com.codacy.api.OrganizationProvider
+import com.codacy.parsers.CoverageParser
+import com.codacy.plugins.api.languages.{Language, Languages}
 
 sealed trait Configuration {
   def baseConfig: BaseConfig
