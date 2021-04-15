@@ -162,6 +162,9 @@ jobs:
       - run:
           name: prepare the environment
           command: |
+            # Call brew update explicitly until Circle CI update their images,
+            # see https://github.com/Homebrew/brew/issues/11123
+            brew update
             brew install mockserver coreutils
             export CODACY_REPORTER_TMP_FOLDER=".codacy-coverage"
             version=$(cat .version)
