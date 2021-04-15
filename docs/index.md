@@ -115,11 +115,24 @@ After having coverage reports set up for your repository, you must use Codacy Co
 1.  Set up an API token to allow Codacy Coverage Reporter to authenticate on Codacy.
     {: id="authenticate"}
 
-    Obtain the [project API Token](../codacy-api/api-tokens/#project-api-tokens) from the page **Integrations** in your Codacy repository settings. Then, set the following environment variable to specify your project API Token:
+    -   **If you're setting up coverage for one repository**, obtain the [project API Token](../codacy-api/api-tokens/#project-api-tokens) from the page **Integrations** in your Codacy repository settings.
 
-    ```bash
-    export CODACY_PROJECT_TOKEN=<your project API Token>
-    ```
+        Then, set the following environment variable to specify your project API Token:
+
+        ```bash
+        export CODACY_PROJECT_TOKEN=<your project API Token>
+        ```
+
+    -   **If you're setting up and automating coverage for multiple repositories**, obtain an [account API Token](../codacy-api/api-tokens/#account-api-tokens) from the page **Access management** in your Codacy account settings.
+
+        Then, set the following environment variables to specify the account API Token, the username associated with the account API token, and the repository for which you're uploading the coverage information:
+
+        ```bash
+        export CODACY_API_TOKEN=<your account API Token>
+        export CODACY_ORGANIZATION_PROVIDER=<the repository provider>
+        export CODACY_USERNAME=<the repository owner username>
+        export CODACY_PROJECT_NAME=<the repository name>
+        ```
 
     !!! warning
         **Never write API tokens on your configuration files** and keep your API tokens well protected, as they grant owner permissions to your projects on Codacy

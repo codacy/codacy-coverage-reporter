@@ -1,12 +1,11 @@
 package com.codacy.rules
 
+import com.codacy.api.OrganizationProvider
+
 import java.io.File
 import java.net.URL
-
 import scala.util.Try
-
 import wvlet.log.LogSupport
-
 import com.codacy.configuration.parser.{BaseCommandConfig, CommandConfiguration, Final, Report}
 import com.codacy.model.configuration._
 
@@ -82,7 +81,7 @@ class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, S
 
   private def validateAuthConfig(baseCommandConfig: BaseCommandConfig): Either[String, AuthenticationConfig] = {
     val errorMessage =
-      "A project API token must be provided or available in an environment variable"
+      "Either a project or account API token must be provided or available in an environment variable"
 
     val projectToken = getValueOrEnvironmentVar(baseCommandConfig.projectToken, "CODACY_PROJECT_TOKEN")
     val apiToken = getValueOrEnvironmentVar(baseCommandConfig.apiToken, "CODACY_API_TOKEN")
@@ -112,7 +111,13 @@ class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, S
   private def validateApiTokenAuth(baseCommandConfig: BaseCommandConfig, apiToken: Option[String]) = {
     for {
       apiToken <- apiToken.filter(_.nonEmpty).toRight("Empty argument --api-token")
-      organizationProvider <- baseCommandConfig.organizationProvider.toRight("Empty argument --organization-provider")
+      organizationProvider <- baseCommandConfig.organizationProvider
+        .orElse(
+          envVars
+            .get("CODACY_ORGANIZATION_PROVIDER")
+            .flatMap(provider => OrganizationProvider.values.find(_.toString.equalsIgnoreCase(provider)))
+        )
+        .toRight("Empty argument --organization-provider")
       username <- getValueOrEnvironmentVar(baseCommandConfig.username, "CODACY_USERNAME")
         .filter(_.nonEmpty)
         .toRight("Empty argument --username")
