@@ -129,8 +129,9 @@ After having coverage reports set up for your repository, you must use Codacy Co
 
         ```bash
         export CODACY_API_TOKEN=<your account API Token>
-        export CODACY_USERNAME=<your account username>
-        export CODACY_PROJECT_NAME=<name of your repository>
+        export CODACY_ORGANIZATION_PROVIDER=<the repository provider>
+        export CODACY_USERNAME=<the repository owner username>
+        export CODACY_PROJECT_NAME=<the repository name>
         ```
 
     !!! warning
