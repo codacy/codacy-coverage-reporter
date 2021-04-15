@@ -123,7 +123,7 @@ After having coverage reports set up for your repository, you must use Codacy Co
         export CODACY_PROJECT_TOKEN=<your project API Token>
         ```
 
-    -   **If you're setting up and automating coverage for multiple repositories**, obtain an [account API Token](https://docs.codacy.com/related-tools/api-tokens/) from the page **Access management** in your Codacy account settings.
+    -   **If you're setting up and automating coverage for multiple repositories**, obtain an [account API Token](../codacy-api/api-tokens/#account-api-tokens) from the page **Access management** in your Codacy account settings.
 
         Then, set the following environment variables to specify the account API Token, the username associated with the account API token, and the repository for which you're uploading the coverage information:
 
