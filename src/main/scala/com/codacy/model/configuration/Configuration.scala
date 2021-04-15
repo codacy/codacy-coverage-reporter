@@ -1,7 +1,8 @@
 package com.codacy.model.configuration
 
-import java.io.File
+import com.codacy.api.OrganizationProvider
 
+import java.io.File
 import com.codacy.parsers.CoverageParser
 import com.codacy.plugins.api.languages.{Language, Languages}
 
@@ -30,8 +31,12 @@ sealed trait AuthenticationConfig
 
 case class ProjectTokenAuthenticationConfig(projectToken: String) extends AuthenticationConfig
 
-case class ApiTokenAuthenticationConfig(apiToken: String, username: String, projectName: String)
-    extends AuthenticationConfig
+case class ApiTokenAuthenticationConfig(
+    apiToken: String,
+    organizationProvider: OrganizationProvider.Value,
+    username: String,
+    projectName: String
+) extends AuthenticationConfig
 
 case class BaseConfig(
     authentication: AuthenticationConfig,

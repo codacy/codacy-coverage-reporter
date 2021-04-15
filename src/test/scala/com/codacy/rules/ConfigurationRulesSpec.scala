@@ -1,7 +1,6 @@
 package com.codacy.rules
 
-import java.io.File
-
+import com.codacy.api.OrganizationProvider
 import com.codacy.configuration.parser.{BaseCommandConfig, Report}
 import com.codacy.di.Components
 import com.codacy.model.configuration.ReportConfig
@@ -9,13 +8,15 @@ import com.codacy.plugins.api.languages.Languages
 import org.scalatest.Inside._
 import org.scalatest._
 
+import java.io.File
+
 class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues with EitherValues {
 
   val projToken = "1234adasdsdw333"
   val coverageFiles = List(new File("coverage.xml"))
   val apiBaseUrl = "https://example.com"
 
-  val baseConf = BaseCommandConfig(Some(projToken), None, None, None, Some(apiBaseUrl), None)
+  val baseConf = BaseCommandConfig(Some(projToken), None, None, None, None, Some(apiBaseUrl), None)
 
   val conf =
     Report(baseConf, Some("Scala"), coverageReports = Some(coverageFiles), prefix = None, forceCoverageParser = None)
@@ -80,6 +81,7 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
           BaseCommandConfig(
             None,
             None,
+            Option(OrganizationProvider.gh),
             Some("username"),
             Some("projectName"),
             Some(apiBaseUrl),
@@ -96,6 +98,7 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
             None,
             None,
             None,
+            None,
             Some(apiBaseUrl),
             Some("ad7ce1b9973d31a2794565f892b6ae4cab575d7c")
           )
@@ -107,6 +110,7 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
           BaseCommandConfig(
             None,
             Some(""),
+            None,
             None,
             None,
             Some(apiBaseUrl),
@@ -121,6 +125,7 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
             None,
             Some("token"),
             None,
+            None,
             Some("projectName"),
             Some(apiBaseUrl),
             Some("ad7ce1b9973d31a2794565f892b6ae4cab575d7c")
@@ -133,6 +138,7 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
           BaseCommandConfig(
             None,
             Some("token"),
+            None,
             Some("username"),
             None,
             Some(apiBaseUrl),
@@ -148,6 +154,7 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
             None,
             None,
             None,
+            None,
             Some("Invalid URL"),
             Some("ad7ce1b9973d31a2794565f892b6ae4cab575d7c")
           )
@@ -156,7 +163,7 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
 
       "commit UUID is not valid" in {
         val baseConfig =
-          BaseCommandConfig(Some("token"), None, None, None, Some(apiBaseUrl), Some("Commit UUID"))
+          BaseCommandConfig(Some("token"), None, None, None, None, Some(apiBaseUrl), Some("Commit UUID"))
         assertFailure(baseConfig)
       }
     }
@@ -166,6 +173,7 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
         val baseConfig =
           BaseCommandConfig(
             Some("token"),
+            None,
             None,
             None,
             None,
@@ -181,6 +189,7 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
           BaseCommandConfig(
             None,
             Some("apiToken"),
+            Option(OrganizationProvider.gh),
             Some("username"),
             Some("projectName"),
             Some(apiBaseUrl),
@@ -196,6 +205,7 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
           BaseCommandConfig(
             Some("projectToken"),
             Some("apiToken"),
+            None,
             None,
             None,
             Some(apiBaseUrl),
