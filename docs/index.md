@@ -106,29 +106,25 @@ There are many tools that you can use to generate coverage reports for the langu
     This will generate a file `cobertura.xml` inside the folder `<report-output-dir>`.
 
 !!! note
-    If you're generating a report format that Codacy does not support yet, see [submitting coverage from unsupported report formats](troubleshooting-common-issues.md#unsupported-report-formats).
+    If you're generating a report format that Codacy doesn't support yet, see [submitting coverage from unsupported report formats](troubleshooting-common-issues.md#unsupported-report-formats).
 
 ## 2. Uploading coverage data to Codacy {: id="uploading-coverage"}
 
 After having coverage reports set up for your repository, you must use Codacy Coverage Reporter to convert the reports to smaller JSON files and upload these files to Codacy. The recommended way to do this is using a CI/CD platform that automatically runs tests, generates coverage, and uses Codacy Coverage Reporter to upload the coverage report information for every push to your repository.
 
-1.  Set up an API token to allow Codacy Coverage Reporter to authenticate on Codacy.
+1.  Set up an API token to allow Codacy Coverage Reporter to authenticate on Codacy:
     {: id="authenticate"}
 
-    -   **If you're setting up coverage for one repository**, [obtain a project API Token](../codacy-api/api-tokens/#project-api-tokens) from the page **Integrations** in your Codacy repository settings.
-
-        Then, set the following environment variable to specify your project API Token:
+    -   **If you're setting up coverage for one repository**, [obtain a project API token](../codacy-api/api-tokens/#project-api-tokens) and set the following environment variable to specify your project API token:
 
         ```bash
-        export CODACY_PROJECT_TOKEN=<your project API Token>
+        export CODACY_PROJECT_TOKEN=<your project API token>
         ```
 
-    -   **If you're setting up and automating coverage for multiple repositories**, [obtain an account API Token](../codacy-api/api-tokens/#account-api-tokens) from the page **Access management** in your Codacy account settings.
-
-        Then, set the following environment variables to specify the account API Token, the username associated with the account API token, and the repository for which you're uploading the coverage information:
+    -   **If you're setting up and automating coverage for multiple repositories**, [obtain an account API Token](../codacy-api/api-tokens/#account-api-tokens) and set the following environment variables to specify the account API token, the username associated with the account API token, and the repository for which you're uploading the coverage information:
 
         ```bash
-        export CODACY_API_TOKEN=<your account API Token>
+        export CODACY_API_TOKEN=<your account API token>
         export CODACY_ORGANIZATION_PROVIDER=<the repository provider>
         export CODACY_USERNAME=<the repository owner username>
         export CODACY_PROJECT_NAME=<the repository name>
@@ -139,7 +135,7 @@ After having coverage reports set up for your repository, you must use Codacy Co
 
         We recommend that you set API tokens as environment variables. Check the documentation of your CI/CD platform on how to do this.
 
-1.  **If you are using Codacy Self-hosted** set the following environment variable to specify your Codacy instance URL:
+1.  **If you're using Codacy Self-hosted** set the following environment variable to specify your Codacy instance URL:
 
     ```bash
     export CODACY_API_BASE_URL=<your Codacy instance URL>
