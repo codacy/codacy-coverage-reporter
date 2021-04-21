@@ -1,12 +1,12 @@
 ---
-description: To set up coverage on Codacy you must generate coverage reports in a supported format and upload them to Codacy.
+description: Generate coverage reports in a supported format and upload them to Codacy to monitor the test coverage of your repositories on Codacy.
 ---
 
 # Adding coverage to your repository
 
 Code coverage is a metric used to describe the degree to which the source code of a program is tested. A program with high code coverage has been more thoroughly tested and has a lower chance of containing software bugs than a program with low code coverage. You can read more about the [basics of code coverage](https://blog.codacy.com/a-guide-to-code-coverage-part-1-code-coverage-explained/) on Codacy's blog.
 
-To set up coverage on Codacy you must complete these main steps:
+Complete these main steps to start monitoring the test coverage of your repositories on Codacy:
 
 1.  **Generating coverage reports**
 
