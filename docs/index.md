@@ -92,11 +92,11 @@ There are many tools that you can use to generate coverage reports for the langu
 </tbody>
 </table>
 
-!!! tip
-    To use Swift and Objective-C with Xcode coverage reports, use [Slather](https://github.com/SlatherOrg/slather) to convert the Xcode output into the Cobertura format.
-    {: id="swift-objectivec-support"}
+### Submitting coverage from unsupported report formats
 
-    To do this, execute the following commands on the CI:
+If you are generating a report format that Codacy does not yet support, try using the community projects below or contribute to our [codacy/coverage-parser](https://github.com/codacy/coverage-parser) project:
+
+-   [SlatherOrg/slather](https://github.com/SlatherOrg/slather): generate Cobertura reports from Xcode coverage reports:
 
     ```bash
     gem install slather
@@ -105,8 +105,35 @@ There are many tools that you can use to generate coverage reports for the langu
 
     This will generate a file `cobertura.xml` inside the folder `<report-output-dir>`.
 
-!!! note
-    If you're generating a report format that Codacy doesn't support yet, see [submitting coverage from unsupported report formats](troubleshooting-common-issues.md#unsupported-report-formats).
+-   [dariodf/lcov_ex](https://github.com/dariodf/lcov_ex): generate LCOV reports for Elixir projects
+-   [t-yuki/gocover-cobertura](https://github.com/t-yuki/gocover-cobertura): generate Cobertura reports from [Go cover](https://golang.org/pkg/cmd/cover/) reports
+-   [chrisgit/sfdx-plugins_apex_coverage_report](https://github.com/chrisgit/sfdx-plugins_apex_coverage_report): generate LCOV or Cobertura reports from [Apex](https://help.salesforce.com/articleView?id=sf.code_apex_dev_guide_tools.htm&type=5) test coverage data
+-   [danielpalme/ReportGenerator](https://github.com/danielpalme/ReportGenerator): convert between different report formats 
+
+!!! tip
+    As a workaround, you can also send the coverage data directly by calling the Codacy API endpoint [saveCoverage](https://api.codacy.com/swagger#savecoverage) (when using a project API Token)
+    or [saveCoverageWithAccountToken](https://api.codacy.com/swagger#savecoveragewithaccounttoken) (when using an account API Token).
+
+    The following is an example of the JSON payload:
+
+    ```json
+    {
+    "total": 23,
+    "fileReports": [
+        {
+        "filename": "src/Codacy/Coverage/Parser/CloverParser.php",
+        "total": 54,
+        "coverage": {
+            "3": 3,
+            "5": 0,
+            "7": 1
+        }
+        }
+    ]
+    }
+    ```
+
+    Note that all "coverable" lines should be present on the `coverage` node of the JSON payload. In the example you can see `"5": 0`, meaning that line 5 is not covered.
 
 ## 2. Uploading coverage data to Codacy {: id="uploading-coverage"}
 

@@ -6,39 +6,6 @@ description: Instructions or workarounds to overcome common issues while using C
 
 The sections below provide instructions or workarounds to overcome common issues while using Codacy Coverage Reporter.
 
-## Submitting coverage from unsupported report formats {: id="unsupported-report-formats"}
-
-If you are generating a report format that Codacy does not yet support, try using the community projects below or contribute to our [codacy/coverage-parser](https://github.com/codacy/coverage-parser) project:
-
--   [danielpalme/ReportGenerator](https://github.com/danielpalme/ReportGenerator): convert between different report formats 
--   [dariodf/lcov_ex](https://github.com/dariodf/lcov_ex): generate LCOV reports for Elixir projects
--   [t-yuki/gocover-cobertura](https://github.com/t-yuki/gocover-cobertura): generate Cobertura reports from [Go cover](https://golang.org/pkg/cmd/cover/) reports
--   [chrisgit/sfdx-plugins_apex_coverage_report](https://github.com/chrisgit/sfdx-plugins_apex_coverage_report): generate LCOV or Cobertura reports from [Apex](https://help.salesforce.com/articleView?id=sf.code_apex_dev_guide_tools.htm&type=5) test coverage data
-
-As a workaround, you can also send the coverage data directly by calling the Codacy API endpoint [saveCoverage](https://api.codacy.com/swagger#savecoverage) (when using a project API Token)
-or [saveCoverageWithAccountToken](https://api.codacy.com/swagger#savecoveragewithaccounttoken) (when using an account API Token).
-
-The following is an example of the JSON payload:
-
-```json
-{
-  "total": 23,
-  "fileReports": [
-    {
-      "filename": "src/Codacy/Coverage/Parser/CloverParser.php",
-      "total": 54,
-      "coverage": {
-        "3": 3,
-        "5": 0,
-        "7": 1
-      }
-    }
-  ]
-}
-```
-
-Note that all "coverable" lines should be present on the `coverage` node of the JSON payload. In the example you can see `"5": 0`, meaning that line 5 is not covered.
-
 ## Can't guess any report due to no matching
 
 Codacy Coverage Reporter automatically searches for coverage reports matching the [file name conventions for supported formats](index.md#generating-coverage).
