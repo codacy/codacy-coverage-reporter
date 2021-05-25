@@ -94,7 +94,7 @@ There are many tools that you can use to generate coverage reports for the langu
 
 ### Submitting coverage from unsupported report formats
 
-If you are generating a report format that Codacy does not yet support, try using the community projects below or contribute to our [codacy/coverage-parser](https://github.com/codacy/coverage-parser) project:
+If you're generating a report format that Codacy doesn't support yet, use one of the community projects below to generate coverage reports in a supported format or contribute to our [codacy/coverage-parser](https://github.com/codacy/coverage-parser) project:
 
 -   [SlatherOrg/slather](https://github.com/SlatherOrg/slather): generate Cobertura reports from Xcode coverage reports:
 
@@ -118,18 +118,18 @@ If you are generating a report format that Codacy does not yet support, try usin
 
     ```json
     {
-    "total": 23,
-    "fileReports": [
+      "total": 23,
+      "fileReports": [
         {
-        "filename": "src/Codacy/Coverage/Parser/CloverParser.php",
-        "total": 54,
-        "coverage": {
+          "filename": "src/Codacy/Coverage/Parser/CloverParser.php",
+          "total": 54,
+          "coverage": {
             "3": 3,
             "5": 0,
             "7": 1
+          }
         }
-        }
-    ]
+      ]
     }
     ```
 
