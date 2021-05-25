@@ -156,7 +156,7 @@ After having coverage reports set up for your repository, you must use Codacy Co
 
 See the sections below for more advanced functionality, or [check the troubleshooting page](troubleshooting-common-issues.md) if you found an issue during the setup process.
 
-## Uploading multiple coverage reports for the same language {: id="multiple-reports"}
+### Uploading multiple coverage reports for the same language {: id="multiple-reports"}
 
 If your test suite is split on different modules or runs in parallel, you will need to upload multiple coverage reports for the same language.
 
@@ -190,7 +190,18 @@ bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
 !!! tip
     It might also be possible to merge the reports before uploading them to Codacy, since most coverage tools support merge/aggregation. For example, <http://www.eclemma.org/jacoco/trunk/doc/merge-mojo.html>.
 
-## Commit SHA hash detection {: id="commit-detection"}
+### Submitting coverage for unsupported languages
+
+If your language is not in the list of supported languages, you can still send coverage to Codacy. You can do it by providing the correct language name with the flag `-l`, together with `--force-language`. For example:
+
+```bash
+bash <(curl -Ls https://coverage.codacy.com/get.sh) report
+  -l Kotlin --force-language
+```
+
+See the [list of languages](https://github.com/codacy/codacy-plugins-api/blob/master/src/main/scala/com/codacy/plugins/api/languages/Language.scala#L43) that you can specify using the flag `-l`.
+
+### Commit SHA hash detection {: id="commit-detection"}
 
 The Codacy Coverage Reporter automatically detects the commit SHA hash to associate with the coverage data from the following CI/CD platforms:
 

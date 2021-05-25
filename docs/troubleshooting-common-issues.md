@@ -6,17 +6,6 @@ description: Instructions or workarounds to overcome common issues while using C
 
 The sections below provide instructions or workarounds to overcome common issues while using Codacy Coverage Reporter.
 
-## Submitting coverage for unsupported languages
-
-If your language is not in the list of supported languages, you can still send coverage to Codacy. You can do it by providing the correct language name with the flag `-l`, together with `--force-language`. For example:
-
-```bash
-bash <(curl -Ls https://coverage.codacy.com/get.sh) report
-  -l Kotlin --force-language
-```
-
-See the [list of languages](https://github.com/codacy/codacy-plugins-api/blob/master/src/main/scala/com/codacy/plugins/api/languages/Language.scala#L43) that you can specify using the flag `-l`.
-
 ## Submitting coverage from unsupported report formats {: id="unsupported-report-formats"}
 
 If you are generating a report format that Codacy does not yet support, try using the community projects below or contribute to our [codacy/coverage-parser](https://github.com/codacy/coverage-parser) project:
