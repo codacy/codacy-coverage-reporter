@@ -17,11 +17,12 @@ object GitHubActionProvider extends CommitUUIDProvider with LazyLogger {
   }
 
   override def getValidCommitUUID(environment: Map[String, String]): Either[String, CommitUUID] = {
-    // if the event is a pull request the GITHUB_SHA will have a different commit UUID (the id of a merge commit)
+    // If the event is a pull request event the GITHUB_SHA will have a different commit UUID (the id of a merge commit).
+    // It happens with all the pull_request* events: pull_request, pull_request_review, pull_request_review_comment and pull_request_target.
     // https://help.github.com/en/actions/reference/events-that-trigger-workflows
     // for this reason, we need to fetch it from the event details that GitHub provides
     // equivalent to doing ${{github.event.pull_request.head.sha}} in a GitHub action workflow
-    if (environment.get("GITHUB_EVENT_NAME").contains("pull_request")) {
+    if (environment.get("GITHUB_EVENT_NAME").exists(_.startsWith("pull_request"))) {
       getPullRequestCommit(environment)
     } else {
       parseEnvironmentVariable(environment.get("GITHUB_SHA"))
