@@ -92,11 +92,11 @@ There are many tools that you can use to generate coverage reports for the langu
 </tbody>
 </table>
 
-!!! tip
-    To use Swift and Objective-C with Xcode coverage reports, use [Slather](https://github.com/SlatherOrg/slather) to convert the Xcode output into the Cobertura format.
-    {: id="swift-objectivec-support"}
+### Submitting coverage from unsupported report formats
 
-    To do this, execute the following commands on the CI:
+If you're generating a report format that Codacy doesn't support yet, use one of the community projects below to generate coverage reports in a supported format or contribute to our [codacy/coverage-parser](https://github.com/codacy/coverage-parser) project:
+
+-   [SlatherOrg/slather](https://github.com/SlatherOrg/slather): generate Cobertura reports from Xcode coverage reports:
 
     ```bash
     gem install slather
@@ -105,8 +105,35 @@ There are many tools that you can use to generate coverage reports for the langu
 
     This will generate a file `cobertura.xml` inside the folder `<report-output-dir>`.
 
-!!! note
-    If you're generating a report format that Codacy doesn't support yet, see [submitting coverage from unsupported report formats](troubleshooting-common-issues.md#unsupported-report-formats).
+-   [dariodf/lcov_ex](https://github.com/dariodf/lcov_ex): generate LCOV reports for Elixir projects
+-   [t-yuki/gocover-cobertura](https://github.com/t-yuki/gocover-cobertura): generate Cobertura reports from [Go cover](https://golang.org/pkg/cmd/cover/) reports
+-   [chrisgit/sfdx-plugins_apex_coverage_report](https://github.com/chrisgit/sfdx-plugins_apex_coverage_report): generate LCOV or Cobertura reports from [Apex](https://help.salesforce.com/articleView?id=sf.code_apex_dev_guide_tools.htm&type=5) test coverage data
+-   [danielpalme/ReportGenerator](https://github.com/danielpalme/ReportGenerator): convert between different report formats 
+
+!!! tip
+    As a workaround, you can also send the coverage data directly by calling the Codacy API endpoint [saveCoverage](https://api.codacy.com/swagger#savecoverage) (when using a project API Token)
+    or [saveCoverageWithAccountToken](https://api.codacy.com/swagger#savecoveragewithaccounttoken) (when using an account API Token).
+
+    The following is an example of the JSON payload:
+
+    ```json
+    {
+      "total": 23,
+      "fileReports": [
+        {
+          "filename": "src/Codacy/Coverage/Parser/CloverParser.php",
+          "total": 54,
+          "coverage": {
+            "3": 3,
+            "5": 0,
+            "7": 1
+          }
+        }
+      ]
+    }
+    ```
+
+    Note that all "coverable" lines should be present on the `coverage` node of the JSON payload. In the example you can see `"5": 0`, meaning that line 5 is not covered.
 
 ## 2. Uploading coverage data to Codacy {: id="uploading-coverage"}
 
@@ -156,7 +183,7 @@ After having coverage reports set up for your repository, you must use Codacy Co
 
 See the sections below for more advanced functionality, or [check the troubleshooting page](troubleshooting-common-issues.md) if you found an issue during the setup process.
 
-## Uploading multiple coverage reports for the same language {: id="multiple-reports"}
+### Uploading multiple coverage reports for the same language {: id="multiple-reports"}
 
 If your test suite is split on different modules or runs in parallel, you will need to upload multiple coverage reports for the same language.
 
@@ -190,7 +217,18 @@ bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
 !!! tip
     It might also be possible to merge the reports before uploading them to Codacy, since most coverage tools support merge/aggregation. For example, <http://www.eclemma.org/jacoco/trunk/doc/merge-mojo.html>.
 
-## Commit SHA hash detection {: id="commit-detection"}
+### Submitting coverage for unsupported languages
+
+If your language is not in the list of supported languages, you can still send coverage to Codacy. You can do it by providing the correct language name with the flag `-l`, together with `--force-language`. For example:
+
+```bash
+bash <(curl -Ls https://coverage.codacy.com/get.sh) report
+  -l Kotlin --force-language
+```
+
+See the [list of languages](https://github.com/codacy/codacy-plugins-api/blob/master/src/main/scala/com/codacy/plugins/api/languages/Language.scala#L43) that you can specify using the flag `-l`.
+
+### Commit SHA hash detection {: id="commit-detection"}
 
 The Codacy Coverage Reporter automatically detects the commit SHA hash to associate with the coverage data from the following CI/CD platforms:
 
