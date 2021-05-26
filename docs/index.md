@@ -110,30 +110,10 @@ If you're generating a report format that Codacy doesn't support yet, use one of
 -   [chrisgit/sfdx-plugins_apex_coverage_report](https://github.com/chrisgit/sfdx-plugins_apex_coverage_report): generate LCOV or Cobertura reports from [Apex](https://help.salesforce.com/articleView?id=sf.code_apex_dev_guide_tools.htm&type=5) test coverage data
 -   [danielpalme/ReportGenerator](https://github.com/danielpalme/ReportGenerator): convert between different report formats 
 
-!!! tip
-    As a workaround, you can also send the coverage data directly by calling the Codacy API endpoint [saveCoverage](https://api.codacy.com/swagger#savecoverage) (when using a project API Token)
-    or [saveCoverageWithAccountToken](https://api.codacy.com/swagger#savecoveragewithaccounttoken) (when using an account API Token).
+As a last resort, you can also send the coverage data directly by calling one of the following Codacy API endpoints:
 
-    The following is an example of the JSON payload:
-
-    ```json
-    {
-      "total": 23,
-      "fileReports": [
-        {
-          "filename": "src/Codacy/Coverage/Parser/CloverParser.php",
-          "total": 54,
-          "coverage": {
-            "3": 3,
-            "5": 0,
-            "7": 1
-          }
-        }
-      ]
-    }
-    ```
-
-    Note that all "coverable" lines should be present on the `coverage` node of the JSON payload. In the example you can see `"5": 0`, meaning that line 5 is not covered.
+-   [saveCoverage](https://api.codacy.com/swagger#savecoverage)
+-   [saveCoverageWithAccountToken](https://api.codacy.com/swagger#savecoveragewithaccounttoken)
 
 ## 2. Uploading coverage data to Codacy {: id="uploading-coverage"}
 
