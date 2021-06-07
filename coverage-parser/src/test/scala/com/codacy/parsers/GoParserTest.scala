@@ -16,11 +16,11 @@ class GoParserTest extends WordSpec with Matchers with EitherValues {
         val nonExistentReportPath = "coverage-parser/src/test/resources/non-existent.xml"
 
         // Act
-        val parseResult = CloverParser.parse(new File("."), new File(nonExistentReportPath))
+        val parseResult = GoParser.parse(new File("."), new File(nonExistentReportPath))
 
         // Assert
         parseResult shouldBe Left(
-          "Unparseable report. coverage-parser/src/test/resources/non-existent.xml (No such file or directory)"
+          "Can't load report file. coverage-parser/src/test/resources/non-existent.xml"
         )
       }
     }
