@@ -3,8 +3,7 @@ package com.codacy.parsers.implementation
 import com.codacy.parsers.CoverageParser
 
 import java.io.File
-
-import com.codacy.parsers.util.{MathUtils}
+import com.codacy.parsers.util.MathUtils
 
 //import com.codacy.parsers.util.MathUtils._
 
@@ -28,7 +27,9 @@ object GoParser extends CoverageParser {
 
   override val name: String = "Go"
 
-  final val MODE = "mode:"
+  final val MODE = """mode: ([set|count|atomic]*)""".r
+
+  final val regexpString = """([a-zA-Z\\/\\._\\-\\d]*):(\\d+).*?,(\\d+).* (\\d+) (\\d+)""".r
 
   override def parse(rootProject: File, reportFile: File): Either[String, CoverageReport] = {
     val report = Try(Source.fromFile(reportFile)) match {
@@ -41,28 +42,50 @@ object GoParser extends CoverageParser {
     report.flatMap(parseLines(reportFile, _))
   }
 
-  private def parseLines(reportFile: File, lines: Iterator[String]): Either[String, CoverageReport] = {
+
+ private def parseLines(reportFile: File, lines: Iterator[String]): Either[String, CoverageReport] = {
+    var currentFile:String = "-1"
+    for (elem <- lines){
+      println(elem)
+    }
+
     val coverageFileReports =
-      lines.foldLeft[Either[String, Seq[CoverageFileReport]]](Right(Seq.empty[CoverageFileReport]))((accum, next) => {
-        println(accum)
-        accum.flatMap {
-          //case reports if next startsWith MODE =>
-          // reports.headOption match {
-          //   case Some(value) =>
-          //     val coverage = next.stripPrefix("\n")
-          //     if (coverage.length >= 2 && coverage.forall(_ forall Character.isDigit)) {
-          //       val coverageValue = coverage.map(_.toIntOrMaxValue)
-          //       Right(
-          //         value.copy(coverage = value.coverage + (coverageValue(0) -> coverageValue(1))) +: reports.tail
-          //       )
-          //     } else Left(s"Misformatting of file ${reportFile.toString}")
-          //   case _ => Left(s"Fail to parse ${reportFile.toString}")
-          // }
-          case reports =>
-            val res = Right(reports)
-            res
-        }
-      })
+      lines.foldLeft[Either[String, Seq[CoverageFileReport]]](Right(Seq.empty[CoverageFileReport]))(
+        (accum, next) =>
+          accum.flatMap {
+            next match {
+              case regexpString(filename,line,lineColumn, numberOfStatements, count, _*) =>
+                {
+                  case reports if filename startsWith currentFile =>
+                    Right(CoverageFileReport(currentFile, 0, Map()) +: reports)
+                  case reports if filename startsWith DA =>
+                    reports.headOption match {
+                      case Some(value) =>
+                        val coverage = next.stripPrefix(DA).split(",")
+                        if (coverage.length >= 2 && coverage.forall(_ forall Character.isDigit)) {
+                          val coverageValue = coverage.map(_.toIntOrMaxValue)
+                          Right(
+                            value.copy(coverage = value.coverage + (coverageValue(0) -> coverageValue(1))) +: reports.tail
+                          )
+                        } else Left(s"Misformatting of file ${reportFile.toString}")
+                      case _ => Left(s"Fail to parse ${reportFile.toString}")
+                    }
+                  case reports =>
+                    val res = Right(reports)
+                    res
+
+
+                  Right(Seq.empty[CoverageFileReport])
+//                    if (currentFile != filename){
+//                      currentFile = filename
+//                    }
+                }
+            }
+
+         }
+      )
+
+
     coverageFileReports.map { fileReports =>
       val totalFileReport = fileReports.map { report =>
         val coveredLines = report.coverage.count { case (_, hit) => hit > 0 }
@@ -86,4 +109,5 @@ object GoParser extends CoverageParser {
       CoverageReport(totalCoverage, totalFileReport)
     }
   }
+
 }
