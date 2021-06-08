@@ -23,7 +23,7 @@ class GoParserTest extends WordSpec with Matchers with EitherValues {
 
         // Assert
         parseResult shouldBe Left(
-          "Can't load report file. coverage-parser/src/test/resources/non-existent.xml"
+          "Can't load report file."
         )
       }
     }
@@ -32,24 +32,17 @@ class GoParserTest extends WordSpec with Matchers with EitherValues {
       val reader = GoParser.parse(new File("."), new File("coverage-parser/src/test/resources/test_go.out"))
 
       val testReport = CoverageReport(
-        86,
+        75,
         List(
           CoverageFileReport(
-            "coverage-parser/src/test/resources/TestSourceFile2.scala",
-            100,
-            Map(1 -> 1, 2 -> 1, 3 -> 1)
-          ),
-          CoverageFileReport(
-            "coverage-parser/src/test/resources/TestSourceFile.scala",
+            "example.com/m/v2/hello.go",
             75,
-            Map(3 -> 0, 4 -> 1, 5 -> 1, 6 -> 2)
+            Map(5 -> 0, 14 -> 1, 6 -> 0, 13 -> 1, 17 -> 1, 12 -> 1, 7 -> 0, 18 -> 1, 11 -> 1, 19 -> 1)
           )
         )
       )
 
       reader.right.value should equal(testReport)
     }
-
-
   }
 }

@@ -5,23 +5,17 @@ import com.codacy.parsers.CoverageParser
 import java.io.File
 import com.codacy.parsers.util.MathUtils
 
-//import com.codacy.parsers.util.MathUtils._
-
 import com.codacy.api.{CoverageFileReport, CoverageReport}
-import scala.io.Source
 
+import scala.io.Source
 import scala.util.{Failure, Success, Try}
 
-//name.go:line.column,line.column numberOfStatements count
 
-// mode: set
-// github.com/cnuss/api_server/server.go:47.2,48.16 2 0
-// github.com/cnuss/api_server/server.go:52.2,53.16 2 0
-// github.com/cnuss/api_server/server.go:57.2,58.16 2 0
-// github.com/cnuss/api_server/server.go:62.2,63.16 2 0
-// github.com/cnuss/api_server/server.go:67.2,68.16 2 0
-// github.com/cnuss/api_server/server.go:72.2,73.16 2 0
-// github.com/cnuss/api_server/server.go:77.2,78.16 2 0
+case class GoCoverageInfo(filename: String, lineFrom: Int, lineTo: Int, numberOfStatements: Int, countOfStatements: Int)
+
+case class GoCoverageStatementsCount(countStatements: Int, numberStatements: Int, coveredStatements: Int)
+
+case class CoverageFileReportWithStatementsCount(statementsCount: GoCoverageStatementsCount, coverageFileReport: CoverageFileReport)
 
 object GoParser extends CoverageParser {
 
@@ -29,84 +23,73 @@ object GoParser extends CoverageParser {
 
   final val MODE = """mode: ([set|count|atomic]*)""".r
 
-  final val regexpString = """([a-zA-Z\\/\\._\\-\\d]*):(\\d+).*?,(\\d+).* (\\d+) (\\d+)""".r
+  //filename.go:lineFrom.column,lineTo.column numberOfStatements countOfStatements
+  final val regexpString = """([a-zA-Z\/\._\-\d]*):(\d+).*?,(\d+).* (\d+) (\d+)""".r
 
   override def parse(rootProject: File, reportFile: File): Either[String, CoverageReport] = {
     val report = Try(Source.fromFile(reportFile)) match {
       case Success(lines) =>
         Right(lines.getLines)
       case Failure(ex) =>
-        Left(s"Can't load report file. ${reportFile.toString}")
+        Left("Can't load report file.")
     }
 
-    report.flatMap(parseLines(reportFile, _))
+    report.map(lines => parseLines(lines.toList))
   }
 
-
- private def parseLines(reportFile: File, lines: Iterator[String]): Either[String, CoverageReport] = {
-    var currentFile:String = "-1"
-    for (elem <- lines){
-      println(elem)
-    }
+ private def parseLines(lines: List[String]): CoverageReport = {
+   val coverageInfo = parseAllCoverageInfo(lines)
+   val coverageInfoGroupedByFilename: Map[String,Set[GoCoverageInfo]] = coverageInfo.toSet.groupBy((a: GoCoverageInfo) => a.filename)
 
     val coverageFileReports =
-      lines.foldLeft[Either[String, Seq[CoverageFileReport]]](Right(Seq.empty[CoverageFileReport]))(
-        (accum, next) =>
-          accum.flatMap {
-            next match {
-              case regexpString(filename,line,lineColumn, numberOfStatements, count, _*) =>
-                {
-                  case reports if filename startsWith currentFile =>
-                    Right(CoverageFileReport(currentFile, 0, Map()) +: reports)
-                  case reports if filename startsWith DA =>
-                    reports.headOption match {
-                      case Some(value) =>
-                        val coverage = next.stripPrefix(DA).split(",")
-                        if (coverage.length >= 2 && coverage.forall(_ forall Character.isDigit)) {
-                          val coverageValue = coverage.map(_.toIntOrMaxValue)
-                          Right(
-                            value.copy(coverage = value.coverage + (coverageValue(0) -> coverageValue(1))) +: reports.tail
-                          )
-                        } else Left(s"Misformatting of file ${reportFile.toString}")
-                      case _ => Left(s"Fail to parse ${reportFile.toString}")
-                    }
-                  case reports =>
-                    val res = Right(reports)
-                    res
+      coverageInfoGroupedByFilename.foldLeft[Seq[CoverageFileReportWithStatementsCount]](Seq.empty[CoverageFileReportWithStatementsCount])(
+        (accum, next) => {
+              next match {
+                case (filename, coverageInfosForFile) =>
+                  val statementsCountForFile = coverageInfosForFile.foldLeft(GoCoverageStatementsCount(0, 0, 0)) {
+                    (acc, v) =>
+                      val newCountStatements = acc.countStatements + v.countOfStatements
+                      val newNumberStatements = acc.numberStatements + v.numberOfStatements
+                      val newTotalCoveredStatements = if (v.countOfStatements > 0) acc.coveredStatements + v.numberOfStatements else acc.coveredStatements
 
+                      GoCoverageStatementsCount(newCountStatements, newNumberStatements, newTotalCoveredStatements)
+                  }
 
-                  Right(Seq.empty[CoverageFileReport])
-//                    if (currentFile != filename){
-//                      currentFile = filename
-//                    }
-                }
-            }
+                  val coverage = coverageInfosForFile.foldLeft(Map[Int, Int]()) {
+                    (acc, coverageInfo) => acc ++ lineHits(coverageInfo)
+                  }
 
-         }
+                  val totalForFile = calculateTotal(statementsCountForFile)
+
+                  accum :+ CoverageFileReportWithStatementsCount(statementsCountForFile, CoverageFileReport(filename, totalForFile, coverage))
+              }
+        }
       )
 
+   val (covered, total) = coverageFileReports
+     .foldLeft[(Int, Int)]((0, 0)) {
+       case ((covered, total), coverageFileReportWithStatementsCount) =>
+       (covered + coverageFileReportWithStatementsCount.statementsCount.coveredStatements, total + coverageFileReportWithStatementsCount.statementsCount.numberStatements)
+     }
 
-    coverageFileReports.map { fileReports =>
-      val totalFileReport = fileReports.map { report =>
-        val coveredLines = report.coverage.count { case (_, hit) => hit > 0 }
-        val totalLines = report.coverage.size
-        val fileCoverage =
-          MathUtils.computePercentage(coveredLines, totalLines)
+   val totalCoverage = MathUtils.computePercentage(covered, total)
 
-        CoverageFileReport(report.filename, fileCoverage, report.coverage)
-      }
+   CoverageReport(totalCoverage, coverageFileReports.map(_.coverageFileReport))
+  }
 
-      val (covered, total) = totalFileReport
-        .map { f =>
-          (f.coverage.count { case (_, hit) => hit > 0 }, f.coverage.size)
-        }
-        .foldLeft(0 -> 0) {
-          case ((accumCovered, accumTotal), (nextCovered, nextTotal)) =>
-            (accumCovered + nextCovered, accumTotal + nextTotal)
-        }
+  private def calculateTotal(coverageFileStatements: GoCoverageStatementsCount): Int = {
+    MathUtils.computePercentage(coverageFileStatements.coveredStatements, coverageFileStatements.numberStatements)
+  }
 
-      val totalCoverage = MathUtils.computePercentage(covered, total)
-      CoverageReport(totalCoverage, totalFileReport)
+  private def lineHits(coverageInfo: GoCoverageInfo): Map[Int, Int] = {
+    val lines = Range.inclusive(coverageInfo.lineFrom, coverageInfo.lineTo)
+    lines.foldLeft(Map[Int,Int]())((acc, line) => acc ++ Map(line -> coverageInfo.countOfStatements))
+  }
+
+  private def parseAllCoverageInfo(lines: List[String]): List[GoCoverageInfo] = {
+    lines.collect {
+      case regexpString(filename, lineFrom, lineTo, numberOfStatements, countOfStatements, _*) =>
+        GoCoverageInfo(filename, lineFrom.toInt, lineTo.toInt, numberOfStatements.toInt, countOfStatements.toInt)
     }
   }
 
