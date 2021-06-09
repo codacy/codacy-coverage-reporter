@@ -94,7 +94,7 @@ There are many tools that you can use to generate coverage reports for the langu
 
 ### Submitting coverage from unsupported report formats
 
-If you're generating a report format that Codacy doesn't support yet, use one of the community projects below to generate coverage reports in a supported format or contribute to our [codacy/coverage-parser](https://github.com/codacy/coverage-parser) project:
+If you're generating a report format that Codacy doesn't support yet, [contribute with a parser implementation](https://github.com/codacy/codacy-coverage-reporter/tree/master/coverage-parser/src/main/scala/com/codacy/parsers/implementation) yourself or use one of the community projects below to generate coverage reports in a supported format:
 
 -   [SlatherOrg/slather](https://github.com/SlatherOrg/slather): generate Cobertura reports from Xcode coverage reports:
 
