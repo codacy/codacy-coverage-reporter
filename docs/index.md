@@ -45,7 +45,7 @@ There are many tools that you can use to generate coverage reports for the langu
 <tr>
     <td>Go</td>
     <td><a href="https://blog.golang.org/cover">Golang</a> Code Coverage</td>
-    <td>See <a href="#submitting-coverage-for-golang">here</a> how to generate coverage reports with Golang</td>
+    <td>Golang report files don't have a specific name. Because of this, later in the setup process you must follow <a href="#submitting-coverage-for-golang">specific instructions</a> while submitting coverage to Codacy.</td>
 </tr>
 <tr>
     <td rowspan="2">Java</td>
