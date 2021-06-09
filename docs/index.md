@@ -92,7 +92,7 @@ There are many tools that you can use to generate coverage reports for the langu
 <tr>
     <td>Go</td>
     <td><a href="https://blog.golang.org/cover">Golang</a> Code Coverage</td>
-    <td>See <a href="#submitting-coverage-for-golang">here</a> how to generate coverage reports with Golang`</td>
+    <td>See <a href="#submitting-coverage-for-golang">here</a> how to generate coverage reports with Golang</td>
 </tr>
 </tbody>
 </table>
@@ -122,7 +122,6 @@ If you're generating a report format that Codacy doesn't support yet, use one of
     This will generate a file `cobertura.xml` inside the folder `<report-output-dir>`.
 
 -   [dariodf/lcov_ex](https://github.com/dariodf/lcov_ex): generate LCOV reports for Elixir projects
--   [t-yuki/gocover-cobertura](https://github.com/t-yuki/gocover-cobertura): generate Cobertura reports from [Go cover](https://golang.org/pkg/cmd/cover/) reports
 -   [chrisgit/sfdx-plugins_apex_coverage_report](https://github.com/chrisgit/sfdx-plugins_apex_coverage_report): generate LCOV or Cobertura reports from [Apex](https://help.salesforce.com/articleView?id=sf.code_apex_dev_guide_tools.htm&type=5) test coverage data
 -   [danielpalme/ReportGenerator](https://github.com/danielpalme/ReportGenerator): convert between different report formats 
 
