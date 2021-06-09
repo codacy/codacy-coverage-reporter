@@ -97,17 +97,6 @@ There are many tools that you can use to generate coverage reports for the langu
 </tbody>
 </table>
 
-### Submitting coverage for Golang
-
-Codacy can't infer the Golang report file because it doesn't have specific report file name.
-
-If you're generating a report for Golang, you must enforce the report type when calling Codacy's coverage reporter by doing:
-
-```bash
-bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
-    --force-coverage-parser go --coverage-reports <your project coverage file name>
-```
-
 ### Submitting coverage from unsupported report formats
 
 If you're generating a report format that Codacy doesn't support yet, use one of the community projects below to generate coverage reports in a supported format or contribute to our [codacy/coverage-parser](https://github.com/codacy/coverage-parser) project:
@@ -211,6 +200,17 @@ bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
 
 !!! tip
     It might also be possible to merge the reports before uploading them to Codacy, since most coverage tools support merge/aggregation. For example, <http://www.eclemma.org/jacoco/trunk/doc/merge-mojo.html>.
+
+### Submitting coverage for Golang
+
+Codacy can't infer the Golang report file because it doesn't have specific report file name.
+
+If you're generating a report for Golang, you must enforce the report type when calling Codacy's coverage reporter by doing:
+
+```bash
+bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
+    --force-coverage-parser go --coverage-reports <your project coverage file name>
+```
 
 ### Submitting coverage for unsupported languages
 
