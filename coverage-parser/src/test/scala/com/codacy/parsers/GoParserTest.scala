@@ -4,7 +4,6 @@ import java.io.File
 
 import com.codacy.api._
 
-
 import com.codacy.parsers.implementation.GoParser
 import org.scalatest.{EitherValues, Matchers, WordSpec}
 
@@ -22,9 +21,7 @@ class GoParserTest extends WordSpec with Matchers with EitherValues {
         val parseResult = GoParser.parse(new File("."), new File(nonExistentReportPath))
 
         // Assert
-        parseResult shouldBe Left(
-          "Can't load report file."
-        )
+        parseResult shouldBe Left("Can't load report file.")
       }
     }
 
