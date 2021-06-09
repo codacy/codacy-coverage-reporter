@@ -108,7 +108,7 @@ If you're generating a report format that Codacy doesn't support yet, [contribut
 -   [dariodf/lcov_ex](https://github.com/dariodf/lcov_ex): generate LCOV reports for Elixir projects
 -   [t-yuki/gocover-cobertura](https://github.com/t-yuki/gocover-cobertura): generate Cobertura reports from [Go cover](https://golang.org/pkg/cmd/cover/) reports
 -   [chrisgit/sfdx-plugins_apex_coverage_report](https://github.com/chrisgit/sfdx-plugins_apex_coverage_report): generate LCOV or Cobertura reports from [Apex](https://help.salesforce.com/articleView?id=sf.code_apex_dev_guide_tools.htm&type=5) test coverage data
--   [danielpalme/ReportGenerator](https://github.com/danielpalme/ReportGenerator): convert between different report formats 
+-   [danielpalme/ReportGenerator](https://github.com/danielpalme/ReportGenerator): convert between different report formats
 
 As a last resort, you can also send the coverage data directly by calling one of the following Codacy API endpoints:
 
@@ -202,7 +202,7 @@ bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
 If your language is not in the list of supported languages, you can still send coverage to Codacy. You can do it by providing the correct language name with the flag `-l`, together with `--force-language`. For example:
 
 ```bash
-bash <(curl -Ls https://coverage.codacy.com/get.sh) report
+bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
   -l Kotlin --force-language
 ```
 
