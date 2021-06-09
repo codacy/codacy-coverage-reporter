@@ -89,8 +89,24 @@ There are many tools that you can use to generate coverage reports for the langu
     <td><a href="https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/testing_with_xcode/chapters/07-code_coverage.html">Xcode</a> Code Coverage</td>
     <td>See below how to generate coverage reports with Xcode</td>
 </tr>
+<tr>
+    <td>Go</td>
+    <td><a href="https://blog.golang.org/cover">Golang</a> Code Coverage</td>
+    <td>See <a href="#submitting-coverage-for-golang">here</a> how to generate coverage reports with Golang`</td>
+</tr>
 </tbody>
 </table>
+
+### Submitting coverage for Golang
+
+Codacy can't infer the Golang report file because it doesn't have specific report file name.
+
+If you're generating a report for Golang, you must enforce the report type when calling Codacy's coverage reporter by doing:
+
+```bash
+bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
+    --force-coverage-parser go --coverage-reports <your project coverage file name>
+```
 
 ### Submitting coverage from unsupported report formats
 
