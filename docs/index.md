@@ -43,6 +43,11 @@ There are many tools that you can use to generate coverage reports for the langu
     <td><code>dotcover.xml</code> (dotCover <a href="troubleshooting-common-issues/#detailedxml">detailedXML</a>)</td>
 </tr>
 <tr>
+    <td>Go</td>
+    <td><a href="https://blog.golang.org/cover">Golang</a> Code Coverage</td>
+    <td>See <a href="#submitting-coverage-for-golang">here</a> how to generate coverage reports with Golang</td>
+</tr>
+<tr>
     <td rowspan="2">Java</td>
     <td><a href="http://eclemma.org/jacoco/">JaCoCo</a></td>
     <td><code>jacoco*.xml</code> (JaCoCo)</td>
@@ -88,11 +93,6 @@ There are many tools that you can use to generate coverage reports for the langu
     <td>Swift/Objective-C</td>
     <td><a href="https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/testing_with_xcode/chapters/07-code_coverage.html">Xcode</a> Code Coverage</td>
     <td>See below how to generate coverage reports with Xcode</td>
-</tr>
-<tr>
-    <td>Go</td>
-    <td><a href="https://blog.golang.org/cover">Golang</a> Code Coverage</td>
-    <td>See <a href="#submitting-coverage-for-golang">here</a> how to generate coverage reports with Golang</td>
 </tr>
 </tbody>
 </table>
@@ -203,13 +203,13 @@ bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
 
 ### Submitting coverage for Golang
 
-Codacy can't infer the Golang report file because it doesn't have specific report file name.
+Codacy can't automatically detect Golang coverage report files because they don't have specific file names.
 
-If you're generating a report for Golang, you must enforce the report type when calling Codacy's coverage reporter by doing:
+If you're uploading a Golang coverage report, you must also specify the report type:
 
 ```bash
 bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
-    --force-coverage-parser go --coverage-reports <your project coverage file name>
+    --force-coverage-parser go -r <your project coverage file name>
 ```
 
 ### Submitting coverage for unsupported languages
