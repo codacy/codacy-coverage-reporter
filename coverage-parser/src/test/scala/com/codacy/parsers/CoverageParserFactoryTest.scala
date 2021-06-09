@@ -57,7 +57,7 @@ class CoverageParserFactoryTest extends WordSpec with BeforeAndAfterAll with Mat
 
     "fail to get invalid report" in {
       CoverageParser.parse(new File("."), new File("invalid_report.xml")) shouldEqual Left(
-        "Could not parse report, unrecognized report format (tried: Cobertura, Jacoco, Clover, OpenCover, DotCover, PHPUnit, LCOV)"
+        "Could not parse report, unrecognized report format (tried: Cobertura, Jacoco, Clover, OpenCover, DotCover, PHPUnit, LCOV, Go)"
       )
     }
 

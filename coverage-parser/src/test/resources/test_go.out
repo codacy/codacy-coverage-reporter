@@ -1,0 +1,4 @@
+mode: set
+example.com/m/v2/hello.go:5.13,7.2 1 0
+example.com/m/v2/hello.go:11.30,14.2 2 1
+example.com/m/v2/hello.go:17.35,19.2 1 1

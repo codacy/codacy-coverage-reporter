@@ -107,7 +107,8 @@ object ConfigArgumentParsers {
     "opencover" -> OpenCoverParser,
     "dotcover" -> DotcoverParser,
     "phpunit" -> PhpUnitXmlParser,
-    "lcov" -> LCOVParser
+    "lcov" -> LCOVParser,
+    "go" -> GoParser
   )
 
   implicit val coverageParser: ArgParser[CoverageParser] = ArgParser.instance("parser") { v =>

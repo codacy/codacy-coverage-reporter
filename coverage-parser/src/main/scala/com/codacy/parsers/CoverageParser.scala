@@ -18,7 +18,16 @@ object CoverageParser {
   final case class CoverageParserResult(report: CoverageReport, parser: CoverageParser)
 
   val allParsers: List[CoverageParser] =
-    List(CoberturaParser, JacocoParser, CloverParser, OpenCoverParser, DotcoverParser, PhpUnitXmlParser, LCOVParser)
+    List(
+      CoberturaParser,
+      JacocoParser,
+      CloverParser,
+      OpenCoverParser,
+      DotcoverParser,
+      PhpUnitXmlParser,
+      LCOVParser,
+      GoParser
+    )
 
   def parse(projectRoot: File, reportFile: File): Either[String, CoverageReport] = {
     parse(projectRoot = projectRoot, reportFile = reportFile, None).map(_.report)

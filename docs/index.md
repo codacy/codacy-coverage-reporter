@@ -43,6 +43,11 @@ There are many tools that you can use to generate coverage reports for the langu
     <td><code>dotcover.xml</code> (dotCover <a href="troubleshooting-common-issues/#detailedxml">detailedXML</a>)</td>
 </tr>
 <tr>
+    <td>Go</td>
+    <td><a href="https://blog.golang.org/cover">Golang</a> Code Coverage</td>
+    <td>Golang report files don't have a specific name. Because of this, later in the setup process you must follow <a href="#submitting-coverage-for-golang">specific instructions</a> while submitting coverage to Codacy.</td>
+</tr>
+<tr>
     <td rowspan="2">Java</td>
     <td><a href="http://eclemma.org/jacoco/">JaCoCo</a></td>
     <td><code>jacoco*.xml</code> (JaCoCo)</td>
@@ -106,7 +111,6 @@ If you're generating a report format that Codacy doesn't support yet, [contribut
     This will generate a file `cobertura.xml` inside the folder `<report-output-dir>`.
 
 -   [dariodf/lcov_ex](https://github.com/dariodf/lcov_ex): generate LCOV reports for Elixir projects
--   [t-yuki/gocover-cobertura](https://github.com/t-yuki/gocover-cobertura): generate Cobertura reports from [Go cover](https://golang.org/pkg/cmd/cover/) reports
 -   [chrisgit/sfdx-plugins_apex_coverage_report](https://github.com/chrisgit/sfdx-plugins_apex_coverage_report): generate LCOV or Cobertura reports from [Apex](https://help.salesforce.com/articleView?id=sf.code_apex_dev_guide_tools.htm&type=5) test coverage data
 -   [danielpalme/ReportGenerator](https://github.com/danielpalme/ReportGenerator): convert between different report formats
 
@@ -196,6 +200,17 @@ bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
 
 !!! tip
     It might also be possible to merge the reports before uploading them to Codacy, since most coverage tools support merge/aggregation. For example, <http://www.eclemma.org/jacoco/trunk/doc/merge-mojo.html>.
+
+### Submitting coverage for Golang
+
+Codacy can't automatically detect Golang coverage report files because they don't have specific file names.
+
+If you're uploading a Golang coverage report, you must also specify the report type:
+
+```bash
+bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
+    --force-coverage-parser go -r <your project coverage file name>
+```
 
 ### Submitting coverage for unsupported languages
 

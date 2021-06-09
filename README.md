@@ -42,7 +42,7 @@ Usage: codacy-coverage-reporter report
   --partial  <if the report is partial>
   --prefix  <the project path prefix>
   --force-coverage-parser  <your coverage parser>
-        Available parsers are: opencover,clover,lcov,phpunit,jacoco,dotcover,cobertura
+        Available parsers are: opencover,clover,lcov,phpunit,jacoco,dotcover,cobertura,go
 
 
  --> Succeeded!
