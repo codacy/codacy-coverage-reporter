@@ -50,8 +50,8 @@ You can use the scripts below to automatically check for the latest version of t
 -   Using Codacy's public S3:
 
     ```bash
-    LATEST_VERSION="$(curl -Ls https://artifacts.codacy.com/binaries/codacy-coverage-reporter/latest)"
-    curl -Ls -o codacy-coverage-reporter "https://artifacts.codacy.com/binaries/codacy-coverage-reporter/${LATEST_VERSION}/codacy-coverage-reporter-linux"
+    LATEST_VERSION="$(curl -Ls https://artifacts.codacy.com/bin/codacy-coverage-reporter/latest)"
+    curl -Ls -o codacy-coverage-reporter "https://artifacts.codacy.com/bin/codacy-coverage-reporter/${LATEST_VERSION}/codacy-coverage-reporter-linux"
     chmod +x codacy-coverage-reporter
     ./codacy-coverage-reporter report
     ```
