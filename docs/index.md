@@ -132,13 +132,23 @@ After having coverage reports set up for your repository, you must use Codacy Co
         export CODACY_PROJECT_TOKEN=<your project API token>
         ```
 
-    -   **If you're setting up and automating coverage for multiple repositories**, [obtain an account API Token](../codacy-api/api-tokens/#account-api-tokens) and set the following environment variables to specify the account API token, the username associated with the account API token, and the repository for which you're uploading the coverage information:
+    -   **If you're setting up and automating coverage for multiple repositories**, [obtain an account API Token](../codacy-api/api-tokens/#account-api-tokens) and set the following environment variables:
+    
+        -   **CODACY_API_TOKEN:** Your account API token.
+
+        -   **CODACY_ORGANIZATION_PROVIDER:** Git provider hosting the repository.
+        
+            Must be one of `gh`, `ghe`, `gl`, `gle`, `bb`, or `bbe` to specify GitHub, GitHub Enterprise, GitLab, GitLab Enterprise, Bitbucket, or Bitbucket Enterprise, respectively.
+
+        -   **CODACY_USERNAME:** Name of your organization on the Git provider, or your username on the Git provider if you're using a personal organization.
+        
+        -   **CODACY_PROJECT_NAME:** Name of the repository for which you're uploading the coverage information.
 
         ```bash
         export CODACY_API_TOKEN=<your account API token>
-        export CODACY_ORGANIZATION_PROVIDER=<the repository provider>
-        export CODACY_USERNAME=<the repository owner username>
-        export CODACY_PROJECT_NAME=<the repository name>
+        export CODACY_ORGANIZATION_PROVIDER=<Git provider hosting the repository>
+        export CODACY_USERNAME=<organization name or username on the Git provider>
+        export CODACY_PROJECT_NAME=<repository name>
         ```
 
     !!! warning
