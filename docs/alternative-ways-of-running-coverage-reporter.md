@@ -64,9 +64,9 @@ You can use the scripts below to automatically check for the latest version of t
     ./codacy-coverage-reporter report
     ```
 
-### Java
+### Java 8
 
-Use the Java binary to run Codacy Coverage reporter on other platforms, such as Linux x86, macOS, Windows, etc.
+Use the Java 8 binary to run Codacy Coverage reporter on other platforms, such as Linux x86, macOS, Windows, etc.
 
 You can use the scripts below to automatically check for the latest version of the Java binaries, download the binaries from either Codacy's public store or GitHub, and run them.
 
