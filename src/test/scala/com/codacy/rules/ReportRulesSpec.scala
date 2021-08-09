@@ -32,7 +32,7 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
 
   "codacyCoverage" should {
     val baseConfig =
-      BaseConfig(ProjectTokenAuthenticationConfig(projToken), apiBaseUrl, None, debug = false)
+      BaseConfig(ProjectTokenAuthenticationConfig(projToken), apiBaseUrl, None, debug = false, timeoutOpt = None)
 
     def assertCodacyCoverage(coverageServices: CoverageServices, coverageReports: List[String], success: Boolean) = {
       val reportRules = new ReportRules(coverageServices)

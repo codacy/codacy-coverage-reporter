@@ -1,6 +1,7 @@
 package com.codacy.rules
 
 import com.codacy.api.OrganizationProvider
+import com.codacy.api.client.RequestTimeout
 
 import java.io.File
 import java.net.URL
@@ -70,7 +71,8 @@ class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, S
         authConfig,
         baseConfig.codacyApiBaseUrl.getOrElse(getApiBaseUrl),
         commitUUID,
-        baseConfig.debugValue
+        baseConfig.debugValue,
+        timeoutOpt = baseConfig.httpTimeout.map(timeout => RequestTimeout(timeout, timeout))
       )
       validatedConfig <- validateBaseConfigUrl(baseConf)
     } yield {

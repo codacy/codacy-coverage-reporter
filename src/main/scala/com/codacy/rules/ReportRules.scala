@@ -1,25 +1,18 @@
 package com.codacy.rules
 
-import java.io.File
-import java.nio.file.Files
-
 import com.codacy.api.CoverageReport
 import com.codacy.api.client.{FailedResponse, SuccessfulResponse}
 import com.codacy.api.helpers.FileHelper
 import com.codacy.api.service.CoverageServices
-import com.codacy.model.configuration.{
-  ApiTokenAuthenticationConfig,
-  BaseConfig,
-  FinalConfig,
-  ProjectTokenAuthenticationConfig,
-  ReportConfig
-}
+import com.codacy.model.configuration._
 import com.codacy.parsers.CoverageParser
-import com.codacy.transformation.PathPrefixer
 import com.codacy.plugins.api.languages.Languages
 import com.codacy.rules.commituuid.CommitUUIDProvider
+import com.codacy.transformation.PathPrefixer
 import wvlet.log.LogSupport
 
+import java.io.File
+import java.nio.file.Files
 import scala.collection.JavaConverters._
 
 class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
@@ -150,7 +143,7 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
   ) = {
     val coverageResponse = config.baseConfig.authentication match {
       case _: ProjectTokenAuthenticationConfig =>
-        coverageServices.sendReport(commitUUID, language, report, config.partial)
+        coverageServices.sendReport(commitUUID, language, report, config.partial, config.baseConfig.timeoutOpt)
 
       case ApiTokenAuthenticationConfig(_, organizationProvider, username, projectName) =>
         coverageServices.sendReportWithProjectName(
@@ -160,7 +153,8 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
           commitUUID,
           language,
           report,
-          config.partial
+          config.partial,
+          config.baseConfig.timeoutOpt
         )
     }
     coverageResponse match {
@@ -284,10 +278,16 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
     withCommitUUID(config.baseConfig) { commitUUID =>
       val coverageResponse = config.baseConfig.authentication match {
         case _: ProjectTokenAuthenticationConfig =>
-          coverageServices.sendFinalNotification(commitUUID)
+          coverageServices.sendFinalNotification(commitUUID, config.baseConfig.timeoutOpt)
 
         case ApiTokenAuthenticationConfig(_, organizationProvider, username, projectName) =>
-          coverageServices.sendFinalWithProjectName(organizationProvider, username, projectName, commitUUID)
+          coverageServices.sendFinalWithProjectName(
+            organizationProvider,
+            username,
+            projectName,
+            commitUUID,
+            config.baseConfig.timeoutOpt
+          )
       }
       coverageResponse match {
         case SuccessfulResponse(value) =>
