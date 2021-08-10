@@ -1,10 +1,9 @@
 package com.codacy.model.configuration
 
 import java.io.File
-
 import scala.util.matching.Regex
-
 import com.codacy.api.OrganizationProvider
+import com.codacy.api.client.RequestTimeout
 import com.codacy.parsers.CoverageParser
 import com.codacy.plugins.api.languages.{Language, Languages}
 
@@ -42,7 +41,8 @@ case class BaseConfig(
     authentication: AuthenticationConfig,
     codacyApiBaseUrl: String,
     commitUUID: Option[CommitUUID],
-    debug: Boolean
+    debug: Boolean,
+    timeoutOpt: Option[RequestTimeout]
 )
 
 sealed trait CommitUUID extends Any {
