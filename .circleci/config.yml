@@ -277,12 +277,11 @@ workflows:
           name: generate_checksums
           cmd: |
             cd ~/workdir/artifacts/
-            sha512sum codacy-coverage-reporter-linux > codacy-coverage-reporter-linux.SHA512SUM
-            sha512sum codacy-coverage-reporter-assembly.jar > codacy-coverage-reporter-assembly.jar.SHA512SUM
-            sha512sum codacy-coverage-reporter-darwin > codacy-coverage-reporter-darwin.SHA512SUM
-            sha512sum --check codacy-coverage-reporter-linux.SHA512SUM
-            sha512sum --check codacy-coverage-reporter-assembly.jar.SHA512SUM
-            sha512sum --check codacy-coverage-reporter-darwin.SHA512SUM
+            for binary_name in codacy-coverage-reporter-linux codacy-coverage-reporter-assembly.jar codacy-coverage-reporter-darwin
+            do
+              sha512sum "$binary_name" > "$binary_name.SHA512SUM"
+              sha512sum --check "$binary_name.SHA512SUM"
+            done
           persist_to_workspace: true
           requires:
             - package_artifacts
