@@ -319,20 +319,6 @@ workflows:
             branches:
               only:
                 - master
-      - codacy/publish_s3:
-          name: publish_bintray
-          path: bin/codacy-coverage-reporter
-          files: artifacts/codacy-coverage-reporter-linux artifacts/codacy-coverage-reporter-darwin artifacts/codacy-coverage-reporter-assembly.jar
-          filters:
-            branches:
-              only:
-                - master
-          context: CodacyAWS
-          requires:
-            - it_coverage_script_macosx
-            - it_coverage_script_alpine
-            - it_coverage_script_ubuntu_success
-            - it_coverage_script_ubuntu_failure
       - codacy/publish_ghr:
           name: publish_ghr
           path: ~/workdir/artifacts/
@@ -346,10 +332,21 @@ workflows:
             - it_coverage_script_alpine
             - it_coverage_script_ubuntu_success
             - it_coverage_script_ubuntu_failure
+      - codacy/publish_s3:
+          name: publish_s3
+          path: bin/codacy-coverage-reporter
+          files: artifacts/codacy-coverage-reporter-linux artifacts/codacy-coverage-reporter-darwin artifacts/codacy-coverage-reporter-assembly.jar
+          filters:
+            branches:
+              only:
+                - master
+          context: CodacyAWS
+          requires:
+            - publish_ghr
       - publish_dev:
           context: CodacyCircleCI
           requires:
-            - publish_ghr
+            - publish_s3
             - pack_and_validate_orb
           filters:
             branches:
@@ -358,7 +355,7 @@ workflows:
       - publish_prod:
           context: CodacyCircleCI
           requires:
-            - publish_ghr
+            - publish_s3
             - pack_and_validate_orb
           filters:
             branches:
