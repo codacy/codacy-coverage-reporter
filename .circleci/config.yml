@@ -273,6 +273,19 @@ workflows:
           requires:
             - create_artifacts
             - create_artifacts_for_osx
+      - codacy/shell:
+          name: generate_checksums
+          cmd: |
+            cd ~/workdir/artifacts/
+            sha512sum codacy-coverage-reporter-linux > codacy-coverage-reporter-linux.SHA512SUM
+            sha512sum codacy-coverage-reporter-assembly.jar > codacy-coverage-reporter-assembly.jar.SHA512SUM
+            sha512sum codacy-coverage-reporter-darwin > codacy-coverage-reporter-darwin.SHA512SUM
+            sha512sum --check codacy-coverage-reporter-linux.SHA512SUM
+            sha512sum --check codacy-coverage-reporter-assembly.jar.SHA512SUM
+            sha512sum --check codacy-coverage-reporter-darwin.SHA512SUM
+          persist_to_workspace: true
+          requires:
+            - package_artifacts
       - it_coverage_script_macosx:
           requires:
             - package_artifacts
@@ -301,6 +314,7 @@ workflows:
             docker push codacy/$CIRCLE_PROJECT_REPONAME:$(cat .version)
           persist_to_workspace: true
           requires:
+            - generate_checksums
             - it_coverage_script_macosx
             - it_coverage_script_alpine
             - it_coverage_script_ubuntu_success
@@ -311,6 +325,7 @@ workflows:
                 - master
       - publish_circleci_artifacts:
           requires:
+            - generate_checksums
             - it_coverage_script_macosx
             - it_coverage_script_alpine
             - it_coverage_script_ubuntu_success
@@ -328,6 +343,7 @@ workflows:
               only:
                 - master
           requires:
+            - generate_checksums
             - it_coverage_script_macosx
             - it_coverage_script_alpine
             - it_coverage_script_ubuntu_success
