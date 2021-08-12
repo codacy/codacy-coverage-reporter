@@ -65,17 +65,42 @@ exit_trap() {
 trap exit_trap EXIT
 trap 'fatal Interrupted' INT
 
-download() {
+download_stdout() {
     local url="$1"
-    local output="${2:--}"
 
     if command -v curl > /dev/null 2>&1; then
-        curl -# -LS "$url" -o "$output"
+        curl -# -LS "$url" -o-
     elif command -v wget > /dev/null 2>&1; then
-        wget "$url" -O "$output"
+        wget "$url" -O-
     else
         fatal "Could not find curl or wget, please install one."
     fi
+}
+
+download_file() {
+    local url="$1"
+
+    if command -v curl > /dev/null 2>&1; then
+        curl -# -LS "$url" -O
+    elif command -v wget > /dev/null 2>&1; then
+        wget "$url"
+    else
+        fatal "Could not find curl or wget, please install one."
+    fi
+}
+
+download() {
+    local url="$1"
+    local file_name="$2"
+    local output_folder="$3"
+    local output_filename="$4"
+
+    pushd "$output_folder"
+
+    download_file "$url"
+    mv "$file_name" "$output_filename"
+
+    popd
 }
 
 download_reporter() {
@@ -87,6 +112,8 @@ download_reporter() {
     fi
     local binary_name="codacy-coverage-reporter-$suffix"
     local reporter_path=$1
+    local reporter_folder=$2
+    local reporter_filename=$3
 
     if [ ! -f "$reporter_path" ]
     then
@@ -94,7 +121,7 @@ download_reporter() {
 
         binary_url="https://artifacts.codacy.com/bin/codacy-coverage-reporter/$CODACY_REPORTER_VERSION/$binary_name"
 
-        download "$binary_url" "$reporter_path"
+        download "$binary_url" "$binary_name" "$reporter_folder" "$reporter_filename"
     else
         log "$i" "Codacy reporter $binary_name already in cache"
     fi
@@ -104,7 +131,7 @@ os_name=$(uname)
 
 # Find the latest version in case is not specified
 if [ -z "$CODACY_REPORTER_VERSION" ] || [ "$CODACY_REPORTER_VERSION" = "latest" ]; then
-    CODACY_REPORTER_VERSION=$(download "https://artifacts.codacy.com/bin/codacy-coverage-reporter/latest")
+    CODACY_REPORTER_VERSION=$(download_stdout "https://artifacts.codacy.com/bin/codacy-coverage-reporter/latest")
 fi
 
 # Temporary folder for downloaded files
@@ -134,7 +161,7 @@ mkdir -p "$reporter_folder"
 # Set binary path
 reporter_path="$reporter_folder"/"$reporter_filename"
 
-download_reporter "$reporter_path"
+download_reporter "$reporter_path" "$reporter_folder" "$reporter_filename"
 
 if [ "$os_name" = "Linux" ] || [ "$os_name" = "Darwin" ]; then
     chmod +x "$reporter_path"
