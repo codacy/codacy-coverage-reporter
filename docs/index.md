@@ -34,13 +34,21 @@ There are many tools that you can use to generate coverage reports for the langu
 </thead>
 <tbody>
 <tr>
-    <td rowspan="2">C#</td>
+    <td rowspan="3">C#</td>
     <td><a href="https://github.com/OpenCover/opencover">OpenCover</a></td>
     <td><code>opencover.xml</code> (OpenCover)</td>
 </tr>
 <tr>
     <td><a href="https://www.jetbrains.com/help/dotcover/Running_Coverage_Analysis_from_the_Command_LIne.html">dotCover CLI</a></td>
     <td><code>dotcover.xml</code> (dotCover <a href="troubleshooting-common-issues/#detailedxml">detailedXML</a>)</td>
+</tr>
+<tr>
+    <td><a href="https://github.com/coverlet-coverage/coverlet#usage">Coverlet</a></td>
+    <td>
+        <code>coverage.cobertura.xml</code> (Cobertura) by default  <br />
+        <code>coverage.opencover.xml</code> (OpenCover) can be used.
+        <a href="https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/MSBuildIntegration.md#coverage-output">See reference.</a>
+    </td>
 </tr>
 <tr>
     <td>Go</td>
