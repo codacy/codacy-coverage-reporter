@@ -89,15 +89,34 @@ download_file() {
     fi
 }
 
+checksum() {
+  local file_name="$1"
+  local checksum_url="$2"
+  local major_version="$(echo "$CODACY_REPORTER_VERSION" | cut -d '.' -f 1)"
+  local minor_version="$(echo "$CODACY_REPORTER_VERSION" | cut -d '.' -f 2)"
+
+  if [ "$CODACY_REPORTER_SKIP_CHECKSUM" = true ]; then
+    log "$i" "Force skipping checksum on the binary."
+  elif [ "$major_version" -ge 12 ] && [ "$minor_version" -ge 4 ]; then
+    log "$i" "Checking checksum..."
+    download_file "$checksum_url"
+    sha512sum --check "$file_name.SHA512SUM"
+  else
+    log "$i" "Checksum not available for versions prior to 12.4.0, consider updating your CODACY_REPORTER_VERSION"
+  fi
+}
+
 download() {
     local url="$1"
     local file_name="$2"
     local output_folder="$3"
     local output_filename="$4"
+    local checksum_url="$5"
 
     pushd "$output_folder"
 
     download_file "$url"
+    checksum "$file_name" "$checksum_url"
     mv "$file_name" "$output_filename"
 
     popd
@@ -120,8 +139,9 @@ download_reporter() {
         log "$i" "Downloading the codacy reporter $binary_name... ($CODACY_REPORTER_VERSION)"
 
         binary_url="https://artifacts.codacy.com/bin/codacy-coverage-reporter/$CODACY_REPORTER_VERSION/$binary_name"
+        checksum_url="https://github.com/codacy/codacy-coverage-reporter/releases/download/$CODACY_REPORTER_VERSION/$binary_name.SHA512SUM"
 
-        download "$binary_url" "$binary_name" "$reporter_folder" "$reporter_filename"
+        download "$binary_url" "$binary_name" "$reporter_folder" "$reporter_filename" "$checksum_url"
     else
         log "$i" "Codacy reporter $binary_name already in cache"
     fi
