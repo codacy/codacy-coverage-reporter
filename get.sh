@@ -93,16 +93,15 @@ checksum() {
   local file_name="$1"
   local checksum_url="$2"
   local major_version="$(echo "$CODACY_REPORTER_VERSION" | cut -d '.' -f 1)"
-  local minor_version="$(echo "$CODACY_REPORTER_VERSION" | cut -d '.' -f 2)"
 
   if [ "$CODACY_REPORTER_SKIP_CHECKSUM" = true ]; then
     log "$i" "Force skipping checksum on the binary."
-  elif [ "$major_version" -ge 12 ] && [ "$minor_version" -ge 4 ]; then
+  elif [ "$major_version" -ge 13 ]; then
     log "$i" "Checking checksum..."
     download_file "$checksum_url"
     sha512sum --check "$file_name.SHA512SUM"
   else
-    log "$i" "Checksum not available for versions prior to 12.4.0, consider updating your CODACY_REPORTER_VERSION"
+    log "$i" "Checksum not available for versions prior to 13.0.0, consider updating your CODACY_REPORTER_VERSION"
   fi
 }
 
