@@ -43,7 +43,7 @@ There are many tools that you can use to generate coverage reports for the langu
     <td><code>dotcover.xml</code> (dotCover <a href="troubleshooting-common-issues/#detailedxml">detailedXML</a>)</td>
 </tr>
 <tr>
-    <td><a href="https://github.com/coverlet-coverage/coverlet#usage">Coverlet</a></td>
+    <td><a href="https://github.com/coverlet-coverage/coverlet">Coverlet</a></td>
     <td>
         <code>coverage.cobertura.xml</code> (Cobertura) by default  <br />
         <code>coverage.opencover.xml</code> (OpenCover) can be used.
