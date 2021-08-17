@@ -100,7 +100,7 @@ For example, run the commands below to download and validate the checksum for th
 
 ```bash
 curl -Ls -O https://github.com/codacy/codacy-coverage-reporter/releases/download/13.0.0/codacy-coverage-reporter-linux.SHA512SUM
-sha512sum --check codacy-coverage-reporter-linux.SHA512SUM
+sha512sum -c codacy-coverage-reporter-linux.SHA512SUM
 ```
 
 ## Building from source
