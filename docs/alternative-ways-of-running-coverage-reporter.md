@@ -29,6 +29,13 @@ To use a specific version of the Codacy Coverage Reporter, set the following env
 export CODACY_REPORTER_VERSION=<version>
 ```
 
+!!! note
+    Starting on version `13.0.0` the script automatically validates the checksum of the downloaded binary. To skip the checksum validation, define the following environment variable:
+
+    ```bash
+    export CODACY_REPORTER_SKIP_CHECKSUM=true
+    ```
+
 The sections below provide details on alternative ways to run or install Codacy Coverage Reporter.
 
 ## Docker
@@ -84,6 +91,17 @@ You can use the scripts below to automatically check for the latest version of t
     curl -LS -o codacy-coverage-reporter-assembly.jar "$(curl -LSs https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r '.assets | map({name, browser_download_url} | select(.name | endswith(".jar"))) | .[0].browser_download_url')"
     java -jar codacy-coverage-reporter-assembly.jar report
     ```
+
+### Validating the checksum of the binaries
+
+You can use the checksums [available for each release](https://github.com/codacy/codacy-coverage-reporter/releases) to validate the binaries that you download manually. You can use any tool of your choice to validate the checksum, as long as it uses the `SHA512` algorithm.
+
+For example, run the commands below to download and validate the checksum for the 13.0.0 Linux binary. Note that the command `sha512sum` expects to find the binary on the same directory and with the original name `codacy-coverage-reporter-linux`.
+
+```bash
+curl -Ls -O https://github.com/codacy/codacy-coverage-reporter/releases/download/13.0.0/codacy-coverage-reporter-linux.SHA512SUM
+sha512sum --check codacy-coverage-reporter-linux.SHA512SUM
+```
 
 ## Building from source
 
