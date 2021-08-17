@@ -13,13 +13,12 @@ Codacy Coverage Reporter automatically searches for coverage reports matching th
 However, if Codacy Coverage Reporter does not find your coverage report, you can explicitly define the report file name with the flag `-r`. For example:
 
 ```bash
-bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
-    -r <my report>
+bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r <coverage report file>
 ```
 
 ## Report generated an empty result while uploading C# coverage data {: id="detailedxml"}
 
-If you are using dotCover to generate coverage reports for your C# projects, you must use the dotCover detailedXML report format as follows:
+If you're using dotCover to generate coverage reports for your C# projects, you must use the dotCover detailedXML report format as follows:
 
 ```bash
 dotCover.exe cover ... --reportType=DetailedXml
@@ -43,7 +42,7 @@ For maximum compatibility of your coverage reports with the Codacy Coverage Repo
 
 ## SubstrateSegfaultHandler caught signal 11
 
-If you are experiencing segmentation faults when uploading the coverage results due to [oracle/graal#624](https://github.com/oracle/graal/issues/624), execute the following command before running the reporter, as a workaround:
+If you're experiencing segmentation faults when uploading the coverage results due to [oracle/graal#624](https://github.com/oracle/graal/issues/624), execute the following command before running the reporter, as a workaround:
 
 ```sh
 echo "$(dig +short api.codacy.com | tail -n1) api.codacy.com" >> /etc/hosts
@@ -51,7 +50,7 @@ echo "$(dig +short api.codacy.com | tail -n1) api.codacy.com" >> /etc/hosts
 
 ## coverage-xml/index.xml generated an empty result
 
-If you are using PHPUnit version 5 or above to generate your coverage report, you must output the report using the Clover format. Codacy Coverage Reporter supports the PHPUnit XML format only for versions 4 and older.
+If you're using PHPUnit version 5 or above to generate your coverage report, you must output the report using the Clover format. Codacy Coverage Reporter supports the PHPUnit XML format only for versions 4 and older.
 
 To change the output format replace the flag `--coverage-xml <dir>` with `--coverage-clover <file>` when executing `phpunit`.
 
