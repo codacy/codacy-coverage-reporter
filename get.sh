@@ -99,7 +99,16 @@ checksum() {
   elif [ "$major_version" -ge 13 ]; then
     log "$i" "Checking checksum..."
     download_file "$checksum_url"
-    sha512sum --check "$file_name.SHA512SUM"
+    
+    if command -v sha512sum > /dev/null 2>&1; then
+        sha_check_command="sha512sum"
+    elif command -v shasum > /dev/null 2>&1; then
+        sha_check_command="shasum -a 512"
+    else
+        fatal "Error: no method of validating checksum, please install 'sha512sum' or 'shasum'. You can skip this check by setting CODACY_REPORTER_SKIP_CHECKSUM=true"
+    fi
+
+    $sha_check_command --check "$file_name.SHA512SUM"    
   else
     log "$i" "Checksum not available for versions prior to 13.0.0, consider updating your CODACY_REPORTER_VERSION"
   fi
