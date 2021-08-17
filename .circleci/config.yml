@@ -280,7 +280,7 @@ workflows:
             for binary_name in codacy-coverage-reporter-linux codacy-coverage-reporter-assembly.jar codacy-coverage-reporter-darwin
             do
               sha512sum "$binary_name" > "$binary_name.SHA512SUM"
-              sha512sum --check "$binary_name.SHA512SUM"
+              sha512sum -c "$binary_name.SHA512SUM"
             done
           persist_to_workspace: true
           requires:

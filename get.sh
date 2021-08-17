@@ -108,7 +108,7 @@ checksum() {
         fatal "Error: no method of validating checksum, please install 'sha512sum' or 'shasum'. You can skip this check by setting CODACY_REPORTER_SKIP_CHECKSUM=true"
     fi
 
-    $sha_check_command --check "$file_name.SHA512SUM"    
+    $sha_check_command -c "$file_name.SHA512SUM"
   else
     log "$i" "Checksum not available for versions prior to 13.0.0, consider updating your CODACY_REPORTER_VERSION"
   fi
