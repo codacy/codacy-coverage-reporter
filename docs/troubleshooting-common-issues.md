@@ -25,15 +25,21 @@ If you are using dotCover to generate coverage reports for your C# projects, you
 dotCover.exe cover ... --reportType=DetailedXml
 ```
 
-## JsonParseException while uploading C# coverage data
+## JsonParseException while uploading coverage data
 
-If you are using dotCover to generate coverage reports for your C# projects, you should [exclude xUnit files](https://www.jetbrains.com/help/dotcover/Running_Coverage_Analysis_from_the_Command_LIne.html#filters_cmd) from the coverage analysis as follows:
+If you're getting a `com.fasterxml.jackson.core.JsonParseException` error while uploading your coverage data to Codacy it means that your coverage report is too big and that Codacy Coverage Reporter hit a limit of 10 MB when uploading the coverage data to Codacy.
 
-```bash
-dotCover.exe cover ... /Filters=-:xunit*
-```
+There are some ways you can solve this:
 
-By default, dotCover includes xUnit files in the coverage analysis and this results in larger coverage reports. This filter helps ensure that the resulting coverage data does not exceed the size limit accepted by the Codacy API when uploading the results.
+-   Split your coverage reports into smaller files and [upload them to Codacy one at a time](index.md#multiple-reports).
+
+-   **If you're using dotCover to generate coverage reports for your C# projects**, you should [exclude xUnit files](https://www.jetbrains.com/help/dotcover/Running_Coverage_Analysis_from_the_Command_LIne.html#filters_cmd) from the coverage analysis as follows:
+
+    ```bash
+    dotCover.exe cover ... /Filters=-:xunit*
+    ```
+
+    By default, dotCover includes xUnit files in the coverage analysis and this results in larger coverage reports. This filter helps ensure that the resulting coverage data does not exceed the size limit accepted by the Codacy API when uploading the results.
 
 ## MalformedInputException while parsing report
 
