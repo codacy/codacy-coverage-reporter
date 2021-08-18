@@ -162,10 +162,10 @@ After having coverage reports set up for your repository, you must use Codacy Co
     export CODACY_API_BASE_URL=<your Codacy instance URL>
     ```
 
-1.  Run Codacy Coverage Reporter **on the root of the locally checked out branch of your Git repository**, specifying the relative path to the coverage report to upload. For example:
+1.  Run Codacy Coverage Reporter **on the root of the locally checked out branch of your Git repository**, specifying the relative path to the coverage report to upload:
 
     ```bash
-    bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r report.xml
+    bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r <coverage report file>
     ```
 
     !!! tip
