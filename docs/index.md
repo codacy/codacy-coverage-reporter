@@ -165,7 +165,7 @@ After having coverage reports set up for your repository, you must use Codacy Co
 1.  Run Codacy Coverage Reporter **on the root of the locally checked out branch of your Git repository**, specifying the relative path to the coverage report to upload:
 
     ```bash
-    bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r <coverage report file>
+    bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r <coverage report file name>
     ```
 
     !!! tip
@@ -219,7 +219,7 @@ If you're uploading a Golang coverage report, you must also specify the report t
 
 ```bash
 bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
-    --force-coverage-parser go -r <your project coverage file name>
+    --force-coverage-parser go -r <coverage report file name>
 ```
 
 ### Submitting coverage for unsupported languages
@@ -228,7 +228,7 @@ If your language is not in the list of supported languages, you can still send c
 
 ```bash
 bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
-  -l Kotlin --force-language
+  -l Kotlin --force-language -r <coverage report file name>
 ```
 
 See the [list of languages](https://github.com/codacy/codacy-plugins-api/blob/master/src/main/scala/com/codacy/plugins/api/languages/Language.scala#L43) that you can specify using the flag `-l`.
