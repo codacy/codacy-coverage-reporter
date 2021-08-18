@@ -13,7 +13,7 @@ Codacy Coverage Reporter automatically searches for coverage reports matching th
 However, if Codacy Coverage Reporter does not find your coverage report, you can explicitly define the report file name with the flag `-r`. For example:
 
 ```bash
-bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r <coverage report file>
+bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r <coverage report file name>
 ```
 
 ## Report generated an empty result while uploading C# coverage data {: id="detailedxml"}
