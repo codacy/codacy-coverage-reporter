@@ -124,14 +124,15 @@ download() {
     local output_folder="$3"
     local output_filename="$4"
     local checksum_url="$5"
+    local original_folder="$(pwd)"
 
-    pushd "$output_folder"
+    cd "$output_folder"
 
     download_file "$url"
     checksum "$file_name" "$checksum_url"
     mv "$file_name" "$output_filename"
 
-    popd
+    cd "$original_folder"
 }
 
 download_reporter() {
