@@ -238,7 +238,9 @@ bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
 
 ### Submitting coverage for unsupported languages
 
-If your language is not in the list of supported languages, you can still send coverage to Codacy. You can do it by providing the correct language name with the flag `-l`, together with `--force-language`. For example:
+If your language is not in the list of supported languages, you can still send coverage to Codacy.
+
+To do this, provide the correct language with the flag `-l`, together with `--force-language`. For example:
 
 ```bash
 bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
