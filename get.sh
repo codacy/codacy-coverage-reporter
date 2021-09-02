@@ -105,7 +105,7 @@ checksum() {
     elif command -v shasum > /dev/null 2>&1; then
         sha_check_command="shasum -a 512"
     else
-        fatal "Error: no method of validating checksum, please install 'sha512sum' or 'shasum'. You can skip this check by setting CODACY_REPORTER_SKIP_CHECKSUM=true"
+        fatal "Error: can't validate checksum, please see https://docs.codacy.com/coverage-reporter/troubleshooting-common-issues/#checksum"
     fi
 
     log "$i" "Expected checksum"

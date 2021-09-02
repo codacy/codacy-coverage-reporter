@@ -6,6 +6,18 @@ description: Instructions or workarounds to overcome common issues while using C
 
 The sections below provide instructions or workarounds to overcome common issues while using Codacy Coverage Reporter.
 
+## Can't validate checksum {: id="checksum"}
+
+Starting on version [13.0.0](https://github.com/codacy/codacy-coverage-reporter/releases/tag/13.0.0) the `get.sh` script automatically validates the checksum of the downloaded Codacy Coverage Reporter binary. This requires having either the `sha512sum` or `shasum` command on the operating system where you're running the script.
+
+If you're getting this error while uploading your coverage data to Codacy, install the correct version of `sha512sum` or `shasum` for the operating system that you're using.
+
+You can also skip validating the checksum of the binary by defining the following environment variable, however, Codacy doesn't recommend this:
+
+```bash
+export CODACY_REPORTER_SKIP_CHECKSUM=true
+```
+
 ## Can't guess any report due to no matching
 
 Codacy Coverage Reporter automatically searches for coverage reports matching the [file name conventions for supported formats](index.md#generating-coverage).
