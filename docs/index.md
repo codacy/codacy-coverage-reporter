@@ -179,7 +179,7 @@ See the sections below for more advanced functionality, or [check the troublesho
 
 ### Uploading multiple coverage reports for the same language {: id="multiple-reports"}
 
-If your test suite is split on different modules or runs in parallel, you will need to upload multiple coverage reports for the same language.
+If your test suite is split on different modules or runs in parallel, you must upload multiple coverage reports for the same language.
 
 To do this, specify multiple reports by repeating the flag `-r`. For example:
 
@@ -211,6 +211,19 @@ bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
 !!! tip
     It might also be possible to merge the reports before uploading them to Codacy, since most coverage tools support merge/aggregation. For example, <http://www.eclemma.org/jacoco/trunk/doc/merge-mojo.html>.
 
+### Uploading the same coverage report for multiple languages {: id="multiple-languages"}
+
+If your test suite generates a single coverage report for more than one language, you must upload the same coverage report for each language.
+
+To do this, upload the same report multiple times, specifying each different language with the flag `-l`. For example:
+
+```bash
+bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
+    -l Javascript -r report.xml
+bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
+    -l TypeScript -r report.xml
+```
+
 ### Submitting coverage for Golang
 
 Codacy can't automatically detect Golang coverage report files because they don't have specific file names.
@@ -224,7 +237,9 @@ bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
 
 ### Submitting coverage for unsupported languages
 
-If your language is not in the list of supported languages, you can still send coverage to Codacy. You can do it by providing the correct language name with the flag `-l`, together with `--force-language`. For example:
+If your language is not in the list of supported languages, you can still send coverage to Codacy.
+
+To do this, provide the correct language with the flag `-l`, together with `--force-language`. For example:
 
 ```bash
 bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
