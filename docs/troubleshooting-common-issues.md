@@ -6,11 +6,13 @@ description: Instructions or workarounds to overcome common issues while using C
 
 The sections below provide instructions or workarounds to overcome common issues while using Codacy Coverage Reporter.
 
-## Checksum
+## sha512sum: command not found while checking checksum {: id="checksum"}
 
-Starting with [version 13.0.0](https://github.com/codacy/codacy-coverage-reporter/releases/tag/13.0.0) the `get.sh` script automatically validates the checksum of the downloaded Codacy Coverage Reporter binary.
+Starting on version [13.0.0](https://github.com/codacy/codacy-coverage-reporter/releases/tag/13.0.0) the `get.sh` script automatically validates the checksum of the downloaded Codacy Coverage Reporter binary. This requires having the `sha512sum` command on the operating system where you're running the script.
 
-To override this behavior and skip validating the checksum of the binary define the following environment variable
+If you're getting this error while uploading your coverage data to Codacy, install the correct version of `sha512sum` for the operating system that you're using.
+
+You can also skip validating the checksum of the binary by defining the following environment variable, however, Codacy doesn't recommend this:
 
 ```bash
 export CODACY_REPORTER_SKIP_CHECKSUM=true
