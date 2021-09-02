@@ -6,6 +6,16 @@ description: Instructions or workarounds to overcome common issues while using C
 
 The sections below provide instructions or workarounds to overcome common issues while using Codacy Coverage Reporter.
 
+## Checksum
+
+Starting with [version 13.0.0](https://github.com/codacy/codacy-coverage-reporter/releases/tag/13.0.0) the `get.sh` script automatically validates the checksum of the downloaded Codacy Coverage Reporter binary.
+
+To override this behavior and skip validating the checksum of the binary define the following environment variable
+
+```bash
+export CODACY_REPORTER_SKIP_CHECKSUM=true
+```
+
 ## Can't guess any report due to no matching
 
 Codacy Coverage Reporter automatically searches for coverage reports matching the [file name conventions for supported formats](index.md#generating-coverage).

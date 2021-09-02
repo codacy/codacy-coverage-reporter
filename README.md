@@ -48,15 +48,6 @@ Usage: codacy-coverage-reporter report
  --> Succeeded!
 ```
 
-## Checksum
-
-Starting with version `13.0.0` the `get.sh` script does a checksum on the downloaded binary automatically.
-To override this behavior and skip the checksum of the binary you can:
-
-```bash
-export CODACY_REPORTER_SKIP_CHECKSUM=true
-```
-
 ## What is Codacy?
 
 [Codacy](https://www.codacy.com/) is an Automated Code Review Tool that monitors your technical debt, helps you improve your code quality, teaches best practices to your developers, and helps you save time in Code Reviews.
