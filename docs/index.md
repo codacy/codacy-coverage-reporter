@@ -220,7 +220,6 @@ To do this, upload the same report multiple times, specifying each different lan
 ```bash
 bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
     -l Javascript -r report.xml
-
 bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
     -l TypeScript -r report.xml
 ```
