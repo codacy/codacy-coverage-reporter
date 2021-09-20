@@ -11,7 +11,7 @@ class LCOVParserTest extends WordSpec with BeforeAndAfterAll with Matchers with 
   "LCOVParser" should {
 
     "identify if report is invalid" in {
-      val reader = LCOVParser.parse(new File("."), new File("coverage-parser/src/test/resources/invalid_report.lcov"))
+      val reader = LCOVParser.parse(new File("."), new File("coverage-parser/src/test/resources/invalid_report.testlcov"))
       reader.isLeft shouldBe true
     }
 
@@ -26,12 +26,12 @@ class LCOVParserTest extends WordSpec with BeforeAndAfterAll with Matchers with 
     }
 
     "identify if report is valid" in {
-      val reader = LCOVParser.parse(new File("."), new File("coverage-parser/src/test/resources/test_lcov.lcov"))
+      val reader = LCOVParser.parse(new File("."), new File("coverage-parser/src/test/resources/test_lcov.testlcov"))
       reader.isRight shouldBe true
     }
 
     "return a valid report" in {
-      val reader = LCOVParser.parse(new File("."), new File("coverage-parser/src/test/resources/test_lcov.lcov"))
+      val reader = LCOVParser.parse(new File("."), new File("coverage-parser/src/test/resources/test_lcov.testlcov"))
 
       val testReport = CoverageReport(
         86,

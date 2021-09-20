@@ -149,6 +149,14 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
       reportEither should be('right)
       reportEither.right.value should be(List(new File("coverage-xml", "index.xml")))
     }
+
+    "find an lcov report" in {
+      val fileIterator = Iterator(new File("lcov.info"), new File("lcov.dat"), new File("foo.lcov"), new File("foobar.txt"))
+      val reportEither = components.reportRules.guessReportFiles(List.empty[File], fileIterator)
+
+      reportEither should be('right)
+      reportEither.right.value.map(_.toString) should be(List("lcov.info", "lcov.dat", "foo.lcov"))
+    }
   }
 
   "validateFileAccess" should {
