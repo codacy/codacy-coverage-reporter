@@ -73,3 +73,10 @@ If you're using PHPUnit version 5 or above to generate your coverage report, you
 To change the output format replace the flag `--coverage-xml <dir>` with `--coverage-clover <file>` when executing `phpunit`.
 
 See [PHPUnit command-line documentation](https://phpunit.readthedocs.io/en/latest/textui.html) for more information.
+
+## No coverage data is visible on the Codacy UI
+
+If the Codacy Coverage Reporter correctly uploaded your coverage report but the coverage data doesn't show up on the Codacy UI, please validate the following:
+
+-   Make sure that the file paths included in your coverage reports are relative to the root directory of your repository. For example, `src/index.js`.
+-   Verify that the Codacy Coverage Reporter is uploading the coverage data for the [correct commit in the correct branch](index.md#commit-detection).
