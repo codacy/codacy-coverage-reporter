@@ -38,7 +38,7 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
         coverageServices: CoverageServices,
         coverageReports: List[String],
         success: Boolean,
-        projectFiles: Option[Seq[File]] = None
+        projectFiles: Option[List[File]] = None
     ) = {
       val reportRules = new ReportRules(coverageServices)
       val reportConfig =
@@ -65,7 +65,7 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
       "it finds no report file" in {
         val coverageServices = mock[CoverageServices]
 
-        assertCodacyCoverage(coverageServices, List(), success = false, projectFiles = Some(Seq.empty))
+        assertCodacyCoverage(coverageServices, List(), success = false, projectFiles = Some(List.empty))
       }
 
       "it is not able to parse report file" in {
@@ -130,40 +130,40 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
 
   "guessReportFiles" should {
     "provide a report file" in {
-      val fileIterator = Iterator(new File("jacoco-coverage.xml"), new File("foobar.txt"))
-      val reportEither = components.reportRules.guessReportFiles(List.empty[File], fileIterator)
+      val projectFiles = List(new File("jacoco-coverage.xml"), new File("foobar.txt"))
+      val reportEither = components.reportRules.guessReportFiles(List.empty[File], projectFiles)
 
       reportEither should be('right)
       reportEither.right.value.map(_.toString) should be(List("jacoco-coverage.xml"))
     }
 
     "not provide a report file" in {
-      val fileIterator = Iterator(new File("foobar.txt"))
-      val reportEither = components.reportRules.guessReportFiles(List.empty[File], fileIterator)
+      val projectFiles = List(new File("foobar.txt"))
+      val reportEither = components.reportRules.guessReportFiles(List.empty[File], projectFiles)
 
       reportEither should be('left)
     }
 
     "provide the available report file" in {
       val files = List(new File("coverage.xml"))
-      val reportEither = components.reportRules.guessReportFiles(files, Iterator.empty)
+      val reportEither = components.reportRules.guessReportFiles(files, List.empty)
 
       reportEither should be('right)
       reportEither.right.value should be(files)
     }
 
     "only provide phpunit report file inside coverage-xml" in {
-      val fileIterator = Iterator(new File("index.xml"), new File("coverage-xml", "index.xml"))
-      val reportEither = components.reportRules.guessReportFiles(List.empty, fileIterator)
+      val projectFiles = List(new File("index.xml"), new File("coverage-xml", "index.xml"))
+      val reportEither = components.reportRules.guessReportFiles(List.empty, projectFiles)
 
       reportEither should be('right)
       reportEither.right.value should be(List(new File("coverage-xml", "index.xml")))
     }
 
     "find an lcov report" in {
-      val fileIterator =
-        Iterator(new File("lcov.info"), new File("lcov.dat"), new File("foo.lcov"), new File("foobar.txt"))
-      val reportEither = components.reportRules.guessReportFiles(List.empty[File], fileIterator)
+      val projectFiles =
+        List(new File("lcov.info"), new File("lcov.dat"), new File("foo.lcov"), new File("foobar.txt"))
+      val reportEither = components.reportRules.guessReportFiles(List.empty[File], projectFiles)
 
       reportEither should be('right)
       reportEither.right.value.map(_.toString) should be(List("lcov.info", "lcov.dat", "foo.lcov"))

@@ -18,11 +18,12 @@ import scala.collection.JavaConverters._
 class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
 
   private val rootProjectDir = new File(System.getProperty("user.dir"))
-  private val rootProjectDirIterator = Files
+  private val rootProjectFiles = Files
     .walk(rootProjectDir.toPath)
     .iterator()
     .asScala
     .map(_.toFile)
+    .toList
 
   private def sendFilesReportForCommit(
       files: List[File],
@@ -55,10 +56,10 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
   }
 
   def codacyCoverage(config: ReportConfig): Either[String, String] = {
-    codacyCoverage(config, rootProjectDirIterator)
+    codacyCoverage(config, rootProjectFiles)
   }
 
-  def codacyCoverage(config: ReportConfig, projectFiles: TraversableOnce[File]): Either[String, String] = {
+  def codacyCoverage(config: ReportConfig, projectFiles: List[File]): Either[String, String] = {
     withCommitUUID(config.baseConfig) { commitUUID =>
       logAuthenticationToken(config)
 
@@ -204,10 +205,7 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
     * @param paths paths to search the files
     * @return the guessed report files on the right or an error on the left.
     */
-  private[rules] def guessReportFiles(
-      files: List[File],
-      pathIterator: TraversableOnce[File]
-  ): Either[String, List[File]] = {
+  private[rules] def guessReportFiles(files: List[File], projectFiles: List[File]): Either[String, List[File]] = {
     val JacocoRegex = """(jacoco.*\.xml)""".r
     val CoberturaRegex = """(cobertura\.xml)""".r
     val LCOVRegex = """(lcov\.info|lcov\.dat|.*\.lcov)""".r
@@ -220,7 +218,7 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
 
     files match {
       case value if value.isEmpty =>
-        val foundFiles = pathIterator
+        val foundFiles = projectFiles
           .filter(
             file =>
               file.getName match {
