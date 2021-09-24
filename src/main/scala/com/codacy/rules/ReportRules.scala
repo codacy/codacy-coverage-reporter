@@ -55,10 +55,14 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
   }
 
   def codacyCoverage(config: ReportConfig): Either[String, String] = {
+    codacyCoverage(config, rootProjectDirIterator)
+  }
+
+  def codacyCoverage(config: ReportConfig, projectFiles: TraversableOnce[File]): Either[String, String] = {
     withCommitUUID(config.baseConfig) { commitUUID =>
       logAuthenticationToken(config)
 
-      val filesEither = guessReportFiles(config.coverageReports, rootProjectDirIterator)
+      val filesEither = guessReportFiles(config.coverageReports, projectFiles)
 
       val operationResult = filesEither.flatMap { files =>
         if (files.length > 1 && !config.partial) {
@@ -196,11 +200,14 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
     *
     * This function try to guess the report language based on common report file names.
     *
-    * @param files        coverage file option provided by the config
-    * @param pathIterator path iterator to search the files
+    * @param files coverage file option provided by the config
+    * @param paths paths to search the files
     * @return the guessed report files on the right or an error on the left.
     */
-  private[rules] def guessReportFiles(files: List[File], pathIterator: Iterator[File]): Either[String, List[File]] = {
+  private[rules] def guessReportFiles(
+      files: List[File],
+      pathIterator: TraversableOnce[File]
+  ): Either[String, List[File]] = {
     val JacocoRegex = """(jacoco.*\.xml)""".r
     val CoberturaRegex = """(cobertura\.xml)""".r
     val LCOVRegex = """(lcov\.info|lcov\.dat|.*\.lcov)""".r

@@ -34,7 +34,12 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
     val baseConfig =
       BaseConfig(ProjectTokenAuthenticationConfig(projToken), apiBaseUrl, None, debug = false, timeoutOpt = None)
 
-    def assertCodacyCoverage(coverageServices: CoverageServices, coverageReports: List[String], success: Boolean) = {
+    def assertCodacyCoverage(
+        coverageServices: CoverageServices,
+        coverageReports: List[String],
+        success: Boolean,
+        projectFiles: Option[Seq[File]] = None
+    ) = {
       val reportRules = new ReportRules(coverageServices)
       val reportConfig =
         ReportConfig(
@@ -46,7 +51,12 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
           prefix = "",
           forceCoverageParser = None
         )
-      val result = reportRules.codacyCoverage(reportConfig)
+      val result = projectFiles match {
+        case Some(files) =>
+          reportRules.codacyCoverage(reportConfig, files)
+        case None =>
+          reportRules.codacyCoverage(reportConfig)
+      }
 
       result should be(if (success) 'right else 'left)
     }
@@ -55,7 +65,7 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
       "it finds no report file" in {
         val coverageServices = mock[CoverageServices]
 
-        assertCodacyCoverage(coverageServices, List(), success = false)
+        assertCodacyCoverage(coverageServices, List(), success = false, projectFiles = Some(Seq.empty))
       }
 
       "it is not able to parse report file" in {
