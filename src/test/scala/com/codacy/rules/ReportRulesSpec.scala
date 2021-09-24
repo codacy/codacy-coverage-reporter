@@ -151,7 +151,8 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
     }
 
     "find an lcov report" in {
-      val fileIterator = Iterator(new File("lcov.info"), new File("lcov.dat"), new File("foo.lcov"), new File("foobar.txt"))
+      val fileIterator =
+        Iterator(new File("lcov.info"), new File("lcov.dat"), new File("foo.lcov"), new File("foobar.txt"))
       val reportEither = components.reportRules.guessReportFiles(List.empty[File], fileIterator)
 
       reportEither should be('right)
