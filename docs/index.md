@@ -168,14 +168,23 @@ After having coverage reports set up for your repository, you must use Codacy Co
     bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r <coverage report file name>
     ```
 
+    !!! important
+        Check the console output to validate that the Codacy Coverage Reporter **detected the correct commit UUID** and **successfully uploaded** the coverage data to Codacy. If you need help, [check the troubleshooting page](troubleshooting-common-issues.md) for solutions to the most common setup issues.
+
+        Be sure to also check the sections below for more advanced functionality while uploading the coverage data to Codacy.
+
     !!! tip
-        The recommended self-contained script automatically downloads and runs the most recent version of Codacy Coverage Reporter.
+        The self-contained script `get.sh` automatically downloads and runs the most recent version of Codacy Coverage Reporter.
 
         See [alternative ways of running Codacy Coverage Reporter](alternative-ways-of-running-coverage-reporter.md) for other ways of running Codacy Coverage Reporter, such as by installing the binary manually or using a GitHub Action or CircleCI Orb.
 
-1.  Optionally, [add a Codacy badge](https://docs.codacy.com/repositories/badges/) to the README of your repository to display the current code coverage.
+1.  Validate that the uploaded coverage data was successfully read by Codacy. To do this, check that Codacy displays the coverage information on your next commit or pull request, either as a positive, negative, or no variation (repesented by `=`) of the coverage percentage:
 
-See the sections below for more advanced functionality, or [check the troubleshooting page](troubleshooting-common-issues.md) if you found an issue during the setup process.
+    ![Coverage data displayed on Codacy](images/coverage-codacy-ui.png)
+
+    Follow [these troubleshooting steps](troubleshooting-common-issues.md#no-coverage-visible) if Codacy doesn't display the coverage data for your commit or pull request (repesented by `-`).
+
+1.  Optionally, [add a Codacy badge](https://docs.codacy.com/repositories/badges/) to the README of your repository to display the current code coverage.
 
 ### Uploading multiple coverage reports for the same language {: id="multiple-reports"}
 
