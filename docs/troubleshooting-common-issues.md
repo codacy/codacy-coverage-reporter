@@ -18,6 +18,40 @@ You can also skip validating the checksum of the binary by defining the followin
 export CODACY_REPORTER_SKIP_CHECKSUM=true
 ```
 
+### Commit SHA hash detection {: id="commit-detection"}
+
+The Codacy Coverage Reporter automatically detects the commit SHA hash to associate with the coverage data from the following CI/CD platforms:
+
+-   Appveyor
+-   Azure Pipelines
+-   Bitrise
+-   Buildkite
+-   Circle CI
+-   Codefresh
+-   Codeship
+-   Docker
+-   GitLab
+-   Greenhouse CI
+-   Heroku CI
+-   Jenkins
+-   Magnum CI
+-   Semaphore CI
+-   Shippable CI
+-   Solano CI
+-   TeamCity CI
+-   Travis CI
+-   Wercker CI
+
+If the Codacy Coverage Reporter fails to detect the current commit from the CI workflow context, it will use the current commit from the local Git repository instead.
+
+However, you can also force using a specific commit SHA hash with the flag `--commit-uuid`. For example:
+
+```bash
+bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
+    -r report.xml \
+    --commit-uuid cd4d000083a744cf1617d46af4ec108b79e06bed
+```
+
 ## Can't guess any report due to no matching
 
 Codacy Coverage Reporter automatically searches for coverage reports matching the [file name conventions for supported formats](index.md#generating-coverage).
@@ -74,9 +108,9 @@ To change the output format replace the flag `--coverage-xml <dir>` with `--cove
 
 See [PHPUnit command-line documentation](https://phpunit.readthedocs.io/en/latest/textui.html) for more information.
 
-## No coverage data is visible on the Codacy UI
+## No coverage data is visible on the Codacy UI {: id="no-coverage-visible"}
 
 If the Codacy Coverage Reporter correctly uploaded your coverage report but the coverage data doesn't show up on the Codacy UI, please validate the following:
 
 -   Make sure that the file paths included in your coverage reports are relative to the root directory of your repository. For example, `src/index.js`.
--   Verify that the Codacy Coverage Reporter is uploading the coverage data for the [correct commit in the correct branch](index.md#commit-detection).
+-   Verify that the Codacy Coverage Reporter is uploading the coverage data for the [correct commit in the correct branch](#commit-detection).
