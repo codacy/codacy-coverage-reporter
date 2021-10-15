@@ -6,16 +6,45 @@ description: Instructions or workarounds to overcome common issues while using C
 
 The sections below provide instructions or workarounds to overcome common issues while using Codacy Coverage Reporter.
 
-## Can't validate checksum {: id="checksum"}
+## No coverage data is visible on the Codacy UI {: id="no-coverage-visible"}
 
-Starting on version [13.0.0](https://github.com/codacy/codacy-coverage-reporter/releases/tag/13.0.0) the `get.sh` script automatically validates the checksum of the downloaded Codacy Coverage Reporter binary. This requires having either the `sha512sum` or `shasum` command on the operating system where you're running the script.
+If the Codacy Coverage Reporter correctly uploaded your coverage report but the coverage data doesn't show up on the Codacy UI, please validate the following:
 
-If you're getting this error while uploading your coverage data to Codacy, install the correct version of `sha512sum` or `shasum` for the operating system that you're using.
+-   Make sure that the file paths included in your coverage reports are relative to the root directory of your repository. For example, `src/index.js`.
+-   Verify that the Codacy Coverage Reporter is uploading the coverage data for the [correct commit in the correct branch](#commit-detection).
 
-You can also skip validating the checksum of the binary by defining the following environment variable, however, Codacy doesn't recommend this:
+### Commit SHA hash detection {: id="commit-detection"}
+
+The Codacy Coverage Reporter automatically detects the commit SHA hash to associate with the coverage data from the following CI/CD platforms:
+
+-   Appveyor
+-   Azure Pipelines
+-   Bitrise
+-   Buildkite
+-   Circle CI
+-   Codefresh
+-   Codeship
+-   Docker
+-   GitLab
+-   Greenhouse CI
+-   Heroku CI
+-   Jenkins
+-   Magnum CI
+-   Semaphore CI
+-   Shippable CI
+-   Solano CI
+-   TeamCity CI
+-   Travis CI
+-   Wercker CI
+
+If the Codacy Coverage Reporter fails to detect the current commit from the CI workflow context, it will use the current commit from the local Git repository instead.
+
+However, you can also force using a specific commit SHA hash with the flag `--commit-uuid`. For example:
 
 ```bash
-export CODACY_REPORTER_SKIP_CHECKSUM=true
+bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
+    -r report.xml \
+    --commit-uuid cd4d000083a744cf1617d46af4ec108b79e06bed
 ```
 
 ## Can't guess any report due to no matching
@@ -74,9 +103,14 @@ To change the output format replace the flag `--coverage-xml <dir>` with `--cove
 
 See [PHPUnit command-line documentation](https://phpunit.readthedocs.io/en/latest/textui.html) for more information.
 
-## No coverage data is visible on the Codacy UI
+## Can't validate checksum {: id="checksum"}
 
-If the Codacy Coverage Reporter correctly uploaded your coverage report but the coverage data doesn't show up on the Codacy UI, please validate the following:
+Starting on version [13.0.0](https://github.com/codacy/codacy-coverage-reporter/releases/tag/13.0.0) the `get.sh` script automatically validates the checksum of the downloaded Codacy Coverage Reporter binary. This requires having either the `sha512sum` or `shasum` command on the operating system where you're running the script.
 
--   Make sure that the file paths included in your coverage reports are relative to the root directory of your repository. For example, `src/index.js`.
--   Verify that the Codacy Coverage Reporter is uploading the coverage data for the [correct commit in the correct branch](index.md#commit-detection).
+If you're getting this error while uploading your coverage data to Codacy, install the correct version of `sha512sum` or `shasum` for the operating system that you're using.
+
+You can also skip validating the checksum of the binary by defining the following environment variable, however, Codacy doesn't recommend this:
+
+```bash
+export CODACY_REPORTER_SKIP_CHECKSUM=true
+```
