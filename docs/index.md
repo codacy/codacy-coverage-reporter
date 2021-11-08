@@ -180,11 +180,11 @@ After having coverage reports set up for your repository, you must use Codacy Co
 
 1.  Optionally, [add a Codacy badge](https://docs.codacy.com/repositories/badges/) to the README of your repository to display the current code coverage.
 
-To validate that the coverage setup is complete, **wait until your repository has at least two new commits** and check that Codacy displays the coverage information on the last commit or in subsequent pull requests, either as a positive, negative, or no variation (repesented by `=`) of the coverage percentage:
+To validate that the coverage setup is complete, **wait until your repository has at least two new commits** and check that Codacy displays the coverage information on the last commit or in subsequent pull requests, either as a positive, negative, or no variation (represented by `=`) of the coverage percentage:
 
 ![Coverage data displayed on Codacy](images/coverage-codacy-ui.png)
 
-Follow [these troubleshooting steps](troubleshooting-common-issues.md#no-coverage-visible) if Codacy doesn't display the coverage data for your commit or pull request (repesented by `-`).
+Follow [these troubleshooting steps](troubleshooting-common-issues.md#no-coverage-visible) if Codacy doesn't display the coverage data for your commit or pull request (represented by `-`).
 
 ### Uploading multiple coverage reports for the same language {: id="multiple-reports"}
 
