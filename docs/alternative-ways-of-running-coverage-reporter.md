@@ -192,7 +192,7 @@ task (codacyLocs) << {
 }
 ```
 
-The following Gradle task by [Ramil Khamitov](https://github.com/Ram-002) was based on the solution above.
+The following Gradle task by [Ramil Khamitov](https://github.com/Ram042) was based on the solution above.
 
 ```gradle
 configurations { codacy }
