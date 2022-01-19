@@ -1,16 +1,16 @@
 ---
-description: Generate coverage reports in a supported format and upload them to Codacy to monitor the test coverage of your repositories on Codacy.
+description: Generate coverage reports in a supported format and upload them to Codacy to monitor the code coverage of your repositories on Codacy.
 ---
 
 # Adding coverage to your repository
 
 Code coverage is a metric used to describe the degree to which the source code of a program is tested. A program with high code coverage has been more thoroughly tested and has a lower chance of containing software bugs than a program with low code coverage. You can read more about the [basics of code coverage](https://blog.codacy.com/a-guide-to-code-coverage-part-1-code-coverage-explained/) on Codacy's blog.
 
-Complete these main steps to start monitoring the test coverage of your repositories on Codacy:
+Complete these main steps to start monitoring the code coverage of your repositories on Codacy:
 
 1.  **Generating coverage reports**
 
-    Ensure that you're generating one of the test coverage report formats supported by Codacy on each push to your repository.
+    Ensure that you're generating one of the code coverage report formats supported by Codacy on each push to your repository.
 
 1.  **Uploading coverage data to Codacy**
 
@@ -111,7 +111,7 @@ If you're generating a report format that Codacy doesn't support yet, [contribut
     This will generate a file `cobertura.xml` inside the folder `<report-output-dir>`.
 
 -   [dariodf/lcov_ex](https://github.com/dariodf/lcov_ex): generate LCOV reports for Elixir projects
--   [chrisgit/sfdx-plugins_apex_coverage_report](https://github.com/chrisgit/sfdx-plugins_apex_coverage_report): generate LCOV or Cobertura reports from [Apex](https://help.salesforce.com/articleView?id=sf.code_apex_dev_guide_tools.htm&type=5) test coverage data
+-   [chrisgit/sfdx-plugins_apex_coverage_report](https://github.com/chrisgit/sfdx-plugins_apex_coverage_report): generate LCOV or Cobertura reports from [Apex](https://help.salesforce.com/articleView?id=sf.code_apex_dev_guide_tools.htm&type=5) code coverage data
 -   [danielpalme/ReportGenerator](https://github.com/danielpalme/ReportGenerator): convert between different report formats
 
 As a last resort, you can also send the coverage data directly by calling one of the following Codacy API endpoints:
