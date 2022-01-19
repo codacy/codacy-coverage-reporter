@@ -54,7 +54,7 @@ case class Final(
 case class Report(
     @Recurse
     baseConfig: BaseCommandConfig,
-    @Name("l") @ValueDescription("your project language")
+    @Name("l") @ValueDescription("language associated with your coverage report")
     language: Option[String],
     @Hidden @Name("f")
     forceLanguage: Int @@ Counter = Tag.of(0),
