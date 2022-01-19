@@ -37,7 +37,7 @@ Usage: codacy-coverage-reporter report
   --commit-uuid  <your commitUUID>
   --http-timeout  <Sets a specified timeout value, in milliseconds, to be used when interacting with Codacy API>
   --skip | -s  <skip if token isn't defined>
-  --language | -l  <your project language>
+  --language | -l  <language associated with your coverage report>
   --coverage-reports | -r  <your project coverage file name>
   --partial  <if the report is partial>
   --prefix  <the project path prefix>
