@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  codacy: codacy/base@5.2.3
+  codacy: codacy/base@6.1.4
 
 references:
   circleci_job: &circleci_job
@@ -309,7 +309,7 @@ workflows:
           cmd: |
             docker build --build-arg nativeImageLocation=artifacts/codacy-coverage-reporter-linux -t codacy-coverage-reporter .
             docker tag codacy-coverage-reporter codacy/$CIRCLE_PROJECT_REPONAME:$(cat .version)
-            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
             docker push codacy/$CIRCLE_PROJECT_REPONAME:$(cat .version)
           persist_to_workspace: true
           requires:
