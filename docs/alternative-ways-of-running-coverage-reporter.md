@@ -48,11 +48,11 @@ docker run -v $PWD:/code codacy/codacy-coverage-reporter:<version> report
 
 ## GitHub Action
 
-If you are using GitHub Actions to report coverage, you can use our GitHub Action [codacy/codacy-coverage-reporter-action](https://github.com/codacy/codacy-coverage-reporter-action).
+If you're using GitHub Actions to report coverage, you can use our GitHub Action [codacy/codacy-coverage-reporter-action](https://github.com/codacy/codacy-coverage-reporter-action).
 
 ## CircleCI orb
 
-If you are using CircleCI to report coverage, you can use our orb [codacy/coverage-reporter](https://circleci.com/orbs/registry/orb/codacy/coverage-reporter).
+If you're using CircleCI to report coverage, you can use our orb [codacy/coverage-reporter](https://circleci.com/orbs/registry/orb/codacy/coverage-reporter).
 
 ## Manually downloading the binary
 
