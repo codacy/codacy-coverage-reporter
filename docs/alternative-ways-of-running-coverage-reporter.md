@@ -46,6 +46,14 @@ You can use Docker to run Codacy Coverage Reporter:
 docker run -v $PWD:/code codacy/codacy-coverage-reporter:<version> report
 ```
 
+## GitHub Action
+
+If you are using GitHub Actions to report coverage, you can use our GitHub Action [codacy/codacy-coverage-reporter-action](https://github.com/codacy/codacy-coverage-reporter-action).
+
+## CircleCI orb
+
+If you are using CircleCI to report coverage, you can use our orb [codacy/coverage-reporter](https://circleci.com/orbs/registry/orb/codacy/coverage-reporter).
+
 ## Manually downloading the binary
 
 ### Linux amd64
@@ -127,14 +135,6 @@ If you are having any issues with your installation, you can also build the cove
     ```bash
     <path>/java-project$ java -jar ../codacy-coverage-reporter/target/codacy-coverage-reporter-assembly-<version>.jar report
     ```
-
-## CircleCI orb
-
-If you are using CircleCI to report coverage, you can use our orb [codacy/coverage-reporter](https://circleci.com/orbs/registry/orb/codacy/coverage-reporter).
-
-## GitHub Action
-
-If you are using GitHub Actions to report coverage, you can use our GitHub Action [codacy/codacy-coverage-reporter-action](https://github.com/codacy/codacy-coverage-reporter-action).
 
 ## Community supported alternatives
 
