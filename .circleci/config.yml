@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  codacy: codacy/base@dev:6.2.0-majordockertag.1.e8c6160
+  codacy: codacy/base@6.2.0
 
 references:
   circleci_job: &circleci_job
