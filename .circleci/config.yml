@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  codacy: codacy/base@6.1.4
+  codacy: codacy/base@6.2.0
 
 references:
   circleci_job: &circleci_job
@@ -304,13 +304,11 @@ workflows:
           requires:
             - package_artifacts
       - codacy/shell:
-          name: build_publish_docker_image
+          name: build_docker_image
           context: CodacyDocker
           cmd: |
-            docker build --build-arg nativeImageLocation=artifacts/codacy-coverage-reporter-linux -t codacy-coverage-reporter .
-            docker tag codacy-coverage-reporter codacy/$CIRCLE_PROJECT_REPONAME:$(cat .version)
-            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-            docker push codacy/$CIRCLE_PROJECT_REPONAME:$(cat .version)
+            docker build --build-arg nativeImageLocation=artifacts/codacy-coverage-reporter-linux -t $CIRCLE_PROJECT_REPONAME:latest .
+            docker save --output docker-image.tar $CIRCLE_PROJECT_REPONAME:latest
           persist_to_workspace: true
           requires:
             - generate_checksums
@@ -318,6 +316,11 @@ workflows:
             - it_coverage_script_alpine
             - it_coverage_script_ubuntu_success
             - it_coverage_script_ubuntu_failure
+      - codacy/publish_docker:
+          name: publish_docker_image
+          context: CodacyDocker
+          requires:
+            - build_docker_image
           filters:
             branches:
               only:
