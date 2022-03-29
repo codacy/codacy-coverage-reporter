@@ -1,5 +1,10 @@
 site_name: coverage-reporter
 
+# Repository information
+repo_name: "codacy/codacy-coverage-reporter"
+repo_url: "https://github.com/codacy/codacy-coverage-reporter"
+edit_uri: "edit/master/docs/"
+
 strict: true
 
 theme:
