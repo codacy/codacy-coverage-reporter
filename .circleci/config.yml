@@ -260,7 +260,8 @@ workflows:
             fi
             sudo tar -xf $TARGET_GRAAL -C /Library/Java/JavaVirtualMachines
             /usr/libexec/java_home -V
-            export PATH="$PATH:/Library/Java/JavaVirtualMachines/graalvm-ce-java8-$GRAAL_VERSION/Contents/Home/bin"
+            export JAVA_HOME=/Library/Java/JavaVirtualMachines/graalvm-ce-java8-$GRAAL_VERSION/Contents/Home
+            export PATH="$PATH:$JAVA_HOME/bin"
             sudo gu install native-image
             sbt "set GraalVMNativeImage / containerBuildImage := None; set graalVMNativeImageOptions --= Seq(\"--static\", \"--libc=musl\"); graalvm-native-image:packageBin"
             mkdir -p  ~/workdir/tmp-artifacts
