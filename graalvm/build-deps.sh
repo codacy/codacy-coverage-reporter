@@ -15,7 +15,7 @@ dest=/usr/local
   make install
 )
 
-zlib='zlib-1.2.11'
+zlib='zlib-1.2.12'
 zlibtargz=$zlib.tar.gz
 curl https://zlib.net/$zlibtargz --output $zlibtargz
 tar -xf $zlibtargz
