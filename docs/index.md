@@ -167,17 +167,18 @@ After having coverage reports set up for your repository, you must use Codacy Co
     bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r <coverage report file name>
     ```
 
-    !!! important
-        Check the console output to validate that the Codacy Coverage Reporter **detected the correct commit UUID** and **successfully uploaded** the coverage data to Codacy. If you need help, [check the troubleshooting page](troubleshooting-common-issues.md) for solutions to the most common setup issues.
+    Check the console output to validate that the Codacy Coverage Reporter **detected the correct commit UUID** and **successfully uploaded** the coverage data to Codacy. If you need help, [check the troubleshooting page](troubleshooting-common-issues.md) for solutions to the most common setup issues.
+
+    !!! tip
+        The self-contained script `get.sh` automatically downloads and runs the most recent version of Codacy Coverage Reporter. See [alternative ways of running Codacy Coverage Reporter](alternative-ways-of-running-coverage-reporter.md) for other ways of running Codacy Coverage Reporter, such as by installing the binary manually or using a GitHub Action or CircleCI Orb.
 
         Be sure to also check the sections below for more advanced functionality while uploading the coverage data to Codacy.
 
-    !!! tip
-        The self-contained script `get.sh` automatically downloads and runs the most recent version of Codacy Coverage Reporter.
+1.  Make sure that Codacy received the coverage data successfully for the **correct commit UUID and branch**. On Codacy, open your **Repository Settings**, tab **Coverage**, and expand the list of recent coverage reports in the section **Test your integration**:
 
-        See [alternative ways of running Codacy Coverage Reporter](alternative-ways-of-running-coverage-reporter.md) for other ways of running Codacy Coverage Reporter, such as by installing the binary manually or using a GitHub Action or CircleCI Orb.
+    ![Testing the coverage integration](images/coverage-test-integration.png)
 
-1.  Optionally, [add a Codacy badge](https://docs.codacy.com/repositories/badges/) to the README of your repository to display the current code coverage.
+    If you make adjustments to your setup and upload new coverage data, click the button **Test integration** to refresh the table.
 
 To validate that the coverage setup is complete, **wait until your repository has at least two new commits** and check that Codacy displays the coverage information on the last commit or in subsequent pull requests, either as a positive, negative, or no variation (represented by `=`) of the coverage percentage:
 
