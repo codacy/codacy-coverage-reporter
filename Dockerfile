@@ -1,4 +1,4 @@
-FROM alpine:3.12.3
+FROM alpine:3.15.3
 
 ARG nativeImageLocation=target/graalvm-native-image/codacy-coverage-reporter
 
