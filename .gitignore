@@ -32,3 +32,4 @@ musl.tar.gz
 src/graal/bundle
 project/metals.sbt
 site
+.bsp
