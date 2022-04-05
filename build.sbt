@@ -84,9 +84,18 @@ lazy val coverageParser = project
   .in(file("coverage-parser"))
   .settings(
     libraryDependencies ++= Seq(
-      "com.codacy" %% "codacy-api-scala" % "6.1.0",
+      "com.codacy" %% "codacy-api-scala" % "7.0.0",
       "com.codacy" %% "codacy-plugins-api" % "5.2.0",
       "org.scala-lang.modules" %% "scala-xml" % "1.2.0",
       scalatest % Test
     )
   )
+
+// https://github.com/sbt/sbt-assembly/issues/146
+ThisBuild / assemblyMergeStrategy := {
+  case PathList("module-info.class") => MergeStrategy.discard
+  case x if x.endsWith("/module-info.class") => MergeStrategy.discard
+  case x =>
+    val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
+    oldStrategy(x)
+}
