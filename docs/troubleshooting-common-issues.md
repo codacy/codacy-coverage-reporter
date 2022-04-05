@@ -18,6 +18,7 @@ If the Codacy Coverage Reporter correctly uploaded your coverage report but the 
 The Codacy Coverage Reporter automatically detects the commit SHA hash to associate with the coverage data from the following CI/CD platforms:
 
 -   Appveyor
+-   AWS CodeBuild
 -   Azure Pipelines
 -   Bitrise
 -   Buildkite
