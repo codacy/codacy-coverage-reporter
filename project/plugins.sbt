@@ -1,8 +1,8 @@
-addSbtPlugin("com.typesafe.sbt" % "sbt-native-packager" % "1.7.6")
-addSbtPlugin("com.codacy" % "codacy-sbt-plugin" % "20.1.1")
+addSbtPlugin("com.github.sbt" % "sbt-native-packager" % "1.9.9")
+addSbtPlugin("com.codacy" % "codacy-sbt-plugin" % "22.0.1")
 
 // Publish
-addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.14.9")
+addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "1.2.0")
 
 // Updates
 addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.4.0")
