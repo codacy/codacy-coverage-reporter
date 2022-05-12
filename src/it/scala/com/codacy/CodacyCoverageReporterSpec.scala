@@ -23,8 +23,7 @@ class CodacyCoverageReporterSpec extends WordSpec with Matchers with EitherValue
       organizationProvider: Option[OrganizationProvider.Value],
       username: Option[String],
       projectName: Option[String],
-      commitUuid: Option[String],
-      httpTimeout: Option[Int] = None
+      commitUuid: Option[String]
   ) = {
     val baseConfig =
       BaseCommandConfig(
@@ -34,8 +33,7 @@ class CodacyCoverageReporterSpec extends WordSpec with Matchers with EitherValue
         username,
         projectName,
         apiBaseUrl,
-        commitUuid,
-        httpTimeout
+        commitUuid
       )
 
     val commandConfig = Report(
@@ -58,7 +56,7 @@ class CodacyCoverageReporterSpec extends WordSpec with Matchers with EitherValue
   "run" should {
     "be successful" when {
       "using a project token to send coverage" in {
-        val result = runCoverageReport(projectToken, None, None, None, None, commitUuid, httpTimeout = Some(10000))
+        val result = runCoverageReport(projectToken, None, None, None, None, commitUuid)
 
         result shouldBe 'right
       }
@@ -73,8 +71,7 @@ class CodacyCoverageReporterSpec extends WordSpec with Matchers with EitherValue
             Option(OrganizationProvider.gh),
             username,
             projectName,
-            commitUuid,
-            httpTimeout = Some(10000)
+            commitUuid
           )
 
         result shouldBe 'right

@@ -148,7 +148,7 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
   ) = {
     val coverageResponse = config.baseConfig.authentication match {
       case _: ProjectTokenAuthenticationConfig =>
-        coverageServices.sendReport(commitUUID, language, report, config.partial, config.baseConfig.timeoutOpt)
+        coverageServices.sendReport(commitUUID, language, report, config.partial, Some(config.baseConfig.timeout))
 
       case ApiTokenAuthenticationConfig(_, organizationProvider, username, projectName) =>
         coverageServices.sendReportWithProjectName(
@@ -159,7 +159,7 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
           language,
           report,
           config.partial,
-          config.baseConfig.timeoutOpt
+          Some(config.baseConfig.timeout)
         )
     }
     coverageResponse match {
@@ -283,7 +283,7 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
     withCommitUUID(config.baseConfig) { commitUUID =>
       val coverageResponse = config.baseConfig.authentication match {
         case _: ProjectTokenAuthenticationConfig =>
-          coverageServices.sendFinalNotification(commitUUID, config.baseConfig.timeoutOpt)
+          coverageServices.sendFinalNotification(commitUUID, Some(config.baseConfig.timeout))
 
         case ApiTokenAuthenticationConfig(_, organizationProvider, username, projectName) =>
           coverageServices.sendFinalWithProjectName(
@@ -291,7 +291,7 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
             username,
             projectName,
             commitUUID,
-            config.baseConfig.timeoutOpt
+            Some(config.baseConfig.timeout)
           )
       }
       coverageResponse match {

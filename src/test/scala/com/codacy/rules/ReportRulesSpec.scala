@@ -2,7 +2,7 @@ package com.codacy.rules
 
 import java.io.File
 
-import com.codacy.api.client.{FailedResponse, RequestSuccess, SuccessfulResponse}
+import com.codacy.api.client.{FailedResponse, RequestSuccess, RequestTimeout, SuccessfulResponse}
 import com.codacy.api.service.CoverageServices
 import com.codacy.api.{CoverageFileReport, CoverageReport}
 import com.codacy.configuration.parser.{BaseCommandConfig, Report}
@@ -32,7 +32,13 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
 
   "codacyCoverage" should {
     val baseConfig =
-      BaseConfig(ProjectTokenAuthenticationConfig(projToken), apiBaseUrl, None, debug = false, timeoutOpt = None)
+      BaseConfig(
+        ProjectTokenAuthenticationConfig(projToken),
+        apiBaseUrl,
+        None,
+        debug = false,
+        timeout = RequestTimeout(10000, 10000)
+      )
 
     def assertCodacyCoverage(
         coverageServices: CoverageServices,
