@@ -83,9 +83,13 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
       "cannot send report" in {
         val coverageServices = mock[CoverageServices]
 
-        coverageServices.sendReport(any[String], any[String], any[CoverageReport], anyBoolean) returns FailedResponse(
-          "Failed to send report"
-        )
+        coverageServices.sendReport(
+          any[String],
+          any[String],
+          any[CoverageReport],
+          anyBoolean,
+          Some(RequestTimeout(10000, 10000))
+        ) returns FailedResponse("Failed to send report")
 
         assertCodacyCoverage(coverageServices, List("src/test/resources/dotcover-example.xml"), success = false)
       }
@@ -94,9 +98,13 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
     "succeed if it can parse and send the report" in {
       val coverageServices = mock[CoverageServices]
 
-      coverageServices.sendReport(any[String], any[String], any[CoverageReport], anyBoolean) returns SuccessfulResponse(
-        RequestSuccess("Success")
-      )
+      coverageServices.sendReport(
+        any[String],
+        any[String],
+        any[CoverageReport],
+        anyBoolean,
+        Some(RequestTimeout(10000, 10000))
+      ) returns SuccessfulResponse(RequestSuccess("Success"))
 
       assertCodacyCoverage(coverageServices, List("src/test/resources/dotcover-example.xml"), success = true)
     }
