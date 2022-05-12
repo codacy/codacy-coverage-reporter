@@ -2,7 +2,7 @@ package com.codacy.rules
 
 import java.io.File
 
-import com.codacy.api.client.{FailedResponse, RequestSuccess, SuccessfulResponse}
+import com.codacy.api.client.{FailedResponse, RequestSuccess, RequestTimeout, SuccessfulResponse}
 import com.codacy.api.service.CoverageServices
 import com.codacy.api.{CoverageFileReport, CoverageReport}
 import com.codacy.configuration.parser.{BaseCommandConfig, Report}
@@ -32,7 +32,13 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
 
   "codacyCoverage" should {
     val baseConfig =
-      BaseConfig(ProjectTokenAuthenticationConfig(projToken), apiBaseUrl, None, debug = false, timeoutOpt = None)
+      BaseConfig(
+        ProjectTokenAuthenticationConfig(projToken),
+        apiBaseUrl,
+        None,
+        debug = false,
+        timeout = RequestTimeout(10000, 10000)
+      )
 
     def assertCodacyCoverage(
         coverageServices: CoverageServices,
@@ -77,9 +83,13 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
       "cannot send report" in {
         val coverageServices = mock[CoverageServices]
 
-        coverageServices.sendReport(any[String], any[String], any[CoverageReport], anyBoolean) returns FailedResponse(
-          "Failed to send report"
-        )
+        coverageServices.sendReport(
+          any[String],
+          any[String],
+          any[CoverageReport],
+          anyBoolean,
+          Some(RequestTimeout(10000, 10000))
+        ) returns FailedResponse("Failed to send report")
 
         assertCodacyCoverage(coverageServices, List("src/test/resources/dotcover-example.xml"), success = false)
       }
@@ -88,9 +98,13 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
     "succeed if it can parse and send the report" in {
       val coverageServices = mock[CoverageServices]
 
-      coverageServices.sendReport(any[String], any[String], any[CoverageReport], anyBoolean) returns SuccessfulResponse(
-        RequestSuccess("Success")
-      )
+      coverageServices.sendReport(
+        any[String],
+        any[String],
+        any[CoverageReport],
+        anyBoolean,
+        Some(RequestTimeout(10000, 10000))
+      ) returns SuccessfulResponse(RequestSuccess("Success"))
 
       assertCodacyCoverage(coverageServices, List("src/test/resources/dotcover-example.xml"), success = true)
     }
