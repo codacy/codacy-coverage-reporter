@@ -72,7 +72,7 @@ class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, S
         baseConfig.codacyApiBaseUrl.getOrElse(getApiBaseUrl),
         commitUUID,
         baseConfig.debugValue,
-        timeout = RequestTimeout(baseConfig.httpTimeout, baseConfig.httpTimeout)
+        timeout = RequestTimeout(connTimeoutMs = 1000, readTimeoutMs = baseConfig.httpTimeout)
       )
       validatedConfig <- validateBaseConfigUrl(baseConf)
     } yield {

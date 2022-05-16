@@ -37,7 +37,7 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
         apiBaseUrl,
         None,
         debug = false,
-        timeout = RequestTimeout(10000, 10000)
+        timeout = RequestTimeout(1000, 10000)
       )
 
     def assertCodacyCoverage(
@@ -88,7 +88,7 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
           any[String],
           any[CoverageReport],
           anyBoolean,
-          Some(RequestTimeout(10000, 10000))
+          Some(RequestTimeout(1000, 10000))
         ) returns FailedResponse("Failed to send report")
 
         assertCodacyCoverage(coverageServices, List("src/test/resources/dotcover-example.xml"), success = false)
@@ -103,7 +103,7 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
         any[String],
         any[CoverageReport],
         anyBoolean,
-        Some(RequestTimeout(10000, 10000))
+        Some(RequestTimeout(1000, 10000))
       ) returns SuccessfulResponse(RequestSuccess("Success"))
 
       assertCodacyCoverage(coverageServices, List("src/test/resources/dotcover-example.xml"), success = true)
