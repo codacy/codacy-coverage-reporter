@@ -87,7 +87,9 @@ case class BaseCommandConfig(
     codacyApiBaseUrl: Option[String],
     @ValueDescription("your commitUUID")
     commitUUID: Option[String],
-    @ValueDescription("Sets a specified timeout value, in milliseconds, to be used when interacting with Codacy API")
+    @ValueDescription(
+      "Sets a specified read timeout value, in milliseconds, to be used when interacting with Codacy API"
+    )
     httpTimeout: Int = 10000,
     @Name("s") @ValueDescription("skip if token isn't defined")
     skip: Int @@ Counter = Tag.of(0),
