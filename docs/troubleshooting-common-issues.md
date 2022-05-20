@@ -14,8 +14,12 @@ If the Codacy Coverage Reporter correctly uploaded your coverage report but the 
 -   Verify that the Codacy Coverage Reporter is uploading the coverage data for the [correct commit in the correct branch](#commit-detection).
 -   For pull requests, make sure that you have uploaded the coverage data for both:
 
-    -   The last commit in the pull request branch
     -   The commit that is the common ancestor of the pull request branch and the target branch
+    -   The last commit in the pull request branch
+
+    The following diagram highlights the commits that must have received coverage data for Codacy to display coverage information on a pull request:
+
+    ![Commits that must have coverage data](images/coverage-pr-commits.png)
 
 ### Commit SHA hash detection {: id="commit-detection"}
 
