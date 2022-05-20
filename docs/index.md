@@ -213,7 +213,12 @@ bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
 ```
 
 !!! note
-    Alternatively, you can upload each report separately with the flag `--partial` and notify Codacy with the `final` command after uploading all reports. For example:
+    Alternatively, you can:
+    
+    1.   Upload each report separately with the flag `--partial`
+    1.   Notify Codacy with the `final` command after uploading all reports
+    
+    For example:
 
     ```bash
     bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
