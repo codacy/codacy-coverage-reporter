@@ -12,6 +12,10 @@ If the Codacy Coverage Reporter correctly uploaded your coverage report but the 
 
 -   Make sure that the file paths included in your coverage reports are relative to the root directory of your repository. For example, `src/index.js`.
 -   Verify that the Codacy Coverage Reporter is uploading the coverage data for the [correct commit in the correct branch](#commit-detection).
+-   For pull requests, make sure that you have uploaded the coverage data for both:
+
+    -   The last commit in the pull request branch
+    -   The commit that is the common ancestor of the pull request branch and the target branch
 
 ### Commit SHA hash detection {: id="commit-detection"}
 
