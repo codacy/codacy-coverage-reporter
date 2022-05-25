@@ -92,9 +92,9 @@ There are some ways you can solve this:
 
 ## MalformedInputException while parsing report
 
-If you get a `java.nio.charset.MalformedInputException` when running the Codacy Coverage Reporter it means that the coverage report includes an unsupported character, perhaps on one of your source code file names.
+If you get a `java.nio.charset.MalformedInputException` when running the Codacy Coverage Reporter it means that the coverage report includes a character that is not encoded in UTF-8. The invalid character can belong to the file name of one of your source code files, or even a class or method name.
 
-For maximum compatibility of your coverage reports with the Codacy Coverage Reporter, make sure that your coverage reports use UTF-8 encoding or remove any special characters from the reports.
+For maximum compatibility of your coverage reports with the Codacy Coverage Reporter, make sure that your coverage reports use UTF-8 encoding and that they only include UTF-8 characters.
 
 ## SubstrateSegfaultHandler caught signal 11
 
