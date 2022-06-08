@@ -76,7 +76,7 @@ dotCover.exe cover ... --reportType=DetailedXml
 
 ## JsonParseException while uploading coverage data
 
-If you're getting a `com.fasterxml.jackson.core.JsonParseException` error while uploading your coverage data to Codacy it means that your coverage report is too big and that Codacy Coverage Reporter hit a limit of 10 MB when uploading the coverage data to Codacy.
+If you get a `com.fasterxml.jackson.core.JsonParseException` error while uploading your coverage data to Codacy it means that your coverage report is too big and that Codacy Coverage Reporter hit a limit of 10 MB when uploading the coverage data to Codacy.
 
 There are some ways you can solve this:
 
@@ -89,6 +89,18 @@ There are some ways you can solve this:
     ```
 
     By default, dotCover includes xUnit files in the coverage analysis and this results in larger coverage reports. This filter helps ensure that the resulting coverage data does not exceed the size limit accepted by the Codacy API when uploading the results.
+
+## Connect timed out while uploading coverage data
+
+If you get a `Error doing a post to ... connect timed out` error while uploading your coverage data to Codacy it means that the Codacy Coverage Reporter is timing out while connecting to the Codacy API. This typically happens if you're uploading coverage data for larger repositories.
+
+To increase the default timeout while connecting to the Codacy API, use the flag `--http-timeout` to set a value larger than 10000 miliseconds. For example, to set the timeout to 30 seconds:
+
+```bash
+bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
+    -r report.xml \
+    --http-timeout 30000
+```
 
 ## MalformedInputException while parsing report
 
