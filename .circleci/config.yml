@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  codacy: codacy/base@6.2.0
+  codacy: codacy/base@7.2.0
 
 references:
   circleci_job: &circleci_job
@@ -217,37 +217,53 @@ workflows:
       - build_mkdocs:
           requires:
             - codacy/checkout_and_version
-      - codacy/sbt:
-          name: scalafmt_and_compile
-          cmd: sbt "scalafmtCheckAll;scalafmtSbtCheck;test:compile;it:compile"
+      - codacy/sbt_docker:
+          name: compile_and_test
+          steps:
+            - run:
+                name: Enable coverage
+                command: sbt coverage
+            - run:
+                name: Run Scalafmt on Scala files
+                command: sbt scalafmtCheckAll
+            - run:
+                name: Run Scalafmt on Sbt files
+                command: sbt scalafmtSbtCheck
+            - run:
+                name: Compile
+                command: sbt test:compile
+            - run:
+                name: Compile Integration tests
+                command: sbt it:compile
+            - run:
+                name: Run Tests
+                command: sbt test
+            - run:
+                name: Run Integration Tests
+                command: sbt it:test
+            - run:
+                name: Aggregate coverage data
+                command: sbt coverageAggregate
+            - run:
+                name: Send Coverage data to Codacy
+                command: ./get.sh report --skip
           persist_to_workspace: true
           requires:
             - codacy/checkout_and_version
       - codacy/sbt:
-          name: test_and_coverage
-          cmd: |
-            sbt coverage test
-            sbt coverageAggregate
-            ./get.sh report --skip
-          requires:
-            - scalafmt_and_compile
-      - codacy/sbt:
-          name: integration_tests
-          cmd: sbt it:test
-          persist_to_workspace: true
-          requires:
-            - scalafmt_and_compile
-      - codacy/sbt:
           name: create_artifacts
-          cmd: |
-            (cd graalvm; docker build -t graavlm:latest .)
-            sbt "assembly;graalvm-native-image:packageBin"
-            mkdir -p ~/workdir/tmp-artifacts
-            mv target/graalvm-native-image/codacy-coverage-reporter ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux
-            mv target/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/tmp-artifacts/codacy-coverage-reporter-assembly.jar
+          steps:
+            - run:
+                name: Create Artifacts
+                command: |
+                  (cd graalvm; docker build -t graavlm:latest .)
+                  sbt "assembly;graalvm-native-image:packageBin"
+                  mkdir -p ~/workdir/tmp-artifacts
+                  mv target/graalvm-native-image/codacy-coverage-reporter ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux
+                  mv target/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/tmp-artifacts/codacy-coverage-reporter-assembly.jar
           persist_to_workspace: true
           requires:
-            - scalafmt_and_compile
+            - compile_and_test
       - codacy/sbt_osx:
           name: create_artifacts_for_osx
           cmd: |
@@ -269,7 +285,7 @@ workflows:
           persist_to_workspace: true
           persist_to_workspace_path: "tmp-artifacts/codacy-coverage-reporter-darwin"
           requires:
-            - scalafmt_and_compile
+            - compile_and_test
       - package_artifacts:
           requires:
             - create_artifacts
