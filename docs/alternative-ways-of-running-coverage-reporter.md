@@ -163,6 +163,6 @@ If you're using Gradle to automate your CI/CD you can add use the following exam
 ```groovy
 task uploadCoverage(type:Exec, dependsOn: <COVERAGE_REPORT_TASK>) {
     description 'Uploads coverage data to Codacy.'
-    commandLine 'bash', '-c', 'bash <(curl -Ls https://coverage.codacy.com/get.sh) report
+    commandLine 'bash', '-c', 'bash <(curl -Ls https://coverage.codacy.com/get.sh) report'
 }
 ```
