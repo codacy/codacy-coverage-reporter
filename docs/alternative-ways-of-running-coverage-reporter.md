@@ -158,59 +158,11 @@ Make sure that you also [set your project or account API Token](index.md#authent
 
 ### Gradle task
 
-A big shout-out to [Tom Howard](https://github.com/tompahoward), who suggested a way to [create a Gradle task](https://github.com/mountain-pass/hyperstate/commit/857ca93e1c8484c14a5e2da9f0434d3daf3328ce).
+If you're using Gradle to automate your CI/CD you can add use the following example task, where `<COVERAGE_REPORT_TASK>` is the name of the task that generates your coverage report:
 
-```gradle
-task uploadCoverageToCodacy(type: JavaExec, dependsOn : jacocoTestReport) {
-   main = "com.codacy.CodacyCoverageReporter"
-   classpath = configurations.codacy
-   args = [
-            "report",
-            "-l",
-            "Java",
-            "-r",
-            "${buildDir}/test-results/jacoco/${archivesBaseName}.xml"
-           ]
-}
-
-task (codacyDepsize) << {
-def size = 0;
-configurations.codacy.collect { it.length() / (1024 * 1024) }.each { size += it }
-println "Total dependencies size: ${Math.round(size * 100) / 100} Mb"
-
-configurations
-        .codacy
-        .sort { -it.length() }
-        .each { println "${it.name} : ${Math.round(it.length() / (1024) * 100) / 100} kb" }
-}
-
-task (codacyLocs) << {
-    configurations.codacy.each {
-        String jarName = it
-        println jarName
-    }
-}
-```
-
-The following Gradle task by [Ramil Khamitov](https://github.com/Ram042) was based on the solution above.
-
-```gradle
-configurations { codacy }
-repositories {
-    jcenter()
-}
-dependencies {
-    codacy 'com.codacy:codacy-coverage-reporter:latest.release'
-}
-task sendCoverageToCodacy(type: JavaExec, dependsOn: jacocoTestReport) {
-    main = "com.codacy.CodacyCoverageReporter"
-    classpath = configurations.codacy
-    args = [
-            "report",
-            "-l",
-            "Java",
-            "-r",
-            "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
-    ]
+```groovy
+task uploadCoverage(type:Exec, dependsOn: <COVERAGE_REPORT_TASK>) {
+    description 'Uploads coverage data to Codacy.'
+    commandLine 'bash', '-c', 'bash <(curl -Ls https://coverage.codacy.com/get.sh) report
 }
 ```
