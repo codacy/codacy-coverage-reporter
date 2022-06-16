@@ -122,7 +122,7 @@ If you're using PHPUnit version 5 or above to generate your coverage report, you
 
 To change the output format replace the flag `--coverage-xml <dir>` with `--coverage-clover <file>` when executing `phpunit`.
 
-See [PHPUnit command-line documentation](https://phpunit.readthedocs.io/en/latest/textui.html) for more information.
+See [PHPUnit command-line documentation](https://phpunit.readthedocs.io/en/9.5/textui.html) for more information.
 
 ## Can't validate checksum {: id="checksum"}
 

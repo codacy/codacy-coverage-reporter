@@ -93,7 +93,7 @@ There are many tools that you can use to generate coverage reports for the langu
     <td><code>jacoco*.xml</code> (JaCoCo)</td>
 </tr>
 <tr>
-    <td><a href="http://scoverage.org/">scoverage</a></td>
+    <td><a href="https://github.com/scoverage/scalac-scoverage-plugin">scoverage</a></td>
     <td><code>cobertura.xml</code> (Cobertura)</td>
 </tr>
 <tr>
