@@ -209,7 +209,7 @@ You can also upload all your reports dynamically using the command `find`. For e
 
 ```bash
 bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
-    -l Java $(find -name 'jacoco*.xml' -printf '-r %p ')
+    -l Java $(find . -name 'jacoco*.xml' -printf '-r %p ')
 ```
 
 !!! note
