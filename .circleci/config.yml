@@ -9,6 +9,11 @@ references:
       - image: circleci/circleci-cli:0.1.5879
     working_directory: ~/workdir
 
+  default_machine_job: &default_machine_job
+    machine:
+      image: ubuntu-2004:202201-02
+    working_directory: ~/workdir
+
 commands:
   run_coverage_reporting:
     description: "Runs the coverage reporting using the mock-server as API"
@@ -204,12 +209,27 @@ jobs:
           name: build mkdocs
           command: mkdocs build
 
+  wait_for_other_jobs_to_finish: &wait_for_other_jobs_to_finish
+    <<: *default_machine_job
+    resource_class: medium # small is not accepted for linux machines at the moment
+    working_directory: ~/workdir
+    steps:
+      - checkout
+      - run:
+          name: Run script to wait for other jobs to finish
+          command: |
+            python3 ~/workdir/.circleci/canWorkflowStart.py -k $CIRCLE_TOKEN -w $CIRCLE_WORKFLOW_ID -b $CIRCLE_BRANCH
+
 workflows:
   version: 2
   compile_test_deploy:
     jobs:
+      - wait_for_other_jobs_to_finish:
+          context: CodacyCircleCI
       - codacy/checkout_and_version:
           write_sbt_version: true
+          requires:
+            - wait_for_other_jobs_to_finish
       - pack_and_validate_orb:
           context: CodacyCircleCI
           requires:
