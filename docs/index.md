@@ -196,7 +196,7 @@ Follow [these troubleshooting steps](troubleshooting-common-issues.md#no-coverag
 
 ### Uploading multiple coverage reports for the same language {: id="multiple-reports"}
 
-If your test suite is split on different modules or runs in parallel, you must upload multiple coverage reports for the same language.
+If your test suite is split in different modules or runs in parallel, you must upload multiple coverage reports for the same language.
 
 To do this, specify multiple reports by repeating the flag `-r`. For example:
 
