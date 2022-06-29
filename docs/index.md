@@ -20,9 +20,15 @@ The next sections include detailed instructions on how to complete each step of 
 
 ## 1. Generating coverage reports {: id="generating-coverage"}
 
-Before setting up Codacy to display code coverage metrics for your repository you must have tests and use tools to generate coverage reports for the languages in your repositories.
+Before setting up Codacy to display code coverage metrics for your repository you must have tests and use tools to generate coverage reports for the source code files in your repository.
 
-There are many tools that you can use to generate coverage reports for the languages used in your repositories. The following table contains example coverage tools that generate reports in formats that Codacy supports:
+Consider the following when generating coverage reports for your repository:
+
+-   There are many tools that you can use to generate coverage reports, but you must ensure that the coverage reports are in one of the formats that Codacy supports
+-   If your repository includes multiple programming languages, you may need to generate a separate coverage report for each language depending on the specific languages and tools that you use
+-   Make sure that you generage coverage reports that include coverage data for all source code files in your repository, and not just the files that were changed in each commit
+
+The following table contains example coverage tools that generate reports in formats that Codacy supports:
 
 <table>
 <thead>
