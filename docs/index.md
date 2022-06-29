@@ -27,9 +27,9 @@ There are many tools that you can use to generate coverage reports for the langu
 <table>
 <thead>
 <tr>
-<th>Language</th>
-<th>Example coverage tools</th>
-<th>Report files</th>
+    <th>Language</th>
+    <th>Example coverage tools</th>
+    <th>Report files</th>
 </tr>
 </thead>
 <tbody>
