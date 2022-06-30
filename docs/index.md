@@ -278,11 +278,24 @@ See the [list of languages](https://github.com/codacy/codacy-plugins-api/blob/ma
 
 ## 3. Validating that the coverage setup is complete {: id="validating-coverage"}
 
+Codacy displays the code coverage in each branch, as well as the evolution of code coverage between commits and the code coverage variation introduced by pull requests. Because of this, to ensure that all code coverage metrics are available on Codacy, you must have successfully uploaded coverage data for:
+
+-   The last two commits in each branch
+-   The common ancestor commits between pull request branches and their target branches
+
+The example below shows that after pushing a commit that correctly sets up coverage on the main branch:
+
+-   Codacy will be able to report the coverage metrics for all subsequent commits and pull requests relative to the main branch
+-   However, Codacy won't be able to report coverage for commits and pull requests that are relative to older branches where the coverage setup wasn't performed yet
+
+![Setting up coverage on the main branch](images/coverage-validate.png)
+
 To validate that the coverage setup is complete:
 
-1.  Wait until your repository has at least **two new commits**
+1.  Wait until your repository has **at least one new commit** after the one where you finished setting up coverage
+
 1.  Check that Codacy displays the coverage information on the last commit or in subsequent pull requests, either as a positive, negative, or no variation (represented by `=`) of the coverage percentage:
 
     ![Coverage data displayed on Codacy](images/coverage-codacy-ui.png)
-
-1.  **If Codacy doesn't display the coverage data** for your commit or pull request (represented by `-`), follow [these troubleshooting steps](troubleshooting-common-issues.md#no-coverage-visible).
+    
+    [Follow these troubleshooting steps](troubleshooting-common-issues.md#no-coverage-visible) if Codacy doesn't display the coverage data for the latest commits or pull requests (represented by `-`).
