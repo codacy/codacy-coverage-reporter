@@ -292,10 +292,10 @@ The example below shows that after pushing a commit that correctly sets up cover
 
 To validate that the coverage setup is complete:
 
-1.  Wait until your repository has **at least one new commit** after the one where you finished setting up coverage
+1.  Wait until there is **at least one new commit** after the one where you finished setting up coverage.
 
-1.  Check that Codacy displays the coverage information on the last commit or in subsequent pull requests, either as a positive, negative, or no variation (represented by `=`) of the coverage percentage:
+1.  Check that Codacy displays the coverage information for the lastest commits and pull requests, either as a positive, negative, or no variation (represented by `=`) of the coverage percentage:
 
     ![Coverage data displayed on Codacy](images/coverage-codacy-ui.png)
     
-    [Follow these troubleshooting steps](troubleshooting-common-issues.md#no-coverage-visible) if Codacy doesn't display the coverage data for the latest commits or pull requests (represented by `-`).
+    **If Codacy doesn't display the coverage data** for the latest commits or pull requests (represented by `-`), [follow these troubleshooting instructions](troubleshooting-common-issues.md#no-coverage-visible).
