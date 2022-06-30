@@ -16,6 +16,10 @@ Complete these main steps to start monitoring the code coverage of your reposito
 
     After each push to your repository, run the Codacy Coverage Reporter to parse your report file and upload the coverage data to Codacy.
 
+1.  **Validating that the coverage setup is complete**
+
+    Check if Codacy displays coverage information for new commits and pull requests and troubleshoot the coverage setup if necessary.
+
 The next sections include detailed instructions on how to complete each step of the setup process.
 
 ## 1. Generating coverage reports {: id="generating-coverage"}
@@ -194,12 +198,6 @@ After having coverage reports set up for your repository, you must use Codacy Co
 
     If you make adjustments to your setup and upload new coverage data, click the button **Test integration** to refresh the table.
 
-To validate that the coverage setup is complete, **wait until your repository has at least two new commits** and check that Codacy displays the coverage information on the last commit or in subsequent pull requests, either as a positive, negative, or no variation (represented by `=`) of the coverage percentage:
-
-![Coverage data displayed on Codacy](images/coverage-codacy-ui.png)
-
-Follow [these troubleshooting steps](troubleshooting-common-issues.md#no-coverage-visible) if Codacy doesn't display the coverage data for your commit or pull request (represented by `-`).
-
 ### Uploading multiple coverage reports for the same language {: id="multiple-reports"}
 
 If your test suite is split in different modules or runs in parallel, you must upload multiple coverage reports for the same language.
@@ -275,3 +273,14 @@ bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
 ```
 
 See the [list of languages](https://github.com/codacy/codacy-plugins-api/blob/master/src/main/scala/com/codacy/plugins/api/languages/Language.scala#L43) that you can specify using the flag `-l`.
+
+## 3. Validating that the coverage setup is complete {: id="validating-coverage"}
+
+To validate that the coverage setup is complete:
+
+1.  Wait until your repository has at least **two new commits**
+1.  Check that Codacy displays the coverage information on the last commit or in subsequent pull requests, either as a positive, negative, or no variation (represented by `=`) of the coverage percentage:
+
+    ![Coverage data displayed on Codacy](images/coverage-codacy-ui.png)
+
+1.  **If Codacy doesn't display the coverage data** for your commit or pull request (represented by `-`), follow [these troubleshooting steps](troubleshooting-common-issues.md#no-coverage-visible).
