@@ -32,7 +32,7 @@ Consider the following when generating coverage reports for your repository:
 
 -   There are many tools that you can use to generate coverage reports, but you must ensure that the coverage reports are in one of the formats that Codacy supports
 -   If your repository includes multiple programming languages, you may need to generate a separate coverage report for each language depending on the specific languages and tools that you use
--   Make sure that you generage coverage reports that include coverage data for all source code files in your repository, and not just the files that were changed in each commit
+-   Make sure that you generate coverage reports that include coverage data for all source code files in your repository, and not just the files that were changed in each commit
 
 The following table contains example coverage tools that generate reports in formats that Codacy supports:
 
@@ -265,7 +265,7 @@ bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
 
 ### Submitting coverage for unsupported languages
 
-If your language is not in the list of supported languages, you can still send coverage to Codacy.
+If your language isn't in the list of supported languages, you can still send coverage to Codacy.
 
 To do this, provide the correct language with the flag `-l`, together with `--force-language`. For example:
 
@@ -297,7 +297,7 @@ To validate that the coverage setup is complete:
     !!! important
         Codacy only takes the uploaded coverage data into account after analyzing the corresponding commits, so make sure that you [invite or ask your team members to join your organization on Codacy](../organizations/managing-people/#adding-people) so that Codacy analyzes their commits on private repositories.
 
-1.  Check that Codacy displays the coverage information for the lastest commits and pull requests, either as a positive, negative, or no variation (represented by `=`) of the coverage percentage:
+1.  Check that Codacy displays the coverage information for the latest commits and pull requests, either as a positive, negative, or no variation (represented by `=`) of the coverage percentage:
 
     ![Coverage data displayed on Codacy](images/coverage-codacy-ui.png)
     
