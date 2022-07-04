@@ -295,7 +295,9 @@ To validate that the coverage setup is complete:
 1.  Wait until there are **at least two commits** sending coverage data that are analyzed by Codacy.
 
     !!! important
-        Codacy only takes the uploaded coverage data into account after analyzing the corresponding commits, so make sure that you [invite or ask your team members to join your organization on Codacy](../organizations/managing-people/#adding-people) so that Codacy analyzes their commits on private repositories.
+        Codacy only takes the uploaded coverage data into account after successfully analyzing each commit.
+
+        Make sure that you [invite or ask your team members to join your organization on Codacy](../organizations/managing-people/#adding-people) so that Codacy analyzes their commits on private repositories.
 
 1.  Check that Codacy displays the coverage information for the latest commits and pull requests, either as a positive, negative, or no variation (represented by `=`) of the coverage percentage:
 
