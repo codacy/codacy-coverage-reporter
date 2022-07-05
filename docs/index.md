@@ -285,21 +285,21 @@ Codacy displays the code coverage in each branch, as well as the evolution of co
 
 The example below shows that after pushing a commit that correctly sets up coverage on the main branch:
 
--   Codacy will be able to report the coverage metrics for all subsequent commits and pull requests relative to the main branch
--   However, Codacy won't be able to report coverage for commits and pull requests that are relative to older branches where the coverage setup wasn't performed yet
+-   Codacy will report coverage metrics for all subsequent commits and pull requests relative to the main branch
+-   Codacy won't report coverage metrics for commits and pull requests that are relative to older branches where the coverage setup wasn't performed yet
 
 ![Setting up coverage on the main branch](images/coverage-validate.png)
 
 To validate that the coverage setup is complete:
 
-1.  Wait until there are **at least two commits** sending coverage data that are analyzed by Codacy.
+1.  Wait until there are **at least two commits** that have uploaded coverage data to Codacy and were successfully analyzed by Codacy.
 
     !!! important
         Codacy only takes the uploaded coverage data into account after successfully analyzing each commit.
 
         Make sure that you [invite or ask your team members to join your organization on Codacy](../organizations/managing-people/#adding-people) so that Codacy analyzes their commits on private repositories.
 
-1.  Check that Codacy displays the coverage information for the latest commits and pull requests, either as a positive, negative, or no variation (represented by `=`) of the coverage percentage:
+1.  Check that Codacy displays the coverage information for the latest commits and pull requests:
 
     ![Coverage data displayed on Codacy](images/coverage-codacy-ui.png)
     
