@@ -6,7 +6,9 @@ description: Generate coverage reports in a supported format and upload them to 
 
 Code coverage is a metric used to describe the degree to which the source code of a program is tested. A program with high code coverage has been more thoroughly tested and has a lower chance of containing software bugs than a program with low code coverage. You can read more about the [basics of code coverage](https://blog.codacy.com/a-guide-to-code-coverage-part-1-code-coverage-explained/) on Codacy's blog.
 
-Complete these main steps to start monitoring the code coverage of your repositories on Codacy:
+To monitor the code coverage of your repository on Codacy you must generate coverage reports for each commit on your CI/CD workflow, and then upload the coverage data to Codacy.
+
+Complete these main steps to set up coverage for your repository:
 
 1.  **Generating coverage reports**
 
@@ -16,20 +18,30 @@ Complete these main steps to start monitoring the code coverage of your reposito
 
     After each push to your repository, run the Codacy Coverage Reporter to parse your report file and upload the coverage data to Codacy.
 
+1.  **Validating that the coverage setup is complete**
+
+    Check if Codacy displays coverage information for new commits and pull requests and troubleshoot the coverage setup if necessary.
+
 The next sections include detailed instructions on how to complete each step of the setup process.
 
 ## 1. Generating coverage reports {: id="generating-coverage"}
 
-Before setting up Codacy to display code coverage metrics for your repository you must have tests and use tools to generate coverage reports for the languages in your repositories.
+Before setting up Codacy to display code coverage metrics for your repository you must have tests and use tools to generate coverage reports for the source code files in your repository.
 
-There are many tools that you can use to generate coverage reports for the languages used in your repositories. The following table contains example coverage tools that generate reports in formats that Codacy supports:
+Consider the following when generating coverage reports for your repository:
+
+-   There are many tools that you can use to generate coverage reports, but you must ensure that the coverage reports are in one of the formats that Codacy supports
+-   If your repository includes multiple programming languages, you may need to generate a separate coverage report for each language depending on the specific languages and tools that you use
+-   Make sure that you generate coverage reports that include coverage data for all source code files in your repository, and not just the files that were changed in each commit
+
+The following table contains example coverage tools that generate reports in formats that Codacy supports:
 
 <table>
 <thead>
 <tr>
-<th>Language</th>
-<th>Example coverage tools</th>
-<th>Report files</th>
+    <th>Language</th>
+    <th>Example coverage tools</th>
+    <th>Report files</th>
 </tr>
 </thead>
 <tbody>
@@ -188,15 +200,9 @@ After having coverage reports set up for your repository, you must use Codacy Co
 
     If you make adjustments to your setup and upload new coverage data, click the button **Test integration** to refresh the table.
 
-To validate that the coverage setup is complete, **wait until your repository has at least two new commits** and check that Codacy displays the coverage information on the last commit or in subsequent pull requests, either as a positive, negative, or no variation (represented by `=`) of the coverage percentage:
-
-![Coverage data displayed on Codacy](images/coverage-codacy-ui.png)
-
-Follow [these troubleshooting steps](troubleshooting-common-issues.md#no-coverage-visible) if Codacy doesn't display the coverage data for your commit or pull request (represented by `-`).
-
 ### Uploading multiple coverage reports for the same language {: id="multiple-reports"}
 
-If your test suite is split on different modules or runs in parallel, you must upload multiple coverage reports for the same language.
+If your test suite is split in different modules or runs in parallel, you must upload multiple coverage reports for the same language.
 
 To do this, specify multiple reports by repeating the flag `-r`. For example:
 
@@ -259,7 +265,7 @@ bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
 
 ### Submitting coverage for unsupported languages
 
-If your language is not in the list of supported languages, you can still send coverage to Codacy.
+If your language isn't in the list of supported languages, you can still send coverage to Codacy.
 
 To do this, provide the correct language with the flag `-l`, together with `--force-language`. For example:
 
@@ -269,3 +275,32 @@ bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
 ```
 
 See the [list of languages](https://github.com/codacy/codacy-plugins-api/blob/master/src/main/scala/com/codacy/plugins/api/languages/Language.scala#L43) that you can specify using the flag `-l`.
+
+## 3. Validating that the coverage setup is complete {: id="validating-coverage"}
+
+Codacy displays the code coverage in each branch, as well as the evolution of code coverage between commits and the code coverage variation introduced by pull requests. Because of this, to ensure that all code coverage metrics are available on Codacy, you must have successfully uploaded coverage data and analyzed:
+
+-   The last two commits in each branch
+-   The common ancestor commits between pull request branches and their target branches
+
+The example below shows that after pushing a commit that correctly sets up coverage on the main branch:
+
+-   Codacy will report coverage metrics for all subsequent commits and pull requests relative to the main branch
+-   Codacy won't report coverage metrics for commits and pull requests that are relative to older branches where the coverage setup wasn't performed yet
+
+![Setting up coverage on the main branch](images/coverage-validate.png)
+
+To validate that the coverage setup is complete:
+
+1.  Wait until there are **at least two commits** that have uploaded coverage data to Codacy and were successfully analyzed by Codacy.
+
+    !!! important
+        Codacy only takes the uploaded coverage data into account after successfully analyzing each commit.
+
+        Make sure that you [invite or ask your team members to join your organization on Codacy](../organizations/managing-people/#adding-people) so that Codacy analyzes their commits on private repositories.
+
+1.  Check that Codacy displays the coverage information for the latest commits and pull requests:
+
+    ![Coverage data displayed on Codacy](images/coverage-codacy-ui.png)
+    
+    **If Codacy doesn't display the coverage data** for the latest commits or pull requests (represented by `-`), [follow these troubleshooting instructions](troubleshooting-common-issues.md#no-coverage-visible).
