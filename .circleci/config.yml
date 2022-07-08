@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  codacy: codacy/base@6.2.0
+  codacy: codacy/base@9.0.0
 
 references:
   circleci_job: &circleci_job
@@ -209,27 +209,16 @@ jobs:
           name: build mkdocs
           command: mkdocs build
 
-  wait_for_other_jobs_to_finish: &wait_for_other_jobs_to_finish
-    <<: *default_machine_job
-    resource_class: medium # small is not accepted for linux machines at the moment
-    working_directory: ~/workdir
-    steps:
-      - checkout
-      - run:
-          name: Run script to wait for other jobs to finish
-          command: |
-            python3 ~/workdir/.circleci/canWorkflowStart.py -k $CIRCLE_TOKEN -w $CIRCLE_WORKFLOW_ID -b $CIRCLE_BRANCH
-
 workflows:
   version: 2
   compile_test_deploy:
     jobs:
-      - wait_for_other_jobs_to_finish:
-          context: CodacyCircleCI
+      - codacy/wait_for_workflows:
+          context: ExternalSystems
       - codacy/checkout_and_version:
           write_sbt_version: true
           requires:
-            - wait_for_other_jobs_to_finish
+            - codacy/wait_for_workflows
       - pack_and_validate_orb:
           context: CodacyCircleCI
           requires:
