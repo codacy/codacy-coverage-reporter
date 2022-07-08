@@ -42,7 +42,9 @@ case class BaseConfig(
     codacyApiBaseUrl: String,
     commitUUID: Option[CommitUUID],
     debug: Boolean,
-    timeout: RequestTimeout
+    timeout: RequestTimeout,
+    sleepTime: Option[Int],
+    numRetries: Option[Int]
 )
 
 sealed trait CommitUUID extends Any {

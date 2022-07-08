@@ -37,6 +37,8 @@ Usage: codacy-coverage-reporter report
   --commit-uuid  <your commitUUID>
   --http-timeout  <Sets a specified read timeout value, in milliseconds, to be used when interacting with Codacy API>
   --skip | -s  <skip if token isn't defined>
+  --sleep-time <Sets a specified time, in milliseconds, to ne used when waiting between retries>
+  --num-retries <Sets a number of retries in case of failure>
   --language | -l  <language associated with your coverage report>
   --coverage-reports | -r  <your project coverage file name>
   --partial  <if the report is partial>

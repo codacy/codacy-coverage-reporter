@@ -91,6 +91,10 @@ case class BaseCommandConfig(
       "Sets a specified read timeout value, in milliseconds, to be used when interacting with Codacy API"
     )
     httpTimeout: Int = 10000,
+    @ValueDescription("Sets a specified time, in milliseconds, to ne used when waiting between retries")
+    sleepTime: Option[Int] = Some(10000),
+    @ValueDescription("Sets a number of retries in case of failure")
+    numRetries: Option[Int] = Some(3),
     @Name("s") @ValueDescription("skip if token isn't defined")
     skip: Int @@ Counter = Tag.of(0),
     @Hidden
