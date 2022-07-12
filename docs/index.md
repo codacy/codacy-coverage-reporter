@@ -152,15 +152,15 @@ After having coverage reports set up for your repository, you must use Codacy Co
         ```
 
     -   **If you're setting up and automating coverage for multiple repositories**, [obtain an account API Token](../codacy-api/api-tokens/#account-api-tokens) and set the following environment variables:
-    
+
         -   **CODACY_API_TOKEN:** Your account API token.
 
         -   **CODACY_ORGANIZATION_PROVIDER:** Git provider hosting the repository.
-        
+
             Must be one of `gh`, `ghe`, `gl`, `gle`, `bb`, or `bbe` to specify GitHub, GitHub Enterprise, GitLab, GitLab Enterprise, Bitbucket, or Bitbucket Enterprise, respectively.
 
         -   **CODACY_USERNAME:** Name of your organization on the Git provider, or your username on the Git provider if you're using a personal organization.
-        
+
         -   **CODACY_PROJECT_NAME:** Name of the repository for which you're uploading the coverage information.
 
         ```bash
@@ -220,10 +220,10 @@ bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
 
 !!! note
     Alternatively, you can:
-    
+
     1.   Upload each report separately with the flag `--partial`
     1.   Notify Codacy with the `final` command after uploading all reports
-    
+
     For example:
 
     ```bash
