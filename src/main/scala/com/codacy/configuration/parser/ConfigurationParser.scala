@@ -88,12 +88,14 @@ case class BaseCommandConfig(
     @ValueDescription("your commitUUID")
     commitUUID: Option[String],
     @ValueDescription(
-      "Sets a specified read timeout value, in milliseconds, to be used when interacting with Codacy API"
+      "Sets a specified read timeout value, in milliseconds, to be used when interacting with Codacy API. By default, the value is 10 seconds"
     )
     httpTimeout: Int = 10000,
-    @ValueDescription("Sets a specified time, in milliseconds, to ne used when waiting between retries")
+    @ValueDescription(
+      "Sets a specified time, in milliseconds, to be used when waiting between retries. By default, the value is 10 seconds"
+    )
     sleepTime: Option[Int] = Some(10000),
-    @ValueDescription("Sets a number of retries in case of failure")
+    @ValueDescription("Sets a number of retries in case of failure. By default, the value is 3 times")
     numRetries: Option[Int] = Some(3),
     @Name("s") @ValueDescription("skip if token isn't defined")
     skip: Int @@ Counter = Tag.of(0),

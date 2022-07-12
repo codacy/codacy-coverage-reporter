@@ -35,10 +35,10 @@ Usage: codacy-coverage-reporter report
   --project-name | -p  <your project name>
   --codacy-api-base-url  <the base URL for the Codacy API>
   --commit-uuid  <your commitUUID>
-  --http-timeout  <Sets a specified read timeout value, in milliseconds, to be used when interacting with Codacy API>
+  --http-timeout  <Sets a specified read timeout value, in milliseconds, to be used when interacting with Codacy API. By default, the value is 10 seconds>
   --skip | -s  <skip if token isn't defined>
-  --sleep-time <Sets a specified time, in milliseconds, to ne used when waiting between retries>
-  --num-retries <Sets a number of retries in case of failure>
+  --sleep-time <Sets a specified time, in milliseconds, to be used when waiting between retries. By default, the value is 10 seconds>
+  --num-retries <Sets a number of retries in case of failure. By default, the value is 3 times>
   --language | -l  <language associated with your coverage report>
   --coverage-reports | -r  <your project coverage file name>
   --partial  <if the report is partial>

@@ -91,7 +91,7 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
           any[CoverageReport],
           anyBoolean,
           Some(RequestTimeout(1000, 10000)),
-          Some(10),
+          Some(10000),
           Some(3)
         ) returns FailedResponse("Failed to send report")
 
@@ -108,7 +108,7 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
         any[CoverageReport],
         anyBoolean,
         Some(RequestTimeout(1000, 10000)),
-        Some(10),
+        Some(10000),
         Some(3)
       ) returns SuccessfulResponse(RequestSuccess("Success"))
 
