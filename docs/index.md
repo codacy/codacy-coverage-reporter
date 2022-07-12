@@ -309,8 +309,8 @@ To validate that the coverage setup is complete:
         If you need more help setting up coverage on your repository please contact us at <mailto:support@codacy.com> including the following information:
 
         -   URL of your repository on Codacy
-        -   Your CI configuration files and the name of your CI platform
-        -   Full console output of your CI when running the Codacy Coverage Reporter
-        -   Branch name and commit UUID corresponding to the CI output
+        -   Your CI/CD configuration files and the name of your CI/CD platform
+        -   Full console output of your CI/CD when running the Codacy Coverage Reporter
+        -   Branch name and commit UUID corresponding to the CI/CD output
         -   Test coverage report that you're uploading to Codacy
         -   Any other relevant information or screenshots of your setup
