@@ -24,7 +24,7 @@ class CodacyCoverageReporterSpec extends WordSpec with Matchers with EitherValue
       username: Option[String],
       projectName: Option[String],
       commitUuid: Option[String],
-      sleepTime: Option[Int],
+      sleepTime: Int,
       numRetries: Option[Int]
   ) = {
     val baseConfig =
@@ -60,7 +60,7 @@ class CodacyCoverageReporterSpec extends WordSpec with Matchers with EitherValue
   "run" should {
     "be successful" when {
       "using a project token to send coverage" in {
-        val result = runCoverageReport(projectToken, None, None, None, None, commitUuid, Some(10000), None)
+        val result = runCoverageReport(projectToken, None, None, None, None, commitUuid, 10000, None)
 
         result shouldBe 'right
       }
@@ -76,7 +76,7 @@ class CodacyCoverageReporterSpec extends WordSpec with Matchers with EitherValue
             username,
             projectName,
             commitUuid,
-            Some(10000),
+            10000,
             None
           )
 
@@ -86,7 +86,7 @@ class CodacyCoverageReporterSpec extends WordSpec with Matchers with EitherValue
 
     "fail" when {
       "project token is invalid" in {
-        val result = runCoverageReport(Some("invalid token"), None, None, None, None, commitUuid, Some(10000), None)
+        val result = runCoverageReport(Some("invalid token"), None, None, None, None, commitUuid, 10000, None)
 
         result shouldBe 'left
       }
@@ -99,7 +99,7 @@ class CodacyCoverageReporterSpec extends WordSpec with Matchers with EitherValue
           username,
           projectName,
           commitUuid,
-          Some(10000),
+          10000,
           None
         )
 
