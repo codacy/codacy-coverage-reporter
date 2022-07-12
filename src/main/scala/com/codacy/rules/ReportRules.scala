@@ -148,7 +148,15 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
   ) = {
     val coverageResponse = config.baseConfig.authentication match {
       case _: ProjectTokenAuthenticationConfig =>
-        coverageServices.sendReport(commitUUID, language, report, config.partial, Some(config.baseConfig.timeout))
+        coverageServices.sendReport(
+          commitUUID,
+          language,
+          report,
+          config.partial,
+          Some(config.baseConfig.timeout),
+          Some(config.baseConfig.sleepTime),
+          Some(config.baseConfig.numRetries)
+        )
 
       case ApiTokenAuthenticationConfig(_, organizationProvider, username, projectName) =>
         coverageServices.sendReportWithProjectName(
@@ -159,7 +167,9 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
           language,
           report,
           config.partial,
-          Some(config.baseConfig.timeout)
+          Some(config.baseConfig.timeout),
+          Some(config.baseConfig.sleepTime),
+          Some(config.baseConfig.numRetries)
         )
     }
     coverageResponse match {
@@ -283,7 +293,12 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
     withCommitUUID(config.baseConfig) { commitUUID =>
       val coverageResponse = config.baseConfig.authentication match {
         case _: ProjectTokenAuthenticationConfig =>
-          coverageServices.sendFinalNotification(commitUUID, Some(config.baseConfig.timeout))
+          coverageServices.sendFinalNotification(
+            commitUUID,
+            Some(config.baseConfig.timeout),
+            Some(config.baseConfig.sleepTime),
+            Some(config.baseConfig.numRetries)
+          )
 
         case ApiTokenAuthenticationConfig(_, organizationProvider, username, projectName) =>
           coverageServices.sendFinalWithProjectName(
@@ -291,7 +306,9 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
             username,
             projectName,
             commitUUID,
-            Some(config.baseConfig.timeout)
+            Some(config.baseConfig.timeout),
+            Some(config.baseConfig.sleepTime),
+            Some(config.baseConfig.numRetries)
           )
       }
       coverageResponse match {

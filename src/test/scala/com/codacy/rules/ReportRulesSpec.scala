@@ -17,7 +17,7 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
   val coverageFiles = List(new File("coverage.xml"))
   val apiBaseUrl = "https://api.codacy.com"
 
-  val baseConf = BaseCommandConfig(Some(projToken), None, None, None, None, Some(apiBaseUrl), None)
+  val baseConf = BaseCommandConfig(Some(projToken), None, None, None, None, Some(apiBaseUrl), None, 10000, 3)
 
   val conf =
     Report(baseConf, Some("Scala"), coverageReports = Some(coverageFiles), prefix = None, forceCoverageParser = None)
@@ -37,7 +37,9 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
         apiBaseUrl,
         None,
         debug = false,
-        timeout = RequestTimeout(1000, 10000)
+        timeout = RequestTimeout(1000, 10000),
+        sleepTime = 10000,
+        numRetries = 3
       )
 
     def assertCodacyCoverage(
@@ -88,7 +90,9 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
           any[String],
           any[CoverageReport],
           anyBoolean,
-          Some(RequestTimeout(1000, 10000))
+          Some(RequestTimeout(1000, 10000)),
+          Some(10000),
+          Some(3)
         ) returns FailedResponse("Failed to send report")
 
         assertCodacyCoverage(coverageServices, List("src/test/resources/dotcover-example.xml"), success = false)
@@ -103,7 +107,9 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
         any[String],
         any[CoverageReport],
         anyBoolean,
-        Some(RequestTimeout(1000, 10000))
+        Some(RequestTimeout(1000, 10000)),
+        Some(10000),
+        Some(3)
       ) returns SuccessfulResponse(RequestSuccess("Success"))
 
       assertCodacyCoverage(coverageServices, List("src/test/resources/dotcover-example.xml"), success = true)
