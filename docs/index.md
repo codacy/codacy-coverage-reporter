@@ -310,6 +310,7 @@ To validate that the coverage setup is complete:
 
         -   URL of your repository on Codacy
         -   Your CI configuration files and the name of your CI platform
+        -   Full console output of your CI when running the Codacy Coverage Reporter
+        -   Branch name and commit UUID corresponding to the CI output
         -   Test coverage report that you're uploading to Codacy
-        -   Branch name, commit UUID, and full console output of the Codacy Coverage Reporter
         -   Any other relevant information or screenshots of your setup
