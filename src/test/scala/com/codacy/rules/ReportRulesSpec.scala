@@ -17,7 +17,7 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
   val coverageFiles = List(new File("coverage.xml"))
   val apiBaseUrl = "https://api.codacy.com"
 
-  val baseConf = BaseCommandConfig(Some(projToken), None, None, None, None, Some(apiBaseUrl), None, 10000, None)
+  val baseConf = BaseCommandConfig(Some(projToken), None, None, None, None, Some(apiBaseUrl), None, 10000, 3)
 
   val conf =
     Report(baseConf, Some("Scala"), coverageReports = Some(coverageFiles), prefix = None, forceCoverageParser = None)
@@ -38,8 +38,8 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
         None,
         debug = false,
         timeout = RequestTimeout(1000, 10000),
-        sleepTime = Option(10000),
-        numRetries = Option(3)
+        sleepTime = 10000,
+        numRetries = 3
       )
 
     def assertCodacyCoverage(

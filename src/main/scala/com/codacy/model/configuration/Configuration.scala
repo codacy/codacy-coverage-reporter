@@ -43,8 +43,8 @@ case class BaseConfig(
     commitUUID: Option[CommitUUID],
     debug: Boolean,
     timeout: RequestTimeout,
-    sleepTime: Option[Int],
-    numRetries: Option[Int]
+    sleepTime: Int,
+    numRetries: Int
 )
 
 sealed trait CommitUUID extends Any {

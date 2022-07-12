@@ -154,8 +154,8 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
           report,
           config.partial,
           Some(config.baseConfig.timeout),
-          config.baseConfig.sleepTime,
-          config.baseConfig.numRetries
+          Some(config.baseConfig.sleepTime),
+          Some(config.baseConfig.numRetries)
         )
 
       case ApiTokenAuthenticationConfig(_, organizationProvider, username, projectName) =>
@@ -168,8 +168,8 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
           report,
           config.partial,
           Some(config.baseConfig.timeout),
-          config.baseConfig.sleepTime,
-          config.baseConfig.numRetries
+          Some(config.baseConfig.sleepTime),
+          Some(config.baseConfig.numRetries)
         )
     }
     coverageResponse match {
@@ -296,8 +296,8 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
           coverageServices.sendFinalNotification(
             commitUUID,
             Some(config.baseConfig.timeout),
-            config.baseConfig.sleepTime,
-            config.baseConfig.numRetries
+            Some(config.baseConfig.sleepTime),
+            Some(config.baseConfig.numRetries)
           )
 
         case ApiTokenAuthenticationConfig(_, organizationProvider, username, projectName) =>
@@ -307,8 +307,8 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
             projectName,
             commitUUID,
             Some(config.baseConfig.timeout),
-            config.baseConfig.sleepTime,
-            config.baseConfig.numRetries
+            Some(config.baseConfig.sleepTime),
+            Some(config.baseConfig.numRetries)
           )
       }
       coverageResponse match {
