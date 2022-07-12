@@ -302,5 +302,14 @@ To validate that the coverage setup is complete:
 1.  Check that Codacy displays the coverage information for the latest commits and pull requests:
 
     ![Coverage data displayed on Codacy](images/coverage-codacy-ui.png)
-    
-    **If Codacy doesn't display the coverage data** for the latest commits or pull requests (represented by `-`), [follow these troubleshooting instructions](troubleshooting-common-issues.md#no-coverage-visible).
+
+1.  **If Codacy doesn't display the coverage data** for the latest commits or pull requests (represented by `-`), please [follow these troubleshooting instructions](troubleshooting-common-issues.md#no-coverage-visible) or contact us for more help:
+
+    !!! note "Opening a Support ticket"
+        If you need more help setting up coverage on your repository please contact us at <mailto:support@codacy.com> including the following information:
+
+        -   URL of your repository on Codacy
+        -   Your CI configuration files and the name of your CI platform
+        -   Test coverage report that you're uploading to Codacy
+        -   Branch name, commit UUID, and full console output of the Codacy Coverage Reporter
+        -   Any other relevant information or screenshots of your setup
