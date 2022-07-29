@@ -194,7 +194,7 @@ After having coverage reports set up for your repository, you must use Codacy Co
 
         Be sure to also check the sections below for more advanced functionality while uploading the coverage data to Codacy.
 
-1.  Make sure that Codacy received the coverage data successfully for the **correct commit UUID and branch**. On Codacy, open your **Repository Settings**, tab **Coverage**, and expand the list of recent coverage reports in the section **Test your integration**:
+1.  Make sure that Codacy received the coverage data successfully for the **correct commit UUID and branch**. On Codacy, open your **Repository Settings**, tab **Coverage**, and observe the list of recent coverage reports in the section **Test your integration**:
 
     ![Testing the coverage integration](images/coverage-test-integration.png)
 
