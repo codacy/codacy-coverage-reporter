@@ -14,6 +14,8 @@ If necessary, see [alternative ways of running Codacy Coverage Reporter](https:/
 
 For a complete list of commands and options, run the Codacy Coverage Reporter with the flag `--help`. For example:
 
+
+```bash
 $ bash <(curl -Ls https://coverage.codacy.com/get.sh) report --help
      ______          __
     / ____/___  ____/ /___ ________  __
@@ -47,6 +49,7 @@ Usage: codacy-coverage-reporter report
 
 
  --> Succeeded!
+```
 
 ## What is Codacy?
 
