@@ -15,7 +15,7 @@ parameters:
     default: ''
   skip:
     type: boolean
-    description: Skip if token isn't defined. Useful to let forks CI pass without passing secrets
+    description: Skip if token is not defined. Useful to let forks CI pass without passing secrets
     default: false
 
 steps:
