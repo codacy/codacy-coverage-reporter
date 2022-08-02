@@ -97,7 +97,7 @@ case class BaseCommandConfig(
     sleepTime: Int = 10000,
     @ValueDescription("Sets a number of retries in case of failure. By default, the value is 3 times")
     numRetries: Int = 3,
-    @Name("s") @ValueDescription("skip if token is not defined")
+    @Name("s") @ValueDescription("skip if token isn't defined")
     skip: Int @@ Counter = Tag.of(0),
     @Hidden
     debug: Int @@ Counter = Tag.of(0)
