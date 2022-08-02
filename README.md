@@ -14,7 +14,7 @@ If necessary, see [alternative ways of running Codacy Coverage Reporter](https:/
 
 For a complete list of commands and options, run the Codacy Coverage Reporter with the flag `--help`. For example:
 
-```bash
+```
 $ bash <(curl -Ls https://coverage.codacy.com/get.sh) report --help
      ______          __
     / ____/___  ____/ /___ ________  __
@@ -36,7 +36,7 @@ Usage: codacy-coverage-reporter report
   --codacy-api-base-url  <the base URL for the Codacy API>
   --commit-uuid  <your commitUUID>
   --http-timeout  <Sets a specified read timeout value, in milliseconds, to be used when interacting with Codacy API. By default, the value is 10 seconds>
-  --skip | -s  <skip if token is not defined>
+  --skip | -s  <skip if token isn't defined>
   --sleep-time <Sets a specified time, in milliseconds, to be used when waiting between retries. By default, the value is 10 seconds>
   --num-retries <Sets a number of retries in case of failure. By default, the value is 3 times>
   --language | -l  <language associated with your coverage report>
