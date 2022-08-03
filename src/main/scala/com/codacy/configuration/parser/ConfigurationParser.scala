@@ -85,7 +85,7 @@ case class BaseCommandConfig(
     projectName: Option[String],
     @ValueDescription("the base URL for the Codacy API")
     codacyApiBaseUrl: Option[String],
-    @ValueDescription("your commitUUID")
+    @ValueDescription("your commit SHA-1 hash")
     commitUUID: Option[String],
     @ValueDescription(
       "Sets a specified read timeout value, in milliseconds, to be used when interacting with Codacy API. By default, the value is 10 seconds"

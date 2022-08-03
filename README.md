@@ -34,7 +34,7 @@ Usage: codacy-coverage-reporter report
   --username | -u  <the project owner name>
   --project-name | -p  <your project name>
   --codacy-api-base-url  <the base URL for the Codacy API>
-  --commit-uuid  <your commitUUID>
+  --commit-uuid  <your commit SHA-1 hash>
   --http-timeout  <Sets a specified read timeout value, in milliseconds, to be used when interacting with Codacy API. By default, the value is 10 seconds>
   --skip | -s  <skip if token isn't defined>
   --sleep-time <Sets a specified time, in milliseconds, to be used when waiting between retries. By default, the value is 10 seconds>

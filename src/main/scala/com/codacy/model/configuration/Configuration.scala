@@ -66,7 +66,7 @@ object CommitUUID {
     if (isValid(commitUUID)) {
       Right(CommitUUIDImpl(commitUUID))
     } else {
-      Left("Commit UUID is not valid. Make sure the commit SHA consists of 40 hexadecimal characters.")
+      Left("Commit SHA-1 hash isn't valid. Make sure it consists of 40 hexadecimal characters.")
     }
 
   /** Commit UUID class that guarantees it contains a valid commit SHA, since it can only be instantiated via
