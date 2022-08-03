@@ -145,9 +145,9 @@ After having coverage reports set up for your repository, you must use the Codac
 The recommended way to do this is by using a CI/CD platform that automatically runs tests, generates coverage, and uses the Codacy Coverage Reporter to upload the coverage report information for every push to your repository.
 
 !!! note "Alternative ways of running the Codacy Coverage Reporter"
-    The instructions on this page assume that you'll run a self-contained bash script `get.sh` to automatically download and run the most recent version of the Codacy Coverage Reporter.
-    
-    However, there are [alternative ways to run the Codacy Coverage Reporter](alternative-ways-of-running-coverage-reporter.md), such as by installing the binary manually or by using Docker, a GitHub Action, or a CircleCI Orb.
+    Codacy makes available [alternative ways to run the Codacy Coverage Reporter](alternative-ways-of-running-coverage-reporter.md), such as by installing the binary manually or by using Docker, a GitHub Action, or a CircleCI Orb.
+
+    However, the instructions on this page assume that you'll run the recommended [self-contained bash script `get.sh`](alternative-ways-of-running-coverage-reporter.md#bash-script) to automatically download and run the most recent version of the Codacy Coverage Reporter.    
 
 1.  Set up an API token to allow Codacy Coverage Reporter to authenticate on Codacy:
     {: id="authenticate"}
