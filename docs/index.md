@@ -210,17 +210,20 @@ The recommended way to do this is by using a CI/CD platform that automatically r
 
 ## 3. Validating that the coverage setup is complete {: id="validating-coverage"}
 
-Codacy displays the code coverage in each branch, as well as the evolution of code coverage between commits and the code coverage variation introduced by pull requests. Because of this, to ensure that all code coverage metrics are available on Codacy, you must have successfully uploaded coverage data and analyzed:
+Codacy displays the code coverage in each branch, as well as the evolution of code coverage between commits and the code coverage variation introduced by pull requests.
+
+Because of this, to ensure that all code coverage metrics are available on Codacy, you must have successfully uploaded coverage data and analyzed:
 
 -   The last two commits in each branch
--   The common ancestor commits between pull request branches and their target branches
+-   The common ancestor commit of each pull request branch and its target branch
 
-The example below shows that after pushing a commit that correctly sets up coverage on the main branch:
+!!! note "Example"
+    The example below shows that after pushing a commit that correctly sets up coverage on the main branch:
 
--   Codacy will report coverage metrics for all subsequent commits and pull requests relative to the main branch
--   Codacy won't report coverage metrics for commits and pull requests that are relative to older branches where the coverage setup wasn't performed yet
+    -   Codacy will report coverage metrics for all subsequent commits and pull requests relative to the main branch
+    -   Codacy won't report coverage metrics for commits and pull requests that are relative to older branches where the coverage setup wasn't performed yet
 
-![Setting up coverage on the main branch](images/coverage-validate.png)
+    ![Setting up coverage on the main branch](images/coverage-validate.png)
 
 To validate that the coverage setup is complete:
 
