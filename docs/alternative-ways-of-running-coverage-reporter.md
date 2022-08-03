@@ -4,6 +4,10 @@ description: There are alternative ways of running or installing Codacy Coverage
 
 # Alternative ways of running Coverage Reporter
 
+The following sections list the alternative ways of running or installing Codacy Coverage Reporter.
+
+## Bash script (recommended) {: id="bash-script"}
+
 The recommended way to run Codacy Coverage Reporter is using a self-contained script that automatically downloads and runs the most recent version of Codacy Coverage Reporter:
 
 -   On Ubuntu, run:
@@ -35,8 +39,6 @@ export CODACY_REPORTER_VERSION=<version>
     ```bash
     export CODACY_REPORTER_SKIP_CHECKSUM=true
     ```
-
-The sections below provide details on alternative ways to run or install Codacy Coverage Reporter.
 
 ## Docker
 
