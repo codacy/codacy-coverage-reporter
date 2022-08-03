@@ -116,7 +116,7 @@ The following table contains example coverage tools that generate reports in for
 </tbody>
 </table>
 
-### Submitting coverage from unsupported report formats
+### Handling unsupported report formats
 
 If you're generating a report format that Codacy doesn't support yet, [contribute with a parser implementation](https://github.com/codacy/codacy-coverage-reporter/tree/master/coverage-parser/src/main/scala/com/codacy/parsers/implementation) yourself or use one of the community projects below to generate coverage reports in a supported format:
 
@@ -202,9 +202,14 @@ After having coverage reports set up for your repository, you must use Codacy Co
 
 ### Uploading multiple coverage reports for the same language {: id="multiple-reports"}
 
-If your test suite is split in different modules or runs in parallel, you must upload multiple coverage reports for the same language.
+If your test suite is split in different modules or runs in parallel, you must upload multiple coverage reports for the same language either at once or in sequence.
 
-To do this, specify multiple reports by repeating the flag `-r`. For example:
+!!! tip
+    Alternatively, it might also be possible to merge the coverage reports before uploading them to Codacy, since most coverage tools support merging or aggregating the coverage data. For example, use the [merge mojo for JaCoCo](http://www.eclemma.org/jacoco/trunk/doc/merge-mojo.html).
+
+#### Uploading multiple reports at once {: id="multiple-reports-once"}
+
+Upload multiple partial coverage reports with a single command by specifying each report with the flag `-r`. For example:
 
 ```bash
 bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
@@ -218,26 +223,25 @@ bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
     -l Java $(find . -name 'jacoco*.xml' -printf '-r %p ')
 ```
 
-!!! note
-    Alternatively, you can:
+#### Uploading multiple reports in sequence {: id="multiple-reports-sequence"}
 
-    1.   Upload each report separately with the flag `--partial`
-    1.   Notify Codacy with the `final` command after uploading all reports
+Upload multiple partial coverage reports in sequence:
 
-    For example:
+1.  Upload each report separately with the flag `--partial`.
 
-    ```bash
-    bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
-        --partial -l Java -r report1.xml
-    bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
-        --partial -l Java -r report2.xml
-    bash <(curl -Ls https://coverage.codacy.com/get.sh) final
-    ```
+    If you're sending reports for a language with the flag `--partial`, you must use the flag in all reports for that language to ensure the correct calculation of the coverage.
 
-    If you're sending reports for a language with the flag `--partial`, you should use the flag in all reports for that language to ensure the correct calculation of the coverage.
+1.  Notify Codacy with the `final` command after uploading all reports.
 
-!!! tip
-    It might also be possible to merge the reports before uploading them to Codacy, since most coverage tools support merge/aggregation. For example, <http://www.eclemma.org/jacoco/trunk/doc/merge-mojo.html>.
+For example:
+
+```bash
+bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
+    --partial -l Java -r report1.xml
+bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
+    --partial -l Java -r report2.xml
+bash <(curl -Ls https://coverage.codacy.com/get.sh) final
+```
 
 ### Uploading the same coverage report for multiple languages {: id="multiple-languages"}
 
@@ -252,7 +256,7 @@ bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
     -l TypeScript -r report.xml
 ```
 
-### Submitting coverage for Golang
+### Uploading coverage for Golang {: id="golang"}
 
 Codacy can't automatically detect Golang coverage report files because they don't have specific file names.
 
@@ -263,7 +267,7 @@ bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
     --force-coverage-parser go -r <coverage report file name>
 ```
 
-### Submitting coverage for unsupported languages
+### Uploading coverage for unsupported languages {: id="unsupported-languages"}
 
 If your language isn't in the list of supported languages, you can still send coverage to Codacy.
 
