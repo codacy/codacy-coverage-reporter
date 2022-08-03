@@ -140,7 +140,7 @@ As a last resort, you can also send the coverage data directly by calling one of
 
 ## 2. Uploading coverage data to Codacy {: id="uploading-coverage"}
 
-After having coverage reports set up for your repository, you must use the Codacy Coverage Reporter to convert the reports to smaller JSON files and upload these files to Codacy.
+After having coverage reports set up for your repository, you must use the Codacy Coverage Reporter to upload them to Codacy.
 
 The recommended way to do this is by using a CI/CD platform that automatically runs tests, generates coverage, and uses the Codacy Coverage Reporter to upload the coverage report information for every push to your repository.
 
