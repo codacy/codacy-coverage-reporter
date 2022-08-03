@@ -140,7 +140,14 @@ As a last resort, you can also send the coverage data directly by calling one of
 
 ## 2. Uploading coverage data to Codacy {: id="uploading-coverage"}
 
-After having coverage reports set up for your repository, you must use Codacy Coverage Reporter to convert the reports to smaller JSON files and upload these files to Codacy. The recommended way to do this is using a CI/CD platform that automatically runs tests, generates coverage, and uses Codacy Coverage Reporter to upload the coverage report information for every push to your repository.
+After having coverage reports set up for your repository, you must use the Codacy Coverage Reporter to convert the reports to smaller JSON files and upload these files to Codacy.
+
+The recommended way to do this is by using a CI/CD platform that automatically runs tests, generates coverage, and uses the Codacy Coverage Reporter to upload the coverage report information for every push to your repository.
+
+!!! note "Alternative ways of running the Codacy Coverage Reporter"
+    The instructions on this page assume that you'll run a self-contained bash script `get.sh` to automatically download and run the most recent version of the Codacy Coverage Reporter.
+    
+    However, there are [alternative ways to run the Codacy Coverage Reporter](alternative-ways-of-running-coverage-reporter.md), such as by installing the binary manually or by using Docker, a GitHub Action, or a CircleCI Orb.
 
 1.  Set up an API token to allow Codacy Coverage Reporter to authenticate on Codacy:
     {: id="authenticate"}
@@ -189,10 +196,8 @@ After having coverage reports set up for your repository, you must use Codacy Co
 
     Check the console output to validate that the Codacy Coverage Reporter **detected the correct commit UUID** and **successfully uploaded** the coverage data to Codacy. If you need help, [check the troubleshooting page](troubleshooting-common-issues.md) for solutions to the most common setup issues.
 
-    !!! tip
-        The self-contained script `get.sh` automatically downloads and runs the most recent version of Codacy Coverage Reporter. See [alternative ways of running Codacy Coverage Reporter](alternative-ways-of-running-coverage-reporter.md) for other ways of running Codacy Coverage Reporter, such as by installing the binary manually or using a GitHub Action or CircleCI Orb.
-
-        Be sure to also check the [instructions for more advanced scenarios](uploading-coverage-in-advanced-scenarios.md) while uploading the coverage data to Codacy.
+    !!! note
+        Be sure to also check the [instructions for more advanced scenarios](uploading-coverage-in-advanced-scenarios.md) while uploading the coverage data to Codacy, such as when you need to upload multiple coverage reports.
 
 1.  Make sure that Codacy received the coverage data successfully for the **correct commit UUID and branch**. On Codacy, open your **Repository Settings**, tab **Coverage**, and observe the list of recent coverage reports in the section **Test your integration**:
 
