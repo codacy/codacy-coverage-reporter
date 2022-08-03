@@ -202,12 +202,6 @@ The recommended way to do this is by using a CI/CD platform that automatically r
     !!! note
         Be sure to also check the [instructions for more advanced scenarios](uploading-coverage-in-advanced-scenarios.md) while uploading the coverage data to Codacy, such as when running parallel tests, using monorepos, or testing source code in multiple or unsupported languages.
 
-1.  Make sure that Codacy received the coverage data successfully for the **correct commit UUID and branch**. On Codacy, open your **Repository Settings**, tab **Coverage**, and observe the list of recent coverage reports in the section **Test your integration**:
-
-    ![Testing the coverage integration](images/coverage-test-integration.png)
-
-    If you make adjustments to your setup and upload new coverage data, click the button **Test integration** to refresh the table.
-
 ## 3. Validating that the coverage setup is complete {: id="validating-coverage"}
 
 Codacy displays the code coverage in each branch, as well as the evolution of code coverage between commits and the code coverage variation introduced by pull requests.
@@ -226,6 +220,12 @@ Because of this, to ensure that all code coverage metrics are available on Codac
     ![Setting up coverage on the main branch](images/coverage-validate.png)
 
 To validate that the coverage setup is complete:
+
+1.  Make sure that Codacy received the coverage data successfully for the **correct commit UUID and branch**. On Codacy, open your **Repository Settings**, tab **Coverage**, and observe the list of recent coverage reports in the section **Test your integration**:
+
+    ![Testing the coverage integration](images/coverage-test-integration.png)
+
+    If you make adjustments to your setup and upload new coverage data, click the button **Test integration** to refresh the table.
 
 1.  Wait until there are **at least two commits** that have uploaded coverage data to Codacy and were successfully analyzed by Codacy.
 
