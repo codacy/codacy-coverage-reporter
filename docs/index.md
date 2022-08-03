@@ -227,9 +227,16 @@ To validate that the coverage setup is complete:
 
     If you make adjustments to your setup and upload new coverage data, click the button **Test integration** to refresh the table.
 
-1.  Wait until there are **at least two commits** that have uploaded coverage data to Codacy and were successfully analyzed by Codacy.
+    <!--TODO
+        Link to troubleshooting instructions for each possible error status
+    -->
+
+1.  Make sure that there are **at least two commits** that uploaded coverage data to Codacy and were successfully analyzed by Codacy.
 
     !!! important
+        <!--TODO
+            Move this information to the troubleshooting instructions linked in the previous step, as it is relevant to the error status "Commit not analyzed".
+        -->
         Codacy only takes the uploaded coverage data into account after successfully analyzing each commit.
 
         Make sure that you [invite or ask your team members to join your organization on Codacy](../organizations/managing-people/#adding-people) so that Codacy analyzes their commits on private repositories.
