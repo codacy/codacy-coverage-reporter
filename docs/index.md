@@ -116,7 +116,7 @@ The following table contains example coverage tools that generate reports in for
 </tbody>
 </table>
 
-### Handling unsupported report formats
+### Handling unsupported languages
 
 If you're generating a report format that Codacy doesn't support yet, [contribute with a parser implementation](https://github.com/codacy/codacy-coverage-reporter/tree/master/coverage-parser/src/main/scala/com/codacy/parsers/implementation) yourself or use one of the community projects below to generate coverage reports in a supported format:
 
@@ -132,6 +132,9 @@ If you're generating a report format that Codacy doesn't support yet, [contribut
 -   [dariodf/lcov_ex](https://github.com/dariodf/lcov_ex): generate LCOV reports for Elixir projects
 -   [chrisgit/sfdx-plugins_apex_coverage_report](https://github.com/chrisgit/sfdx-plugins_apex_coverage_report): generate LCOV or Cobertura reports from [Apex](https://help.salesforce.com/articleView?id=sf.code_apex_dev_guide_tools.htm&type=5) code coverage data
 -   [danielpalme/ReportGenerator](https://github.com/danielpalme/ReportGenerator): convert between different report formats
+
+!!! important
+    Make sure that you [specify the language](uploading-coverage-in-advanced-scenarios.md#unsupported-languages) when uploading coverage for an unsupported language.
 
 As a last resort, you can also send the coverage data directly by calling one of the following Codacy API endpoints:
 
