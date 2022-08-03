@@ -197,7 +197,7 @@ The recommended way to do this is by using a CI/CD platform that automatically r
     bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r <coverage report file name>
     ```
 
-    Check the console output to validate that the Codacy Coverage Reporter **detected the correct commit UUID** and **successfully uploaded** the coverage data to Codacy. If you need help, [check the troubleshooting page](troubleshooting-common-issues.md) for solutions to the most common setup issues.
+    Check the console output to validate that the Codacy Coverage Reporter **detected the correct commit SHA-1 hash** and **successfully uploaded** the coverage data to Codacy. If you need help, [check the troubleshooting page](troubleshooting-common-issues.md) for solutions to the most common setup issues.
 
     !!! note
         Be sure to also check the [instructions for more advanced scenarios](uploading-coverage-in-advanced-scenarios.md) while uploading the coverage data to Codacy, such as when running parallel tests, using monorepos, or testing source code in multiple or unsupported languages.
@@ -221,7 +221,7 @@ Because of this, to ensure that all code coverage metrics are available on Codac
 
 Follow these instructions to validate that your coverage setup is working correctly:
 
-1.  On Codacy, open your **Repository Settings**, tab **Coverage**, and observe the list of recent coverage reports in the section **Test your integration** to make sure that Codacy received the coverage data successfully for the **[correct commit UUID](troubleshooting-common-issues.md#commit-detection) and branch**, and that it processed the coverage data successfully.
+1.  On Codacy, open your **Repository Settings**, tab **Coverage**, and observe the list of recent coverage reports in the section **Test your integration** to make sure that Codacy received the coverage data successfully for the **[correct commit SHA-1 hash](troubleshooting-common-issues.md#commit-detection) and branch**, and that it processed the coverage data successfully.
 
     ![Testing the coverage integration](images/coverage-test-integration.png)
 
@@ -253,6 +253,6 @@ Follow these instructions to validate that your coverage setup is working correc
         -   URL of your repository on Codacy
         -   Your CI/CD configuration files and the name of your CI/CD platform
         -   Full console output of your CI/CD when running the Codacy Coverage Reporter
-        -   Branch name and commit UUID corresponding to the CI/CD output
+        -   Branch name and commit SHA-1 hash corresponding to the CI/CD output
         -   Test coverage report that you're uploading to Codacy
         -   Any other relevant information or screenshots of your setup
