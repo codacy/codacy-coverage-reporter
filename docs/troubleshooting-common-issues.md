@@ -180,8 +180,8 @@ The commit reported with the coverage doesn't belong to any branch that Codacy i
 <tr>
     <td>Coverage was uploaded for a commit in a branch that isn't explicitly enabled on Codacy nor belongs to a pull request branch targeting an enabled branch</td>
     <td><ul>
-        <li>Make sure that the [branch or target branch for pull requests is enabled on Codacy](../repositories-configure/managing-branches/)</li>
-        <li>Make sure that the Codacy Coverage Reporter is uploading the coverage data for the correct branch and [detecting the correct commit UUID](#commit-detection)</li>
+        <li>Make sure that the <a href="../repositories-configure/managing-branches/">branch or target branch for pull requests is enabled on Codacy</a></li>
+        <li>Make sure that the Codacy Coverage Reporter is uploading the coverage data for the correct branch and <a href="#commit-detection">detecting the correct commit UUID]</a></li>
     </ul></td>
 </tr>
 <tr>
@@ -213,7 +213,7 @@ Due to technical limitations, Codacy only reports coverage for a commit after pe
 <tr>
     <td>Codacy didn't analyze the commit on a private repository because the commit author isn't a member of the Codacy organization</td>
     <td><ul>
-        <li>Make sure that all commit authors are [added as members of the organization](../organizations/managing-people/#adding-people)</li>
+        <li>Make sure that all commit authors are <a href="../organizations/managing-people/#adding-people">added as members of the organization</a></li>
     </ul></td>
 </tr>
 <tr>
@@ -248,14 +248,14 @@ Due to technical limitations, Codacy only reports coverage for a commit after pe
 </thead>
 <tbody>
 <tr>
-    <td>Coverage was [uploaded with the "partial" flag](../coverage-reporter/#multiple-reports) but Codacy didn't receive the "final" notification</td>
+    <td>Coverage was uploaded with the "partial" flag but Codacy didn't receive the "final" notification</td>
     <td><ul>
-        <li>Make sure that after uploading all partial reports you [send the "final notification"](../coverage-reporter/#multiple-reports)</li>
-        <li>Alternatively, send all partial reports by [calling the Codacy Coverage Reporter only once](../coverage-reporter/#multiple-reports)</li>
+        <li>Make sure that after uploading all partial reports you <a href="../coverage-reporter/#multiple-reports">send the "final notification"</a></li>
+        <li>Alternatively, send all partial reports by <a href="../coverage-reporter/#multiple-reports">calling the Codacy Coverage Reporter only once</a></li>
     </ul></td>
 </tr>
 <tr>
-    <td>Coverage uploaded only includes information for files that are [ignored on Codacy](../repositories-configure/ignoring-files/)</td>
+    <td>Coverage uploaded only includes information for files that are <a href="../repositories-configure/ignoring-files/">ignored on Codacy</a></td>
     <td><ul>
         <li>This error status doesn't map well to the scenario causing it and Codacy could instead either report this status as Processed or with a new status to let users know why it won't display their coverage data, and in my opinion this scenario should be considered a bug <!--TODO Rewrite--></li>
     </ul></td>
