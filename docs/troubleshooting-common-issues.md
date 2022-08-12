@@ -209,50 +209,49 @@ Due to technical limitations, Codacy only reports coverage for a commit after su
 <table>
 <thead>
 <tr>
-    <th>What causes the error?</th>
+    <th width="40%">What causes the error?</th>
     <th>How to fix the error?</th>
 </tr>
 </thead>
 <tbody>
 <tr>
     <td>
-        Codacy hasn't finished analyzing the commit yet
+        Codacy hasn't finished analyzing the commit yet.
     </td>
     <td>
-        Wait until Codacy completes the static code analysis for the commit and the status will update automatically
-    </td>
-</tr>
-<tr>
-    <td>
-        Codacy didn't analyze the commit on a private repository because the commit author isn't a member of the Codacy organization
-    </td>
-    <td>
-        Make sure that all commit authors are <a href="../organizations/managing-people/#adding-people">added as members of the organization</a>
+        Wait a few more minutes until Codacy completes the static code analysis for the commit and the status will update automatically.
     </td>
 </tr>
 <tr>
     <td>
-        Codacy skipped analyzing the commit because there are more recent commits
+        Codacy didn't analyze the commit on a private repository because the commit author isn't a member of the Codacy organization.
     </td>
     <td>
-        Upload coverage data for the most recent commit in the branch
-    </td>
-</tr>
-<tr>
-    <td>
-        Codacy ran into an error while performing the static code analysis of the commit
-    </td>
-    <td>
-        <p>Solve the underlying issue causing the analysis to fail (for example, fix the SSH key)</p>
-        <p>Contact Support asking for help</p>
+        Make sure that you <a href="../organizations/managing-people/#adding-people">add all commit authors as members of the Codacy organization</a>.
     </td>
 </tr>
 <tr>
     <td>
-        The setting <strong>Run analysis on your build server</strong> is on, but the tools running locally aren't reporting results back to Codacy
+        Codacy skipped analyzing the commit because there are more recent commits in the branch.
     </td>
     <td>
-        Make sure that the local tools run successfully and that they report the results back to Codacy to complete the analysis
+        Upload coverage data for the most recent commit in the branch.
+    </td>
+</tr>
+<tr>
+    <td>
+        The setting <strong>Run analysis on your build server</strong> is on, but your client-side tools didn't upload results to Codacy.
+    </td>
+    <td>
+        Make sure that your <a href="../related-tools/local-analysis/client-side-tools/">client-side tools</a> run successfully and upload the results to Codacy to complete the analysis.
+    </td>
+</tr>
+<tr>
+    <td>
+        Codacy ran into an error while analyzing the commit.
+    </td>
+    <td>
+        Solve the issue that caused the analysis to fail (for example, fix the SSH key).<!--TODO Mention the most common issues--> or contact us at <a href="mailto:support@codacy.com">support@codacy.com</a> asking for help.
     </td>
 </tr>
 </table>
