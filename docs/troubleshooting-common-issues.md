@@ -263,34 +263,33 @@ Codacy is waiting to receive more coverage data before reporting the coverage fo
 <table>
 <thead>
 <tr>
-    <th>What causes the error?</th>
+    <th width="40%">What causes the error?</th>
     <th>How to fix the error?</th>
 </tr>
 </thead>
 <tbody>
 <tr>
     <td>
-        Coverage was uploaded with the "partial" flag but Codacy didn't receive the "final" notification
+        Coverage was uploaded with the <code>--partial</code> flag but Codacy didn't receive the <code>final</code> notification.
     </td>
     <td>
-        <p>Make sure that after uploading all partial reports you <a href="../coverage-reporter/#multiple-reports">send the "final notification"</a></p>
-        <p>Alternatively, send all partial reports by <a href="../coverage-reporter/#multiple-reports">calling the Codacy Coverage Reporter only once</a></p>
-    </td>
-</tr>
-<tr>
-    <td>
-        Coverage uploaded only includes information for files that are <a href="../repositories-configure/ignoring-files/">ignored on Codacy</a>
-    </td>
-    <td>
-        This error status doesn't map well to the scenario causing it and Codacy could instead either report this status as Processed or with a new status to let users know why it won't display their coverage data, and in my opinion this scenario should be considered a bug <!--TODO Rewrite-->
+        Make sure that after uploading all partial reports you <a href="../#multiple-reports">send the <code>final</code> notification</a>.
     </td>
 </tr>
 <tr>
     <td>
-        An empty coverage data set (`"total": 0`) was uploaded using the Codacy API
+        The uploaded coverage data only includes information for files that are <a href="../repositories-configure/ignoring-files/">ignored on Codacy</a>.
     </td>
     <td>
-        This error status doesn't map well to the scenario causing it and Codacy could instead either report this status as Processed or with a new status to let users know why it won't display their coverage data, and in my opinion this scenario should be considered a bug <!--TODO Rewrite-->
+        Check <a href="../repositories-configure/ignoring-files/">which files are ignored on Codacy</a> and make sure that you're generating coverage reports for the correct files in your repository.
+    </td>
+</tr>
+<tr>
+    <td>
+        An empty coverage data set (<code>"total": 0</code>) was uploaded using the Codacy API.
+    </td>
+    <td>
+        Codacy must receive coverage data for at least one file to calculate and display coverage.
     </td>
 </tr>
 </table>
