@@ -147,26 +147,26 @@ Codacy doesn't have information about the commit associated with the coverage da
 <table>
 <thead>
 <tr>
-    <th>What causes the error?</th>
+    <th width="40%">What causes the error?</th>
     <th>How to fix the error?</th>
 </tr>
 </thead>
 <tbody>
 <tr>
     <td>
-        Codacy hasn't received/processed the hook for that commit from the Git provider
+        Codacy didn't receive the webhook for that commit from the Git provider.
     </td>
     <td>
-        <p>Wait a few more minutes until Codacy "knows about the commit" and the status will update automatically</p>
-        <p>If it takes too long for Codacy to detect the commit, the hook call from the Git provider may have been lost. Contact Support to sync the commits with the Git provider<p>
-    </ul></td>
+        <p>Wait a few more minutes until Codacy detects the commit and the status will update automatically.</p>
+        <p>If it takes too long for Codacy to detect the commit, the webhook call from the Git provider may have been lost. You can wait until you push a new commit or contact us at <a href="mailto:support@codacy.com">support@codacy.com</a> to sync the commits on Codacy with your Git provider.<p>
+    </td>
 </tr>
 <tr>
     <td>
-        The commit SHA-1 hash sent while uploading coverage is wrong
+        The commit SHA-1 hash sent while uploading coverage is wrong.
     </td>
     <td>
-        Make sure that the Codacy Coverage Reporter is <a href="#commit-detection">detecting the correct commit SHA-1 hash</a> for the coverage data it is uploading
+        Make sure that the Codacy Coverage Reporter <a href="#commit-detection">detects the correct commit SHA-1 hash</a> for the uploaded coverage data.
     </td>
 </tr>
 </table>
