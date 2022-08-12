@@ -148,7 +148,7 @@ Codacy doesn't have information about the commit associated with the coverage da
 <thead>
 <tr>
     <th>What causes the error?</th>
-    <th>How to solve the error?</th>
+    <th>How to fix the error?</th>
 </tr>
 </thead>
 <tbody>
@@ -179,7 +179,7 @@ The commit associated with the coverage data doesn't belong to any branch that C
 <thead>
 <tr>
     <th>What causes the error?</th>
-    <th>How to solve the error?</th>
+    <th>How to fix the error?</th>
 </tr>
 </thead>
 <tbody>
@@ -210,7 +210,7 @@ Due to technical limitations, Codacy only reports coverage for a commit after su
 <thead>
 <tr>
     <th>What causes the error?</th>
-    <th>How to solve the error?</th>
+    <th>How to fix the error?</th>
 </tr>
 </thead>
 <tbody>
@@ -265,7 +265,7 @@ Codacy is waiting to receive more coverage data before reporting the coverage fo
 <thead>
 <tr>
     <th>What causes the error?</th>
-    <th>How to solve the error?</th>
+    <th>How to fix the error?</th>
 </tr>
 </thead>
 <tbody>
