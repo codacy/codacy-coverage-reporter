@@ -138,9 +138,11 @@ export CODACY_REPORTER_SKIP_CHECKSUM=true
 
 ## Error status
 
+<!--TODO Add section intro when moving this information to the final place-->
+
 ### Commit not found
 
-Codacy doesn't know about the commit reported with the coverage, either because:
+Codacy doesn't have information about the commit associated with the coverage data.
 
 <table>
 <thead>
@@ -171,7 +173,7 @@ Codacy doesn't know about the commit reported with the coverage, either because:
 
 ### Branch not enabled
 
-The commit reported with the coverage doesn't belong to any branch that Codacy is analyzing:
+The commit associated with the coverage data doesn't belong to any branch that Codacy is analyzing.
 
 <table>
 <thead>
@@ -202,7 +204,7 @@ The commit reported with the coverage doesn't belong to any branch that Codacy i
 
 ### Commit not analyzed
 
-Due to technical limitations, Codacy only reports coverage for a commit after performing static code analysis on that commit:
+Due to technical limitations, Codacy only reports coverage for a commit after successfully completing the static code analysis of that commit.
 
 <table>
 <thead>
@@ -256,6 +258,8 @@ Due to technical limitations, Codacy only reports coverage for a commit after pe
 </table>
 
 ### Pending
+
+Codacy is waiting to receive more coverage data before reporting the coverage for a commit.
 
 <table>
 <thead>
