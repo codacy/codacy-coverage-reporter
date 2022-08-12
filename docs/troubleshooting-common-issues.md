@@ -178,26 +178,26 @@ The commit associated with the coverage data doesn't belong to any branch that C
 <table>
 <thead>
 <tr>
-    <th>What causes the error?</th>
+    <th width="40%">What causes the error?</th>
     <th>How to fix the error?</th>
 </tr>
 </thead>
 <tbody>
 <tr>
     <td>
-        Coverage was uploaded for a commit in a branch that isn't explicitly enabled on Codacy nor belongs to a pull request branch targeting an enabled branch
+        Coverage was uploaded for a commit that belongs to a branch that isn't analyzed by Codacy.
     </td>
     <td>
-        <p>Make sure that the <a href="../repositories-configure/managing-branches/">branch or target branch for pull requests is enabled on Codacy</a></p>
-        <p>Make sure that the Codacy Coverage Reporter is uploading the coverage data for the correct branch and <a href="#commit-detection">detecting the correct commit UUID]</a></p>
+        <p>Make sure that the <a href="../repositories-configure/managing-branches/">branch or target branch for pull requests is enabled on Codacy</a>.</p>
+        <p>If Codacy is already analyzing the branch, make sure that the Codacy Coverage Reporter <href="#commit-detection">detects the correct commit SHA-1 hash</a> for the uploaded coverage data.</p>
     </td>
 </tr>
 <tr>
     <td>
-        Coverage was uploaded for a commit that no longer belongs to any branch on the Git repository, for example after a rebase or squash-merge
+        Coverage was uploaded for a commit that no longer belongs to any branch on the Git repository, for example after a rebase or squash merge.
     </td>
     <td>
-        This is a false positive error status since it is expected depending on the Git workflows of the developers, and in my opinion should be considered a bug <!--TODO Rewrite-->
+        The error status is expected in this scenario and you can ignore it.
     </td>
 </tr>
 </table>
