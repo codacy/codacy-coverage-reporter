@@ -18,10 +18,10 @@ trait CommitUUIDProvider {
   val name: String
 
   /** Default error message */
-  protected val commitNotFoundMessage = s"Can't find $name commit UUID in the environment."
+  protected val commitNotFoundMessage = s"Can't find $name commit SHA-1 hash in the environment."
 
   protected val commitNotValidMessage =
-    "Commit UUID is not valid. Make sure the commit SHA consists of 40 hexadecimal characters."
+    "Commit SHA-1 hash isn't valid. Make sure it consists of 40 hexadecimal characters."
 
   /** Parses `environmentVariable` as a [[CommitUUID]], validates it and returns it, as a [[Right]].
     *
@@ -93,7 +93,7 @@ object CommitUUIDProvider extends LogSupport {
     getFromEnvironment(environment) match {
       case Left(msg) =>
         logger.info(msg)
-        logger.info("Trying to get commit UUID from local Git directory")
+        logger.info("Trying to get commit SHA-1 hash from local Git directory")
         getLatestFromGit()
       case uuid => uuid
     }
@@ -107,10 +107,10 @@ object CommitUUIDProvider extends LogSupport {
     val currentPath = new File(System.getProperty("user.dir"))
     new GitClient(currentPath).latestCommitInfo match {
       case Failure(e) =>
-        Left("Commit UUID not provided and could not retrieve it from local Git directory")
+        Left("Commit SHA-1 hash not provided and could not retrieve it from local Git directory")
       case Success(CommitInfo(uuid, authorName, authorEmail, date)) =>
         val info =
-          s"""Commit UUID not provided, using latest commit of local Git directory:
+          s"""Commit SHA-1 hash not provided, using latest commit of local Git directory:
             |$uuid $authorName <$authorEmail> $date""".stripMargin
 
         logger.info(info)
@@ -134,7 +134,7 @@ object CommitUUIDProvider extends LogSupport {
     }
 
     validUUID
-      .toRight("Can't find or validate commit UUID from any supported CI/CD provider.")
+      .toRight("Can't find or validate commit SHA-1 hash from any supported CI/CD provider.")
       .flatMap(identity)
   }
 }
