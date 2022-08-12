@@ -151,17 +151,21 @@ Codacy doesn't know about the commit reported with the coverage, either because:
 </thead>
 <tbody>
 <tr>
-    <td>Codacy hasn't received/processed the hook for that commit from the Git provider</td>
-    <td><ul>
-        <li>Wait a few more minutes until Codacy "knows about the commit" and the status will update automatically</li>
-        <li>If it takes too long for Codacy to detect the commit, the hook call from the Git provider may have been lost. Contact Support to sync the commits with the Git provider</li>
+    <td>
+        Codacy hasn't received/processed the hook for that commit from the Git provider
+    </td>
+    <td>
+        <p>Wait a few more minutes until Codacy "knows about the commit" and the status will update automatically</p>
+        <p>If it takes too long for Codacy to detect the commit, the hook call from the Git provider may have been lost. Contact Support to sync the commits with the Git provider<p>
     </ul></td>
 </tr>
 <tr>
-    <td>The commit SHA-1 hash sent while uploading coverage is wrong</td>
-    <td><ul>
-        <li>Make sure that the Codacy Coverage Reporter is <a href="#commit-detection">detecting the correct commit SHA-1 hash</a> for the coverage data it is uploading</li>
-    </ul></td>
+    <td>
+        The commit SHA-1 hash sent while uploading coverage is wrong
+    </td>
+    <td>
+        Make sure that the Codacy Coverage Reporter is <a href="#commit-detection">detecting the correct commit SHA-1 hash</a> for the coverage data it is uploading
+    </td>
 </tr>
 </table>
 
@@ -178,17 +182,21 @@ The commit reported with the coverage doesn't belong to any branch that Codacy i
 </thead>
 <tbody>
 <tr>
-    <td>Coverage was uploaded for a commit in a branch that isn't explicitly enabled on Codacy nor belongs to a pull request branch targeting an enabled branch</td>
-    <td><ul>
-        <li>Make sure that the <a href="../repositories-configure/managing-branches/">branch or target branch for pull requests is enabled on Codacy</a></li>
-        <li>Make sure that the Codacy Coverage Reporter is uploading the coverage data for the correct branch and <a href="#commit-detection">detecting the correct commit UUID]</a></li>
-    </ul></td>
+    <td>
+        Coverage was uploaded for a commit in a branch that isn't explicitly enabled on Codacy nor belongs to a pull request branch targeting an enabled branch
+    </td>
+    <td>
+        <p>Make sure that the <a href="../repositories-configure/managing-branches/">branch or target branch for pull requests is enabled on Codacy</a></p>
+        <p>Make sure that the Codacy Coverage Reporter is uploading the coverage data for the correct branch and <a href="#commit-detection">detecting the correct commit UUID]</a></p>
+    </td>
 </tr>
 <tr>
-    <td>Coverage was uploaded for a commit that no longer belongs to any branch on the Git repository, for example after a rebase or squash-merge</td>
-    <td><ul>
-        <li>This is a false positive error status since it is expected depending on the Git workflows of the developers, and in my opinion should be considered a bug <!--TODO Rewrite--></li>
-    </ul></td>
+    <td>
+        Coverage was uploaded for a commit that no longer belongs to any branch on the Git repository, for example after a rebase or squash-merge
+    </td>
+    <td>
+        This is a false positive error status since it is expected depending on the Git workflows of the developers, and in my opinion should be considered a bug <!--TODO Rewrite-->
+    </td>
 </tr>
 </table>
 
@@ -205,35 +213,45 @@ Due to technical limitations, Codacy only reports coverage for a commit after pe
 </thead>
 <tbody>
 <tr>
-    <td>Codacy hasn't finished analyzing the commit yet</td>
-    <td><ul>
-        <li>Wait until Codacy completes the static code analysis for the commit and the status will update automatically</li>
-    </ul></td>
+    <td>
+        Codacy hasn't finished analyzing the commit yet
+    </td>
+    <td>
+        Wait until Codacy completes the static code analysis for the commit and the status will update automatically
+    </td>
 </tr>
 <tr>
-    <td>Codacy didn't analyze the commit on a private repository because the commit author isn't a member of the Codacy organization</td>
-    <td><ul>
-        <li>Make sure that all commit authors are <a href="../organizations/managing-people/#adding-people">added as members of the organization</a></li>
-    </ul></td>
+    <td>
+        Codacy didn't analyze the commit on a private repository because the commit author isn't a member of the Codacy organization
+    </td>
+    <td>
+        Make sure that all commit authors are <a href="../organizations/managing-people/#adding-people">added as members of the organization</a>
+    </td>
 </tr>
 <tr>
-    <td>Codacy skipped analyzing the commit because there are more recent commits</td>
-    <td><ul>
-        <li>Upload coverage data for the most recent commit in the branch</li>
-    </ul></td>
+    <td>
+        Codacy skipped analyzing the commit because there are more recent commits
+    </td>
+    <td>
+        Upload coverage data for the most recent commit in the branch
+    </td>
 </tr>
 <tr>
-    <td>Codacy ran into an error while performing the static code analysis of the commit</td>
-    <td><ul>
-        <li>Solve the underlying issue causing the analysis to fail (for example, fix the SSH key)</li>
-        <li>Contact Support asking for help</li>
-    </ul></td>
+    <td>
+        Codacy ran into an error while performing the static code analysis of the commit
+    </td>
+    <td>
+        <p>Solve the underlying issue causing the analysis to fail (for example, fix the SSH key)</p>
+        <p>Contact Support asking for help</p>
+    </td>
 </tr>
 <tr>
-    <td>The setting <strong>Run analysis on your build server</strong> is on, but the tools running locally aren't reporting results back to Codacy</td>
-    <td><ul>
-        <li>Make sure that the local tools run successfully and that they report the results back to Codacy to complete the analysis</li>
-    </ul></td>
+    <td>
+        The setting <strong>Run analysis on your build server</strong> is on, but the tools running locally aren't reporting results back to Codacy
+    </td>
+    <td>
+        Make sure that the local tools run successfully and that they report the results back to Codacy to complete the analysis
+    </td>
 </tr>
 </table>
 
@@ -248,22 +266,28 @@ Due to technical limitations, Codacy only reports coverage for a commit after pe
 </thead>
 <tbody>
 <tr>
-    <td>Coverage was uploaded with the "partial" flag but Codacy didn't receive the "final" notification</td>
-    <td><ul>
-        <li>Make sure that after uploading all partial reports you <a href="../coverage-reporter/#multiple-reports">send the "final notification"</a></li>
-        <li>Alternatively, send all partial reports by <a href="../coverage-reporter/#multiple-reports">calling the Codacy Coverage Reporter only once</a></li>
-    </ul></td>
+    <td>
+        Coverage was uploaded with the "partial" flag but Codacy didn't receive the "final" notification
+    </td>
+    <td>
+        <p>Make sure that after uploading all partial reports you <a href="../coverage-reporter/#multiple-reports">send the "final notification"</a></p>
+        <p>Alternatively, send all partial reports by <a href="../coverage-reporter/#multiple-reports">calling the Codacy Coverage Reporter only once</a></p>
+    </td>
 </tr>
 <tr>
-    <td>Coverage uploaded only includes information for files that are <a href="../repositories-configure/ignoring-files/">ignored on Codacy</a></td>
-    <td><ul>
-        <li>This error status doesn't map well to the scenario causing it and Codacy could instead either report this status as Processed or with a new status to let users know why it won't display their coverage data, and in my opinion this scenario should be considered a bug <!--TODO Rewrite--></li>
-    </ul></td>
+    <td>
+        Coverage uploaded only includes information for files that are <a href="../repositories-configure/ignoring-files/">ignored on Codacy</a>
+    </td>
+    <td>
+        This error status doesn't map well to the scenario causing it and Codacy could instead either report this status as Processed or with a new status to let users know why it won't display their coverage data, and in my opinion this scenario should be considered a bug <!--TODO Rewrite-->
+    </td>
 </tr>
 <tr>
-    <td>An empty coverage data set (`"total": 0`) was uploaded using the Codacy API</td>
-    <td><ul>
-        <li>This error status doesn't map well to the scenario causing it and Codacy could instead either report this status as Processed or with a new status to let users know why it won't display their coverage data, and in my opinion this scenario should be considered a bug <!--TODO Rewrite--></li>
-    </ul></td>
+    <td>
+        An empty coverage data set (`"total": 0`) was uploaded using the Codacy API
+    </td>
+    <td>
+        This error status doesn't map well to the scenario causing it and Codacy could instead either report this status as Processed or with a new status to let users know why it won't display their coverage data, and in my opinion this scenario should be considered a bug <!--TODO Rewrite-->
+    </td>
 </tr>
 </table>
