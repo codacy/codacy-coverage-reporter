@@ -116,7 +116,7 @@ The following table contains example coverage tools that generate reports in for
 </tbody>
 </table>
 
-### Submitting coverage from unsupported report formats
+### Handling unsupported languages
 
 If you're generating a report format that Codacy doesn't support yet, [contribute with a parser implementation](https://github.com/codacy/codacy-coverage-reporter/tree/master/coverage-parser/src/main/scala/com/codacy/parsers/implementation) yourself or use one of the community projects below to generate coverage reports in a supported format:
 
@@ -133,6 +133,9 @@ If you're generating a report format that Codacy doesn't support yet, [contribut
 -   [chrisgit/sfdx-plugins_apex_coverage_report](https://github.com/chrisgit/sfdx-plugins_apex_coverage_report): generate LCOV or Cobertura reports from [Apex](https://help.salesforce.com/articleView?id=sf.code_apex_dev_guide_tools.htm&type=5) code coverage data
 -   [danielpalme/ReportGenerator](https://github.com/danielpalme/ReportGenerator): convert between different report formats
 
+!!! important
+    Make sure that you [specify the language](uploading-coverage-in-advanced-scenarios.md#unsupported-languages) when uploading coverage for an unsupported language.
+
 As a last resort, you can also send the coverage data directly by calling one of the following Codacy API endpoints:
 
 -   [saveCoverage](https://api.codacy.com/swagger#savecoverage)
@@ -140,7 +143,14 @@ As a last resort, you can also send the coverage data directly by calling one of
 
 ## 2. Uploading coverage data to Codacy {: id="uploading-coverage"}
 
-After having coverage reports set up for your repository, you must use Codacy Coverage Reporter to convert the reports to smaller JSON files and upload these files to Codacy. The recommended way to do this is using a CI/CD platform that automatically runs tests, generates coverage, and uses Codacy Coverage Reporter to upload the coverage report information for every push to your repository.
+After having coverage reports set up for your repository, you must use the Codacy Coverage Reporter to upload them to Codacy.
+
+The recommended way to do this is by using a CI/CD platform that automatically runs tests, generates coverage, and uses the Codacy Coverage Reporter to upload the coverage report information for every push to your repository.
+
+!!! note "Alternative ways of running the Codacy Coverage Reporter"
+    Codacy makes available [alternative ways to run the Codacy Coverage Reporter](alternative-ways-of-running-coverage-reporter.md), such as by installing the binary manually or by using Docker, a GitHub Action, or a CircleCI Orb.
+
+    However, the instructions on this page assume that you'll run the recommended [self-contained bash script `get.sh`](alternative-ways-of-running-coverage-reporter.md#bash-script) to automatically download and run the most recent version of the Codacy Coverage Reporter.    
 
 1.  Set up an API token to allow Codacy Coverage Reporter to authenticate on Codacy:
     {: id="authenticate"}
@@ -189,92 +199,14 @@ After having coverage reports set up for your repository, you must use Codacy Co
 
     Check the console output to validate that the Codacy Coverage Reporter **detected the correct commit UUID** and **successfully uploaded** the coverage data to Codacy. If you need help, [check the troubleshooting page](troubleshooting-common-issues.md) for solutions to the most common setup issues.
 
-    !!! tip
-        The self-contained script `get.sh` automatically downloads and runs the most recent version of Codacy Coverage Reporter. See [alternative ways of running Codacy Coverage Reporter](alternative-ways-of-running-coverage-reporter.md) for other ways of running Codacy Coverage Reporter, such as by installing the binary manually or using a GitHub Action or CircleCI Orb.
-
-        Be sure to also check the sections below for more advanced functionality while uploading the coverage data to Codacy.
+    !!! note
+        Be sure to also check the [instructions for more advanced scenarios](uploading-coverage-in-advanced-scenarios.md) while uploading the coverage data to Codacy, such as when running parallel tests, using monorepos, or testing source code in multiple or unsupported languages.
 
 1.  Make sure that Codacy received the coverage data successfully for the **correct commit UUID and branch**. On Codacy, open your **Repository Settings**, tab **Coverage**, and observe the list of recent coverage reports in the section **Test your integration**:
 
     ![Testing the coverage integration](images/coverage-test-integration.png)
 
     If you make adjustments to your setup and upload new coverage data, click the button **Test integration** to refresh the table.
-
-### Uploading multiple coverage reports for the same language {: id="multiple-reports"}
-
-If your test suite is split in different modules or runs in parallel, you must upload multiple coverage reports for the same language.
-
-To do this, specify multiple reports by repeating the flag `-r`. For example:
-
-```bash
-bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
-    -l Java -r report1.xml -r report2.xml -r report3.xml
-```
-
-You can also upload all your reports dynamically using the command `find`. For example:
-
-```bash
-bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
-    -l Java $(find . -name 'jacoco*.xml' -printf '-r %p ')
-```
-
-!!! note
-    Alternatively, you can:
-
-    1.   Upload each report separately with the flag `--partial`
-    1.   Notify Codacy with the `final` command after uploading all reports
-
-    For example:
-
-    ```bash
-    bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
-        --partial -l Java -r report1.xml
-    bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
-        --partial -l Java -r report2.xml
-    bash <(curl -Ls https://coverage.codacy.com/get.sh) final
-    ```
-
-    If you're sending reports for a language with the flag `--partial`, you should use the flag in all reports for that language to ensure the correct calculation of the coverage.
-
-!!! tip
-    It might also be possible to merge the reports before uploading them to Codacy, since most coverage tools support merge/aggregation. For example, <http://www.eclemma.org/jacoco/trunk/doc/merge-mojo.html>.
-
-### Uploading the same coverage report for multiple languages {: id="multiple-languages"}
-
-If your test suite generates a single coverage report for more than one language, you must upload the same coverage report for each language.
-
-To do this, upload the same report multiple times, specifying each different language with the flag `-l`. For example:
-
-```bash
-bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
-    -l Javascript -r report.xml
-bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
-    -l TypeScript -r report.xml
-```
-
-### Submitting coverage for Golang
-
-Codacy can't automatically detect Golang coverage report files because they don't have specific file names.
-
-If you're uploading a Golang coverage report, you must also specify the report type:
-
-```bash
-bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
-    --force-coverage-parser go -r <coverage report file name>
-```
-
-### Submitting coverage for unsupported languages
-
-If your language isn't in the list of supported languages, you can still send coverage to Codacy.
-
-To do this, provide the correct language with the flag `-l`, together with `--force-language`. For example:
-
-```bash
-bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
-  -l Kotlin --force-language -r <coverage report file name>
-```
-
-See the [list of languages](https://github.com/codacy/codacy-plugins-api/blob/master/src/main/scala/com/codacy/plugins/api/languages/Language.scala#L43) that you can specify using the flag `-l`.
 
 ## 3. Validating that the coverage setup is complete {: id="validating-coverage"}
 

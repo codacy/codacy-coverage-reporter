@@ -1,10 +1,14 @@
 ---
-description: There are alternative ways of running or installing Codacy Coverage Reporter, such as running a Docker image, downloading a binary for your operating system, or building the binary from source.
+description: There are alternative ways of running or installing Codacy Coverage Reporter, such as running a Docker image, using a GitHub Action or CircleCI orb, downloading a binary for your operating system, or building the binary from source.
 ---
 
 # Alternative ways of running Coverage Reporter
 
-The recommended way to run Codacy Coverage Reporter is using a self-contained script that automatically downloads and runs the most recent version of Codacy Coverage Reporter:
+The following sections list the alternative ways of running or installing Codacy Coverage Reporter.
+
+## Bash script (recommended) {: id="bash-script"}
+
+The recommended way to run the Codacy Coverage Reporter is by using the [self-contained bash script `get.sh`](https://github.com/codacy/codacy-coverage-reporter/blob/master/get.sh) that automatically downloads and runs the most recent version of the Codacy Coverage Reporter:
 
 -   On Ubuntu, run:
 
@@ -18,6 +22,13 @@ The recommended way to run Codacy Coverage Reporter is using a self-contained sc
     wget -qO - https://coverage.codacy.com/get.sh | sh
     ```
 
+!!! note
+    Starting on version `13.0.0` the script automatically validates the checksum of the downloaded binary. To skip the checksum validation, define the following environment variable:
+
+    ```bash
+    export CODACY_REPORTER_SKIP_CHECKSUM=true
+    ```
+
 The self-contained script can cache the binary. To avoid downloading the binary every time that the script runs, add one of the following directories to your CI cached folders:
 
 -   `$HOME/.cache/codacy` on Linux
@@ -28,15 +39,6 @@ To use a specific version of the Codacy Coverage Reporter, set the following env
 ```bash
 export CODACY_REPORTER_VERSION=<version>
 ```
-
-!!! note
-    Starting on version `13.0.0` the script automatically validates the checksum of the downloaded binary. To skip the checksum validation, define the following environment variable:
-
-    ```bash
-    export CODACY_REPORTER_SKIP_CHECKSUM=true
-    ```
-
-The sections below provide details on alternative ways to run or install Codacy Coverage Reporter.
 
 ## Docker
 
