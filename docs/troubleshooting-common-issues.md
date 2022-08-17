@@ -21,9 +21,9 @@ If the Codacy Coverage Reporter correctly uploaded your coverage report but the 
 
     ![Commits that must have coverage data](images/coverage-pr-commits.png)
 
-### Commit SHA hash detection {: id="commit-detection"}
+## Commit SHA-1 hash detection {: id="commit-detection"}
 
-The Codacy Coverage Reporter automatically detects the commit SHA hash to associate with the coverage data from the following CI/CD platforms:
+The Codacy Coverage Reporter automatically detects the SHA-1 hash of the current commit to associate with the coverage data when you're using one of the following CI/CD platforms:
 
 -   Appveyor
 -   AWS CodeBuild
@@ -48,7 +48,7 @@ The Codacy Coverage Reporter automatically detects the commit SHA hash to associ
 
 If the Codacy Coverage Reporter fails to detect the current commit from the CI workflow context, it will use the current commit from the local Git repository instead.
 
-However, you can also force using a specific commit SHA hash with the flag `--commit-uuid`. For example:
+However, you can also force using a specific commit SHA-1 hash with the flag `--commit-uuid`. For example:
 
 ```bash
 bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
@@ -80,7 +80,7 @@ If you get a `com.fasterxml.jackson.core.JsonParseException` error while uploadi
 
 There are some ways you can solve this:
 
--   Split your coverage reports into smaller files and [upload them to Codacy one at a time](index.md#multiple-reports).
+-   Split your coverage reports into smaller files and [upload them to Codacy one at a time](../uploading-coverage-in-advanced-scenarios/#multiple-reports).
 
 -   **If you're using dotCover to generate coverage reports for your C# projects**, you should [exclude xUnit files](https://www.jetbrains.com/help/dotcover/Running_Coverage_Analysis_from_the_Command_LIne.html#filters_cmd) from the coverage analysis as follows:
 

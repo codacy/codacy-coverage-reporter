@@ -65,7 +65,7 @@ The following table contains example coverage tools that generate reports in for
 <tr>
     <td>Go</td>
     <td><a href="https://blog.golang.org/cover">Golang</a> Code Coverage</td>
-    <td>Golang report files don't have a specific name. Because of this, later in the setup process you must follow <a href="#submitting-coverage-for-golang">specific instructions</a> while submitting coverage to Codacy.</td>
+    <td>Golang report files don't have a specific name. Because of this, later in the setup process you must follow <a href="uploading-coverage-in-advanced-scenarios/#golang">specific instructions</a> while submitting coverage to Codacy.</td>
 </tr>
 <tr>
     <td rowspan="2">Java</td>
@@ -197,41 +197,51 @@ The recommended way to do this is by using a CI/CD platform that automatically r
     bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r <coverage report file name>
     ```
 
-    Check the console output to validate that the Codacy Coverage Reporter **detected the correct commit UUID** and **successfully uploaded** the coverage data to Codacy. If you need help, [check the troubleshooting page](troubleshooting-common-issues.md) for solutions to the most common setup issues.
+    Check the console output to validate that the Codacy Coverage Reporter **detected the correct commit SHA-1 hash** and **successfully uploaded** the coverage data to Codacy. If you need help, [check the troubleshooting page](troubleshooting-common-issues.md) for solutions to the most common setup issues.
 
     !!! note
         Be sure to also check the [instructions for more advanced scenarios](uploading-coverage-in-advanced-scenarios.md) while uploading the coverage data to Codacy, such as when running parallel tests, using monorepos, or testing source code in multiple or unsupported languages.
 
-1.  Make sure that Codacy received the coverage data successfully for the **correct commit UUID and branch**. On Codacy, open your **Repository Settings**, tab **Coverage**, and observe the list of recent coverage reports in the section **Test your integration**:
+## 3. Validating that the coverage setup is complete {: id="validating-coverage"}
+
+Codacy displays the code coverage in each branch, as well as the evolution of code coverage between commits and the code coverage variation introduced by pull requests.
+
+Because of this, to ensure that all code coverage metrics are available on Codacy, you must have successfully uploaded coverage data and analyzed:
+
+-   The last two commits in each branch
+-   The common ancestor commit of each pull request branch and its target branch
+
+!!! note "Example"
+    The example below shows that after pushing a commit that correctly sets up coverage on the main branch:
+
+    -   Codacy will report coverage metrics for all subsequent commits and pull requests relative to the main branch
+    -   Codacy won't report coverage metrics for commits and pull requests that are relative to older branches where the coverage setup wasn't performed yet
+
+    ![Setting up coverage on the main branch](images/coverage-validate.png)
+
+Follow these instructions to validate that your coverage setup is working correctly:
+
+1.  On Codacy, open your **Repository Settings**, tab **Coverage**, and observe the list of recent coverage reports in the section **Test your integration** to make sure that Codacy received the coverage data successfully for the **[correct commit SHA-1 hash](troubleshooting-common-issues.md#commit-detection) and branch**, and that it processed the coverage data successfully.
 
     ![Testing the coverage integration](images/coverage-test-integration.png)
 
     If you make adjustments to your setup and upload new coverage data, click the button **Test integration** to refresh the table.
 
-## 3. Validating that the coverage setup is complete {: id="validating-coverage"}
+    <!--TODO
+        Link to troubleshooting instructions for each possible error status
+    -->
 
-Codacy displays the code coverage in each branch, as well as the evolution of code coverage between commits and the code coverage variation introduced by pull requests. Because of this, to ensure that all code coverage metrics are available on Codacy, you must have successfully uploaded coverage data and analyzed:
-
--   The last two commits in each branch
--   The common ancestor commits between pull request branches and their target branches
-
-The example below shows that after pushing a commit that correctly sets up coverage on the main branch:
-
--   Codacy will report coverage metrics for all subsequent commits and pull requests relative to the main branch
--   Codacy won't report coverage metrics for commits and pull requests that are relative to older branches where the coverage setup wasn't performed yet
-
-![Setting up coverage on the main branch](images/coverage-validate.png)
-
-To validate that the coverage setup is complete:
-
-1.  Wait until there are **at least two commits** that have uploaded coverage data to Codacy and were successfully analyzed by Codacy.
+1.  Make sure that there are **at least two commits** that uploaded coverage data to Codacy and were successfully analyzed by Codacy.
 
     !!! important
+        <!--TODO
+            Move this information to the troubleshooting instructions linked in the previous step, as it is relevant to the error status "Commit not analyzed".
+        -->
         Codacy only takes the uploaded coverage data into account after successfully analyzing each commit.
 
         Make sure that you [invite or ask your team members to join your organization on Codacy](../organizations/managing-people/#adding-people) so that Codacy analyzes their commits on private repositories.
 
-1.  Check that Codacy displays the coverage information for the latest commits and pull requests:
+1.  Check that Codacy displays the coverage information for the latest commits and pull requests.
 
     ![Coverage data displayed on Codacy](images/coverage-codacy-ui.png)
 
@@ -243,6 +253,6 @@ To validate that the coverage setup is complete:
         -   URL of your repository on Codacy
         -   Your CI/CD configuration files and the name of your CI/CD platform
         -   Full console output of your CI/CD when running the Codacy Coverage Reporter
-        -   Branch name and commit UUID corresponding to the CI/CD output
+        -   Branch name and commit SHA-1 hash corresponding to the CI/CD output
         -   Test coverage report that you're uploading to Codacy
         -   Any other relevant information or screenshots of your setup
