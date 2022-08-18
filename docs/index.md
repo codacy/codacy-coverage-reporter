@@ -52,7 +52,7 @@ The following table contains example coverage tools that generate reports in for
 </tr>
 <tr>
     <td><a href="https://www.jetbrains.com/help/dotcover/Running_Coverage_Analysis_from_the_Command_LIne.html">dotCover CLI</a></td>
-    <td><code>dotcover.xml</code> (dotCover <a href="troubleshooting-common-issues/#detailedxml">detailedXML</a>)</td>
+    <td><code>dotcover.xml</code> (dotCover <a href="troubleshooting-coverage-cli-issues/#detailedxml">detailedXML</a>)</td>
 </tr>
 <tr>
     <td><a href="https://github.com/coverlet-coverage/coverlet">Coverlet</a></td>
@@ -197,7 +197,7 @@ The recommended way to do this is by using a CI/CD platform that automatically r
     bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r <coverage report file name>
     ```
 
-    Check the console output to validate that the Codacy Coverage Reporter **detected the correct commit SHA-1 hash** and **successfully uploaded** the coverage data to Codacy. If you need help, [check the troubleshooting page](troubleshooting-common-issues.md) for solutions to the most common setup issues.
+    Check the console output to validate that the Codacy Coverage Reporter **detected the correct commit SHA-1 hash** and **successfully uploaded** the coverage data to Codacy. If you need help, [check the troubleshooting page](troubleshooting-coverage-cli-issues.md) for solutions to the most common issues while running the CLI.
 
     !!! note
         Be sure to also check the [instructions for more advanced scenarios](uploading-coverage-in-advanced-scenarios.md) while uploading the coverage data to Codacy, such as when running parallel tests, using monorepos, or testing source code in multiple or unsupported languages.
@@ -221,7 +221,7 @@ Because of this, to ensure that all code coverage metrics are available on Codac
 
 Follow these instructions to validate that your coverage setup is working correctly:
 
-1.  On Codacy, open your **Repository Settings**, tab **Coverage**, and observe the list of recent coverage reports in the section **Test your integration** to make sure that Codacy received the coverage data successfully for the **[correct commit SHA-1 hash](troubleshooting-common-issues.md#commit-detection) and branch**, and that it processed the coverage data successfully.
+1.  On Codacy, open your **Repository Settings**, tab **Coverage**, and observe the list of recent coverage reports in the section **Test your integration** to make sure that Codacy received the coverage data successfully for the **[correct commit SHA-1 hash](troubleshooting-coverage-cli-issues.md#commit-detection) and branch**, and that it processed the coverage data successfully.
 
     ![Testing the coverage integration](images/coverage-test-integration.png)
 
@@ -251,7 +251,7 @@ Follow these instructions to validate that your coverage setup is working correc
                 The commit SHA-1 hash sent while uploading coverage is wrong.
             </td>
             <td>
-                Make sure that the Codacy Coverage Reporter <a href="#commit-detection">detects the correct commit SHA-1 hash</a> for the uploaded coverage data.
+                Make sure that the Codacy Coverage Reporter <a href="troubleshooting-coverage-cli-issues/#commit-detection">detects the correct commit SHA-1 hash</a> for the uploaded coverage data.
             </td>
         </tr>
         </table>
@@ -272,7 +272,7 @@ Follow these instructions to validate that your coverage setup is working correc
             </td>
             <td>
                 <p>Make sure that the <a href="../repositories-configure/managing-branches/">branch or target branch for pull requests is enabled on Codacy</a>.</p>
-                <p>If Codacy is already analyzing the branch, make sure that the Codacy Coverage Reporter <href="#commit-detection">detects the correct commit SHA-1 hash</a> for the uploaded coverage data.</p>
+                <p>If Codacy is already analyzing the branch, make sure that the Codacy Coverage Reporter <href="troubleshooting-coverage-cli-issues/#commit-detection">detects the correct commit SHA-1 hash</a> for the uploaded coverage data.</p>
             </td>
         </tr>
         <tr>
@@ -352,7 +352,7 @@ Follow these instructions to validate that your coverage setup is working correc
                 Coverage was uploaded with the <code>--partial</code> flag but Codacy didn't receive the <code>final</code> notification.
             </td>
             <td>
-                Make sure that after uploading all partial reports you <a href="../#multiple-reports">send the <code>final</code> notification</a>.
+                Make sure that after uploading all partial reports you <a href="uploading-coverage-in-advanced-scenarios/#multiple-reports-sequence">send the <code>final</code> notification</a>.
             </td>
         </tr>
         <tr>
@@ -389,7 +389,7 @@ Follow these instructions to validate that your coverage setup is working correc
     **If Codacy doesn't display the coverage data** for the latest commits or pull requests (represented by `-`), please validate the following:
 
     -   Make sure that the file paths included in your coverage reports are relative to the root directory of your repository. For example, `src/index.js`.
-    -   Verify that the Codacy Coverage Reporter is uploading the coverage data for the [correct commit in the correct branch](#commit-detection).
+    -   Verify that the Codacy Coverage Reporter is uploading the coverage data for the [correct commit in the correct branch](troubleshooting-coverage-cli-issues.md#commit-detection).
     -   For pull requests, make sure that you have uploaded the coverage data for both:
 
         -   The commit that is the common ancestor of the pull request branch and the target branch
