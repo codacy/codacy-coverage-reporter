@@ -332,7 +332,7 @@ Follow these instructions to validate that your coverage setup is working correc
                 Codacy ran into an error while analyzing the commit.
             </td>
             <td>
-                Solve the issue that caused the analysis to fail (for example, fix the SSH key).<!--TODO Mention the most common issues--> or contact us at <a href="mailto:support@codacy.com">support@codacy.com</a> asking for help.
+                Solve the issue that caused the analysis to fail (for example, fix the SSH key),<!--TODO Mention the most common issues--> or contact us at <a href="mailto:support@codacy.com">support@codacy.com</a> asking for help.
             </td>
         </tr>
         </table>
