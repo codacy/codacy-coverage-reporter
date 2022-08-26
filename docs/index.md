@@ -390,12 +390,12 @@ Follow these instructions to validate that your coverage setup is working correc
 
     -   Make sure that the file paths included in your coverage reports are relative to the root directory of your repository. For example, `src/index.js`.
     -   Verify that the Codacy Coverage Reporter is uploading the coverage data for the [correct commit in the correct branch](troubleshooting-coverage-cli-issues.md#commit-detection).
-    -   For pull requests, make sure that you have uploaded the coverage data for both:
+    -   For coverage variation in pull requests, make sure that you have uploaded the coverage data for both:
 
         -   The commit that is the common ancestor of the pull request branch and the target branch
         -   The last commit in the pull request branch
 
-        The following diagram highlights the commits that must have received coverage data for Codacy to display coverage information on a pull request:
+        The following diagram highlights the commits that must have received coverage data for Codacy to display coverage variation on a pull request:
 
         ![Commits that must have coverage data](images/coverage-pr-commits.png)
 
