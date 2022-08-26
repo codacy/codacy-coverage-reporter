@@ -229,151 +229,135 @@ Follow these instructions to validate that your coverage setup is working correc
 
     If there are commits with a status different from **Processed**, please follow the troubleshooting instructions for the corresponding error status and click the button **Test integration** to display any new coverage reports uploaded to Codacy.
 
-    -   **Commit not found:** Codacy doesn't have information about the commit associated with the coverage data.
-
-        <table>
-        <thead>
-        <tr>
-            <th width="40%">What causes the error?</th>
-            <th>How to fix the error?</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td>
-                Codacy didn't receive the webhook for that commit from the Git provider.
-            </td>
-            <td>
-                <p>Wait a few more minutes until Codacy detects the commit and the status will update automatically.</p>
-                <p>If it takes more than 5 to 10 minutes for Codacy to detect the commit, the webhook call from the Git provider may have been lost. You can wait until you push a new commit or contact <a href="mailto:support@codacy.com">support@codacy.com</a> asking us to sync the commits on Codacy with your Git provider.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                The commit SHA-1 hash sent while uploading coverage is wrong.
-            </td>
-            <td>
-                Make sure that the Codacy Coverage Reporter <a href="troubleshooting-coverage-cli-issues/#commit-detection">detects the correct commit SHA-1 hash</a> for the uploaded coverage data.
-            </td>
-        </tr>
-        </table>
-
-    -   **Branch not enabled:** the commit associated with the coverage data doesn't belong to any branch that Codacy is analyzing.
-
-        <table>
-        <thead>
-        <tr>
-            <th width="40%">What causes the error?</th>
-            <th>How to fix the error?</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td>
-                Coverage was uploaded for a commit that belongs to a branch that isn't analyzed by Codacy.
-            </td>
-            <td>
-                <p>Make sure that the <a href="../repositories-configure/managing-branches/">branch or target branch for pull requests is enabled on Codacy</a>.</p>
-                <p>If Codacy is already analyzing the branch, make sure that the Codacy Coverage Reporter <href="troubleshooting-coverage-cli-issues/#commit-detection">detects the correct commit SHA-1 hash</a> for the uploaded coverage data.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                Coverage was uploaded for a commit that no longer belongs to any branch on the Git repository, for example after a rebase or squash merge.
-            </td>
-            <td>
-                The error status is expected in this scenario and you can ignore it.
-            </td>
-        </tr>
-        </table>
-
-    -   **Commit not analyzed:** due to technical limitations, Codacy only reports coverage for a commit after successfully completing the static code analysis of that commit.
-
-        <table>
-        <thead>
-        <tr>
-            <th width="40%">What causes the error?</th>
-            <th>How to fix the error?</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td>
-                Codacy hasn't finished analyzing the commit yet.
-            </td>
-            <td>
-                Wait a few more minutes until Codacy completes the static code analysis for the commit and the status will update automatically.
-            </td>
-        </tr>
-        <tr>
-            <td>
-                Codacy didn't analyze the commit on a private repository because the commit author isn't a member of the Codacy organization.
-            </td>
-            <td>
-                Make sure that you <a href="../organizations/managing-people/#adding-people">add all commit authors as members of the Codacy organization</a>.
-            </td>
-        </tr>
-        <tr>
-            <td>
-                Codacy skipped analyzing the commit because there are more recent commits in the branch.
-            </td>
-            <td>
-                Upload coverage data for the most recent commit in the branch.
-            </td>
-        </tr>
-        <tr>
-            <td>
-                The setting <strong>Run analysis on your build server</strong> is on, but your client-side tools didn't upload results to Codacy.
-            </td>
-            <td>
-                Make sure that your <a href="../related-tools/local-analysis/client-side-tools/">client-side tools</a> run successfully and upload the results to Codacy to complete the analysis.
-            </td>
-        </tr>
-        <tr>
-            <td>
-                Codacy ran into an error while analyzing the commit.
-            </td>
-            <td>
-                Solve the issue that caused the analysis to fail (such as <a href="../faq/troubleshooting/we-no-longer-have-access-to-this-repository/">Codacy losing access to the repository</a>), or contact us at <a href="mailto:support@codacy.com">support@codacy.com</a> asking for help.
-            </td>
-        </tr>
-        </table>
-
-    -   **Pending:** Codacy is waiting to receive more coverage data before reporting the coverage for a commit.
-
-        <table>
-        <thead>
-        <tr>
-            <th width="40%">What causes the error?</th>
-            <th>How to fix the error?</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td>
-                Coverage was uploaded with the <code>--partial</code> flag but Codacy didn't receive the <code>final</code> notification.
-            </td>
-            <td>
-                Make sure that after uploading all partial reports you <a href="uploading-coverage-in-advanced-scenarios/#multiple-reports-sequence">send the <code>final</code> notification</a>.
-            </td>
-        </tr>
-        <tr>
-            <td>
-                The uploaded coverage data only includes information for files that are <a href="../repositories-configure/ignoring-files/">ignored on Codacy</a>.
-            </td>
-            <td>
-                Check <a href="../repositories-configure/ignoring-files/">which files are ignored on Codacy</a> and make sure that you're generating coverage reports for the correct files in your repository.
-            </td>
-        </tr>
-        <tr>
-            <td>
-                An empty coverage data set (<code>"total": 0</code>) was uploaded using the Codacy API.
-            </td>
-            <td>
-                Codacy must receive coverage data for at least one file to calculate and display coverage.
-            </td>
-        </tr>
-        </table>
+    <table>
+    <colgroup>
+        <col style="width: 25%;"/>
+        <col style="width: 30%;"/>
+        <col style="width: 45%;"/>
+    </colgroup>
+    <thead>
+    <tr>
+        <th>Error status</th>
+        <th>What causes the error?</th>
+        <th>How to fix the error?</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td rowspan="2">
+            <p style="color: #EF5454;"><strong>Commit not found</strong></p>
+            <p>Codacy doesn't have information about the commit associated with the coverage data.</p>
+        </td>
+        <td>
+            Codacy didn't receive the webhook for that commit from the Git provider.
+        </td>
+        <td>
+            <p>Wait a few more minutes until Codacy detects the commit and the status will update automatically.</p>
+            <p>If it takes more than 5 to 10 minutes for Codacy to detect the commit, the webhook call from the Git provider may have been lost. You can wait until you push a new commit or contact <a href="mailto:support@codacy.com">support@codacy.com</a> asking us to sync the commits on Codacy with your Git provider.</p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            The commit SHA-1 hash sent while uploading coverage is wrong.
+        </td>
+        <td>
+            Make sure that the Codacy Coverage Reporter <a href="troubleshooting-coverage-cli-issues/#commit-detection">detects the correct commit SHA-1 hash</a> for the uploaded coverage data.
+        </td>
+    </tr>
+    <tr>
+       <td rowspan="2">
+            <p style="color: #EF5454;"><strong>Branch not enabled</strong></p>
+            <p>The commit associated with the coverage data doesn't belong to any branch that Codacy is analyzing.</p>
+        </td>
+        <td>
+            Coverage was uploaded for a commit that belongs to a branch that isn't analyzed by Codacy.
+        </td>
+        <td>
+            <p>Make sure that the <a href="../repositories-configure/managing-branches/">branch or target branch for pull requests is enabled on Codacy</a>.</p>
+            <p>If Codacy is already analyzing the branch, make sure that the Codacy Coverage Reporter <href="troubleshooting-coverage-cli-issues/#commit-detection">detects the correct commit SHA-1 hash</a> for the uploaded coverage data.</p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Coverage was uploaded for a commit that no longer belongs to any branch on the Git repository, for example after a rebase or squash merge.
+        </td>
+        <td>
+            The error status is expected in this scenario and you can ignore it.
+        </td>
+    </tr>
+    <tr>
+        <td rowspan="5">
+            <p style="color: #EF5454;"><strong>Commit not analyzed</strong></p>
+            <p>Due to technical limitations, Codacy only reports coverage for a commit after successfully completing the static code analysis of that commit.</p>
+        </td>
+        <td>
+            Codacy hasn't finished analyzing the commit yet.
+        </td>
+        <td>
+            Wait a few more minutes until Codacy completes the static code analysis for the commit and the status will update automatically.
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Codacy didn't analyze the commit on a private repository because the commit author isn't a member of the Codacy organization.
+        </td>
+        <td>
+            Make sure that you <a href="../organizations/managing-people/#adding-people">add all commit authors as members of the Codacy organization</a>.
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Codacy skipped analyzing the commit because there are more recent commits in the branch.
+        </td>
+        <td>
+            Upload coverage data for the most recent commit in the branch.
+        </td>
+    </tr>
+    <tr>
+        <td>
+            The setting <strong>Run analysis on your build server</strong> is on, but your client-side tools didn't upload results to Codacy.
+        </td>
+        <td>
+            Make sure that your <a href="../related-tools/local-analysis/client-side-tools/">client-side tools</a> run successfully and upload the results to Codacy to complete the analysis.
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Codacy ran into an error while analyzing the commit.
+        </td>
+        <td>
+            Solve the issue that caused the analysis to fail (such as <a href="../faq/troubleshooting/we-no-longer-have-access-to-this-repository/">Codacy losing access to the repository</a>), or contact us at <a href="mailto:support@codacy.com">support@codacy.com</a> asking for help.
+        </td>
+    </tr>
+    <tr>
+        <td rowspan="3">
+            <p style="color: #2562EA;"><strong>Pending</strong></p>
+            <p>Codacy is waiting to receive more coverage data before reporting the coverage for a commit.</p>
+        </td>
+        <td>
+            Coverage was uploaded with the <code>--partial</code> flag but Codacy didn't receive the <code>final</code> notification.
+        </td>
+        <td>
+            Make sure that after uploading all partial reports you <a href="uploading-coverage-in-advanced-scenarios/#multiple-reports-sequence">send the <code>final</code> notification</a>.
+        </td>
+    </tr>
+    <tr>
+        <td>
+            The uploaded coverage data only includes information for files that are <a href="../repositories-configure/ignoring-files/">ignored on Codacy</a>.
+        </td>
+        <td>
+            Check <a href="../repositories-configure/ignoring-files/">which files are ignored on Codacy</a> and make sure that you're generating coverage reports for the correct files in your repository.
+        </td>
+    </tr>
+    <tr>
+        <td>
+            An empty coverage data set (<code>"total": 0</code>) was uploaded using the Codacy API.
+        </td>
+        <td>
+            Codacy must receive coverage data for at least one file to calculate and display coverage.
+        </td>
+    </tr>
+    </table>
 
 1.  Check that Codacy displays the coverage information for the latest commits and pull requests.
 
