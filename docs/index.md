@@ -243,7 +243,7 @@ Follow these instructions to validate that your coverage setup is working correc
             </td>
             <td>
                 <p>Wait a few more minutes until Codacy detects the commit and the status will update automatically.</p>
-                <p>If it takes too long for Codacy to detect the commit, the webhook call from the Git provider may have been lost. You can wait until you push a new commit or contact us at <a href="mailto:support@codacy.com">support@codacy.com</a> to sync the commits on Codacy with your Git provider.<p>
+                <p>If it takes more than 5 to 10 minutes for Codacy to detect the commit, the webhook call from the Git provider may have been lost. You can wait until you push a new commit or contact <a href="mailto:support@codacy.com">support@codacy.com</a> asking us to sync the commits on Codacy with your Git provider.</p>
             </td>
         </tr>
         <tr>
