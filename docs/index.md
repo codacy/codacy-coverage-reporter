@@ -221,11 +221,13 @@ Because of this, to ensure that all code coverage metrics are available on Codac
 
 Follow these instructions to validate that your coverage setup is working correctly:
 
-1.  On Codacy, open your **Repository Settings**, tab **Coverage**, and observe the list of recent coverage reports in the section **Test your integration** to make sure that Codacy received the coverage data successfully for the **[correct commit SHA-1 hash](troubleshooting-coverage-cli-issues.md#commit-detection) and branch**, and that it processed the coverage data successfully.
+1.  On Codacy, open your **Repository Settings**, tab **Coverage**, and observe the list of recent coverage reports in the section **Test your integration**.
+
+    Make sure that Codacy receives and processes the coverage data successfully for **at least two commits**.
 
     ![Testing the coverage integration](images/coverage-test-integration.png)
 
-    If there are commits with a status different from **Processed**, please check the troubleshooting instructions for the corresponding error status:
+    If there are commits with a status different from **Processed**, please follow the troubleshooting instructions for the corresponding error status and click the button **Test integration** to display any new coverage reports uploaded to Codacy.
 
     -   **Commit not found:** Codacy doesn't have information about the commit associated with the coverage data.
 
@@ -373,31 +375,21 @@ Follow these instructions to validate that your coverage setup is working correc
         </tr>
         </table>
 
-    If you make adjustments to your setup and upload new coverage data, click the button **Test integration** to refresh the table.
-
-1.  Make sure that there are **at least two commits** that uploaded coverage data to Codacy and were successfully analyzed by Codacy.
-
-    !!! important
-        Codacy only takes the uploaded coverage data into account after successfully analyzing each commit.
-
-        Make sure that you [invite or ask your team members to join your organization on Codacy](../organizations/managing-people/#adding-people) so that Codacy analyzes their commits on private repositories.
-
 1.  Check that Codacy displays the coverage information for the latest commits and pull requests.
 
-    ![Coverage data displayed on Codacy](images/coverage-codacy-ui.png)
+    ![Coverage information displayed on Codacy](images/coverage-codacy-ui.png)
 
-    **If Codacy doesn't display the coverage data** for the latest commits or pull requests (represented by `-`), please validate the following:
+    If Codacy doesn't display the coverage information for the latest commits or pull requests (represented by `-`), please validate the following:
 
     -   Make sure that the file paths included in your coverage reports are relative to the root directory of your repository. For example, `src/index.js`.
-    -   Verify that the Codacy Coverage Reporter is uploading the coverage data for the [correct commit in the correct branch](troubleshooting-coverage-cli-issues.md#commit-detection).
-    -   For coverage variation in pull requests, make sure that you have uploaded the coverage data for both:
+    -   For coverage variation in pull requests, make sure that you have uploaded coverage data for both:
 
-        -   The commit that is the common ancestor of the pull request branch and the target branch
+        -   The common ancestor commit of the pull request branch and the target branch
         -   The last commit in the pull request branch
 
         The following diagram highlights the commits that must have received coverage data for Codacy to display coverage variation on a pull request:
 
-        ![Commits that must have coverage data](images/coverage-pr-commits.png)
+        ![Commits that must have received coverage data](images/coverage-pr-commits.png)
 
 !!! note "Need help?"
     If you need help setting up coverage on your repository please contact us at <mailto:support@codacy.com> including the following information:
