@@ -20,7 +20,7 @@ Complete these main steps to set up coverage for your repository:
 
 1.  **Validating that the coverage setup is complete**
 
-    Check if Codacy displays coverage information for new commits and pull requests and troubleshoot the coverage setup if necessary.
+    Check if Codacy displays the coverage metrics for new commits and pull requests and troubleshoot the coverage setup if necessary.
 
 The next sections include detailed instructions on how to complete each step of the setup process.
 
@@ -171,7 +171,7 @@ The recommended way to do this is by using a CI/CD platform that automatically r
 
         -   **CODACY_USERNAME:** Name of your organization on the Git provider, or your username on the Git provider if you're using a personal organization.
 
-        -   **CODACY_PROJECT_NAME:** Name of the repository for which you're uploading the coverage information.
+        -   **CODACY_PROJECT_NAME:** Name of the repository for which you're uploading the coverage data.
 
         ```bash
         export CODACY_API_TOKEN=<your account API token>
@@ -359,11 +359,11 @@ Follow these instructions to validate that your coverage setup is working correc
     </tr>
     </table>
 
-1.  Check that Codacy displays the coverage information for the latest commits and pull requests.
+1.  Check that Codacy displays the coverage metrics for the latest commits and pull requests.
 
-    ![Coverage information displayed on Codacy](images/coverage-codacy-ui.png)
+    ![Coverage metrics displayed on Codacy](images/coverage-codacy-ui.png)
 
-    If Codacy doesn't display the coverage information for the latest commits or pull requests (represented by `-`), please validate the following:
+    If Codacy doesn't display the coverage metrics for the latest commits or pull requests (represented by `-`), please validate the following:
 
     -   Make sure that the file paths included in your coverage reports are relative to the root directory of your repository. For example, `src/index.js`.
     -   For coverage variation in pull requests, make sure that you have uploaded coverage data for both:
