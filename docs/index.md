@@ -366,12 +366,12 @@ Follow these instructions to validate that your coverage setup is working correc
     If Codacy doesn't display the coverage metrics for the latest commits or pull requests (represented by `-`), please validate the following:
 
     -   Make sure that the file paths included in your coverage reports are relative to the root directory of your repository. For example, `src/index.js`.
-    -   For coverage variation in pull requests, make sure that you have uploaded coverage data for both:
+    -   To display the coverage variation metric in pull requests, make sure that you have uploaded coverage data for both:
 
         -   The common ancestor commit of the pull request branch and the target branch
         -   The last commit in the pull request branch
 
-        The following diagram highlights the commits that must have received coverage data for Codacy to display coverage variation on a pull request:
+        The following diagram highlights the commits that must have received coverage data for Codacy to display the coverage variation metric on a pull request:
 
         ![Commits that must have received coverage data](images/coverage-pr-commits.png)
 
