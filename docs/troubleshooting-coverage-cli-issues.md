@@ -1,25 +1,10 @@
 ---
-description: Instructions or workarounds to overcome common issues while using Codacy Coverage Reporter.
+description: Instructions or workarounds to overcome common issues while using Codacy Coverage Reporter CLI.
 ---
 
-# Troubleshooting common issues
+# Troubleshooting coverage CLI issues
 
-The sections below provide instructions or workarounds to overcome common issues while using Codacy Coverage Reporter.
-
-## No coverage data is visible on the Codacy UI {: id="no-coverage-visible"}
-
-If the Codacy Coverage Reporter correctly uploaded your coverage report but the coverage data doesn't show up on the Codacy UI, please validate the following:
-
--   Make sure that the file paths included in your coverage reports are relative to the root directory of your repository. For example, `src/index.js`.
--   Verify that the Codacy Coverage Reporter is uploading the coverage data for the [correct commit in the correct branch](#commit-detection).
--   For pull requests, make sure that you have uploaded the coverage data for both:
-
-    -   The commit that is the common ancestor of the pull request branch and the target branch
-    -   The last commit in the pull request branch
-
-    The following diagram highlights the commits that must have received coverage data for Codacy to display coverage information on a pull request:
-
-    ![Commits that must have coverage data](images/coverage-pr-commits.png)
+The sections below provide instructions or workarounds to overcome common issues while using Codacy Coverage Reporter CLI.
 
 ## Commit SHA-1 hash detection {: id="commit-detection"}
 
