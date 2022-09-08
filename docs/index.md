@@ -343,6 +343,14 @@ Follow these instructions to validate that your coverage setup is working correc
     </tr>
     <tr>
         <td>
+            The file paths in the coverage report don't match the ones on the repository <strong>Files</strong> page on Codacy.
+        </td>
+        <td>
+            Make sure that the file paths included in your coverage report are relative to the root directory of your repository. For example, <code>src/index.js</code>.
+        </td>
+    </tr>
+    <tr>
+        <td>
             The uploaded coverage data only includes information for files that are <a href="../repositories-configure/ignoring-files/">ignored on Codacy</a>.
         </td>
         <td>
@@ -363,17 +371,14 @@ Follow these instructions to validate that your coverage setup is working correc
 
     ![Coverage metrics displayed on Codacy](images/coverage-codacy-ui.png)
 
-    If Codacy doesn't display the coverage metrics for the latest commits or pull requests (represented by `-`), please validate the following:
+    If Codacy doesn't display the coverage variation metric in pull requests (represented by `-`), make sure that you have uploaded coverage data for both:
 
-    -   Make sure that the file paths included in your coverage reports are relative to the root directory of your repository. For example, `src/index.js`.
-    -   To display the coverage variation metric in pull requests, make sure that you have uploaded coverage data for both:
+    -   The common ancestor commit of the pull request branch and the target branch
+    -   The last commit in the pull request branch
 
-        -   The common ancestor commit of the pull request branch and the target branch
-        -   The last commit in the pull request branch
+    The following diagram highlights the commits that must have received coverage data for Codacy to display the coverage variation metric on a pull request:
 
-        The following diagram highlights the commits that must have received coverage data for Codacy to display the coverage variation metric on a pull request:
-
-        ![Commits that must have received coverage data](images/coverage-pr-commits.png)
+    ![Commits that must have received coverage data](images/coverage-pr-commits.png)
 
 !!! note "Need help?"
     If you need help setting up coverage on your repository please contact us at <mailto:support@codacy.com> including the following information:
