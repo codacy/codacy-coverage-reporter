@@ -330,7 +330,7 @@ Follow these instructions to validate that your coverage setup is working correc
         </td>
     </tr>
     <tr>
-        <td rowspan="3">
+        <td rowspan="4">
             <p style="color: #2562EA;"><strong>Pending</strong></p>
             <p>Codacy is waiting to receive more coverage data before reporting the coverage for a commit.</p>
         </td>
