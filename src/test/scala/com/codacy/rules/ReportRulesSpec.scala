@@ -130,21 +130,30 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
 
   "guessReportLanguage" should {
     "provide the available language" in {
-      val langEither = components.reportRules.guessReportLanguage(conf.language, noLanguageReport)
+      val langEither = components.reportRules.guessReportLanguage(
+        languageOpt = conf.language,
+        report = noLanguageReport,
+        reportFilePath = "I/am/a/file.extension"
+      )
 
       langEither should be('right)
       langEither.right.value should be(conf.language.get)
     }
 
     "provide the Scala language from report" in {
-      val langEither = components.reportRules.guessReportLanguage(None, coverageReport)
+      val langEither = components.reportRules
+        .guessReportLanguage(languageOpt = None, report = coverageReport, reportFilePath = "I/am/a/file.extension")
 
       langEither should be('right)
       langEither.right.value should be(Languages.Scala.name)
     }
 
     "not provide the language from an empty report" in {
-      components.reportRules.guessReportLanguage(None, noLanguageReport) should be('left)
+      components.reportRules.guessReportLanguage(
+        languageOpt = None,
+        report = noLanguageReport,
+        reportFilePath = "I/am/a/file.extension"
+      ) should be('left)
     }
   }
 
