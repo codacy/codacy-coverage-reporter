@@ -205,12 +205,13 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
           case None => Left("Can't guess the report language")
           case Some(language) =>
             if (reportLanguages.size > 1) {
-              logger.warn(s"""
+              logger.warn(
+                s"""
                    |Multiple languages detected in $reportFilePath (${reportLanguages.mkString(",")}).
-                   |  This run will report coverage for the $language language.
-                   |  To make sure you are uploading this report for all languages,
-                   |  check https://docs.codacy.com/coverage-reporter/uploading-coverage-in-advanced-scenarios/#multiple-languages
-                   |  for further details.""".stripMargin)
+                   |  This run will only upload coverage for the $language language.
+                   |  To make sure that you upload coverage for all languages in the report,
+                   |  see https://docs.codacy.com/coverage-reporter/uploading-coverage-in-advanced-scenarios/#multiple-languages""".stripMargin
+              )
             }
             Right(language)
         }
