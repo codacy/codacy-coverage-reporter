@@ -43,7 +43,7 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
               transform(coverageResult.report)(finalConfig)
           }
           _ <- storeReport(report, file)
-          language <- guessReportLanguage(finalConfig.languageOpt, report)
+          language <- guessReportLanguage(finalConfig.languageOpt, report, file.getAbsolutePath)
           success <- sendReport(report, language, finalConfig, commitUUID, file)
         } yield {
           success
@@ -194,16 +194,31 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
     */
   private[rules] def guessReportLanguage(
       languageOpt: Option[String],
-      report: CoverageReport
+      report: CoverageReport,
+      reportFilePath: String
   ): Either[String, String] = {
     languageOpt match {
       case Some(l) => Right(l)
       case None =>
-        report.fileReports.flatMap(file => Languages.forPath(file.filename)).headOption match {
+        val reportLanguages = getReportLanguages(report).distinct
+        reportLanguages.headOption match {
           case None => Left("Can't guess the report language")
-          case Some(value) => Right(value.name)
+          case Some(language) =>
+            if (reportLanguages.size > 1) {
+              logger.warn(s"""
+                   |Multiple languages detected in $reportFilePath (${reportLanguages.mkString(",")}).
+                   |  This run will report coverage for the $language language.
+                   |  To make sure you are uploading this report for all languages,
+                   |  check https://docs.codacy.com/coverage-reporter/uploading-coverage-in-advanced-scenarios/#multiple-languages
+                   |  for further details.""".stripMargin)
+            }
+            Right(language)
         }
     }
+  }
+
+  private[rules] def getReportLanguages(report: CoverageReport): Seq[String] = {
+    report.fileReports.flatMap(file => Languages.forPath(file.filename).map(_.name)).distinct
   }
 
   /**
