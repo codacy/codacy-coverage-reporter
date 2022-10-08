@@ -13,13 +13,15 @@ The recommended way to run the Codacy Coverage Reporter is by using the [self-co
 -   On Ubuntu, run:
 
     ```bash
-    bash <(curl -Ls https://coverage.codacy.com/get.sh)
+    bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r <coverage report file name>
     ```
 
 -   On Alpine Linux, run:
 
     ```sh
-    wget -qO - https://coverage.codacy.com/get.sh | sh
+    wget -q https://coverage.codacy.com/get.sh
+    sh get.sh report -r <coverage report file name>
+    rm get.sh
     ```
 
 !!! note
