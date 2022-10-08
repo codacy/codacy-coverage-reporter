@@ -19,9 +19,7 @@ The recommended way to run the Codacy Coverage Reporter is by using the [self-co
 -   On Alpine Linux, run:
 
     ```sh
-    wget -q https://coverage.codacy.com/get.sh
-    sh get.sh report -r <coverage report file name>
-    rm get.sh
+    wget -qO - https://coverage.codacy.com/get.sh | sh -s -- report -r <coverage report file name>
     ```
 
 !!! note
