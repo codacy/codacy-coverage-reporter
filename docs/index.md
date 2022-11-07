@@ -330,8 +330,8 @@ Follow these instructions to validate that your coverage setup is working correc
         </td>
     </tr>
     <tr>
-        <td id="status-final-not-sent">
-            <p style="color: #EF5454;"><strong>Final not sent</strong></p>
+        <td id="status-final-report-not-sent">
+            <p style="color: #EF5454;"><strong>Final report not sent</strong></p>
             <p>Codacy is waiting to receive more coverage data before reporting the coverage for a commit.</p>
         </td>
         <td>
