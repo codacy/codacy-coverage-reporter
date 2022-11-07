@@ -330,8 +330,8 @@ Follow these instructions to validate that your coverage setup is working correc
         </td>
     </tr>
     <tr>
-        <td rowspan="4" id="status-pending">
-            <p style="color: #2562EA;"><strong>Pending</strong></p>
+        <td id="status-pending">
+            <p style="color: #EF5454;"><strong>Final not sent</strong></p>
             <p>Codacy is waiting to receive more coverage data before reporting the coverage for a commit.</p>
         </td>
         <td>
@@ -342,6 +342,10 @@ Follow these instructions to validate that your coverage setup is working correc
         </td>
     </tr>
     <tr>
+        <td rowspan="3" id="status-pending">
+            <p style="color: #2562EA;"><strong>Pending</strong></p>
+            <p>Codacy is waiting to receive more coverage data before reporting the coverage for a commit.</p>
+        </td>
         <td>
             The file paths in the coverage report don't match the ones on the repository <strong>Files</strong> page on Codacy.
         </td>
