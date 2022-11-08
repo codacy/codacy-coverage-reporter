@@ -374,7 +374,7 @@ Follow these instructions to validate that your coverage setup is working correc
     If Codacy doesn't display the coverage variation metric in pull requests (represented by `-`), make sure that you have uploaded coverage data for both:
 
     -   The common ancestor commit of the pull request branch and the target branch
-    -   The last commit in the pull request branch
+    -   The head commit of the pull request branch
 
     The following diagram highlights the commits that must have received coverage data for Codacy to display the coverage variation metric on a pull request:
 
