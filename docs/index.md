@@ -214,8 +214,11 @@ Because of this, to ensure that all code coverage metrics are available on Codac
 !!! note "Example"
     The example below shows that after pushing a commit that correctly sets up coverage on the main branch:
 
-    -   Codacy will report coverage metrics for all subsequent commits and pull requests relative to the main branch
-    -   Codacy won't report coverage metrics for commits and pull requests that are relative to older branches where the coverage setup wasn't performed yet
+    -   Codacy will report coverage metrics for all subsequent commits and pull requests relative to the main branch.
+
+    -   Codacy won't report coverage metrics for commits and pull requests that are relative to older branches where the coverage setup wasn't performed yet.
+
+        To solve this issue, you can rebase the old feature branch to update the common ancestor commit to one that already has coverage data.
 
     ![Setting up coverage on the main branch](images/coverage-validate.png)
 
@@ -244,8 +247,8 @@ Follow these instructions to validate that your coverage setup is working correc
     </thead>
     <tbody>
     <tr>
-        <td rowspan="2" id="status-commit-not-found">
-            <p style="color: #EF5454;"><strong>Commit not found</strong></p>
+        <td rowspan="2">
+            <p id="status-commit-not-found" style="color: #EF5454;"><strong>Commit not found</strong></p>
             <p>Codacy doesn't have information about the commit associated with the coverage data.</p>
         </td>
         <td>
@@ -265,8 +268,8 @@ Follow these instructions to validate that your coverage setup is working correc
         </td>
     </tr>
     <tr>
-       <td rowspan="2" id="status-branch-not-enabled">
-            <p style="color: #EF5454;"><strong>Branch not enabled</strong></p>
+       <td rowspan="2">
+            <p id="status-branch-not-enabled" style="color: #EF5454;"><strong>Branch not enabled</strong></p>
             <p>The commit associated with the coverage data doesn't belong to any branch that Codacy is analyzing.</p>
         </td>
         <td>
@@ -286,8 +289,8 @@ Follow these instructions to validate that your coverage setup is working correc
         </td>
     </tr>
     <tr>
-        <td rowspan="5" id="status-commit-not-analyzed">
-            <p style="color: #EF5454;"><strong>Commit not analyzed</strong></p>
+        <td rowspan="5">
+            <p id="status-commit-not-analyzed" style="color: #EF5454;"><strong>Commit not analyzed</strong></p>
             <p>Due to technical limitations, Codacy only reports coverage for a commit after successfully completing the static code analysis of that commit.</p>
         </td>
         <td>
@@ -378,7 +381,7 @@ Follow these instructions to validate that your coverage setup is working correc
     If Codacy doesn't display the coverage variation metric in pull requests (represented by `-`), make sure that you have uploaded coverage data for both:
 
     -   The common ancestor commit of the pull request branch and the target branch
-    -   The last commit in the pull request branch
+    -   The head commit of the pull request branch
 
     The following diagram highlights the commits that must have received coverage data for Codacy to display the coverage variation metric on a pull request:
 
