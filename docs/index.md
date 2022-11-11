@@ -247,8 +247,8 @@ Follow these instructions to validate that your coverage setup is working correc
     </thead>
     <tbody>
     <tr>
-        <td rowspan="2" id="status-commit-not-found">
-            <p style="color: #EF5454;"><strong>Commit not found</strong></p>
+        <td rowspan="2">
+            <p id="status-commit-not-found" style="color: #EF5454;"><strong>Commit not found</strong></p>
             <p>Codacy doesn't have information about the commit associated with the coverage data.</p>
         </td>
         <td>
@@ -268,8 +268,8 @@ Follow these instructions to validate that your coverage setup is working correc
         </td>
     </tr>
     <tr>
-       <td rowspan="2" id="status-branch-not-enabled">
-            <p style="color: #EF5454;"><strong>Branch not enabled</strong></p>
+       <td rowspan="2">
+            <p id="status-branch-not-enabled" style="color: #EF5454;"><strong>Branch not enabled</strong></p>
             <p>The commit associated with the coverage data doesn't belong to any branch that Codacy is analyzing.</p>
         </td>
         <td>
@@ -289,8 +289,8 @@ Follow these instructions to validate that your coverage setup is working correc
         </td>
     </tr>
     <tr>
-        <td rowspan="5" id="status-commit-not-analyzed">
-            <p style="color: #EF5454;"><strong>Commit not analyzed</strong></p>
+        <td rowspan="5">
+            <p id="status-commit-not-analyzed" style="color: #EF5454;"><strong>Commit not analyzed</strong></p>
             <p>Due to technical limitations, Codacy only reports coverage for a commit after successfully completing the static code analysis of that commit.</p>
         </td>
         <td>
@@ -333,8 +333,8 @@ Follow these instructions to validate that your coverage setup is working correc
         </td>
     </tr>
     <tr>
-        <td rowspan="4" id="status-pending">
-            <p style="color: #2562EA;"><strong>Pending</strong></p>
+        <td rowspan="4">
+            <p id="status-pending" style="color: #2562EA;"><strong>Pending</strong></p>
             <p>Codacy is waiting to receive more coverage data before reporting the coverage for a commit.</p>
         </td>
         <td>
