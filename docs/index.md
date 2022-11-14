@@ -418,14 +418,6 @@ Follow these instructions to validate that your coverage setup is working correc
             Check <a href="../repositories-configure/ignoring-files/">which files are ignored on Codacy</a> and make sure that you're generating coverage reports for the correct files in your repository.
         </td>
     </tr>
-    <tr>
-        <td>
-            An empty coverage data set (<code>"total": 0</code>) was uploaded using the Codacy API.
-        </td>
-        <td>
-            Codacy must receive coverage data for at least one file to calculate and display coverage.
-        </td>
-    </tr>
     </table>
 
 1.  Check that Codacy displays the coverage metrics for the latest commits and pull requests.
