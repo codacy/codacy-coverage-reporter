@@ -212,15 +212,15 @@ Because of this, to ensure that all code coverage metrics are available on Codac
 -   The common ancestor commit of each pull request branch and its target branch
 
 !!! note "Example"
-    The example below shows that after pushing a commit that correctly sets up coverage on the main branch:
+    The example below shows that after pushing a commit that correctly sets up coverage on the default branch:
 
-    -   Codacy will report coverage metrics for all subsequent commits and pull requests relative to the main branch.
+    -   Codacy will report coverage metrics for all subsequent commits and pull requests relative to the default branch.
 
     -   Codacy won't report coverage metrics for commits and pull requests that are relative to older branches where the coverage setup wasn't performed yet.
 
         To solve this issue, you can rebase the old feature branch to update the common ancestor commit to one that already has coverage data.
 
-    ![Setting up coverage on the main branch](images/coverage-validate.png)
+    ![Setting up coverage on the default branch](images/coverage-validate.png)
 
 Follow these instructions to validate that your coverage setup is working correctly:
 
