@@ -232,25 +232,23 @@ Follow these instructions to validate that your coverage setup is working correc
 
     If there are commits with a status different from **Processed**, please follow the troubleshooting instructions for the corresponding error status and click the button **Test integration** to display any new coverage reports uploaded to Codacy.
 
+    ### Commit not found {: id="status-commit-not-found" style="color: #EF5454;"}
+
+    Codacy doesn't have information about the commit associated with the coverage data.
+
     <table>
     <colgroup>
-        <col style="width: 25%;"/>
-        <col style="width: 30%;"/>
-        <col style="width: 45%;"/>
+        <col style="width: 40%;"/>
+        <col style="width: 60%;"/>
     </colgroup>
     <thead>
     <tr>
-        <th>Error status</th>
         <th>What causes the error?</th>
         <th>How to fix the error?</th>
     </tr>
     </thead>
     <tbody>
     <tr>
-        <td rowspan="2">
-            <p id="status-commit-not-found" style="color: #EF5454;"><strong>Commit not found</strong></p>
-            <p>Codacy doesn't have information about the commit associated with the coverage data.</p>
-        </td>
         <td>
             Codacy didn't receive the webhook for that commit from the Git provider.
         </td>
@@ -267,11 +265,26 @@ Follow these instructions to validate that your coverage setup is working correc
             Make sure that the Codacy Coverage Reporter <a href="troubleshooting-coverage-cli-issues/#commit-detection">detects the correct commit SHA-1 hash</a> for the uploaded coverage data.
         </td>
     </tr>
+    </table>
+
+    ### Branch not enabled {: id="status-branch-not-enabled" style="color: #EF5454;"}
+
+    The commit associated with the coverage data doesn't belong to any branch that Codacy is analyzing.
+
+    <table>
+    <colgroup>
+        <col style="width: 40%;"/>
+        <col style="width: 60%;"/>
+    </colgroup>
+    <thead>
     <tr>
-       <td rowspan="2">
-            <p id="status-branch-not-enabled" style="color: #EF5454;"><strong>Branch not enabled</strong></p>
-            <p>The commit associated with the coverage data doesn't belong to any branch that Codacy is analyzing.</p>
-        </td>
+        <th>What causes the error?</th>
+        <th>How to fix the error?</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    <tr>
         <td>
             Coverage was uploaded for a commit that belongs to a branch that isn't analyzed by Codacy.
         </td>
@@ -288,11 +301,25 @@ Follow these instructions to validate that your coverage setup is working correc
             The error status is expected in this scenario and you can ignore it.
         </td>
     </tr>
+    </table>
+
+    ### Commit not analyzed {: id="status-commit-not-analyzed" style="color: #EF5454;"}
+
+    Due to technical limitations, Codacy only reports coverage for a commit after successfully completing the static code analysis of that commit.
+
+    <table>
+    <colgroup>
+        <col style="width: 40%;"/>
+        <col style="width: 60%;"/>
+    </colgroup>
+    <thead>
     <tr>
-        <td rowspan="5">
-            <p id="status-commit-not-analyzed" style="color: #EF5454;"><strong>Commit not analyzed</strong></p>
-            <p>Due to technical limitations, Codacy only reports coverage for a commit after successfully completing the static code analysis of that commit.</p>
-        </td>
+        <th>What causes the error?</th>
+        <th>How to fix the error?</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
         <td>
             Codacy hasn't finished analyzing the commit yet.
         </td>
@@ -332,11 +359,25 @@ Follow these instructions to validate that your coverage setup is working correc
             Solve the issue that caused the analysis to fail (such as <a href="../faq/troubleshooting/we-no-longer-have-access-to-this-repository/">Codacy losing access to the repository</a>), or contact us at <a href="mailto:support@codacy.com">support@codacy.com</a> asking for help.
         </td>
     </tr>
+    </table>
+
+    ### Final report not sent {: id="status-final-report-not-sent" style="color: #EF5454;"}
+
+    Codacy is waiting to receive more coverage data before reporting the coverage for a commit.
+
+    <table>
+    <colgroup>
+        <col style="width: 40%;"/>
+        <col style="width: 60%;"/>
+    </colgroup>
+    <thead>
     <tr>
-        <td>
-            <p id="status-final-report-not-sent" style="color: #EF5454;"><strong>Final report not sent</strong></p>
-            <p>Codacy is waiting to receive more coverage data before reporting the coverage for a commit.</p>
-        </td>
+        <th>What causes the error?</th>
+        <th>How to fix the error?</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
         <td>
             Coverage was uploaded with the <code>--partial</code> flag but Codacy didn't receive the <code>final</code> notification.
         </td>
@@ -344,11 +385,25 @@ Follow these instructions to validate that your coverage setup is working correc
             Make sure that after uploading all partial reports you <a href="uploading-coverage-in-advanced-scenarios/#multiple-reports-sequence">send the <code>final</code> notification</a>.
         </td>
     </tr>
+    </table>
+
+    ### Pending {: id="status-pending" style="color: #2562EA;"}
+
+    Codacy is waiting to receive valid coverage data for the files in your repository.
+
+    <table>
+    <colgroup>
+        <col style="width: 40%;"/>
+        <col style="width: 60%;"/>
+    </colgroup>
+    <thead>
     <tr>
-        <td rowspan="3" id="status-pending">
-            <p style="color: #2562EA;"><strong>Pending</strong></p>
-            <p>Codacy is waiting to receive valid coverage data for the files in your repository.</p>
-        </td>
+        <th>What causes the error?</th>
+        <th>How to fix the error?</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
         <td>
             The file paths in the coverage report don't match the ones on the repository <strong>Files</strong> page on Codacy.
         </td>
