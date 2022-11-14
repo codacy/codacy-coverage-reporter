@@ -283,7 +283,6 @@ Follow these instructions to validate that your coverage setup is working correc
     </tr>
     </thead>
     <tbody>
-
     <tr>
         <td>
             Coverage was uploaded for a commit that belongs to a branch that isn't analyzed by Codacy.
