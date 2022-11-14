@@ -1,25 +1,10 @@
 ---
-description: Instructions or workarounds to overcome common issues while using Codacy Coverage Reporter.
+description: Instructions or workarounds to overcome common issues while using Codacy Coverage Reporter CLI.
 ---
 
-# Troubleshooting common issues
+# Troubleshooting coverage CLI issues
 
-The sections below provide instructions or workarounds to overcome common issues while using Codacy Coverage Reporter.
-
-## No coverage data is visible on the Codacy UI {: id="no-coverage-visible"}
-
-If the Codacy Coverage Reporter correctly uploaded your coverage report but the coverage data doesn't show up on the Codacy UI, please validate the following:
-
--   Make sure that the file paths included in your coverage reports are relative to the root directory of your repository. For example, `src/index.js`.
--   Verify that the Codacy Coverage Reporter is uploading the coverage data for the [correct commit in the correct branch](#commit-detection).
--   For pull requests, make sure that you have uploaded the coverage data for both:
-
-    -   The commit that is the common ancestor of the pull request branch and the target branch
-    -   The last commit in the pull request branch
-
-    The following diagram highlights the commits that must have received coverage data for Codacy to display coverage information on a pull request:
-
-    ![Commits that must have coverage data](images/coverage-pr-commits.png)
+The sections below provide instructions or workarounds to overcome common issues while using Codacy Coverage Reporter CLI.
 
 ## Commit SHA-1 hash detection {: id="commit-detection"}
 
@@ -71,7 +56,7 @@ bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r <coverage report f
 If you're using dotCover to generate coverage reports for your C# projects, you must use the dotCover detailedXML report format as follows:
 
 ```bash
-dotCover.exe cover ... --reportType=DetailedXml
+dotCover.exe cover <...> --reportType=DetailedXml
 ```
 
 ## JsonParseException while uploading coverage data
@@ -85,14 +70,14 @@ There are some ways you can solve this:
 -   **If you're using dotCover to generate coverage reports for your C# projects**, you should [exclude xUnit files](https://www.jetbrains.com/help/dotcover/Running_Coverage_Analysis_from_the_Command_LIne.html#filters_cmd) from the coverage analysis as follows:
 
     ```bash
-    dotCover.exe cover ... /Filters=-:xunit*
+    dotCover.exe cover <...> /Filters=-:xunit*
     ```
 
     By default, dotCover includes xUnit files in the coverage analysis and this results in larger coverage reports. This filter helps ensure that the resulting coverage data does not exceed the size limit accepted by the Codacy API when uploading the results.
 
 ## Connect timed out while uploading coverage data
 
-If you get a `Error doing a post to ... connect timed out` error while uploading your coverage data to Codacy it means that the Codacy Coverage Reporter is timing out while connecting to the Codacy API. This typically happens if you're uploading coverage data for larger repositories.
+If you get a `Error doing a post to <...> connect timed out` error while uploading your coverage data to Codacy it means that the Codacy Coverage Reporter is timing out while connecting to the Codacy API. This typically happens if you're uploading coverage data for larger repositories.
 
 To increase the default timeout while connecting to the Codacy API, use the flag `--http-timeout` to set a value larger than 10000 miliseconds. For example, to set the timeout to 30 seconds:
 

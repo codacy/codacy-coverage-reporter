@@ -1,5 +1,3 @@
-import codacy.libs._
-
 inThisBuild(
   Seq(
     scalaVersion := "2.12.11",
@@ -25,18 +23,21 @@ libraryDependencies ++= Seq(
 )
 
 // Test dependencies
-libraryDependencies ++= Seq(scalatest % "it,test", mockitoScalaScalatest % Test)
+libraryDependencies ++= Seq(
+  "org.scalatest" %% "scalatest" % "3.0.8" % "it,test",
+  "org.mockito" %% "mockito-scala-scalatest" % "1.7.1" % Test
+)
 
 configs(IntegrationTest)
 Defaults.itSettings
 
-mainClass in assembly := Some("com.codacy.CodacyCoverageReporter")
-assemblyMergeStrategy in assembly := {
+assembly / mainClass := Some("com.codacy.CodacyCoverageReporter")
+assembly / assemblyMergeStrategy := {
   case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
   case m if m.toLowerCase.matches("meta-inf.*\\.sf$") => MergeStrategy.discard
   case _ => MergeStrategy.first
 }
-test in assembly := {}
+assembly / test := {}
 crossPaths := false
 
 // HACK: Since we are only using the public resolvers we need to remove the private for it to not fail
@@ -53,8 +54,8 @@ scmInfo := Some(
   )
 )
 
-fork in Test := true
-cancelable in Global := true
+Test / fork := true
+Global / cancelable := true
 
 javacOptions ++= Seq("-source", "11", "-target", "11")
 
@@ -87,7 +88,7 @@ lazy val coverageParser = project
       "com.codacy" %% "codacy-api-scala" % "7.0.3",
       "com.codacy" %% "codacy-plugins-api" % "5.2.0",
       "org.scala-lang.modules" %% "scala-xml" % "1.2.0",
-      scalatest % Test
+      "org.scalatest" %% "scalatest" % "3.0.8" % Test
     )
   )
 
