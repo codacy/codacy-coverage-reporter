@@ -224,7 +224,7 @@ Because of this, to ensure that all code coverage metrics are available on Codac
 
 Follow these instructions to validate that your coverage setup is working correctly:
 
-1.  On Codacy, open your **Repository Settings**, tab **Coverage**, and observe the list of recent coverage reports in the section **Test your integration**.
+1.  On Codacy, open your **Repository Settings**, tab **Coverage**, and observe the list of the most recent 50 coverage reports in the section **Test your integration**.
 
     Make sure that Codacy receives and processes the coverage data successfully for **at least two commits**.
 
