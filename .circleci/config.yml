@@ -213,12 +213,12 @@ workflows:
   version: 2
   compile_test_deploy:
     jobs:
-      - codacy/wait_for_workflows:
-          context: ExternalSystems
+#      - codacy/wait_for_workflows:
+#          context: ExternalSystems
       - codacy/checkout_and_version:
           write_sbt_version: true
-          requires:
-            - codacy/wait_for_workflows
+#          requires:
+#            - codacy/wait_for_workflows
       - pack_and_validate_orb:
           context: CodacyCircleCI
           requires:

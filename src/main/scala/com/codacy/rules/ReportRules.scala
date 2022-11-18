@@ -6,7 +6,7 @@ import com.codacy.api.helpers.FileHelper
 import com.codacy.api.service.CoverageServices
 import com.codacy.model.configuration._
 import com.codacy.parsers.CoverageParser
-import com.codacy.plugins.api.languages.{Language, Languages}
+import com.codacy.plugins.api.languages.Languages
 import com.codacy.rules.commituuid.CommitUUIDProvider
 import com.codacy.transformation.PathPrefixer
 import wvlet.log.LogSupport
