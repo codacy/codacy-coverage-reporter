@@ -3,7 +3,7 @@ package com.codacy.parsers.implementation
 import java.io.File
 
 import com.codacy.api.{CoverageFileReport, CoverageReport}
-import com.codacy.parsers.util.{MathUtils, TextUtils}
+import com.codacy.parsers.util.TextUtils
 import com.codacy.parsers.{CoverageParser, XmlReportParser}
 
 import scala.xml.{Elem, NodeSeq}
@@ -43,35 +43,18 @@ object OpenCoverParser extends CoverageParser with XmlReportParser {
       filename <- fileIndices.get(fileIndex)
 
       sanitisedFileName = TextUtils.sanitiseFilename(filename).stripPrefix(projectRoot).stripPrefix("/")
-      lineCoverage = getLineCoverage(methods, sanitisedFileName)
-      totalLines = lineCoverage.size
-      coveredLines = lineCoverage.count { case (_, visitCount) => visitCount > 0 }
-      coverage = MathUtils.computePercentage(coveredLines, totalLines)
-    } yield CoverageFileReport(sanitisedFileName, coverage, lineCoverage)).toSeq
+      lineCoverage = getLineCoverage(methods)
+    } yield CoverageFileReport(sanitisedFileName, 0, lineCoverage)).toSeq
 
-    val totalCoverage = computeTotalCoverage(fileReports)
-
-    CoverageReport(totalCoverage, fileReports)
+    CoverageReport(0, fileReports)
   }
 
-  private def getLineCoverage(methodNodes: NodeSeq, filename: String) = {
+  private def getLineCoverage(methodNodes: NodeSeq) = {
     val lineCoverage = for {
       methodNode <- methodNodes
       sequencePoint <- methodNode \\ SequencePointTag
     } yield (sequencePoint \@ LineAttribute).toInt -> (sequencePoint \@ VisitCounterAttribute).toInt
 
     lineCoverage.toMap
-  }
-
-  private def computeTotalCoverage(fileReports: Seq[CoverageFileReport]) = {
-    val (totalLines, coveredLines) = fileReports
-      .foldLeft((0, 0)) {
-        case ((total, covered), f) =>
-          val totalLines = f.coverage.size
-          val coveredLines = (f.total * totalLines) / 100
-          (total + totalLines, covered + coveredLines)
-      }
-
-    MathUtils.computePercentage(coveredLines, totalLines)
   }
 }

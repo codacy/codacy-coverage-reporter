@@ -50,7 +50,7 @@ class PhpUnitXmlParserTest extends WordSpec with BeforeAndAfterAll with Matchers
         .right
         .value
 
-      report.total shouldBe 69
+      report.total shouldBe 0
     }
 
     "return a report with the expected number of files" in {
@@ -91,13 +91,13 @@ class PhpUnitXmlParserTest extends WordSpec with BeforeAndAfterAll with Matchers
       report.fileReports.find(_.filename.endsWith(configPhpFile)) match {
         case None => fail(configPhpFile + " file is not present in the list of file reports")
         case Some(fileReport) =>
-          fileReport.total shouldBe 86
+          fileReport.total shouldBe 0
       }
 
       report.fileReports.find(_.filename.endsWith("CloverParser.php")) match {
         case None => fail("CloverParser.php is not present in the list of file reports")
         case Some(fileReport) =>
-          fileReport.total shouldBe 95
+          fileReport.total shouldBe 0
       }
     }
 

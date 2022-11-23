@@ -25,7 +25,7 @@ class CloverParserTest extends WordSpec with Matchers with EitherValues {
       }
 
       "the report is not in the Clover format" in {
-        // Arrange
+        // Arranges
         val reportNotInCloverFormat = "coverage-parser/src/test/resources/test_cobertura.xml"
 
         // Act
@@ -33,19 +33,6 @@ class CloverParserTest extends WordSpec with Matchers with EitherValues {
 
         // Assert
         parseResult shouldBe Left("Invalid report. Could not find tag hierarchy <coverage> <project> <metrics> tags.")
-      }
-
-      "the report is missing the statements attribute in the file metrics tag" in {
-        // Arrange
-        val invalidCloverReportPath = "coverage-parser/src/test/resources/test_invalid_clover.xml"
-
-        // Act
-        val parseResult = CloverParser.parse(new File("."), new File(invalidCloverReportPath))
-
-        // Assert
-        parseResult shouldBe Left(
-          "Could not retrieve file coverage from metrics tag for file 'home/codacy-php/src/Codacy/Coverage/Parser/Parser.php': Could not find attribute with name 'statements'"
-        )
       }
 
     }
@@ -120,7 +107,7 @@ class CloverParserTest extends WordSpec with Matchers with EitherValues {
 
     "return a report with the expected total coverage" in {
       // Arrange
-      val expectedTotalCoverage = 38
+      val expectedTotalCoverage = 0
 
       // Act
       val coverageTotal =
@@ -156,7 +143,7 @@ class CloverParserTest extends WordSpec with Matchers with EitherValues {
     "return a report with the expected file coverage" in {
       // Arrange
       val filePath = "src/Codacy/Coverage/Parser/Parser.php"
-      val expectedFileCoverage = 33
+      val expectedFileCoverage = 0
 
       // Act
       val fileTotalCoverage =

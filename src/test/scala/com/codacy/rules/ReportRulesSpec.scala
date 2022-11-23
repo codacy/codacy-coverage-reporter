@@ -22,7 +22,7 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
   val conf =
     Report(baseConf, Some("Scala"), coverageReports = Some(coverageFiles), prefix = None, forceCoverageParser = None)
 
-  val coverageReport = CoverageReport(100, Seq(CoverageFileReport("file.scala", 100, Map(10 -> 1))))
+  val coverageReport = CoverageReport(0, Seq(CoverageFileReport("file.scala", 0, Map(10 -> 1))))
   val noLanguageReport = CoverageReport(0, Seq.empty[CoverageFileReport])
 
   val configRules = new ConfigurationRules(conf, sys.env)

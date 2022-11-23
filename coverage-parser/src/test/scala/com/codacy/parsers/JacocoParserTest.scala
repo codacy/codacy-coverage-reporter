@@ -24,16 +24,16 @@ class JacocoParserTest extends WordSpec with BeforeAndAfterAll with Matchers wit
       val reader = JacocoParser.parse(new File("."), new File("coverage-parser/src/test/resources/test_jacoco.xml"))
 
       val testReport = CoverageReport(
-        73,
+        0,
         List(
           CoverageFileReport(
             "org/eluder/coverage/sample/InnerClassCoverage.java",
-            81,
+            0,
             Map(10 -> 1, 6 -> 1, 9 -> 1, 13 -> 1, 22 -> 1, 27 -> 0, 12 -> 1, 3 -> 1, 16 -> 1, 26 -> 0, 19 -> 1)
           ),
           CoverageFileReport(
             "org/eluder/coverage/sample/SimpleCoverage.java",
-            50,
+            0,
             Map(3 -> 1, 6 -> 1, 10 -> 0, 11 -> 0)
           )
         )
