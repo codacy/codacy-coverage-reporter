@@ -36,7 +36,7 @@ object JacocoParser extends CoverageParser with XmlReportParser {
           .stripPrefix("/")
       calculateCoverageFileReport(filename, sourceFile)
     }
-    CoverageReport(0, filesCoverage)
+    CoverageReport(filesCoverage)
   }
 
   private def calculateCoverageFileReport(filename: String, fileNode: Node): CoverageFileReport = {
@@ -52,6 +52,6 @@ object JacocoParser extends CoverageParser with XmlReportParser {
           key -> (if (lineCoverage.coveredInstructions > 0) 1 else 0)
       }(collection.breakOut)
 
-    CoverageFileReport(filename, 0, lineHitMap)
+    CoverageFileReport(filename, lineHitMap)
   }
 }

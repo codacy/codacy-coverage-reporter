@@ -37,9 +37,9 @@ object DotcoverParser extends CoverageParser with XmlReportParser {
       (fileIndex, statements) <- statementsPerFile
       filename = TextUtils.sanitiseFilename(fileIndices(fileIndex)).stripPrefix(projectRootStr).stripPrefix("/")
       lineCoverage = getLineCoverage(statements)
-    } yield CoverageFileReport(filename, 0, lineCoverage)
+    } yield CoverageFileReport(filename, lineCoverage)
 
-    CoverageReport(0, fileReports.toSeq)
+    CoverageReport(fileReports.toSeq)
   }
 
   private def getLineCoverage(statementNodes: NodeSeq) = {

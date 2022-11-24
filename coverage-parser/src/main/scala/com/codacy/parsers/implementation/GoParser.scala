@@ -64,12 +64,12 @@ object GoParser extends CoverageParser {
 
             accum :+ CoverageFileReportWithStatementsCount(
               statementsCountForFile,
-              CoverageFileReport(filename, 0, coverage)
+              CoverageFileReport(filename, coverage)
             )
         }
       })
 
-    CoverageReport(0, coverageFileReports.map(_.coverageFileReport))
+    CoverageReport(coverageFileReports.map(_.coverageFileReport))
   }
 
   private def lineHits(coverageInfo: GoCoverageInfo): Map[Int, Int] = {

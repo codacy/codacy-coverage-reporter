@@ -35,7 +35,7 @@ object PhpUnitXmlParser extends CoverageParser with XmlReportParser {
     val codeDirectory = report \ ProjectTag \ DirectoryTag \@ "name"
     val fileReports = makeFileReports(fileNodes, projectRootPath, codeDirectory, reportRootPath)
 
-    fileReports.map(CoverageReport(0, _))
+    fileReports.map(CoverageReport(_))
   }
 
   private def makeFileReports(
@@ -50,7 +50,7 @@ object PhpUnitXmlParser extends CoverageParser with XmlReportParser {
       val fileName = getSourceFileName(projectRootPath, codeDirectory, reportFileName)
       getLineCoverage(reportRootPath, reportFileName) match {
         case Right(lineCoverage) =>
-          builder += CoverageFileReport(fileName, 0, lineCoverage)
+          builder += CoverageFileReport(fileName, lineCoverage)
         case Left(message) => return Left(message)
       }
     }

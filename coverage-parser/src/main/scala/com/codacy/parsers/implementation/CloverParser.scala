@@ -37,7 +37,7 @@ object CloverParser extends CoverageParser with XmlReportParser {
       case (Left(errorMessage), _) => Left(errorMessage)
     }
 
-    coverageFiles.map(CoverageReport(0, _))
+    coverageFiles.map(CoverageReport(_))
   }
 
   private def getCoverageFileReport(rootPath: String, fileNode: Node): Either[String, CoverageFileReport] = {
@@ -60,7 +60,7 @@ object CloverParser extends CoverageParser with XmlReportParser {
       relativeFilePath <- relativeFilePath
       linesCoverage <- getLinesCoverage(fileNode).left
         .map(errorMessage => s"Could not retrieve lines coverage for file '$relativeFilePath': $errorMessage")
-    } yield CoverageFileReport(relativeFilePath, 0, linesCoverage)
+    } yield CoverageFileReport(relativeFilePath, linesCoverage)
   }
 
   private def getLinesCoverage(fileNode: Node): Either[String, Map[Int, Int]] = {

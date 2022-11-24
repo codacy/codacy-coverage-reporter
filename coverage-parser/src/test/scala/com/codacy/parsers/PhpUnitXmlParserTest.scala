@@ -44,15 +44,6 @@ class PhpUnitXmlParserTest extends WordSpec with BeforeAndAfterAll with Matchers
       reader shouldBe 'right
     }
 
-    "return a report with the expected total coverage" in {
-      val report = PhpUnitXmlParser
-        .parse(new File(rootPath), new File(validReport))
-        .right
-        .value
-
-      report.total shouldBe 0
-    }
-
     "return a report with the expected number of files" in {
       val report = PhpUnitXmlParser
         .parse(new File(rootPath), new File(validReport))
@@ -80,25 +71,6 @@ class PhpUnitXmlParserTest extends WordSpec with BeforeAndAfterAll with Matchers
         "src/Codacy/Coverage/Report/FileReport.php",
         "src/Codacy/Coverage/Report/JsonProducer.php"
       ).sorted
-    }
-
-    "return a report with the expected file coverage" in {
-      val report = PhpUnitXmlParser
-        .parse(new File(rootPath), new File(validReport))
-        .right
-        .value
-
-      report.fileReports.find(_.filename.endsWith(configPhpFile)) match {
-        case None => fail(configPhpFile + " file is not present in the list of file reports")
-        case Some(fileReport) =>
-          fileReport.total shouldBe 0
-      }
-
-      report.fileReports.find(_.filename.endsWith("CloverParser.php")) match {
-        case None => fail("CloverParser.php is not present in the list of file reports")
-        case Some(fileReport) =>
-          fileReport.total shouldBe 0
-      }
     }
 
     "return a report with the expected line coverage" in {

@@ -38,7 +38,7 @@ object CoberturaParser extends CoverageParser with XmlReportParser {
       lineCoverage(cleanFilename, classes)
     })(collection.breakOut)
 
-    CoverageReport(0, fileReports)
+    CoverageReport(fileReports)
   }
 
   private def lineCoverage(sourceFilename: String, classes: NodeSeq): CoverageFileReport = {
@@ -48,6 +48,6 @@ object CoberturaParser extends CoverageParser with XmlReportParser {
         line <- xClass \\ "line"
       } yield (line \@ "number").toInt -> (line \@ "hits").toIntOrMaxValue).toMap
 
-    CoverageFileReport(sourceFilename, 0, lineHitMap)
+    CoverageFileReport(sourceFilename, lineHitMap)
   }
 }

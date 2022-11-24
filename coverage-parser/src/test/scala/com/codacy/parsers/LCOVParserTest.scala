@@ -34,16 +34,13 @@ class LCOVParserTest extends WordSpec with BeforeAndAfterAll with Matchers with 
       val reader = LCOVParser.parse(new File("."), new File("coverage-parser/src/test/resources/test_lcov.lcov"))
 
       val testReport = CoverageReport(
-        0,
         List(
           CoverageFileReport(
             "coverage-parser/src/test/resources/TestSourceFile2.scala",
-            0,
             Map(1 -> 1, 2 -> 1, 3 -> 1)
           ),
           CoverageFileReport(
             "coverage-parser/src/test/resources/TestSourceFile.scala",
-            0,
             Map(3 -> 0, 4 -> 1, 5 -> 1, 6 -> 2)
           )
         )

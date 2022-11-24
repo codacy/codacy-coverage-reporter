@@ -44,9 +44,9 @@ object OpenCoverParser extends CoverageParser with XmlReportParser {
 
       sanitisedFileName = TextUtils.sanitiseFilename(filename).stripPrefix(projectRoot).stripPrefix("/")
       lineCoverage = getLineCoverage(methods)
-    } yield CoverageFileReport(sanitisedFileName, 0, lineCoverage)).toSeq
+    } yield CoverageFileReport(sanitisedFileName, lineCoverage)).toSeq
 
-    CoverageReport(0, fileReports)
+    CoverageReport(fileReports)
   }
 
   private def getLineCoverage(methodNodes: NodeSeq) = {

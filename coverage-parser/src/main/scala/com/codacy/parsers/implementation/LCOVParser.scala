@@ -36,7 +36,7 @@ object LCOVParser extends CoverageParser {
         (accum, next) =>
           accum.flatMap {
             case reports if next startsWith SF =>
-              Right(CoverageFileReport(next stripPrefix SF, 0, Map()) +: reports)
+              Right(CoverageFileReport(next stripPrefix SF, Map()) +: reports)
             case reports if next startsWith DA =>
               reports.headOption match {
                 case Some(value) =>
@@ -56,9 +56,9 @@ object LCOVParser extends CoverageParser {
       )
     coverageFileReports.map { fileReports =>
       val totalFileReport = fileReports.map { report =>
-        CoverageFileReport(report.filename, 0, report.coverage)
+        CoverageFileReport(report.filename, report.coverage)
       }
-      CoverageReport(0, totalFileReport)
+      CoverageReport(totalFileReport)
     }
   }
 }
