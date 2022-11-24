@@ -69,10 +69,7 @@ class DotCoverParserTest extends WordSpec with BeforeAndAfterAll with Matchers w
             )
           ),
           CoverageFileReport("src/Coverage/Program.cs", Map(8 -> 0, 9 -> 0, 10 -> 0)),
-          CoverageFileReport(
-            "src/Coverage/Bar.cs",
-            Map(10 -> 0, 14 -> 1, 9 -> 1, 12 -> 0, 11 -> 0, 8 -> 1, 15 -> 1)
-          ),
+          CoverageFileReport("src/Coverage/Bar.cs", Map(10 -> 0, 14 -> 1, 9 -> 1, 12 -> 0, 11 -> 0, 8 -> 1, 15 -> 1)),
           CoverageFileReport("src/Coverage/Foo.cs", Map(8 -> 1, 9 -> 1, 10 -> 1))
         )
       )
