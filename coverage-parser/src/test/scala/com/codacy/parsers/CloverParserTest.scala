@@ -25,7 +25,7 @@ class CloverParserTest extends WordSpec with Matchers with EitherValues {
       }
 
       "the report is not in the Clover format" in {
-        // Arranges
+        // Arrange
         val reportNotInCloverFormat = "coverage-parser/src/test/resources/test_cobertura.xml"
 
         // Act

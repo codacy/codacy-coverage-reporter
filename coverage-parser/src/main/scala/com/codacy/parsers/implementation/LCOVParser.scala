@@ -31,7 +31,7 @@ object LCOVParser extends CoverageParser {
   }
 
   private def parseLines(reportFile: File, lines: Iterator[String]): Either[String, CoverageReport] = {
-    val coverageFileReports: Either[String, Seq[CoverageFileReport]] =
+    val coverageFileReports =
       lines.foldLeft[Either[String, Seq[CoverageFileReport]]](Right(Seq.empty[CoverageFileReport]))(
         (accum, next) =>
           accum.flatMap {
