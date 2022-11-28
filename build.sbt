@@ -59,10 +59,15 @@ Global / cancelable := true
 
 javacOptions ++= Seq("-source", "11", "-target", "11")
 
-enablePlugins(GraalVMNativeImagePlugin)
-GraalVMNativeImage / containerBuildImage := Some("graavlm:latest")
+enablePlugins(NativeImagePlugin)
 
-graalVMNativeImageOptions := Seq(
+nativeImageVersion := "21.0.0"
+
+val osSpecificOptions =
+  if (sys.props("os.name") == "Mac OS X") Seq.empty[String]
+  else Seq("--static", "--libc=musl")
+
+nativeImageOptions := Seq(
   "--verbose",
   "--no-server",
   "--enable-http",
@@ -74,10 +79,8 @@ graalVMNativeImageOptions := Seq(
   "-H:+ReportExceptionStackTraces",
   "--no-fallback",
   "--initialize-at-build-time",
-  "--report-unsupported-elements-at-runtime",
-  "--static",
-  "--libc=musl"
-)
+  "--report-unsupported-elements-at-runtime"
+) ++ osSpecificOptions
 
 dependsOn(coverageParser)
 

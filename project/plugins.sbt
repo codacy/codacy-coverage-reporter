@@ -1,4 +1,4 @@
-addSbtPlugin("com.github.sbt" % "sbt-native-packager" % "1.9.9")
+addSbtPlugin("org.scalameta" % "sbt-native-image" % "0.3.1")
 addSbtPlugin("com.codacy" % "codacy-sbt-plugin" % "22.0.1")
 
 // Publish
