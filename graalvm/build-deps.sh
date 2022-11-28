@@ -12,7 +12,7 @@ dest=/usr/local
   cd $musl
   ./configure --disable-shared --prefix=$dest
   make -j "$(nproc)"
-  make install
+  sudo make install
 )
 
 zlib='zlib-1.2.13'
@@ -25,5 +25,5 @@ tar -xf $zlibtargz
   export CC=musl-gcc
   ./configure --static --prefix=$dest
   make -j "$(nproc)"
-  make install
+  sudo make install
 )
