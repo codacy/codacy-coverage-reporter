@@ -229,7 +229,7 @@ workflows:
       - codacy/sbt:
           name: create_artifacts
           cmd: |
-            graalvm/build-deps.sh
+            export PATH=$(graalvm/build-deps.sh):$PATH
             sbt "assembly;nativeImage"
             mkdir -p ~/workdir/tmp-artifacts
             mv target/native-image/codacy-coverage-reporter ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux
