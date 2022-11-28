@@ -2,18 +2,13 @@
 
 set -e +o pipefail
 
-musl='musl-1.2.2'
-musltargz=$musl.tar.gz
-curl https://musl.libc.org/releases/$musltargz --output $musltargz
-tar -xf $musltargz
-dest=/usr/local
+export TOOLCHAIN_DIR=$HOME/.musl
+mkdir -p $TOOLCHAIN_DIR
+cd $TOOLCHAIN_DIR
 
-(
-  cd $musl
-  ./configure --disable-shared --prefix=$dest
-  make -j "$(nproc)"
-  sudo make install
-)
+curl http://more.musl.cc/10/x86_64-linux-musl/x86_64-linux-musl-native.tgz --output musl.tgz
+tar -xf musl.tgz
+export CC=$TOOLCHAIN_DIR/bin/gcc
 
 zlib='zlib-1.2.13'
 zlibtargz=$zlib.tar.gz
@@ -22,8 +17,7 @@ tar -xf $zlibtargz
 
 (
   cd $zlib
-  export CC=musl-gcc
-  ./configure --static --prefix=$dest
+  ./configure --prefix=$TOOLCHAIN_DIR --static
   make -j "$(nproc)"
   sudo make install
 )

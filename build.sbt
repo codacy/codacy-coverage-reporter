@@ -61,7 +61,7 @@ javacOptions ++= Seq("-source", "11", "-target", "11")
 
 enablePlugins(NativeImagePlugin)
 
-nativeImageVersion := "21.0.0"
+nativeImageVersion := "22.3.0"
 
 val osSpecificOptions =
   if (sys.props("os.name") == "Mac OS X") Seq.empty[String]
