@@ -78,7 +78,6 @@ nativeImageOptions := Seq(
   "-H:IncludeResourceBundles=com.sun.org.apache.xerces.internal.impl.msg.XMLMessages",
   "-H:+ReportExceptionStackTraces",
   "--no-fallback",
-  "--initialize-at-build-time",
   "--report-unsupported-elements-at-runtime"
 ) ++ osSpecificOptions
 
