@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  codacy: codacy/base@9.3.3
+  codacy: codacy/base@9.3.5
 
 references:
   circleci_job: &circleci_job
