@@ -6,7 +6,8 @@ import org.scalatest._
 class PathPrefixerSpec extends WordSpec with Matchers {
 
   val report = CoverageReport(
-    Seq(CoverageFileReport("Filename.scala", Map.empty), CoverageFileReport("OtherFile.scala", Map.empty))
+    83,
+    Seq(CoverageFileReport("Filename.scala", 24, Map.empty), CoverageFileReport("OtherFile.scala", 74, Map.empty))
   )
 
   "PathPrefixer" should {
