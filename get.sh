@@ -162,9 +162,18 @@ download_reporter() {
 
 os_name=$(uname)
 
+# This version should be one that matches the latest self hosted release.
+SELF_HOSTED_CODACY_REPORTER_VERSION="13.10.15"
+
 # Find the latest version in case is not specified
 if [ -z "$CODACY_REPORTER_VERSION" ] || [ "$CODACY_REPORTER_VERSION" = "latest" ]; then
-    CODACY_REPORTER_VERSION=$(download_stdout "https://artifacts.codacy.com/bin/codacy-coverage-reporter/latest")
+    # In case of a self hosted installation, pin a version to the latest released self hosted version working coverage reporter
+    if [ -n "$CODACY_API_BASE_URL" ] && [ "$CODACY_API_BASE_URL" != "https://api.codacy.com" ]; then
+      log "Self hosted instance detected, setting codacy coverage reporter version to $SELF_HOSTED_CODACY_REPORTER_VERSION"
+      CODACY_REPORTER_VERSION="$SELF_HOSTED_CODACY_REPORTER_VERSION"
+    else
+      CODACY_REPORTER_VERSION=$(download_stdout "https://artifacts.codacy.com/bin/codacy-coverage-reporter/latest")
+    fi
 fi
 
 # Temporary folder for downloaded files
