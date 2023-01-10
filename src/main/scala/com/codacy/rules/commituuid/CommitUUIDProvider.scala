@@ -62,8 +62,9 @@ object CommitUUIDProvider extends LogSupport {
 
   private val providers = List(
     AppveyorProvider,
-    AzurePipelinesProvider,
+    ArgoCDProvider,
     AWSCodeBuildProvider,
+    AzurePipelinesProvider,
     BitriseCIProvider,
     BuildkiteCIProvider,
     CircleCIProvider,
