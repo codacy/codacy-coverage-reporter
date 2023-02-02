@@ -40,7 +40,7 @@ Usage: codacy-coverage-reporter report
   --sleep-time <Sets a specified time, in milliseconds, to be used when waiting between retries. By default, the value is 10 seconds>
   --num-retries <Sets a number of retries in case of failure. By default, the value is 3 times>
   --language | -l  <language associated with your coverage report>
-  --coverage-reports | -r  <your project coverage file name>
+  --coverage-reports | -r  <your project coverage file name (supports globs)>
   --partial  <if the report is partial>
   --prefix  <the project path prefix>
   --force-coverage-parser  <your coverage parser>
