@@ -267,8 +267,15 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
         Right {
           try {
             value.flatMap { file =>
-              val matcher = fileSystems.getPathMatcher(s"glob:$file")
-              projectFiles.filter(f => matcher.matches(f.toPath()))
+              val foundWithGlob = {
+                val matcher = fileSystems.getPathMatcher(s"glob:$file")
+                projectFiles.filter(f => matcher.matches(f.toPath()))
+              }
+              // When the glob doesn't match any file, we return it
+              // as a file so the later stages will fail instead of silently
+              // filtering it
+              if (foundWithGlob.isEmpty) file :: Nil
+              else foundWithGlob
             }.distinct
           } catch {
             case util.control.NonFatal(e) =>

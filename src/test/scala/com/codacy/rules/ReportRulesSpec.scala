@@ -208,6 +208,13 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
       reportEither.right.value.map(_.toString) should be(List("foo.lcov", "bar.lcov"))
     }
 
+    "return files untouched when glob doesn't find anything" in {
+      val reportEither = components.reportRules.guessReportFiles(new File("unexisting.xml") :: Nil, projectFiles = Nil)
+
+      reportEither should be('right)
+      reportEither.right.value.map(_.toString) should be(List("unexisting.xml"))
+    }
+
     "support file globs with directories" in {
       val projectFiles =
         List(
