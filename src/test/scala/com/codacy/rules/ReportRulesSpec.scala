@@ -174,8 +174,9 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
     }
 
     "provide the available report file" in {
-      val files = List(new File("coverage.xml"))
-      val reportEither = components.reportRules.guessReportFiles(files, List.empty)
+      val files = new File("coverage.xml") :: Nil
+      val projectFiles = new File("coverage.xml") :: new File("other.xml") :: Nil
+      val reportEither = components.reportRules.guessReportFiles(files = files, projectFiles = projectFiles)
 
       reportEither should be('right)
       reportEither.right.value should be(files)
@@ -196,6 +197,45 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
 
       reportEither should be('right)
       reportEither.right.value.map(_.toString) should be(List("lcov.info", "lcov.dat", "foo.lcov"))
+    }
+
+    "support file globs" in {
+      val projectFiles =
+        List(new File("foo.lcov"), new File("lcov.info"), new File("bar.lcov"), new File("foobar.txt"))
+      val reportEither = components.reportRules.guessReportFiles(new File("*.lcov") :: Nil, projectFiles)
+
+      reportEither should be('right)
+      reportEither.right.value.map(_.toString) should be(List("foo.lcov", "bar.lcov"))
+    }
+
+    "return files untouched when glob doesn't find anything" in {
+      val reportEither = components.reportRules.guessReportFiles(new File("unexisting.xml") :: Nil, projectFiles = Nil)
+
+      reportEither should be('right)
+      reportEither.right.value.map(_.toString) should be(List("unexisting.xml"))
+    }
+
+    "support file globs with directories" in {
+      val projectFiles =
+        List(
+          new File("target/dir1/coverage.xml"),
+          new File("dir2/lcov.info"),
+          new File("dir1/bar.lcov"),
+          new File("dir2/other.xml")
+        )
+      val reportEither = components.reportRules.guessReportFiles(new File("**/*.xml") :: Nil, projectFiles)
+
+      reportEither should be('right)
+      reportEither.right.value.map(_.toString) should be(List("target/dir1/coverage.xml", "dir2/other.xml"))
+    }
+
+    "remove duplicates when using file globs" in {
+      val projectFiles = List(new File("coverage.xml"))
+      val reportEither =
+        components.reportRules.guessReportFiles(new File("*.xml") :: new File("coverage.xml") :: Nil, projectFiles)
+
+      reportEither should be('right)
+      reportEither.right.value.map(_.toString) should be(List("coverage.xml"))
     }
   }
 

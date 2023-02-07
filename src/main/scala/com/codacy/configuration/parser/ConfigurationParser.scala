@@ -58,7 +58,7 @@ case class Report(
     language: Option[String],
     @Hidden @Name("f")
     forceLanguage: Int @@ Counter = Tag.of(0),
-    @Name("r") @ValueDescription("your project coverage file name")
+    @Name("r") @ValueDescription("your project coverage file name (supports globs)")
     coverageReports: Option[List[File]],
     @ValueDescription("if the report is partial")
     partial: Int @@ Counter = Tag.of(0),

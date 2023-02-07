@@ -12,7 +12,7 @@ import com.codacy.transformation.PathPrefixer
 import wvlet.log.LogSupport
 
 import java.io.File
-import java.nio.file.Files
+import java.nio.file.{FileSystems, Files}
 import scala.collection.JavaConverters._
 
 class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
@@ -222,6 +222,8 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
     report.fileReports.flatMap(file => Languages.forPath(file.filename).map(_.name)).distinct
   }
 
+  private val fileSystems = FileSystems.getDefault()
+
   /**
     * Guess the report file
     *
@@ -262,7 +264,25 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
         else
           Right(foundFiles)
       case value =>
-        Right(value)
+        Right {
+          try {
+            value.flatMap { file =>
+              val foundWithGlob = {
+                val matcher = fileSystems.getPathMatcher(s"glob:$file")
+                projectFiles.filter(f => matcher.matches(f.toPath()))
+              }
+              // When the glob doesn't match any file, we return it
+              // as a file so the later stages will fail instead of silently
+              // filtering it
+              if (foundWithGlob.isEmpty) file :: Nil
+              else foundWithGlob
+            }.distinct
+          } catch {
+            case util.control.NonFatal(e) =>
+              logger.debug(s"""Failed to read "$value" as file glob. Cause $e""")
+              value
+          }
+        }
     }
   }
 
