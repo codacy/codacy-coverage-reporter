@@ -7,3 +7,7 @@ addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "1.2.0")
 // Updates
 addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.4.0")
 addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.9.2")
+
+// Coverage
+addSbtPlugin("org.scoverage" % "sbt-scoverage" % "2.0.6")
+evictionErrorLevel := Level.Warn

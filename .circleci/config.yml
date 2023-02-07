@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  codacy: codacy/base@9.3.5
+  codacy: codacy/base@10.1.1
 
 references:
   circleci_job: &circleci_job
@@ -207,25 +207,45 @@ workflows:
           requires:
             - codacy/checkout_and_version
       - codacy/sbt:
-          name: scalafmt_and_compile
-          cmd: sbt "scalafmtCheckAll;scalafmtSbtCheck;test:compile;it:compile"
+          name: compile_and_test
           persist_to_workspace: true
+          steps_before_sbt:
+            - run:
+                name: Enable coverage
+                command: echo "ThisBuild / coverageEnabled := true" > coverage.sbt
+          steps:
+            - run:
+                name: Check formatting Sbt files
+                command: sbt scalafmtSbtCheck
+            - run:
+                name: Check formatting Scala files
+                command: sbt scalafmtCheckAll
+            - run:
+                name: Test compile
+                command: sbt test:compile
+            - run:
+                name: It compile
+                command: sbt it:compile
+            - run:
+                name: Unit testing
+                command: sbt test
+            - run:
+                name: It testing
+                command: sbt it:test
+            - run:
+               name: Aggregate coverage reports
+               command: sbt coverageAggregate
+            - run:
+                name: Send coverage report to Codacy
+                # Specify only scala coverage reports, because coverage reporter is detecting coverage reports
+                # for other languages that are not valid and are used on tests
+                command: |
+                  bash <(curl -Ls https://coverage.codacy.com/get.sh) report -l Scala -r "**/cobertura*.xml"
+            - run:
+                 name: Clean coverage.sbt from cache
+                 command: rm coverage.sbt
           requires:
             - codacy/checkout_and_version
-      - codacy/sbt:
-          name: test_and_coverage
-          cmd: |
-            sbt coverage test
-            sbt coverageAggregate
-            ./get.sh report --skip
-          requires:
-            - scalafmt_and_compile
-      - codacy/sbt:
-          name: integration_tests
-          cmd: sbt it:test
-          persist_to_workspace: true
-          requires:
-            - scalafmt_and_compile
       - codacy/sbt:
           name: create_artifacts
           cmd: |
@@ -236,7 +256,7 @@ workflows:
             mv target/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/tmp-artifacts/codacy-coverage-reporter-assembly.jar
           persist_to_workspace: true
           requires:
-            - scalafmt_and_compile
+            - compile_and_test
       - codacy/sbt_osx:
           name: create_artifacts_for_osx
           cmd: |
@@ -258,7 +278,7 @@ workflows:
           persist_to_workspace: true
           persist_to_workspace_path: "tmp-artifacts/codacy-coverage-reporter-darwin"
           requires:
-            - scalafmt_and_compile
+            - compile_and_test
       - package_artifacts:
           requires:
             - create_artifacts
