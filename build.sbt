@@ -100,3 +100,6 @@ ThisBuild / assemblyMergeStrategy := {
     val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
     oldStrategy(x)
 }
+
+// required to upgrade org.scoverage.sbt-scoverage.2.0.6
+ThisBuild / libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
