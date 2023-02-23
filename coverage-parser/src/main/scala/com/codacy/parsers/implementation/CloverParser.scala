@@ -4,7 +4,7 @@ import java.io.File
 import java.nio.file.Paths
 
 import com.codacy.api.{CoverageFileReport, CoverageReport}
-import com.codacy.parsers.util.TextUtils
+import com.codacy.parsers.util.{MathUtils, TextUtils}
 import com.codacy.parsers.{CoverageParser, XmlReportParser}
 
 import scala.xml.{Elem, Node, NodeSeq}
@@ -27,6 +27,10 @@ object CloverParser extends CoverageParser with XmlReportParser {
   override def getRootNode(xml: Elem): NodeSeq = xml \\ CoverageTag
 
   private def parseReportNode(rootProject: File, report: NodeSeq): Either[String, CoverageReport] = {
+    val metricsNode = report \ ProjectTag \ MetricsTag
+    val totalCoverage = getCoveragePercentage(metricsNode).left
+      .map(errorMessage => s"Could not retrieve total coverage from metrics tag in project: $errorMessage")
+
     val rootPath = TextUtils.sanitiseFilename(rootProject.getAbsolutePath)
 
     val coverageFiles = (report \\ "file").foldLeft[Either[String, Seq[CoverageFileReport]]](Right(List())) {
@@ -37,7 +41,17 @@ object CloverParser extends CoverageParser with XmlReportParser {
       case (Left(errorMessage), _) => Left(errorMessage)
     }
 
-    coverageFiles.map(CoverageReport(_))
+    for {
+      totalCoverage <- totalCoverage
+      coverageFiles <- coverageFiles
+    } yield CoverageReport(totalCoverage, coverageFiles)
+  }
+
+  private def getCoveragePercentage(metrics: NodeSeq): Either[String, Int] = {
+    for {
+      totalStatements <- getFirstNonEmptyValueAsInt(metrics, "statements")
+      coveredStatements <- getFirstNonEmptyValueAsInt(metrics, "coveredstatements")
+    } yield MathUtils.computePercentage(coveredStatements, totalStatements)
   }
 
   private def getCoverageFileReport(rootPath: String, fileNode: Node): Either[String, CoverageFileReport] = {
@@ -58,9 +72,15 @@ object CloverParser extends CoverageParser with XmlReportParser {
 
     for {
       relativeFilePath <- relativeFilePath
+      metricsNode = fileNode \ MetricsTag
+      fileCoverage <- getCoveragePercentage(metricsNode).left
+        .map(
+          errorMessage =>
+            s"Could not retrieve file coverage from metrics tag for file '$relativeFilePath': $errorMessage"
+        )
       linesCoverage <- getLinesCoverage(fileNode).left
         .map(errorMessage => s"Could not retrieve lines coverage for file '$relativeFilePath': $errorMessage")
-    } yield CoverageFileReport(relativeFilePath, linesCoverage)
+    } yield CoverageFileReport(relativeFilePath, fileCoverage, linesCoverage)
   }
 
   private def getLinesCoverage(fileNode: Node): Either[String, Map[Int, Int]] = {
