@@ -3,7 +3,6 @@ package com.codacy.parsers.implementation
 import com.codacy.parsers.CoverageParser
 
 import java.io.File
-import com.codacy.parsers.util.MathUtils
 
 import com.codacy.api.{CoverageFileReport, CoverageReport}
 
@@ -63,31 +62,14 @@ object GoParser extends CoverageParser {
               acc ++ lineHits(coverageInfo)
             }
 
-            val totalForFile = calculateTotal(statementsCountForFile)
-
             accum :+ CoverageFileReportWithStatementsCount(
               statementsCountForFile,
-              CoverageFileReport(filename, totalForFile, coverage)
+              CoverageFileReport(filename, coverage)
             )
         }
       })
 
-    val (covered, total) = coverageFileReports
-      .foldLeft[(Int, Int)]((0, 0)) {
-        case ((covered, total), coverageFileReportWithStatementsCount) =>
-          (
-            covered + coverageFileReportWithStatementsCount.statementsCount.coveredStatements,
-            total + coverageFileReportWithStatementsCount.statementsCount.numberStatements
-          )
-      }
-
-    val totalCoverage = MathUtils.computePercentage(covered, total)
-
-    CoverageReport(totalCoverage, coverageFileReports.map(_.coverageFileReport))
-  }
-
-  private def calculateTotal(coverageFileStatements: GoCoverageStatementsCount): Int = {
-    MathUtils.computePercentage(coverageFileStatements.coveredStatements, coverageFileStatements.numberStatements)
+    CoverageReport(coverageFileReports.map(_.coverageFileReport))
   }
 
   private def lineHits(coverageInfo: GoCoverageInfo): Map[Int, Int] = {
