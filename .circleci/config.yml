@@ -319,10 +319,7 @@ workflows:
           name: publish_ghr
           path: ~/workdir/artifacts/
           context: CodacyGitHub
-          filters:
-            branches:
-              only:
-                - master
+
           requires:
             - generate_checksums
             - it_coverage_script_macosx
@@ -333,10 +330,7 @@ workflows:
           name: publish_s3
           path: bin/codacy-coverage-reporter
           files: artifacts/codacy-coverage-reporter-linux artifacts/codacy-coverage-reporter-darwin artifacts/codacy-coverage-reporter-assembly.jar
-          filters:
-            branches:
-              only:
-                - master
+
           context: CodacyAWS
           requires:
             - publish_ghr
