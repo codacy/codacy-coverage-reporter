@@ -249,10 +249,11 @@ workflows:
       - codacy/sbt:
           name: create_artifacts
           cmd: |
-            (cd graalvm; docker build -t graavlm:latest .)
-            sbt "assembly;graalvm-native-image:packageBin"
+            graalvm/build-deps.sh
+            export PATH=$HOME/.musl/x86_64-linux-musl-native/bin:$PATH
+            sbt "assembly;nativeImage"
             mkdir -p ~/workdir/tmp-artifacts
-            mv target/graalvm-native-image/codacy-coverage-reporter ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux
+            mv target/native-image/codacy-coverage-reporter ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux
             mv target/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/tmp-artifacts/codacy-coverage-reporter-assembly.jar
           persist_to_workspace: true
           requires:
@@ -260,21 +261,9 @@ workflows:
       - codacy/sbt_osx:
           name: create_artifacts_for_osx
           cmd: |
-            # TODO GraalVM version should be in a single place
-            export GRAAL_VERSION=21.0.0
-            export TARGET_GRAAL="./target/graalvm-$GRAAL_VERSION.tar.gz"
-            mkdir -p target
-            if [[ ! -e $TARGET_GRAAL ]]; then
-              curl -L "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-$GRAAL_VERSION/graalvm-ce-java8-darwin-amd64-$GRAAL_VERSION.tar.gz" -o "$TARGET_GRAAL"
-            fi
-            sudo tar -xf $TARGET_GRAAL -C /Library/Java/JavaVirtualMachines
-            /usr/libexec/java_home -V
-            export JAVA_HOME=/Library/Java/JavaVirtualMachines/graalvm-ce-java8-$GRAAL_VERSION/Contents/Home
-            export PATH="$PATH:$JAVA_HOME/bin"
-            sudo gu install native-image
-            sbt "set GraalVMNativeImage / containerBuildImage := None; set graalVMNativeImageOptions --= Seq(\"--static\", \"--libc=musl\"); graalvm-native-image:packageBin"
+            sbt nativeImage
             mkdir -p  ~/workdir/tmp-artifacts
-            mv $HOME/workdir/target/graalvm-native-image/codacy-coverage-reporter $HOME/workdir/tmp-artifacts/codacy-coverage-reporter-darwin
+            mv $HOME/workdir/target/native-image/codacy-coverage-reporter $HOME/workdir/tmp-artifacts/codacy-coverage-reporter-darwin
           persist_to_workspace: true
           persist_to_workspace_path: "tmp-artifacts/codacy-coverage-reporter-darwin"
           requires:

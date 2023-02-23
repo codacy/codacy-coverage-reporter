@@ -14,6 +14,7 @@ object PhpUnitXmlParser extends CoverageParser with XmlReportParser {
   private val PhpUnitTag = "phpunit"
   private val ProjectTag = "project"
   private val DirectoryTag = "directory"
+  private val TotalsTag = "totals"
   private val XmlParseErrorMessage = s"Could not find top level <$PhpUnitTag> tag";
 
   override def parse(rootProject: File, reportFile: File): Either[String, CoverageReport] =
@@ -35,7 +36,8 @@ object PhpUnitXmlParser extends CoverageParser with XmlReportParser {
     val codeDirectory = report \ ProjectTag \ DirectoryTag \@ "name"
     val fileReports = makeFileReports(fileNodes, projectRootPath, codeDirectory, reportRootPath)
 
-    fileReports.map(CoverageReport(_))
+    val totalPercentage = getTotalsCoveragePercentage(report \ ProjectTag \ DirectoryTag \ TotalsTag)
+    fileReports.map(CoverageReport(totalPercentage, _))
   }
 
   private def makeFileReports(
@@ -48,9 +50,10 @@ object PhpUnitXmlParser extends CoverageParser with XmlReportParser {
     for (f <- fileNodes) {
       val reportFileName = f \@ "href"
       val fileName = getSourceFileName(projectRootPath, codeDirectory, reportFileName)
+      val coveragePercentage = getTotalsCoveragePercentage(f \ TotalsTag)
       getLineCoverage(reportRootPath, reportFileName) match {
         case Right(lineCoverage) =>
-          builder += CoverageFileReport(fileName, lineCoverage)
+          builder += CoverageFileReport(fileName, coveragePercentage, lineCoverage)
         case Left(message) => return Left(message)
       }
     }
@@ -67,6 +70,11 @@ object PhpUnitXmlParser extends CoverageParser with XmlReportParser {
       }.toMap
     }
     lineCoverage
+  }
+
+  private def getTotalsCoveragePercentage(totals: NodeSeq) = {
+    val percentageStr = (totals \ "lines" \@ "percent").dropRight(1)
+    scala.math.round(percentageStr.toFloat)
   }
 
   private def getSourceFileName(pathToRemove: String, codeRootDirectory: String, reportRelativePath: String) = {

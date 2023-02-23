@@ -5,7 +5,7 @@ import com.codacy.parsers.util.MathUtils._
 import com.codacy.api.{CoverageFileReport, CoverageReport}
 import java.io.File
 
-import com.codacy.parsers.util.XMLoader
+import com.codacy.parsers.util.{MathUtils, XMLoader}
 
 import scala.io.Source
 import scala.util.{Failure, Success, Try}
@@ -36,7 +36,7 @@ object LCOVParser extends CoverageParser {
         (accum, next) =>
           accum.flatMap {
             case reports if next startsWith SF =>
-              Right(CoverageFileReport(next stripPrefix SF, Map()) +: reports)
+              Right(CoverageFileReport(next stripPrefix SF, 0, Map()) +: reports)
             case reports if next startsWith DA =>
               reports.headOption match {
                 case Some(value) =>
@@ -56,9 +56,25 @@ object LCOVParser extends CoverageParser {
       )
     coverageFileReports.map { fileReports =>
       val totalFileReport = fileReports.map { report =>
-        CoverageFileReport(report.filename, report.coverage)
+        val coveredLines = report.coverage.count { case (_, hit) => hit > 0 }
+        val totalLines = report.coverage.size
+        val fileCoverage =
+          MathUtils.computePercentage(coveredLines, totalLines)
+
+        CoverageFileReport(report.filename, fileCoverage, report.coverage)
       }
-      CoverageReport(totalFileReport)
+
+      val (covered, total) = totalFileReport
+        .map { f =>
+          (f.coverage.count { case (_, hit) => hit > 0 }, f.coverage.size)
+        }
+        .foldLeft(0 -> 0) {
+          case ((accumCovered, accumTotal), (nextCovered, nextTotal)) =>
+            (accumCovered + nextCovered, accumTotal + nextTotal)
+        }
+
+      val totalCoverage = MathUtils.computePercentage(covered, total)
+      CoverageReport(totalCoverage, totalFileReport)
     }
   }
 }

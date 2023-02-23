@@ -59,10 +59,15 @@ Global / cancelable := true
 
 javacOptions ++= Seq("-source", "11", "-target", "11")
 
-enablePlugins(GraalVMNativeImagePlugin)
-GraalVMNativeImage / containerBuildImage := Some("graavlm:latest")
+enablePlugins(NativeImagePlugin)
 
-graalVMNativeImageOptions := Seq(
+nativeImageVersion := "22.3.0"
+
+val osSpecificOptions =
+  if (sys.props("os.name") == "Mac OS X") Seq.empty[String]
+  else Seq("--static", "--libc=musl")
+
+nativeImageOptions := Seq(
   "--verbose",
   "--no-server",
   "--enable-http",
@@ -73,11 +78,8 @@ graalVMNativeImageOptions := Seq(
   "-H:IncludeResourceBundles=com.sun.org.apache.xerces.internal.impl.msg.XMLMessages",
   "-H:+ReportExceptionStackTraces",
   "--no-fallback",
-  "--initialize-at-build-time",
-  "--report-unsupported-elements-at-runtime",
-  "--static",
-  "--libc=musl"
-)
+  "--report-unsupported-elements-at-runtime"
+) ++ osSpecificOptions
 
 dependsOn(coverageParser)
 
@@ -85,7 +87,7 @@ lazy val coverageParser = project
   .in(file("coverage-parser"))
   .settings(
     libraryDependencies ++= Seq(
-      "com.codacy" %% "codacy-api-scala" % "7.0.8",
+      "com.codacy" %% "codacy-api-scala" % "7.0.7",
       "com.codacy" %% "codacy-plugins-api" % "5.2.0",
       "org.scala-lang.modules" %% "scala-xml" % "1.2.0",
       "org.scalatest" %% "scalatest" % "3.0.8" % Test

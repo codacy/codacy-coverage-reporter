@@ -176,7 +176,7 @@ is_self_hosted_instance() {
 os_name=$(uname)
 
 # This version should be one that matches the latest self hosted release.
-SELF_HOSTED_CODACY_REPORTER_VERSION="13.10.15"
+SELF_HOSTED_CODACY_REPORTER_VERSION="13.12.3"
 
 # Find the latest version in case is not specified
 if [ -z "$CODACY_REPORTER_VERSION" ] || [ "$CODACY_REPORTER_VERSION" = "latest" ]; then

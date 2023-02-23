@@ -30,9 +30,11 @@ class GoParserTest extends WordSpec with Matchers with EitherValues {
       val reader = GoParser.parse(new File("."), new File("coverage-parser/src/test/resources/test_go.out"))
 
       val testReport = CoverageReport(
+        75,
         List(
           CoverageFileReport(
             "example.com/m/v2/hello.go",
+            75,
             Map(5 -> 0, 14 -> 1, 6 -> 0, 13 -> 1, 17 -> 1, 12 -> 1, 7 -> 0, 18 -> 1, 11 -> 1, 19 -> 1)
           )
         )
@@ -50,10 +52,10 @@ class GoParserTest extends WordSpec with Matchers with EitherValues {
 
     }
     val mergedFileReports = merged.map {
-      case (str, intToInt) => CoverageFileReport(str, intToInt)
+      case (str, intToInt) => CoverageFileReport(str, 0, intToInt)
     }.toList
 
-    CoverageReport(mergedFileReports)
+    CoverageReport(0, mergedFileReports)
   }
 
   "Coverage calculated by go coverage tool VS Codacy coverage" in {
