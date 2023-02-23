@@ -3,10 +3,12 @@ package com.codacy.parsers.implementation
 import java.io.File
 
 import com.codacy.api.{CoverageFileReport, CoverageReport}
-import com.codacy.parsers.util.TextUtils
+import com.codacy.parsers.util.{MathUtils, TextUtils}
 import com.codacy.parsers.{CoverageParser, XmlReportParser}
 
 import scala.xml.{Elem, NodeSeq}
+
+case class StatementNode(fileIndex: Int, line: Int, covered: Boolean)
 
 object DotcoverParser extends CoverageParser with XmlReportParser {
   override val name: String = "DotCover"
@@ -27,6 +29,8 @@ object DotcoverParser extends CoverageParser with XmlReportParser {
   private def parseReportNode(rootProject: File, rootNode: NodeSeq): CoverageReport = {
     val projectRootStr: String = TextUtils.sanitiseFilename(rootProject.getAbsolutePath)
 
+    val totalCoverage = (rootNode \@ CoverageAttribute).toInt
+
     val fileIndices: Map[Int, String] = (rootNode \ "FileIndices" \ "File").map { x =>
       (x \@ "Index").toInt -> (x \@ "Name")
     }.toMap
@@ -37,9 +41,12 @@ object DotcoverParser extends CoverageParser with XmlReportParser {
       (fileIndex, statements) <- statementsPerFile
       filename = TextUtils.sanitiseFilename(fileIndices(fileIndex)).stripPrefix(projectRootStr).stripPrefix("/")
       lineCoverage = getLineCoverage(statements)
-    } yield CoverageFileReport(filename, lineCoverage)
+      totalLines = lineCoverage.keys.size
+      coveredLines = lineCoverage.values.count(_ > 0)
+      total = MathUtils.computePercentage(coveredLines, totalLines)
+    } yield CoverageFileReport(filename, total, lineCoverage)
 
-    CoverageReport(fileReports.toSeq)
+    CoverageReport(totalCoverage, fileReports.toSeq)
   }
 
   private def getLineCoverage(statementNodes: NodeSeq) = {

@@ -3,6 +3,7 @@ package com.codacy.parsers.implementation
 import com.codacy.parsers.CoverageParser
 
 import java.io.File
+import com.codacy.parsers.util.MathUtils
 
 import com.codacy.api.{CoverageFileReport, CoverageReport}
 
