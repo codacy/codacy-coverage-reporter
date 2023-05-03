@@ -29,17 +29,26 @@ class GoParserTest extends WordSpec with Matchers with EitherValues {
       val reader = GoParser.parse(new File("."), new File("coverage-parser/src/test/resources/test_go.out"))
 
       val testReport = CoverageReport(
-        75,
+        0,
         List(
           CoverageFileReport(
             "example.com/m/v2/hello.go",
-            75,
+            0,
             Map(5 -> 0, 14 -> 1, 6 -> 0, 13 -> 1, 17 -> 1, 12 -> 1, 7 -> 0, 18 -> 1, 11 -> 1, 19 -> 1)
           )
         )
       )
 
       reader.right.value should equal(testReport)
+    }
+
+    "return consistent values" in {
+      //given two reports where the package names were only changed, should return the same results COV-207
+      val reader = GoParser.parse(new File("."), new File("coverage-parser/src/test/resources/go/original_package.out"))
+      val reader1 =
+        GoParser.parse(new File("."), new File("coverage-parser/src/test/resources/go/changed_package_name.out"))
+
+      reader.right.value.fileReports(0).coverage should equal(reader1.right.value.fileReports(0).coverage)
     }
   }
 }

@@ -3,7 +3,6 @@ package com.codacy.parsers.implementation
 import com.codacy.parsers.CoverageParser
 
 import java.io.File
-import com.codacy.parsers.util.MathUtils
 
 import com.codacy.api.{CoverageFileReport, CoverageReport}
 
@@ -11,13 +10,6 @@ import scala.io.Source
 import scala.util.{Failure, Success, Try}
 
 case class GoCoverageInfo(filename: String, lineFrom: Int, lineTo: Int, numberOfStatements: Int, countOfStatements: Int)
-
-case class GoCoverageStatementsCount(countStatements: Int, numberStatements: Int, coveredStatements: Int)
-
-case class CoverageFileReportWithStatementsCount(
-    statementsCount: GoCoverageStatementsCount,
-    coverageFileReport: CoverageFileReport
-)
 
 object GoParser extends CoverageParser {
 
@@ -45,54 +37,31 @@ object GoParser extends CoverageParser {
       coverageInfo.toSet.groupBy((a: GoCoverageInfo) => a.filename)
 
     val coverageFileReports =
-      coverageInfoGroupedByFilename.foldLeft[Seq[CoverageFileReportWithStatementsCount]](
-        Seq.empty[CoverageFileReportWithStatementsCount]
-      )((accum, next) => {
+      coverageInfoGroupedByFilename.foldLeft[Seq[CoverageFileReport]](Seq.empty[CoverageFileReport])((accum, next) => {
         next match {
           case (filename, coverageInfosForFile) =>
-            val statementsCountForFile = coverageInfosForFile.foldLeft(GoCoverageStatementsCount(0, 0, 0)) { (acc, v) =>
-              val newCountStatements = acc.countStatements + v.countOfStatements
-              val newNumberStatements = acc.numberStatements + v.numberOfStatements
-              val newTotalCoveredStatements =
-                if (v.countOfStatements > 0) acc.coveredStatements + v.numberOfStatements else acc.coveredStatements
+            //calculate hits for a file for given statement reports
+            val coverage = coverageInfosForFile.foldLeft(Map[Int, Int]()) {
+              case (hitMapAcc, coverageInfo) =>
+                //calculate the range of lines the statement has
+                val lines = Range.inclusive(coverageInfo.lineFrom, coverageInfo.lineTo)
 
-              GoCoverageStatementsCount(newCountStatements, newNumberStatements, newTotalCoveredStatements)
+                //for each line add the number of hits
+                hitMapAcc ++ lines.foldLeft(Map[Int, Int]()) {
+                  case (statementHitMapAcc, line) =>
+                    statementHitMapAcc ++
+                      //if the line is already present on the hit map, don't replace the value
+                      Map(line -> (hitMapAcc.getOrElse(line, 0) + coverageInfo.countOfStatements))
+
+                }
             }
 
-            val coverage = coverageInfosForFile.foldLeft(Map[Int, Int]()) { (acc, coverageInfo) =>
-              acc ++ lineHits(coverageInfo)
-            }
+            accum :+ CoverageFileReport(filename, 0, coverage)
 
-            val totalForFile = calculateTotal(statementsCountForFile)
-
-            accum :+ CoverageFileReportWithStatementsCount(
-              statementsCountForFile,
-              CoverageFileReport(filename, totalForFile, coverage)
-            )
         }
       })
 
-    val (covered, total) = coverageFileReports
-      .foldLeft[(Int, Int)]((0, 0)) {
-        case ((covered, total), coverageFileReportWithStatementsCount) =>
-          (
-            covered + coverageFileReportWithStatementsCount.statementsCount.coveredStatements,
-            total + coverageFileReportWithStatementsCount.statementsCount.numberStatements
-          )
-      }
-
-    val totalCoverage = MathUtils.computePercentage(covered, total)
-
-    CoverageReport(totalCoverage, coverageFileReports.map(_.coverageFileReport))
-  }
-
-  private def calculateTotal(coverageFileStatements: GoCoverageStatementsCount): Int = {
-    MathUtils.computePercentage(coverageFileStatements.coveredStatements, coverageFileStatements.numberStatements)
-  }
-
-  private def lineHits(coverageInfo: GoCoverageInfo): Map[Int, Int] = {
-    val lines = Range.inclusive(coverageInfo.lineFrom, coverageInfo.lineTo)
-    lines.foldLeft(Map[Int, Int]())((acc, line) => acc ++ Map(line -> coverageInfo.countOfStatements))
+    CoverageReport(0, coverageFileReports)
   }
 
   private def parseAllCoverageInfo(lines: List[String]): List[GoCoverageInfo] = {
