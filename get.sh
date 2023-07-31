@@ -122,7 +122,7 @@ download() {
     local url="$1"
     local file_name="$2"
     local output_folder="$3"
-    local output_filename="$4"
+    local output_filename="$2"
     local checksum_url="$5"
     local original_folder="$(pwd)"
 
@@ -130,7 +130,6 @@ download() {
 
     download_file "$url"
     checksum "$file_name" "$checksum_url"
-    mv -f "$file_name" "$output_filename"
 
     cd "$original_folder"
 }
@@ -154,7 +153,7 @@ download_reporter() {
         binary_url="https://artifacts.codacy.com/bin/codacy-coverage-reporter/$CODACY_REPORTER_VERSION/$binary_name"
         checksum_url="https://github.com/codacy/codacy-coverage-reporter/releases/download/$CODACY_REPORTER_VERSION/$binary_name.SHA512SUM"
 
-        download "$binary_url" "$binary_name" "$reporter_folder" "$reporter_filename" "$checksum_url"
+        download "$binary_url" "$binary_name" "$reporter_folder" "$checksum_url"
     else
         log "$i" "Codacy reporter $binary_name already in cache"
     fi
