@@ -153,7 +153,7 @@ download_reporter() {
         binary_url="https://artifacts.codacy.com/bin/codacy-coverage-reporter/$CODACY_REPORTER_VERSION/$binary_name"
         checksum_url="https://github.com/codacy/codacy-coverage-reporter/releases/download/$CODACY_REPORTER_VERSION/$binary_name.SHA512SUM"
 
-        download "$binary_url" "$binary_name" "$reporter_folder" "$checksum_url"
+        download "$binary_url" "$binary_name" "$reporter_folder" "$reporter_filename" "$checksum_url"
     else
         log "$i" "Codacy reporter $binary_name already in cache"
     fi
