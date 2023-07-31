@@ -1,12 +1,12 @@
 version: 2.1
 
 orbs:
-  codacy: codacy/base@10.1.1
+  codacy: codacy/base@10.2.3
 
 references:
   circleci_job: &circleci_job
     docker:
-      - image: circleci/circleci-cli:0.1.5879
+      - image: circleci/circleci-cli:0.1.28084
     working_directory: ~/workdir
 
   default_machine_job: &default_machine_job
