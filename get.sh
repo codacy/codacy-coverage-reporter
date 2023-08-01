@@ -130,7 +130,7 @@ download() {
 
     download_file "$url"
     checksum "$file_name" "$checksum_url"
-    mv "$file_name" "$output_filename"
+    mv -n "$file_name" "$output_filename"
 
     cd "$original_folder"
 }
