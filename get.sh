@@ -130,7 +130,9 @@ download() {
 
     download_file "$url"
     checksum "$file_name" "$checksum_url"
-    mv -n "$file_name" "$output_filename"
+    if [ "$os_name" = "Linux" ] || [ "$os_name" = "Darwin" ]; then
+        mv "$file_name" "$output_filename"
+    fi
 
     cd "$original_folder"
 }
