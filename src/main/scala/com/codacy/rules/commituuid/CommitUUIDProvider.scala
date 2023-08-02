@@ -71,6 +71,7 @@ object CommitUUIDProvider extends LogSupport {
     CodefreshCIProvider,
     CodeshipCIProvider,
     DockerProvider,
+    DroneCIProvider,
     GitHubActionProvider,
     GitlabProvider,
     GreenhouseCIProvider,
