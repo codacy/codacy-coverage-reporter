@@ -3,7 +3,7 @@ package com.codacy.rules.commituuid.providers
 import com.codacy.model.configuration.CommitUUID
 import com.codacy.rules.commituuid.CommitUUIDProvider
 
-/* Argo CD Provider */
+/* Drone CI Provider */
 object DroneCIProvider extends CommitUUIDProvider {
   val name: String = "Drone CI"
 
