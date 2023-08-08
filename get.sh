@@ -130,7 +130,7 @@ download() {
 
     download_file "$url"
     checksum "$file_name" "$checksum_url"
-    if [ "$os_name" = "Linux" ] || [ "$os_name" = "Darwin" ]; then
+    if [ "$os_name_arch" = "Linux x86_64" ] || [ "$os_name_arch" = "Darwin x86_64" ]; then
         mv "$file_name" "$output_filename"
     fi
 
@@ -138,7 +138,7 @@ download() {
 }
 
 download_reporter() {
-    if [ "$os_name" = "Linux" ] || [ "$os_name" = "Darwin" ]; then
+    if [ "$os_name_arch" = "Linux x86_64" ] || [ "$os_name_arch" = "Darwin x86_64" ]; then
         # OS name lower case
         suffix=$(echo "$os_name" | tr '[:upper:]' '[:lower:]')
     else
@@ -176,6 +176,7 @@ is_self_hosted_instance() {
 }
 
 os_name=$(uname)
+os_name_arch=$(uname -sm)
 
 # This version should be one that matches the latest self hosted release.
 SELF_HOSTED_CODACY_REPORTER_VERSION="13.13.9"
@@ -203,7 +204,7 @@ if [ -z "$CODACY_REPORTER_TMP_FOLDER" ]; then
 fi
 
 # Set binary name
-if [ "$os_name" = "Linux" ] || [ "$os_name" = "Darwin" ]; then
+if [ "$os_name_arch" = "Linux x86_64" ] || [ "$os_name_arch" = "Darwin x86_64" ]; then
     reporter_filename="codacy-coverage-reporter"
 else
     reporter_filename="codacy-coverage-reporter-assembly.jar"
@@ -220,7 +221,7 @@ reporter_path="$reporter_folder"/"$reporter_filename"
 
 download_reporter "$reporter_path" "$reporter_folder" "$reporter_filename"
 
-if [ "$os_name" = "Linux" ] || [ "$os_name" = "Darwin" ]; then
+if [ "$os_name_arch" = "Linux x86_64" ] || [ "$os_name_arch" = "Darwin x86_64" ]; then
     chmod +x "$reporter_path"
     run_command="$reporter_path"
 else
