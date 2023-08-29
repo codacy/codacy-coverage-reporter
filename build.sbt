@@ -88,7 +88,7 @@ lazy val coverageParser = project
   .settings(
     libraryDependencies ++= Seq(
       "com.codacy" %% "codacy-api-scala" % "7.0.7",
-      "com.codacy" %% "codacy-plugins-api" % "5.2.0",
+      "com.codacy" %% "codacy-plugins-api" % "7.2.1",
       "org.scala-lang.modules" %% "scala-xml" % "1.2.0",
       "org.scalatest" %% "scalatest" % "3.0.8" % Test
     )
