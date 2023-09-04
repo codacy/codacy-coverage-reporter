@@ -9,9 +9,9 @@ object MathUtils {
   implicit class ParseIntOps(val s: String) extends AnyVal {
 
     def toIntOrMaxValue: Int = {
-      val long = s.toLong
-      if (long > Int.MaxValue) Int.MaxValue
-      else long.toInt
+      val bigInt = s.map(_.asDigit: BigInt)
+      if (bigInt > Int.MaxValue) Int.MaxValue
+      else bigInt.toInt
     }
   }
 }
