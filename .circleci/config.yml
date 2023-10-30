@@ -97,8 +97,8 @@ jobs:
           mkdir -p ~/workdir/artifacts/
           mv ~/workdir/tmp-artifacts/codacy-coverage-reporter-assembly.jar ~/workdir/artifacts/codacy-coverage-reporter-assembly.jar
           upx --best -o ~/workdir/artifacts/codacy-coverage-reporter-linux ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux
+          #cp ~/workdir/tmp-artifacts/codacy-coverage-reporter-darwin ~/workdir/artifacts/codacy-coverage-reporter-darwin
           upx --best -o ~/workdir/artifacts/codacy-coverage-reporter-darwin ~/workdir/tmp-artifacts/codacy-coverage-reporter-darwin
-          cp ~/workdir/tmp-artifacts/codacy-coverage-reporter-darwin ~/workdir/artifacts/codacy-coverage-reporter-darwin
       - persist_to_workspace:
           root: ~/workdir
           paths:
