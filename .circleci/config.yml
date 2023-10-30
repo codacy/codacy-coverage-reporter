@@ -6,7 +6,7 @@ orbs:
 references:
   circleci_job: &circleci_job
     docker:
-      - image: cimg/base:2023.10
+      - image: circleci/circleci-cli:0.1.29041
     working_directory: ~/workdir
 
   default_machine_job: &default_machine_job
