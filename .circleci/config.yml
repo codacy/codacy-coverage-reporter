@@ -1,17 +1,17 @@
 version: 2.1
 
 orbs:
-  codacy: codacy/base@10.2.3
+  codacy: codacy/base@10.9.3
 
 references:
   circleci_job: &circleci_job
     docker:
-      - image: circleci/circleci-cli:0.1.28084
+      - image: cimg/deploy:2023.09
     working_directory: ~/workdir
 
   default_machine_job: &default_machine_job
     machine:
-      image: ubuntu-2004:202201-02
+      image: ubuntu-2004:2023.10.1
     working_directory: ~/workdir
 
 commands:
@@ -43,7 +43,8 @@ commands:
 
 jobs:
   publish_circleci_artifacts:
-    machine: true
+    machine:
+      image: ubuntu-2004:current
     working_directory: ~/workdir
     steps:
       - attach_workspace:
@@ -91,7 +92,7 @@ jobs:
 
   package_artifacts:
     docker:
-      - image: hairyhenderson/upx:3.94
+      - image: hairyhenderson/upx:3.96
     working_directory: ~/workdir
     steps:
       - run: apk add ca-certificates
@@ -112,7 +113,7 @@ jobs:
 
   it_coverage_script_alpine:
     docker:
-      - image: alpine:3.9.5
+      - image: alpine:3.18.4
       - image: mockserver/mockserver
     working_directory: ~/workdir
     steps:
@@ -137,7 +138,7 @@ jobs:
 
   it_coverage_script_ubuntu:
     docker:
-      - image: cimg/base:2020.01 # ubuntu based image
+      - image: cimg/base:2023.10 # ubuntu based image
       - image: mockserver/mockserver
     working_directory: ~/workdir
     parameters:
@@ -193,7 +194,6 @@ jobs:
             echo "test completed with the expected error code: 0"
 
 workflows:
-  version: 2
   compile_test_deploy:
     jobs:
       - codacy/wait_for_workflows:
