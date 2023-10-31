@@ -1,6 +1,6 @@
 inThisBuild(
   Seq(
-    scalaVersion := "2.12.11",
+    scalaVersion := "2.12.18",
     scalacOptions := Seq(
       "-deprecation",
       "-feature",
@@ -17,15 +17,15 @@ name := "codacy-coverage-reporter"
 
 // Runtime dependencies
 libraryDependencies ++= Seq(
-  "com.github.alexarchambault" %% "case-app" % "1.2.0",
-  "org.wvlet.airframe" %% "airframe-log" % "22.3.0",
-  "com.lihaoyi" %% "ujson" % "1.5.0"
+  "com.github.alexarchambault" %% "case-app" % "2.1.0-M25",
+  "org.wvlet.airframe" %% "airframe-log" % "23.10.0",
+  "com.lihaoyi" %% "ujson" % "3.1.3"
 )
 
 // Test dependencies
 libraryDependencies ++= Seq(
-  "org.scalatest" %% "scalatest" % "3.0.8" % "it,test",
-  "org.mockito" %% "mockito-scala-scalatest" % "1.7.1" % Test
+  "org.scalatest" %% "scalatest" % "3.2.17" % "it,test",
+  "org.mockito" %% "mockito-scala-scalatest" % "1.17.29" % Test
 )
 
 configs(IntegrationTest)
@@ -89,8 +89,8 @@ lazy val coverageParser = project
     libraryDependencies ++= Seq(
       "com.codacy" %% "codacy-api-scala" % "7.0.7",
       "com.codacy" %% "codacy-plugins-api" % "5.2.0",
-      "org.scala-lang.modules" %% "scala-xml" % "1.2.0",
-      "org.scalatest" %% "scalatest" % "3.0.8" % Test
+      "org.scala-lang.modules" %% "scala-xml" % "2.2.0",
+      "org.scalatest" %% "scalatest" % "3.2.17" % Test
     )
   )
 
