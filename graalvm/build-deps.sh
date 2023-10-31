@@ -12,7 +12,7 @@ export CC=$TOOLCHAIN_DIR/bin/gcc
 
 zlib='zlib-1.2.13'
 zlibtargz=$zlib.tar.gz
-curl https://zlib.net/$zlibtargz --output $zlibtargz
+curl https://zlib.net/fossils/$zlibtargz --output $zlibtargz
 tar -xf $zlibtargz
 
 (
