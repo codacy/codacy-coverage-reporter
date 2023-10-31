@@ -7,6 +7,7 @@ import com.codacy.parsers.util.MathUtils._
 import com.codacy.parsers.util.TextUtils
 import com.codacy.parsers.{CoverageParser, XmlReportParser}
 
+import scala.collection.mutable
 import scala.xml.{Elem, NodeSeq}
 
 object CoberturaParser extends CoverageParser with XmlReportParser {
@@ -50,12 +51,18 @@ object CoberturaParser extends CoverageParser with XmlReportParser {
     }
     val fileHit = if (classHit.nonEmpty) { classHit.sum / classHit.length } else 0
 
-    val lineHitMap: Map[Int, Int] =
-      (for {
-        xClass <- classes
-        line <- xClass \\ "line"
-      } yield (line \@ "number").toInt -> (line \@ "hits").toIntOrMaxValue).toMap
+    val map = mutable.Map.empty[Int, Int]
 
-    CoverageFileReport(sourceFilename, fileHit, lineHitMap)
+    for {
+      xClass <- classes
+      line <- xClass \\ "line"
+    } {
+      val key = (line \@ "number").toInt
+      val value = (line \@ "hits").toIntOrMaxValue
+
+      map(key) = map.get(key).getOrElse(0) + value
+    }
+
+    CoverageFileReport(sourceFilename, fileHit, map.toMap)
   }
 }
