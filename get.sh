@@ -234,7 +234,7 @@ fi
 
 if [ "$#" -eq 1 ] && [ "$1" = "download" ];
 then
-    log "$g" "Codacy reporter download succeded";
+    log "$g" "Codacy reporter download succeeded";
 elif [ "$#" -gt 0 ];
 then
     eval "$run_command $*"
