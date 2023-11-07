@@ -74,7 +74,12 @@ jobs:
           at: ~/workdir
       - run:
           name: Publish orb as dev (deleted after 90 days)
-          command: circleci orb publish orb.yml codacy/coverage-reporter@dev:$(cat .version) --token $CIRCLE_TOKEN
+          command: |
+            if [[ ! -v CIRCLE_TOKEN ]]; then
+              echo "CIRCLE_TOKEN is not set. Skipping."
+            else
+              circleci orb publish orb.yml codacy/coverage-reporter@dev:$(cat .version) --token $CIRCLE_TOKEN
+            fi
 
   publish_prod:
     <<: *circleci_job
