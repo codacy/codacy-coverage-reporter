@@ -1,17 +1,12 @@
 version: 2.1
 
 orbs:
-  codacy: codacy/base@10.2.3
+  codacy: codacy/base@10.10.0
 
 references:
   circleci_job: &circleci_job
     docker:
-      - image: circleci/circleci-cli:0.1.28084
-    working_directory: ~/workdir
-
-  default_machine_job: &default_machine_job
-    machine:
-      image: ubuntu-2004:202201-02
+      - image: circleci/circleci-cli:0.1.29041
     working_directory: ~/workdir
 
 commands:
@@ -43,7 +38,8 @@ commands:
 
 jobs:
   publish_circleci_artifacts:
-    machine: true
+    machine: 
+      image: ubuntu-2004:current
     working_directory: ~/workdir
     steps:
       - attach_workspace:
@@ -76,7 +72,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/workdir
-      - deploy:
+      - run:
           name: Publish orb as dev (deleted after 90 days)
           command: circleci orb publish orb.yml codacy/coverage-reporter@dev:$(cat .version) --token $CIRCLE_TOKEN
 
@@ -85,16 +81,16 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/workdir
-      - deploy:
+      - run:
           name: Publish final orb
           command: circleci orb publish orb.yml codacy/coverage-reporter@$(cat .version) --token $CIRCLE_TOKEN
 
   package_artifacts:
     docker:
-      - image: hairyhenderson/upx:3.94
+      - image: alpine:3.18
     working_directory: ~/workdir
     steps:
-      - run: apk add ca-certificates
+      - run: apk add upx
       - attach_workspace:
           at: ~/workdir
       - run: |
@@ -103,8 +99,8 @@ jobs:
           upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-linux ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux
           # upx binaries don't work on Mac OS Big Sur https://github.com/upx/upx/issues/424
           # use upx again once the bug is fixed
-          # upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-darwin ~/workdir/tmp-artifacts/codacy-coverage-reporter-darwin
-          cp ~/workdir/tmp-artifacts/codacy-coverage-reporter-darwin ~/workdir/artifacts/codacy-coverage-reporter-darwin
+          upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-darwin ~/workdir/tmp-artifacts/codacy-coverage-reporter-darwin
+          #cp ~/workdir/tmp-artifacts/codacy-coverage-reporter-darwin ~/workdir/artifacts/codacy-coverage-reporter-darwin
       - persist_to_workspace:
           root: ~/workdir
           paths:
@@ -112,7 +108,7 @@ jobs:
 
   it_coverage_script_alpine:
     docker:
-      - image: alpine:3.9.5
+      - image: alpine:3.18
       - image: mockserver/mockserver
     working_directory: ~/workdir
     steps:
@@ -121,8 +117,8 @@ jobs:
           command: |
             apk --no-cache add openssl wget
             wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
-            wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.31-r0/glibc-2.31-r0.apk
-            apk add glibc-2.31-r0.apk
+            wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.35-r1/glibc-2.35-r1.apk
+            apk add glibc-2.35-r1.apk
       - attach_workspace:
           at: ~/workdir
       - run:
@@ -137,7 +133,7 @@ jobs:
 
   it_coverage_script_ubuntu:
     docker:
-      - image: cimg/base:2020.01 # ubuntu based image
+      - image: cimg/base:2023.10 # ubuntu based image
       - image: mockserver/mockserver
     working_directory: ~/workdir
     parameters:
@@ -187,13 +183,12 @@ jobs:
             export CODACY_PROJECT_TOKEN='TEST_CODACY_PROJECT_TOKEN'
             export TEST_CODACY_REPORT_PATH='integration-tests/test_dotcover.xml'
             export CODACY_REPORTER_TMP_FOLDER=".codacy-coverage"
-            sh get.sh report --commit-uuid 'e9bef8a69a439bd601c37c0557277572425203a7'  -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
+            sh get.sh report --commit-uuid 'e9bef8a69a439bd601c37c0557277572425203a7' -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
             export ERROR_CODE=$?
             if [ $ERROR_CODE -ne 0 ]; then echo "expected an error code 0 and got $ERROR_CODE instead"; exit 1; fi
             echo "test completed with the expected error code: 0"
 
 workflows:
-  version: 2
   compile_test_deploy:
     jobs:
       - codacy/wait_for_workflows:
