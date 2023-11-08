@@ -7,11 +7,13 @@ object MathUtils {
   }
 
   implicit class ParseIntOps(val s: String) extends AnyVal {
+    def toIntOrMaxValue: Int = BigInt(s).toIntOrMaxValue
+  }
 
-    def toIntOrMaxValue: Int = {
-      val long = s.toLong
-      if (long > Int.MaxValue) Int.MaxValue
-      else long.toInt
-    }
+  implicit class BigIntOps(val bigInt: BigInt) extends AnyVal {
+
+    def toIntOrMaxValue: Int =
+      if (bigInt.isValidInt) bigInt.toInt
+      else Int.MaxValue
   }
 }

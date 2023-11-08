@@ -59,8 +59,9 @@ object CoberturaParser extends CoverageParser with XmlReportParser {
     } {
       val key = (line \@ "number").toInt
       val value = (line \@ "hits").toIntOrMaxValue
+      val sum = map.get(key).getOrElse(0) + BigInt(value)
 
-      map(key) = map.get(key).getOrElse(0) + value
+      map(key) = sum.toIntOrMaxValue
     }
 
     CoverageFileReport(sourceFilename, fileHit, map.toMap)

@@ -13,6 +13,7 @@
                         <line number="7" hits="0"/>
                         <line number="8" hits="1"/>
                         <line number="8" hits="2"/>
+                        <line number="9" hits="9999999999999999"/>
                     </lines>
                 </class>
                 <class line-rate="0.87" name="TestSourceFile" filename="coverage-parser/src/test/resources/TestSourceFile.scala">
