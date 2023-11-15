@@ -111,7 +111,7 @@ case class BaseCommandConfig(
 object ConfigArgumentParsers {
 
   implicit val fileParser: ArgParser[File] = new ArgParser[File] {
-    def apply(current: Option[File], value: String) = Right(new File(value))
+    def apply(current: Option[File], index: Int, span: Int, value: String) = Right(new File(value))
     def description = "file"
   }
 
@@ -128,7 +128,7 @@ object ConfigArgumentParsers {
 
   implicit val coverageParser: ArgParser[CoverageParser] = new ArgParser[CoverageParser] {
 
-    def apply(current: Option[CoverageParser], v: String) = {
+    def apply(current: Option[CoverageParser], index: Int, span: Int, v: String) = {
       val value = v.trim.toLowerCase
       parsersMap.get(value) match {
         case Some(parser) => Right(parser)
@@ -143,7 +143,7 @@ object ConfigArgumentParsers {
 
   implicit val organizationProvider: ArgParser[OrganizationProvider.Value] = new ArgParser[OrganizationProvider.Value] {
 
-    def apply(current: Option[OrganizationProvider.Value], v: String) = {
+    def apply(current: Option[OrganizationProvider.Value], index: Int, span: Int, v: String) = {
       val value = v.trim.toLowerCase
       OrganizationProvider.values.find(_.toString == value) match {
         case Some(provider) => Right(provider)
