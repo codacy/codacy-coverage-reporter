@@ -133,9 +133,11 @@ object ConfigArgumentParsers {
       parsersMap.get(value) match {
         case Some(parser) => Right(parser)
         case _ =>
-          Left(Error.Other(
-            s"${value} is an unsupported/unrecognized coverage parser. (Available patterns are: ${parsersMap.keys.mkString(",")})"
-          ))
+          Left(
+            Error.Other(
+              s"${value} is an unsupported/unrecognized coverage parser. (Available patterns are: ${parsersMap.keys.mkString(",")})"
+            )
+          )
       }
     }
     def description = "parser"
@@ -150,8 +152,9 @@ object ConfigArgumentParsers {
         case _ =>
           Left(
             Error.Other(
-            s"${value} is an unsupported/unrecognized organization provider. (Available organization provider are: ${OrganizationProvider.values
-              .mkString(",")})")
+              s"${value} is an unsupported/unrecognized organization provider. (Available organization provider are: ${OrganizationProvider.values
+                .mkString(",")})"
+            )
           )
       }
     }
