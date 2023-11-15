@@ -99,8 +99,8 @@ jobs:
           upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-linux ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux
           # upx binaries don't work on Mac OS Big Sur https://github.com/upx/upx/issues/424
           # use upx again once the bug is fixed
-          upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-darwin ~/workdir/tmp-artifacts/codacy-coverage-reporter-darwin
-          #cp ~/workdir/tmp-artifacts/codacy-coverage-reporter-darwin ~/workdir/artifacts/codacy-coverage-reporter-darwin
+          # upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-darwin ~/workdir/tmp-artifacts/codacy-coverage-reporter-darwin
+          cp ~/workdir/tmp-artifacts/codacy-coverage-reporter-darwin ~/workdir/artifacts/codacy-coverage-reporter-darwin
       - persist_to_workspace:
           root: ~/workdir
           paths:
