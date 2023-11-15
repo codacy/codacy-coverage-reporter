@@ -34,20 +34,6 @@ class CloverParserTest extends WordSpec with Matchers with EitherValues {
         // Assert
         parseResult shouldBe Left("Invalid report. Could not find tag hierarchy <coverage> <project> <metrics> tags.")
       }
-
-      "the report is missing the statements attribute in the file metrics tag" in {
-        // Arrange
-        val invalidCloverReportPath = "coverage-parser/src/test/resources/test_invalid_clover.xml"
-
-        // Act
-        val parseResult = CloverParser.parse(new File("."), new File(invalidCloverReportPath))
-
-        // Assert
-        parseResult shouldBe Left(
-          "Could not retrieve file coverage from metrics tag for file 'home/codacy-php/src/Codacy/Coverage/Parser/Parser.php': Could not find attribute with name 'statements'"
-        )
-      }
-
     }
 
     val cloverReportPath = "coverage-parser/src/test/resources/test_clover.xml"

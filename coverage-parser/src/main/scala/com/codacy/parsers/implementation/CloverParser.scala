@@ -60,7 +60,6 @@ object CloverParser extends CoverageParser with XmlReportParser {
 
     for {
       relativeFilePath <- relativeFilePath
-      metricsNode = fileNode \ MetricsTag
       linesCoverage <- getLinesCoverage(fileNode).left
         .map(errorMessage => s"Could not retrieve lines coverage for file '$relativeFilePath': $errorMessage")
     } yield CoverageFileReport(relativeFilePath, linesCoverage)
