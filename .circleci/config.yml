@@ -225,9 +225,6 @@ workflows:
                 name: Unit testing
                 command: sbt test
             - run:
-                name: It testing
-                command: sbt it:test
-            - run:
                name: Aggregate coverage reports
                command: sbt coverageAggregate
             - run:

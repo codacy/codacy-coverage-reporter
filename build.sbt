@@ -1,6 +1,6 @@
 inThisBuild(
   Seq(
-    scalaVersion := "2.12.11",
+    scalaVersion := "2.12.18",
     scalacOptions := Seq(
       "-deprecation",
       "-feature",
@@ -28,9 +28,6 @@ libraryDependencies ++= Seq(
   "org.mockito" %% "mockito-scala-scalatest" % "1.7.1" % Test
 )
 
-configs(IntegrationTest)
-Defaults.itSettings
-
 assembly / mainClass := Some("com.codacy.CodacyCoverageReporter")
 assembly / assemblyMergeStrategy := {
   case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
@@ -39,6 +36,7 @@ assembly / assemblyMergeStrategy := {
 }
 assembly / test := {}
 crossPaths := false
+run / fork := true
 
 // HACK: Since we are only using the public resolvers we need to remove the private for it to not fail
 resolvers ~= {
@@ -83,16 +81,27 @@ nativeImageOptions := Seq(
 
 dependsOn(coverageParser)
 
+lazy val apiScala = project
+  .in(file("api-scala"))
+  .settings(
+    libraryDependencies ++= Seq(
+      "com.typesafe.play" %% "play-json" % "2.8.2",
+      "org.scalaj" %% "scalaj-http" % "2.4.2",
+      "org.eclipse.jgit" % "org.eclipse.jgit" % "4.8.0.201706111038-r",
+      "org.scalatest" %% "scalatest" % "3.0.8" % Test
+    )
+  )
+
 lazy val coverageParser = project
   .in(file("coverage-parser"))
   .settings(
     libraryDependencies ++= Seq(
-      "com.codacy" %% "codacy-api-scala" % "7.0.7",
       "com.codacy" %% "codacy-plugins-api" % "5.2.0",
       "org.scala-lang.modules" %% "scala-xml" % "1.2.0",
       "org.scalatest" %% "scalatest" % "3.0.8" % Test
     )
   )
+  .dependsOn(apiScala)
 
 // https://github.com/sbt/sbt-assembly/issues/146
 ThisBuild / assemblyMergeStrategy := {

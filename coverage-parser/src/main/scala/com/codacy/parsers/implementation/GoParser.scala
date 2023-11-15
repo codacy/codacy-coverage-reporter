@@ -56,12 +56,12 @@ object GoParser extends CoverageParser {
                 }
             }
 
-            accum :+ CoverageFileReport(filename, 0, coverage)
+            accum :+ CoverageFileReport(filename, coverage)
 
         }
       })
 
-    CoverageReport(0, coverageFileReports)
+    CoverageReport(coverageFileReports)
   }
 
   private def parseAllCoverageInfo(lines: List[String]): List[GoCoverageInfo] = {
