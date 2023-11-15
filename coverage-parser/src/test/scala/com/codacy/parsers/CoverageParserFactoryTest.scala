@@ -12,10 +12,7 @@ class CoverageParserFactoryTest extends WordSpec with BeforeAndAfterAll with Mat
     "get report with unspecified parser" in {
       val expectedReport = CoverageReport(
         List(
-          CoverageFileReport(
-            "coverage-parser/src/test/resources/TestSourceFile2.scala",
-            Map(1 -> 1, 2 -> 1, 3 -> 1)
-          ),
+          CoverageFileReport("coverage-parser/src/test/resources/TestSourceFile2.scala", Map(1 -> 1, 2 -> 1, 3 -> 1)),
           CoverageFileReport(
             "coverage-parser/src/test/resources/TestSourceFile.scala",
             Map(5 -> 1, 10 -> 1, 6 -> 2, 9 -> 1, 3 -> 0, 4 -> 1, 7 -> 1, 8 -> 3, 9 -> Int.MaxValue)
@@ -36,10 +33,7 @@ class CoverageParserFactoryTest extends WordSpec with BeforeAndAfterAll with Mat
             "org/eluder/coverage/sample/InnerClassCoverage.java",
             Map(10 -> 1, 6 -> 1, 9 -> 1, 13 -> 1, 22 -> 1, 27 -> 0, 12 -> 1, 3 -> 1, 16 -> 1, 26 -> 0, 19 -> 1)
           ),
-          CoverageFileReport(
-            "org/eluder/coverage/sample/SimpleCoverage.java",
-            Map(3 -> 1, 6 -> 1, 10 -> 0, 11 -> 0)
-          )
+          CoverageFileReport("org/eluder/coverage/sample/SimpleCoverage.java", Map(3 -> 1, 6 -> 1, 10 -> 0, 11 -> 0))
         )
       )
 
