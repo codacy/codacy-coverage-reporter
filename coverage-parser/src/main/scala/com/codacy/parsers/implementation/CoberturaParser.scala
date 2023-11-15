@@ -32,8 +32,6 @@ object CoberturaParser extends CoverageParser with XmlReportParser {
   private def parseReportNode(projectRoot: File, report: NodeSeq) = {
     val projectRootStr: String = TextUtils.sanitiseFilename(projectRoot.getAbsolutePath)
 
-    val total = math.round(TextUtils.asFloat(report \\ CoverageTag \@ LineRateAttribute) * 100)
-
     val fileReports: List[CoverageFileReport] = (for {
       (filename, classes) <- (report \\ "class").groupBy(c => c \@ "filename")
     } yield {
@@ -41,16 +39,10 @@ object CoberturaParser extends CoverageParser with XmlReportParser {
       lineCoverage(cleanFilename, classes)
     })(collection.breakOut)
 
-    CoverageReport(total, fileReports)
+    CoverageReport(fileReports)
   }
 
   private def lineCoverage(sourceFilename: String, classes: NodeSeq): CoverageFileReport = {
-    val classHit = (classes \\ s"@$LineRateAttribute").map { total =>
-      val totalValue = TextUtils.asFloat(total.text)
-      math.round(totalValue * 100)
-    }
-    val fileHit = if (classHit.nonEmpty) { classHit.sum / classHit.length } else 0
-
     val map = mutable.Map.empty[Int, Int]
 
     for {
@@ -64,6 +56,6 @@ object CoberturaParser extends CoverageParser with XmlReportParser {
       map(key) = sum.toIntOrMaxValue
     }
 
-    CoverageFileReport(sourceFilename, fileHit, map.toMap)
+    CoverageFileReport(sourceFilename, map.toMap)
   }
 }

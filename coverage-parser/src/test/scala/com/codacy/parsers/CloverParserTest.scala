@@ -118,18 +118,6 @@ class CloverParserTest extends WordSpec with Matchers with EitherValues {
       fileReports should have length expectedNumberOfFiles
     }
 
-    "return a report with the expected total coverage" in {
-      // Arrange
-      val expectedTotalCoverage = 38
-
-      // Act
-      val coverageTotal =
-        CloverParser.parse(new File("/home/codacy-php/"), new File(cloverReportPath)).right.value.total
-
-      // Assert
-      coverageTotal shouldBe expectedTotalCoverage
-    }
-
     "return a report with the expected relative file paths" in {
       // Arrange
       val expectedFilePaths = Seq(
@@ -151,26 +139,6 @@ class CloverParserTest extends WordSpec with Matchers with EitherValues {
 
       // Assert
       parsedReportFilePaths should contain theSameElementsAs expectedFilePaths
-    }
-
-    "return a report with the expected file coverage" in {
-      // Arrange
-      val filePath = "src/Codacy/Coverage/Parser/Parser.php"
-      val expectedFileCoverage = 33
-
-      // Act
-      val fileTotalCoverage =
-        CloverParser
-          .parse(new File("/home/codacy-php/"), new File(cloverReportPath))
-          .right
-          .value
-          .fileReports
-          .find(_.filename == filePath)
-          .getOrElse(fail(s"Could not find report for file:$filePath"))
-          .total
-
-      // Assert
-      fileTotalCoverage shouldBe expectedFileCoverage
     }
 
     "return a report with the expected file line coverage" in {

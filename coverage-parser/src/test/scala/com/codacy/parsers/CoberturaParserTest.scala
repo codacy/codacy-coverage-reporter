@@ -26,16 +26,13 @@ class CoberturaParserTest extends WordSpec with BeforeAndAfterAll with Matchers 
         CoberturaParser.parse(new File("."), new File("coverage-parser/src/test/resources/test_cobertura.xml"))
 
       val testReport = CoverageReport(
-        87,
         List(
           CoverageFileReport(
             "coverage-parser/src/test/resources/TestSourceFile2.scala",
-            87,
             Map(1 -> 1, 2 -> 1, 3 -> 1)
           ),
           CoverageFileReport(
             "coverage-parser/src/test/resources/TestSourceFile.scala",
-            87,
             Map(5 -> 1, 10 -> 1, 6 -> 2, 9 -> Int.MaxValue, 3 -> 0, 4 -> 1, 7 -> 1, 8 -> 3)
           )
         )
@@ -49,16 +46,13 @@ class CoberturaParserTest extends WordSpec with BeforeAndAfterAll with Matchers 
         CoberturaParser.parse(new File("."), new File("coverage-parser/src/test/resources/thousand_sep_cobertura.xml"))
 
       val testReport = CoverageReport(
-        87,
         List(
           CoverageFileReport(
             "coverage-parser/src/test/resources/TestSourceFile2.scala",
-            87,
             Map(1 -> 1, 2 -> 1, 3 -> 1)
           ),
           CoverageFileReport(
             "coverage-parser/src/test/resources/TestSourceFile.scala",
-            87,
             Map(5 -> 1, 10 -> 1, 6 -> 2, 9 -> 1, 9 -> 0, 8 -> 1, 4 -> 1)
           )
         )
@@ -72,16 +66,13 @@ class CoberturaParserTest extends WordSpec with BeforeAndAfterAll with Matchers 
         CoberturaParser.parse(new File("."), new File("coverage-parser/src/test/resources/windows_paths_cobertura.xml"))
 
       val testReport = CoverageReport(
-        87,
         List(
           CoverageFileReport(
             "coverage-parser/src/test/resources/TestSourceFile2.scala",
-            87,
             Map(1 -> 1, 2 -> 1, 3 -> 1)
           ),
           CoverageFileReport(
             "coverage-parser/src/test/resources/TestSourceFile.scala",
-            87,
             Map(5 -> 1, 10 -> 1, 6 -> 2, 9 -> 1, 3 -> 0, 4 -> 1)
           )
         )

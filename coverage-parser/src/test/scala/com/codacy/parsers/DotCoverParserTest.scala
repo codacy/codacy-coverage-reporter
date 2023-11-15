@@ -42,25 +42,17 @@ class DotCoverParserTest extends WordSpec with BeforeAndAfterAll with Matchers w
       ).sorted
     }
 
-    "return the expected total coverage" in {
-      val reader = DotcoverParser.parse(new File("."), new File(dotCoverReport))
-      reader.right.value.total shouldBe 72
-    }
-
     "return the expected coverage report" in {
       val reader = DotcoverParser.parse(new File("."), new File(dotCoverReport))
 
       reader.right.value shouldBe CoverageReport(
-        72,
         List(
           CoverageFileReport(
             "src/Coverage/FooBar.cs",
-            57,
             Map(10 -> 1, 21 -> 1, 9 -> 1, 13 -> 0, 17 -> 1, 19 -> 0, 15 -> 0)
           ),
           CoverageFileReport(
             "src/Tests/FooBarTests.cs",
-            100,
             Map(
               14 -> 1,
               20 -> 1,
@@ -76,13 +68,12 @@ class DotCoverParserTest extends WordSpec with BeforeAndAfterAll with Matchers w
               15 -> 1
             )
           ),
-          CoverageFileReport("src/Coverage/Program.cs", 0, Map(8 -> 0, 9 -> 0, 10 -> 0)),
+          CoverageFileReport("src/Coverage/Program.cs", Map(8 -> 0, 9 -> 0, 10 -> 0)),
           CoverageFileReport(
             "src/Coverage/Bar.cs",
-            57,
             Map(10 -> 0, 14 -> 1, 9 -> 1, 12 -> 0, 11 -> 0, 8 -> 1, 15 -> 1)
           ),
-          CoverageFileReport("src/Coverage/Foo.cs", 100, Map(8 -> 1, 9 -> 1, 10 -> 1))
+          CoverageFileReport("src/Coverage/Foo.cs", Map(8 -> 1, 9 -> 1, 10 -> 1))
         )
       )
     }
