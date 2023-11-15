@@ -36,6 +36,7 @@ assembly / assemblyMergeStrategy := {
 }
 assembly / test := {}
 crossPaths := false
+run / fork := true
 
 // HACK: Since we are only using the public resolvers we need to remove the private for it to not fail
 resolvers ~= {
