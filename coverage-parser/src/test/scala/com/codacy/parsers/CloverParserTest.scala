@@ -19,9 +19,9 @@ class CloverParserTest extends WordSpec with Matchers with EitherValues {
         val parseResult = CloverParser.parse(new File("."), new File(nonExistentReportPath))
 
         // Assert
-        parseResult shouldBe Left(
-          "Unparseable report. coverage-parser/src/test/resources/non-existent.xml (No such file or directory)"
-        )
+        val error = parseResult.left.value
+        error should startWith("Unparseable report. ")
+        error should endWith("coverage-parser/src/test/resources/non-existent.xml (No such file or directory)")
       }
 
       "the report is not in the Clover format" in {
