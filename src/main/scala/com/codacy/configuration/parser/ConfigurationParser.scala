@@ -2,7 +2,9 @@ package com.codacy.configuration.parser
 
 import java.io.File
 import caseapp._
-import caseapp.core.ArgParser
+import caseapp.core.Error
+import caseapp.core.app._
+import caseapp.core.argparser.ArgParser
 import com.codacy.api.OrganizationProvider
 import com.codacy.configuration.parser.ConfigArgumentParsers._
 import com.codacy.parsers.CoverageParser
@@ -108,7 +110,10 @@ case class BaseCommandConfig(
 
 object ConfigArgumentParsers {
 
-  implicit val fileParser: ArgParser[File] = ArgParser.instance("file")(a => Right(new File(a)))
+  implicit val fileParser: ArgParser[File] = new ArgParser[File] {
+    def apply(current: Option[File], value: String) = Right(new File(value))
+    def description = "file"
+  }
 
   val parsersMap = Map(
     "cobertura" -> CoberturaParser,
@@ -121,27 +126,35 @@ object ConfigArgumentParsers {
     "go" -> GoParser
   )
 
-  implicit val coverageParser: ArgParser[CoverageParser] = ArgParser.instance("parser") { v =>
-    val value = v.trim.toLowerCase
-    parsersMap.get(value) match {
-      case Some(parser) => Right(parser)
-      case _ =>
-        Left(
-          s"${value} is an unsupported/unrecognized coverage parser. (Available patterns are: ${parsersMap.keys.mkString(",")})"
-        )
+  implicit val coverageParser: ArgParser[CoverageParser] = new ArgParser[CoverageParser] {
+
+    def apply(current: Option[CoverageParser], v: String) = {
+      val value = v.trim.toLowerCase
+      parsersMap.get(value) match {
+        case Some(parser) => Right(parser)
+        case _ =>
+          Left(Error.Other(
+            s"${value} is an unsupported/unrecognized coverage parser. (Available patterns are: ${parsersMap.keys.mkString(",")})"
+          ))
+      }
     }
+    def description = "parser"
   }
 
-  implicit val organizationProvider: ArgParser[OrganizationProvider.Value] =
-    ArgParser.instance("organizationProvider") { v =>
+  implicit val organizationProvider: ArgParser[OrganizationProvider.Value] = new ArgParser[OrganizationProvider.Value] {
+
+    def apply(current: Option[OrganizationProvider.Value], v: String) = {
       val value = v.trim.toLowerCase
       OrganizationProvider.values.find(_.toString == value) match {
         case Some(provider) => Right(provider)
         case _ =>
           Left(
+            Error.Other(
             s"${value} is an unsupported/unrecognized organization provider. (Available organization provider are: ${OrganizationProvider.values
-              .mkString(",")})"
+              .mkString(",")})")
           )
       }
     }
+    def description = "organizationProvider"
+  }
 }
