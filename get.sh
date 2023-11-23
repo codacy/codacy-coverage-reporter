@@ -179,7 +179,7 @@ os_name=$(uname)
 os_name_arch=$(uname -sm)
 
 # This version should be one that matches the latest self hosted release.
-SELF_HOSTED_CODACY_REPORTER_VERSION="13.13.9"
+SELF_HOSTED_CODACY_REPORTER_VERSION="13.13.14"
 
 # Find the latest version in case is not specified
 if [ -z "$CODACY_REPORTER_VERSION" ] || [ "$CODACY_REPORTER_VERSION" = "latest" ]; then
