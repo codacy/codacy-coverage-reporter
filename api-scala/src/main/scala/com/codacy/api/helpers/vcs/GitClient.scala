@@ -2,9 +2,10 @@ package com.codacy.api.helpers.vcs
 
 import java.io.File
 import java.util.Date
-
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.{Repository, RepositoryBuilder}
+import org.eclipse.jgit.revwalk.RevWalk
+import org.eclipse.jgit.treewalk.TreeWalk
 
 import scala.collection.JavaConverters._
 import scala.util.Try
@@ -35,6 +36,29 @@ class GitClient(workDirectory: File) {
       val authorIdent = headRev.getAuthorIdent
 
       CommitInfo(headRev.getName, authorIdent.getName, authorIdent.getEmailAddress, authorIdent.getWhen)
+    }
+  }
+
+  def getRepositoryFileNames(commitSha: String): Try[Seq[String]] = {
+    repositoryTry.map { rep =>
+      val git = new Git(rep)
+      val repo = git.getRepository
+      val commitId = repo.resolve(commitSha)
+      val revWalk = new RevWalk(repo)
+      val commit = revWalk.parseCommit(commitId)
+      val tree = commit.getTree
+      val treeWalk = new TreeWalk(repo)
+      treeWalk.addTree(tree)
+      treeWalk.setRecursive(true)
+
+      val result: Seq[String] =
+        if (treeWalk.next) {
+          Stream
+            .continually(treeWalk.getPathString)
+            .takeWhile(_ => treeWalk.next)
+        } else Seq.empty
+
+      result
     }
   }
 

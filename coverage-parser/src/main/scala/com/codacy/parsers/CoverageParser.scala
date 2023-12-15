@@ -10,7 +10,7 @@ import scala.util.Try
 trait CoverageParser {
   val name: String
 
-  def parse(rootProject: File, reportFile: File): Either[String, CoverageReport]
+  def parse(rootProject: File, reportFile: File, acceptedFiles: Seq[String] = Seq.empty): Either[String, CoverageReport]
 }
 
 object CoverageParser {
@@ -29,14 +29,15 @@ object CoverageParser {
       GoParser
     )
 
-  def parse(projectRoot: File, reportFile: File): Either[String, CoverageReport] = {
-    parse(projectRoot = projectRoot, reportFile = reportFile, None).map(_.report)
+  def parse(projectRoot: File, reportFile: File, acceptedFiles: Seq[String]): Either[String, CoverageReport] = {
+    parse(projectRoot = projectRoot, reportFile = reportFile, None, acceptedFiles).map(_.report)
   }
 
   def parse(
       projectRoot: File,
       reportFile: File,
-      forceParser: Option[CoverageParser]
+      forceParser: Option[CoverageParser],
+      acceptedFiles: Seq[String]
   ): Either[String, CoverageParserResult] = {
     val isEmptyReport = {
       // Just starting by detecting the simplest case: a single report file
@@ -50,7 +51,7 @@ object CoverageParser {
 
     object ParsedCoverage {
       def unapply(parser: CoverageParser): Option[CoverageParserResult] = {
-        parser.parse(projectRoot, reportFile).toOption.map(CoverageParserResult(_, parser))
+        parser.parse(projectRoot, reportFile, acceptedFiles).toOption.map(CoverageParserResult(_, parser))
       }
     }
 

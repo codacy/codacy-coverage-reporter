@@ -21,7 +21,7 @@ class CoverageParserFactoryTest extends WordSpec with BeforeAndAfterAll with Mat
       )
 
       CoverageParser
-        .parse(new File("."), new File("coverage-parser/src/test/resources/test_cobertura.xml")) shouldEqual Right(
+        .parse(new File("."), new File("coverage-parser/src/test/resources/test_cobertura.xml"), Seq.empty) shouldEqual Right(
         expectedReport
       )
     }
@@ -37,14 +37,17 @@ class CoverageParserFactoryTest extends WordSpec with BeforeAndAfterAll with Mat
         )
       )
 
+      val acceptedFiles =
+        Seq("org/eluder/coverage/sample/InnerClassCoverage.java", "org/eluder/coverage/sample/SimpleCoverage.java")
+
       CoverageParser
-        .parse(new File("."), new File("coverage-parser/src/test/resources/test_jacoco.xml")) shouldEqual Right(
+        .parse(new File("."), new File("coverage-parser/src/test/resources/test_jacoco.xml"), acceptedFiles) shouldEqual Right(
         expectedReport
       )
     }
 
     "fail to get invalid report" in {
-      CoverageParser.parse(new File("."), new File("invalid_report.xml")) shouldEqual Left(
+      CoverageParser.parse(new File("."), new File("invalid_report.xml"), Seq.empty) shouldEqual Left(
         "Could not parse report, unrecognized report format (tried: Cobertura, Jacoco, Clover, OpenCover, DotCover, PHPUnit, LCOV, Go)"
       )
     }

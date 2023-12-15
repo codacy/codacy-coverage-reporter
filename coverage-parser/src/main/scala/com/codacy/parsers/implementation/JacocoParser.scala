@@ -1,61 +1,46 @@
 package com.codacy.parsers.implementation
 
 import java.io.File
-
 import com.codacy.api._
-import com.codacy.parsers.util.TextUtils
+import com.codacy.parsers.util.FileNameMatcher
 import com.codacy.parsers.{CoverageParser, XmlReportParser}
+import wvlet.log.LogSupport
 
 import scala.xml.{Elem, Node, NodeSeq}
 
 private case class LineCoverage(missedInstructions: Int, coveredInstructions: Int)
 
-object JacocoParser extends CoverageParser with XmlReportParser {
+object JacocoParser extends CoverageParser with XmlReportParser with LogSupport {
 
   override val name: String = "Jacoco"
 
   private val ReportTag = "report"
 
-  override def parse(projectRoot: File, reportFile: File): Either[String, CoverageReport] =
+  override def parse(projectRoot: File, reportFile: File, acceptedFiles: Seq[String]): Either[String, CoverageReport] =
     parseReport(reportFile, s"Could not find top level <$ReportTag> tag") {
-      parseReportNode(projectRoot, _)
+      parseReportNode(_, acceptedFiles)
     }
 
   override def validateSchema(xml: Elem): Boolean = getRootNode(xml).nonEmpty
 
   override def getRootNode(xml: Elem): NodeSeq = xml \\ ReportTag
 
-  private def parseReportNode(projectRoot: File, report: NodeSeq): Either[String, CoverageReport] = {
-    val projectRootStr: String = TextUtils.sanitiseFilename(projectRoot.getAbsolutePath)
-    totalPercentage(report).map { total =>
-      val filesCoverage = for {
-        pkg <- report \\ "package"
-        packageName = (pkg \@ "name")
-        sourceFile <- pkg \\ "sourcefile"
-      } yield {
-        val filename =
-          TextUtils
-            .sanitiseFilename(s"$packageName/${(sourceFile \@ "name")}")
-            .stripPrefix(projectRootStr)
-            .stripPrefix("/")
-        lineCoverage(filename, sourceFile)
-      }
+  private def parseReportNode(report: NodeSeq, acceptedFiles: Seq[String]): Either[String, CoverageReport] = {
+    val filesCoverage = for {
+      pkg <- report \\ "package"
+      packageName = pkg \@ "name"
+      sourceFile <- pkg \\ "sourcefile"
+      filename = s"$packageName/${sourceFile \@ "name"}"
+      actualName <- FileNameMatcher
+        .matchAndReturnName(filename, acceptedFiles)
+        .map(Some(_))
+        .getOrElse({
+          logger.warn(s"File: $filename will be discarded and will not be considered for coverage calculation")
+          None
+        })
+    } yield lineCoverage(actualName, sourceFile)
 
-      CoverageReport(filesCoverage)
-    }
-  }
-
-  private def totalPercentage(report: NodeSeq): Either[String, Int] = {
-    (report \\ ReportTag \ "counter")
-      .collectFirst {
-        case counter if (counter \@ "type") == "LINE" =>
-          val covered = TextUtils.asFloat((counter \@ "covered"))
-          val missed = TextUtils.asFloat((counter \@ "missed"))
-          Right(((covered / (covered + missed)) * 100).toInt)
-      }
-      .getOrElse {
-        Left("Could not retrieve total percentage of coverage.")
-      }
+    Right(CoverageReport(filesCoverage))
   }
 
   private def lineCoverage(filename: String, fileNode: Node): CoverageFileReport = {

@@ -16,7 +16,11 @@ object CloverParser extends CoverageParser with XmlReportParser {
 
   override val name: String = "Clover"
 
-  override def parse(rootProject: File, reportFile: File): Either[String, CoverageReport] = {
+  override def parse(
+      rootProject: File,
+      reportFile: File,
+      acceptedFiles: Seq[String]
+  ): Either[String, CoverageReport] = {
     parseReport(reportFile, s"Could not find tag hierarchy <$CoverageTag> <$ProjectTag> <$MetricsTag> tags") { node =>
       parseReportNode(rootProject, node)
     }
@@ -30,9 +34,9 @@ object CloverParser extends CoverageParser with XmlReportParser {
     val rootPath = TextUtils.sanitiseFilename(rootProject.getAbsolutePath)
 
     val coverageFiles = (report \\ "file").foldLeft[Either[String, Seq[CoverageFileReport]]](Right(List())) {
-      case (Right(accomulatedFileReports), fileTag) =>
+      case (Right(accumulatedFileReports), fileTag) =>
         val fileReport = getCoverageFileReport(rootPath, fileTag)
-        fileReport.right.map(_ +: accomulatedFileReports)
+        fileReport.right.map(_ +: accumulatedFileReports)
 
       case (Left(errorMessage), _) => Left(errorMessage)
     }

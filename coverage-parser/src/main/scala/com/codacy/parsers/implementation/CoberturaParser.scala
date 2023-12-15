@@ -17,7 +17,7 @@ object CoberturaParser extends CoverageParser with XmlReportParser {
   private val CoverageTag = "coverage"
   private val LineRateAttribute = "line-rate"
 
-  override def parse(projectRoot: File, reportFile: File): Either[String, CoverageReport] = {
+  override def parse(projectRoot: File, reportFile: File, acceptedFiles: Seq[String] = Seq.empty): Either[String, CoverageReport] = {
     parseReport(reportFile, s"Could not find top level <$CoverageTag> tag") { node =>
       Right(parseReportNode(projectRoot, node))
     }

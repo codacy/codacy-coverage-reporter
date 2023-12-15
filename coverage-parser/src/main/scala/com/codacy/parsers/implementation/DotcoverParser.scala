@@ -17,7 +17,7 @@ object DotcoverParser extends CoverageParser with XmlReportParser {
   private val CoverageAttribute = "CoveragePercent"
   private val CoveredAttribute = "Covered"
 
-  override def parse(rootProject: File, reportFile: File): Either[String, CoverageReport] =
+  override def parse(rootProject: File, reportFile: File, acceptedFiles: Seq[String] = Seq.empty): Either[String, CoverageReport] =
     parseReport(reportFile, s"Could not find tag <$RootTag $CoverageAttribute=...>") { node =>
       Right(parseReportNode(rootProject, node))
     }

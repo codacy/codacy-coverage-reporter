@@ -20,7 +20,7 @@ object GoParser extends CoverageParser {
   //filename.go:lineFrom.column,lineTo.column numberOfStatements countOfStatements
   final val regexpString = """([a-zA-Z\/\._\-\d]*):(\d+).*?,(\d+).* (\d+) (\d+)""".r
 
-  override def parse(rootProject: File, reportFile: File): Either[String, CoverageReport] = {
+  override def parse(rootProject: File, reportFile: File, acceptedFiles: Seq[String] = Seq.empty): Either[String, CoverageReport] = {
     val report = Try(Source.fromFile(reportFile)) match {
       case Success(lines) =>
         Right(lines.getLines)

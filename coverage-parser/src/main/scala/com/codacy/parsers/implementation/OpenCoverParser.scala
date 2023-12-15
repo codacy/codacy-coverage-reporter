@@ -22,7 +22,7 @@ object OpenCoverParser extends CoverageParser with XmlReportParser {
 
   override val name: String = "OpenCover"
 
-  override def parse(rootProject: File, reportFile: File): Either[String, CoverageReport] =
+  override def parse(rootProject: File, reportFile: File, acceptedFiles: Seq[String] = Seq.empty): Either[String, CoverageReport] =
     parseReport(reportFile, s"Could not find tag <$RootTag>") { node =>
       Right(parseReportNode(node, TextUtils.sanitiseFilename(rootProject.getAbsolutePath)))
     }

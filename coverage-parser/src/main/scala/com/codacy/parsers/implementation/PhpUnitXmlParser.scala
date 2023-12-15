@@ -16,7 +16,11 @@ object PhpUnitXmlParser extends CoverageParser with XmlReportParser {
   private val DirectoryTag = "directory"
   private val XmlParseErrorMessage = s"Could not find top level <$PhpUnitTag> tag";
 
-  override def parse(rootProject: File, reportFile: File): Either[String, CoverageReport] =
+  override def parse(
+      rootProject: File,
+      reportFile: File,
+      acceptedFiles: Seq[String] = Seq.empty
+  ): Either[String, CoverageReport] =
     parseReport(reportFile, XmlParseErrorMessage) {
       parseReportNode(rootProject, _, reportFile.getParent)
     }
