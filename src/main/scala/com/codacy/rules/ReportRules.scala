@@ -8,14 +8,15 @@ import com.codacy.model.configuration._
 import com.codacy.parsers.CoverageParser
 import com.codacy.plugins.api.languages.Languages
 import com.codacy.rules.commituuid.CommitUUIDProvider
-import com.codacy.transformation.PathPrefixer
+import com.codacy.rules.file.GitFileFetcher
+import com.codacy.transformation.{GitFileNameUpdaterAndFilter, PathPrefixer, Transformation}
 import wvlet.log.LogSupport
 
 import java.io.File
 import java.nio.file.{FileSystems, Files}
 import scala.collection.JavaConverters._
 
-class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
+class ReportRules(coverageServices: => CoverageServices, gitFileFetcher: GitFileFetcher) extends LogSupport {
 
   private val rootProjectDir = new File(System.getProperty("user.dir"))
   private val rootProjectFiles = Files
@@ -32,6 +33,7 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
       commitUUID: String
   ): Either[String, String] = {
     val finalConfig = config.copy(partial = partial)
+
     files
       .map { file =>
         logger.info(s"Parsing coverage data from: ${file.getAbsolutePath} ...")
@@ -40,7 +42,7 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
           report <- CoverageParser.parse(rootProjectDir, file, forceParser = config.forceCoverageParser).map {
             coverageResult =>
               logger.info(s"Coverage parser used is ${coverageResult.parser}")
-              transform(coverageResult.report)(finalConfig)
+              transform(coverageResult.report)(finalConfig, commitUUID)
           }
           _ <- storeReport(report, file)
           language <- guessReportLanguage(finalConfig.languageOpt, report, file.getAbsolutePath)
@@ -222,7 +224,7 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
     report.fileReports.flatMap(file => Languages.forPath(file.filename).map(_.name)).distinct
   }
 
-  private val fileSystems = FileSystems.getDefault()
+  private val fileSystems = FileSystems.getDefault
 
   /**
     * Guess the report file
@@ -258,7 +260,6 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
                 case _ => false
             }
           )
-          .toList
         if (foundFiles.isEmpty)
           Left("Can't detect any coverage report automatically. Specify the report with the flag -r")
         else
@@ -269,7 +270,7 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
             value.flatMap { file =>
               val foundWithGlob = {
                 val matcher = fileSystems.getPathMatcher(s"glob:$file")
-                projectFiles.filter(f => matcher.matches(f.toPath()))
+                projectFiles.filter(f => matcher.matches(f.toPath))
               }
               // When the glob doesn't match any file, we return it
               // as a file so the later stages will fail instead of silently
@@ -318,8 +319,16 @@ class ReportRules(coverageServices: => CoverageServices) extends LogSupport {
     }
   }
 
-  private def transform(report: CoverageReport)(config: ReportConfig): CoverageReport = {
-    val transformations = Set(new PathPrefixer(config.prefix))
+  private def transform(report: CoverageReport)(config: ReportConfig, commitUUID: String): CoverageReport = {
+
+    val acceptableFileNames = gitFileFetcher.forCommit(commitUUID)
+
+    val transformations: Seq[Transformation] = acceptableFileNames
+      .fold(error => {
+        logger.warn(s"Report files will not be matched against git files, reason: $error")
+        Seq(new PathPrefixer(config.prefix))
+      }, filenames => Seq(new PathPrefixer(config.prefix), new GitFileNameUpdaterAndFilter(filenames)))
+
     transformations.foldLeft(report) { (report, transformation) =>
       transformation.execute(report)
     }

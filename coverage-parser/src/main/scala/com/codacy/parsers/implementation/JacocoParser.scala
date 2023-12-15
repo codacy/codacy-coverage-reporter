@@ -1,7 +1,6 @@
 package com.codacy.parsers.implementation
 
 import java.io.File
-
 import com.codacy.api._
 import com.codacy.parsers.util.TextUtils
 import com.codacy.parsers.{CoverageParser, XmlReportParser}
@@ -27,35 +26,19 @@ object JacocoParser extends CoverageParser with XmlReportParser {
 
   private def parseReportNode(projectRoot: File, report: NodeSeq): Either[String, CoverageReport] = {
     val projectRootStr: String = TextUtils.sanitiseFilename(projectRoot.getAbsolutePath)
-    totalPercentage(report).map { total =>
-      val filesCoverage = for {
-        pkg <- report \\ "package"
-        packageName = (pkg \@ "name")
-        sourceFile <- pkg \\ "sourcefile"
-      } yield {
-        val filename =
-          TextUtils
-            .sanitiseFilename(s"$packageName/${(sourceFile \@ "name")}")
-            .stripPrefix(projectRootStr)
-            .stripPrefix("/")
-        lineCoverage(filename, sourceFile)
-      }
-
-      CoverageReport(filesCoverage)
+    val filesCoverage = for {
+      pkg <- report \\ "package"
+      packageName = (pkg \@ "name")
+      sourceFile <- pkg \\ "sourcefile"
+    } yield {
+      val filename =
+        TextUtils
+          .sanitiseFilename(s"$packageName/${(sourceFile \@ "name")}")
+          .stripPrefix(projectRootStr)
+          .stripPrefix("/")
+      lineCoverage(filename, sourceFile)
     }
-  }
-
-  private def totalPercentage(report: NodeSeq): Either[String, Int] = {
-    (report \\ ReportTag \ "counter")
-      .collectFirst {
-        case counter if (counter \@ "type") == "LINE" =>
-          val covered = TextUtils.asFloat((counter \@ "covered"))
-          val missed = TextUtils.asFloat((counter \@ "missed"))
-          Right(((covered / (covered + missed)) * 100).toInt)
-      }
-      .getOrElse {
-        Left("Could not retrieve total percentage of coverage.")
-      }
+    Right(CoverageReport(filesCoverage))
   }
 
   private def lineCoverage(filename: String, fileNode: Node): CoverageFileReport = {

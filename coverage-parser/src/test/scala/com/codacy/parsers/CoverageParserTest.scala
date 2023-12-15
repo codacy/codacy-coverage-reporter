@@ -24,7 +24,8 @@ class CoverageParserTest extends WordSpec with BeforeAndAfterAll with Matchers w
     }
     "return a valid result" when {
       "file and format are matching cobertura" in {
-        val reader = CoverageParser.parse(new File("."), new File(coberturaReportPath), Some(CoberturaParser))
+        val reader =
+          CoverageParser.parse(new File("."), new File(coberturaReportPath), Some(CoberturaParser))
 
         reader shouldBe 'right
       }
