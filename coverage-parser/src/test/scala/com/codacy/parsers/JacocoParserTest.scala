@@ -11,17 +11,21 @@ class JacocoParserTest extends WordSpec with BeforeAndAfterAll with Matchers wit
   "JacocoParser" should {
 
     "identify if report is invalid" in {
-      val reader = JacocoParser.parse(new File("."), new File("coverage-parser/src/test/resources/test_cobertura.xml"))
+      val reader =
+        JacocoParser.parse(new File("."), new File("coverage-parser/src/test/resources/test_cobertura.xml"))
       reader.isLeft shouldBe true
     }
 
     "identify if report is valid" in {
-      val reader = JacocoParser.parse(new File("."), new File("coverage-parser/src/test/resources/test_jacoco.xml"))
+      val reader =
+        JacocoParser.parse(new File("."), new File("coverage-parser/src/test/resources/test_jacoco.xml"))
       reader.isRight shouldBe true
     }
 
     "return a valid report" in {
-      val reader = JacocoParser.parse(new File("."), new File("coverage-parser/src/test/resources/test_jacoco.xml"))
+
+      val reader = JacocoParser
+        .parse(new File("."), new File("coverage-parser/src/test/resources/test_jacoco.xml"))
 
       val testReport = CoverageReport(
         List(
@@ -35,7 +39,6 @@ class JacocoParserTest extends WordSpec with BeforeAndAfterAll with Matchers wit
 
       reader.right.value should equal(testReport)
     }
-
   }
 
 }

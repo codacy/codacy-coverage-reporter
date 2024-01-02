@@ -1,7 +1,6 @@
 package com.codacy.rules
 
 import java.io.File
-
 import com.codacy.api.client.{FailedResponse, RequestSuccess, RequestTimeout, SuccessfulResponse}
 import com.codacy.api.service.CoverageServices
 import com.codacy.api.{CoverageFileReport, CoverageReport}
@@ -9,6 +8,7 @@ import com.codacy.configuration.parser.{BaseCommandConfig, Report}
 import com.codacy.di.Components
 import com.codacy.model.configuration.{BaseConfig, ProjectTokenAuthenticationConfig, ReportConfig}
 import com.codacy.plugins.api.languages.Languages
+import com.codacy.rules.file.GitFileFetcher
 import org.mockito.scalatest.IdiomaticMockito
 import org.scalatest._
 
@@ -44,11 +44,12 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
 
     def assertCodacyCoverage(
         coverageServices: CoverageServices,
+        gitFileFetcher: GitFileFetcher,
         coverageReports: List[String],
         success: Boolean,
         projectFiles: Option[List[File]] = None
     ) = {
-      val reportRules = new ReportRules(coverageServices)
+      val reportRules = new ReportRules(coverageServices, gitFileFetcher)
       val reportConfig =
         ReportConfig(
           baseConfig,
@@ -72,18 +73,30 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
     "fail" when {
       "it finds no report file" in {
         val coverageServices = mock[CoverageServices]
+        val gitFileFetcher = mock[GitFileFetcher]
 
-        assertCodacyCoverage(coverageServices, List(), success = false, projectFiles = Some(List.empty))
+        assertCodacyCoverage(coverageServices, gitFileFetcher, List(), success = false, projectFiles = Some(List.empty))
       }
 
       "it is not able to parse report file" in {
         val coverageServices = mock[CoverageServices]
+        val gitFileFetcher = mock[GitFileFetcher]
 
-        assertCodacyCoverage(coverageServices, List("src/test/resources/invalid-report.xml"), success = false)
+        gitFileFetcher.forCommit(any[String]).shouldReturn(Right(Seq.empty))
+
+        assertCodacyCoverage(
+          coverageServices,
+          gitFileFetcher,
+          List("src/test/resources/invalid-report.xml"),
+          success = false
+        )
       }
 
       "cannot send report" in {
         val coverageServices = mock[CoverageServices]
+        val gitFileFetcher = mock[GitFileFetcher]
+
+        gitFileFetcher.forCommit(any[String]).shouldReturn(Right(Seq("src/Coverage/FooBar.cs")))
 
         coverageServices.sendReport(
           any[String],
@@ -95,12 +108,20 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
           Some(3)
         ) returns FailedResponse("Failed to send report")
 
-        assertCodacyCoverage(coverageServices, List("src/test/resources/dotcover-example.xml"), success = false)
+        assertCodacyCoverage(
+          coverageServices,
+          gitFileFetcher,
+          List("src/test/resources/dotcover-example.xml"),
+          success = false
+        )
       }
     }
 
-    "succeed if it can parse and send the report" in {
+    "succeed if it can parse and send the report, able to get git files" in {
       val coverageServices = mock[CoverageServices]
+      val gitFileFetcher = mock[GitFileFetcher]
+
+      gitFileFetcher.forCommit(any[String]).shouldReturn(Right(Seq("src/Coverage/FooBar.cs")))
 
       coverageServices.sendReport(
         any[String],
@@ -112,7 +133,36 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
         Some(3)
       ) returns SuccessfulResponse(RequestSuccess("Success"))
 
-      assertCodacyCoverage(coverageServices, List("src/test/resources/dotcover-example.xml"), success = true)
+      assertCodacyCoverage(
+        coverageServices,
+        gitFileFetcher,
+        List("src/test/resources/dotcover-example.xml"),
+        success = true
+      )
+    }
+
+    "succeed if it can parse and send the report, unable to get git files" in {
+      val coverageServices = mock[CoverageServices]
+      val gitFileFetcher = mock[GitFileFetcher]
+
+      gitFileFetcher.forCommit(any[String]).shouldReturn(Left("Unable to fetch Git Files"))
+
+      coverageServices.sendReport(
+        any[String],
+        any[String],
+        any[CoverageReport],
+        anyBoolean,
+        Some(RequestTimeout(1000, 10000)),
+        Some(10000),
+        Some(3)
+      ) returns SuccessfulResponse(RequestSuccess("Success"))
+
+      assertCodacyCoverage(
+        coverageServices,
+        gitFileFetcher,
+        List("src/test/resources/dotcover-example.xml"),
+        success = true
+      )
     }
   }
 

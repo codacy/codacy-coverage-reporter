@@ -30,9 +30,9 @@ object CloverParser extends CoverageParser with XmlReportParser {
     val rootPath = TextUtils.sanitiseFilename(rootProject.getAbsolutePath)
 
     val coverageFiles = (report \\ "file").foldLeft[Either[String, Seq[CoverageFileReport]]](Right(List())) {
-      case (Right(accomulatedFileReports), fileTag) =>
+      case (Right(accumulatedFileReports), fileTag) =>
         val fileReport = getCoverageFileReport(rootPath, fileTag)
-        fileReport.right.map(_ +: accomulatedFileReports)
+        fileReport.right.map(_ +: accumulatedFileReports)
 
       case (Left(errorMessage), _) => Left(errorMessage)
     }

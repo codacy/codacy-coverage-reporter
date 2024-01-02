@@ -5,7 +5,7 @@
         <File Index="2" Name="/app/Experiment/Program.cs" ChecksumAlgorithm="SHA256" Checksum="1B3D9F852A896CD8EBF786BC13EE242891EA00F49600B94CD7833C4AA1DE86B3" />
         <File Index="3" Name="/app/Experiment/Bar.cs" ChecksumAlgorithm="SHA256" Checksum="147393855222EF85D83C298103D1BA96733F0FAD96CB4B3E7585FD53E09EEB8E" />
         <File Index="4" Name="/app/Experiment/Foo.cs" ChecksumAlgorithm="SHA256" Checksum="AA0B94F0034959DE2BFD9481E6D37F1FB68DAB0C525F379B153BCDDDEFCE1873" />
-        <File Index="5" Name="/app/Experiment/FooBar.cs" ChecksumAlgorithm="SHA256" Checksum="453C1111E89058E714D1B8C0CC619FC07B2B463A9B597ACB37F397DAC8B048C8" />
+        <File Index="5" Name=".circleci/config.yml" ChecksumAlgorithm="SHA256" Checksum="453C1111E89058E714D1B8C0CC619FC07B2B463A9B597ACB37F397DAC8B048C8" />
     </FileIndices>
     <Assembly Name="Tests" CoveredStatements="13" TotalStatements="13" CoveragePercent="100">
         <Namespace Name="Tests" CoveredStatements="13" TotalStatements="13" CoveragePercent="100">
