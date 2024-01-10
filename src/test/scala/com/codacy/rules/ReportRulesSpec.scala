@@ -164,6 +164,35 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
         success = true
       )
     }
+
+    "succeed even if one of the parsed reports ends up empty" in {
+      val coverageServices = mock[CoverageServices]
+      val gitFileFetcher = mock[GitFileFetcher]
+
+      gitFileFetcher.forCommit(any[String]).shouldReturn(Right(Seq("src/Coverage/FooBar.cs")))
+
+      coverageServices.sendReport(
+        any[String],
+        any[String],
+        any[CoverageReport],
+        anyBoolean,
+        Some(RequestTimeout(1000, 10000)),
+        Some(10000),
+        Some(3)
+      ) returns SuccessfulResponse(RequestSuccess("Success"))
+
+      coverageServices
+        .sendFinalNotification(any[String], Some(RequestTimeout(1000, 10000)), Some(10000), Some(3)) returns SuccessfulResponse(
+        RequestSuccess("Success")
+      )
+
+      assertCodacyCoverage(
+        coverageServices,
+        gitFileFetcher,
+        List("src/test/resources/dotcover-example.xml", "src/test/resources/non-git-report.xml"),
+        success = true
+      )
+    }
   }
 
   "handleFailedResponse" should {
