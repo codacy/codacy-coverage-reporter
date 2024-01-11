@@ -51,10 +51,14 @@ class ReportRules(coverageServices: => CoverageServices, gitFileFetcher: GitFile
           success
         }
       }
-      .collectFirst {
-        case Left(l) => Left(l)
+      .foldLeft[Either[String, String]](Left("No coverage data was sent")) { (prev, curr) =>
+        curr match {
+          case Left(error) =>
+            logger.warn(error)
+            prev
+          case Right(_) => Right("Coverage data uploaded.")
+        }
       }
-      .getOrElse(Right("All coverage data uploaded."))
   }
 
   def codacyCoverage(config: ReportConfig): Either[String, String] = {
