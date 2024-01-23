@@ -86,7 +86,7 @@ lazy val apiScala = project
   .settings(
     libraryDependencies ++= Seq(
       "com.typesafe.play" %% "play-json" % "2.8.2",
-      "org.scalaj" %% "scalaj-http" % "2.4.2",
+      "com.codacy" %% "scalaj-http" % "2.5.0",
       "org.eclipse.jgit" % "org.eclipse.jgit" % "4.11.9.201909030838-r",
       "org.scalatest" %% "scalatest" % "3.0.8" % Test
     )
