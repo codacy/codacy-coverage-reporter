@@ -120,7 +120,7 @@ class ReportRules(coverageServices: => CoverageServices, gitFileFetcher: GitFile
     */
   private[rules] def storeReport(report: CoverageReport, file: File) = {
     if (report.fileReports.isEmpty)
-      Left(s"The provided coverage report ${file.getAbsolutePath} generated an empty result.")
+      Left(s"The generated coverage report ${file.getAbsolutePath} is empty or contains no data for repository files.")
     else {
       val codacyReportFile = File.createTempFile("codacy-coverage-", ".json")
 
