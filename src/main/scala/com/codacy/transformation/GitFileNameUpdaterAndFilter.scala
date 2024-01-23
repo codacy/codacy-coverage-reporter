@@ -19,7 +19,7 @@ class GitFileNameUpdaterAndFilter(acceptableFileNames: Seq[String]) extends Tran
 
     if (maybeFilename.isEmpty)
       logger
-        .warn(s"File: $filename will be discarded and will not be considered for coverage calculation")
+        .warn(s"File: Ignoring $filename for coverage calculation, no matching file found in the repository.")
 
     maybeFilename
   }
