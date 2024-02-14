@@ -2,7 +2,7 @@ package com.codacy
 
 import com.codacy.configuration.parser.{CommandConfiguration, ConfigurationParsingApp}
 import com.codacy.di.Components
-import com.codacy.model.configuration.{FinalConfig, ReportConfig}
+import com.codacy.model.configuration.{Configuration, FinalConfig, ReportConfig}
 import com.codacy.rules.ConfigurationRules
 import wvlet.airframe.log
 import wvlet.log.{LogSupport, Logger}
@@ -11,13 +11,16 @@ object CodacyCoverageReporter extends ConfigurationParsingApp with LogSupport {
   log.initNoColor
 
   def run(commandConfig: CommandConfiguration): Int = {
-    val noAvailableTokens = commandConfig.baseConfig.projectToken.isEmpty && commandConfig.baseConfig.apiToken.isEmpty
+    val configRules = new ConfigurationRules(commandConfig, sys.env)
+
+    val noAvailableTokens =
+      configRules.getProjectToken(commandConfig.baseConfig).isEmpty &&
+        configRules.getApiToken(commandConfig.baseConfig).isEmpty
     if (commandConfig.baseConfig.skipValue && noAvailableTokens) {
       logger.info("Skip reporting coverage")
       0
     } else {
-      val result: Either[String, String] = sendReport(commandConfig, sys.env)
-      result match {
+      sendReport(configRules.validatedConfig) match {
         case Right(message) =>
           logger.info(message)
           0
@@ -28,10 +31,8 @@ object CodacyCoverageReporter extends ConfigurationParsingApp with LogSupport {
     }
   }
 
-  private def sendReport(commandConfig: CommandConfiguration, envVars: Map[String, String]) = {
-    val configRules = new ConfigurationRules(commandConfig, envVars)
-
-    configRules.validatedConfig.flatMap { validatedConfig =>
+  private def sendReport(validatedConfig: Either[String, Configuration]) = {
+    validatedConfig.flatMap { validatedConfig =>
       val components = new Components(validatedConfig)
 
       if (validatedConfig.baseConfig.debug) {

@@ -83,12 +83,18 @@ class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, S
     }
   }
 
+  def getProjectToken(baseCommandConfig: BaseCommandConfig): Option[String] =
+    getValueOrEnvironmentVar(baseCommandConfig.projectToken, "CODACY_PROJECT_TOKEN")
+
+  def getApiToken(baseCommandConfig: BaseCommandConfig): Option[String] =
+    getValueOrEnvironmentVar(baseCommandConfig.apiToken, "CODACY_API_TOKEN")
+
   private def validateAuthConfig(baseCommandConfig: BaseCommandConfig): Either[String, AuthenticationConfig] = {
     val errorMessage =
       "Either a project or account API token must be provided or available in an environment variable"
 
-    val projectToken = getValueOrEnvironmentVar(baseCommandConfig.projectToken, "CODACY_PROJECT_TOKEN")
-    val apiToken = getValueOrEnvironmentVar(baseCommandConfig.apiToken, "CODACY_API_TOKEN")
+    val projectToken = getProjectToken(baseCommandConfig)
+    val apiToken = getApiToken(baseCommandConfig)
 
     if (projectToken.isDefined)
       validateProjectTokenAuth(projectToken)
