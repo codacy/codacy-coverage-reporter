@@ -3,8 +3,11 @@ package com.codacy.rules.commituuid.providers
 import org.scalatest.{EitherValues, Matchers, WordSpec}
 
 class GitHubActionProviderSpec extends WordSpec with Matchers with EitherValues {
-  val validCommitUuid = "480b8293f4340216b8f630053a230e2867cd5c28"
-  val invalidCommitUuid = "65e4436280a41c721617cba15f33555d3122907e"
+  val validPullRequestCommitUuid = "480b8293f4340216b8f630053a230e2867cd5c28"
+  val invalidPullRequestCommitUuid = "65e4436280a41c721617cba15f33555d3122907e"
+
+  val validWorkflowRunCommitUuid = "0f33f2554d99ce8c12ab126fc4e06bd2ad663e50"
+
   "getUUID" should {
     "fail" when {
       "no environment variables are defined" in {
@@ -21,8 +24,8 @@ class GitHubActionProviderSpec extends WordSpec with Matchers with EitherValues 
         val provider = GitHubActionProvider
         val envVars = Map(
           "GITHUB_EVENT_NAME" -> "pull_request",
-          "GITHUB_SHA" -> invalidCommitUuid,
-          "GITHUB_EVENT_PATH" -> "src/test/resources/invalid-github-action-event.json"
+          "GITHUB_SHA" -> invalidPullRequestCommitUuid,
+          "GITHUB_EVENT_PATH" -> "src/test/resources/invalid-github-action-pull-request-event.json"
         )
         val commitUuidEither = provider.getValidCommitUUID(envVars)
         commitUuidEither should be('left)
@@ -31,21 +34,32 @@ class GitHubActionProviderSpec extends WordSpec with Matchers with EitherValues 
     "succeed" when {
       "event is push and GITHUB_SHA has value" in {
         val provider = GitHubActionProvider
-        val envVars = Map("GITHUB_EVENT_NAME" -> "push", "GITHUB_SHA" -> validCommitUuid)
+        val envVars = Map("GITHUB_EVENT_NAME" -> "push", "GITHUB_SHA" -> validPullRequestCommitUuid)
         val commitUuidEither = provider.getValidCommitUUID(envVars)
         commitUuidEither should be('right)
-        commitUuidEither.right.value.value should be(validCommitUuid)
+        commitUuidEither.right.value.value should be(validPullRequestCommitUuid)
       }
-      "even is pull request and json file includes needed information" in {
+      "event is pull_request and json file includes needed information" in {
         val provider = GitHubActionProvider
         val envVars = Map(
           "GITHUB_EVENT_NAME" -> "pull_request",
-          "GITHUB_SHA" -> invalidCommitUuid,
-          "GITHUB_EVENT_PATH" -> "src/test/resources/github-action-event.json"
+          "GITHUB_SHA" -> invalidPullRequestCommitUuid,
+          "GITHUB_EVENT_PATH" -> "src/test/resources/github-action-pull-request-event.json"
         )
         val commitUuidEither = provider.getValidCommitUUID(envVars)
         commitUuidEither should be('right)
-        commitUuidEither.right.value.value should be(validCommitUuid)
+        commitUuidEither.right.value.value should be(validPullRequestCommitUuid)
+      }
+      "event is workflow_run and json file includes needed information" in {
+        val provider = GitHubActionProvider
+        val envVars = Map(
+          "GITHUB_EVENT_NAME" -> "workflow_run",
+          "GITHUB_SHA" -> invalidPullRequestCommitUuid,
+          "GITHUB_EVENT_PATH" -> "src/test/resources/github-action-workflow-run-event.json"
+        )
+        val commitUuidEither = provider.getValidCommitUUID(envVars)
+        commitUuidEither should be('right)
+        commitUuidEither.right.value.value should be(validWorkflowRunCommitUuid)
       }
     }
   }
