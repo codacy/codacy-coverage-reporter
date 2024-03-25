@@ -42,14 +42,15 @@ object JacocoParser extends CoverageParser with XmlReportParser {
   }
 
   private def lineCoverage(filename: String, fileNode: Node): CoverageFileReport = {
-    val lineHitMap: Map[Int, Int] = (fileNode \\ "line")
+    val lineHitMap: Map[Int, Int] = (fileNode \\ "line").view
       .map { line =>
         (line \@ "nr").toInt -> LineCoverage((line \@ "mi").toInt, (line \@ "ci").toInt)
       }
       .collect {
         case (key, lineCoverage) if lineCoverage.missedInstructions + lineCoverage.coveredInstructions > 0 =>
           key -> (if (lineCoverage.coveredInstructions > 0) 1 else 0)
-      }(collection.breakOut)
+      }
+      .toMap
 
     CoverageFileReport(filename, lineHitMap)
   }

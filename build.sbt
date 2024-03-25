@@ -1,15 +1,7 @@
 inThisBuild(
   Seq(
-    scalaVersion := "2.12.18",
-    scalacOptions := Seq(
-      "-deprecation",
-      "-feature",
-      "-unchecked",
-      "-Ywarn-adapted-args",
-      "-Xlint",
-      "-Xfatal-warnings",
-      "-Ypartial-unification"
-    )
+    scalaVersion := "2.13.13",
+    scalacOptions := Seq("-deprecation", "-feature", "-unchecked", "-Xlint", "-Xfatal-warnings")
   )
 )
 
@@ -17,7 +9,7 @@ name := "codacy-coverage-reporter"
 
 // Runtime dependencies
 libraryDependencies ++= Seq(
-  "com.github.alexarchambault" %% "case-app" % "1.2.0",
+  "com.github.alexarchambault" %% "case-app" % "2.1.0-M14",
   "org.wvlet.airframe" %% "airframe-log" % "22.3.0",
   "com.lihaoyi" %% "ujson" % "1.5.0"
 )
