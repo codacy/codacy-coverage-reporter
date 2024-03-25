@@ -17,22 +17,24 @@ object GitHubActionProvider extends CommitUUIDProvider with LazyLogger {
   }
 
   override def getValidCommitUUID(environment: Map[String, String]): Either[String, CommitUUID] = {
-    // if the event is a pull request the GITHUB_SHA will have a different commit UUID (the id of a merge commit)
+    // if the event is a pull_request or a workflow_run the GITHUB_SHA will
+    // have a different commit UUID (the id of a merge commit)
     // https://help.github.com/en/actions/reference/events-that-trigger-workflows
     // for this reason, we need to fetch it from the event details that GitHub provides
     // equivalent to doing ${{github.event.pull_request.head.sha}} in a GitHub action workflow
-    if (environment.get("GITHUB_EVENT_NAME").contains("pull_request")) {
-      getPullRequestCommit(environment)
-    } else {
-      parseEnvironmentVariable(environment.get("GITHUB_SHA"))
+    environment.get("GITHUB_EVENT_NAME") match {
+      case Some(eventName @ ("pull_request" | "workflow_run")) =>
+        getEventCommitSha(environment, eventName)
+      case _ =>
+        parseEnvironmentVariable(environment.get("GITHUB_SHA"))
     }
   }
 
-  private def getPullRequestCommit(envVars: Map[String, String]): Either[String, CommitUUID] = {
+  private def getEventCommitSha(envVars: Map[String, String], eventName: String): Either[String, CommitUUID] = {
     for {
       eventPath <- envVars.get("GITHUB_EVENT_PATH").toRight("Could not find event description file path")
       eventContent <- readFile(eventPath)
-      sha <- extractHeadSHA(eventContent)
+      sha <- extractHeadSHA(eventName = eventName, eventContent = eventContent)
       commitUUID <- CommitUUID.fromString(sha)
     } yield commitUUID
   }
@@ -49,9 +51,15 @@ object GitHubActionProvider extends CommitUUIDProvider with LazyLogger {
     }
   }
 
-  private def extractHeadSHA(event: String) = {
-    val eventJson = ujson.read(event)
-    Try(eventJson("pull_request")("head")("sha").str).toEither.left
-      .map(t => s"Unable to fetch SHA from event file. Failed with error: ${t.getMessage}")
+  private def extractHeadSHA(eventName: String, eventContent: String) = {
+    Try {
+      val eventJson = ujson.read(eventContent)
+      eventName match {
+        case "workflow_run" =>
+          eventJson(eventName)("head_sha").str
+        case _ =>
+          eventJson(eventName)("head")("sha").str
+      }
+    }.toEither.left.map(t => s"Unable to fetch SHA from event file. Failed with error: ${t.getMessage}")
   }
 }
