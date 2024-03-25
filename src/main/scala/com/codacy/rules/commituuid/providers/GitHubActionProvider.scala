@@ -5,6 +5,7 @@ import java.nio.file.Files
 
 import com.codacy.model.configuration.CommitUUID
 import com.codacy.rules.commituuid.CommitUUIDProvider
+import play.api.libs.json._
 import wvlet.log.LazyLogger
 
 import scala.util.Try
@@ -53,12 +54,12 @@ object GitHubActionProvider extends CommitUUIDProvider with LazyLogger {
 
   private def extractHeadSHA(eventName: String, eventContent: String) = {
     Try {
-      val eventJson = ujson.read(eventContent)
+      val eventJson = Json.parse(eventContent)
       eventName match {
         case "workflow_run" =>
-          eventJson(eventName)("head_sha").str
+          (eventJson \ eventName \ "head_sha").as[String]
         case _ =>
-          eventJson(eventName)("head")("sha").str
+          (eventJson \ eventName \ "head" \ "sha").as[String]
       }
     }.toEither.left.map(t => s"Unable to fetch SHA from event file. Failed with error: ${t.getMessage}")
   }
