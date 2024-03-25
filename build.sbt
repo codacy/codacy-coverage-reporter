@@ -1,15 +1,7 @@
 inThisBuild(
   Seq(
-    scalaVersion := "2.12.18",
-    scalacOptions := Seq(
-      "-deprecation",
-      "-feature",
-      "-unchecked",
-      "-Ywarn-adapted-args",
-      "-Xlint",
-      "-Xfatal-warnings",
-      "-Ypartial-unification"
-    )
+    scalaVersion := "2.13.13",
+    scalacOptions := Seq("-deprecation", "-feature", "-unchecked", "-Xlint", "-Xfatal-warnings")
   )
 )
 

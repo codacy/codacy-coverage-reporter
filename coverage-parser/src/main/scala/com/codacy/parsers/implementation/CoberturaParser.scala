@@ -37,7 +37,7 @@ object CoberturaParser extends CoverageParser with XmlReportParser {
     } yield {
       val cleanFilename = TextUtils.sanitiseFilename(filename).stripPrefix(projectRootStr).stripPrefix("/")
       lineCoverage(cleanFilename, classes)
-    })(collection.breakOut)
+    }).toList
 
     CoverageReport(fileReports)
   }

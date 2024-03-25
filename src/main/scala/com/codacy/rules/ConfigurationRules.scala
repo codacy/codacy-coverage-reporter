@@ -187,9 +187,9 @@ class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, S
     */
   private[rules] def validateReportFiles(filesOpt: Option[List[File]]): Either[String, List[File]] = {
     filesOpt match {
-      case Some(value) if value.isEmpty =>
+      case Some(Nil) =>
         Left("Invalid report list. Try passing a report file with -r")
-      case Some(value) if value.nonEmpty =>
+      case Some(value) =>
         Right(value)
       case None =>
         Right(List.empty[File])

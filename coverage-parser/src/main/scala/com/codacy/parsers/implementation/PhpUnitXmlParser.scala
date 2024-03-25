@@ -44,16 +44,22 @@ object PhpUnitXmlParser extends CoverageParser with XmlReportParser {
       reportRootPath: String
   ): Either[String, Seq[CoverageFileReport]] = {
     val builder = Seq.newBuilder[CoverageFileReport]
-    for (f <- fileNodes) {
+    var error = Option.empty[String]
+    for (f <- fileNodes if error.isEmpty) {
       val reportFileName = f \@ "href"
       val fileName = getSourceFileName(projectRootPath, codeDirectory, reportFileName)
       getLineCoverage(reportRootPath, reportFileName) match {
         case Right(lineCoverage) =>
           builder += CoverageFileReport(fileName, lineCoverage)
-        case Left(message) => return Left(message)
+        case Left(message) => error = Some(message)
       }
     }
-    Right(builder.result())
+    error match {
+      case Some(value) =>
+        Left(value)
+      case None =>
+        Right(builder.result())
+    }
   }
 
   private def getLineCoverage(reportRootPath: String, filename: String) = {

@@ -209,17 +209,17 @@ class ReportRules(coverageServices: => CoverageServices, gitFileFetcher: GitFile
         val reportLanguages = getReportLanguages(report).distinct
         reportLanguages.headOption match {
           case None => Left("Can't guess the report language")
-          case Some(language) =>
+          case Some(l) =>
             if (reportLanguages.size > 1) {
               logger.warn(
                 s"""
                    |Multiple languages detected in $reportFilePath (${reportLanguages.mkString(",")}).
-                   |  This run will only upload coverage for the $language language.
+                   |  This run will only upload coverage for the $l language.
                    |  To make sure that you upload coverage for all languages in the report,
                    |  see https://docs.codacy.com/coverage-reporter/uploading-coverage-in-advanced-scenarios/#multiple-languages""".stripMargin
               )
             }
-            Right(language)
+            Right(l)
         }
     }
   }
