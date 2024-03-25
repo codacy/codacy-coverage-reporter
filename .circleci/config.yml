@@ -227,12 +227,12 @@ workflows:
             - run:
                name: Aggregate coverage reports
                command: sbt coverageAggregate
-            # - run:
-            #     name: Send coverage report to Codacy
-            #     # Specify only scala coverage reports, because coverage reporter is detecting coverage reports
-            #     # for other languages that are not valid and are used on tests
-            #     command: |
-            #       bash <(curl -Ls https://coverage.codacy.com/get.sh) report -l Scala -r "**/cobertura*.xml"
+            - run:
+                name: Send coverage report to Codacy
+                # Specify only scala coverage reports, because coverage reporter is detecting coverage reports
+                # for other languages that are not valid and are used on tests
+                command: |
+                  bash <(curl -Ls https://coverage.codacy.com/get.sh) report -l Scala -r "**/cobertura*.xml"
             - run:
                  name: Clean coverage.sbt from cache
                  command: rm coverage.sbt
