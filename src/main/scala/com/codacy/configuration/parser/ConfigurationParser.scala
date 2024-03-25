@@ -3,7 +3,7 @@ package com.codacy.configuration.parser
 import java.io.File
 import caseapp._
 import caseapp.core.Error
-import caseapp.core.app._
+import caseapp.core.app
 import caseapp.core.argparser.ArgParser
 import com.codacy.api.OrganizationProvider
 import com.codacy.configuration.parser.ConfigArgumentParsers._
@@ -12,14 +12,24 @@ import com.codacy.parsers.implementation._
 // Intellij keeps removing this import, I'll leave it here for future reference
 // import com.codacy.configuration.parser.ConfigArgumentParsers._
 
-abstract class ConfigurationParsingApp extends CommandAppWithPreCommand[BaseCommand, CommandConfiguration] {
-  override final def run(options: CommandConfiguration, remainingArgs: RemainingArgs): Unit = {
-    sys.exit(run(options))
+abstract class ConfigurationParsingApp extends app.CommandsEntryPoint { self =>
+
+  object ReportCommand extends app.Command[Report] {
+
+    def run(options: Report, remainingArgs: RemainingArgs): Unit =
+      sys.exit(self.run(options))
   }
 
-  def run(config: CommandConfiguration): Int
+  object FinalCommand extends app.Command[Final] {
 
-  override def beforeCommand(options: BaseCommand, remainingArgs: Seq[String]): Unit = ()
+    def run(options: Final, remainingArgs: RemainingArgs): Unit =
+      sys.exit(self.run(options))
+  }
+
+  def commands = Seq(ReportCommand, FinalCommand)
+  def progName: String = "codacy-coverage-reporter"
+
+  def run(config: CommandConfiguration): Int
 }
 
 @AppName("codacy-coverage-reporter")
