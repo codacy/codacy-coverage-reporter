@@ -229,10 +229,13 @@ workflows:
                command: sbt coverageAggregate
             - run:
                 name: Send coverage report to Codacy
+                # We send the report using the current revision of the reporter. This allows hotfixes to be deployed
+                # when the coverage-reporter is not working in production
+                #
                 # Specify only scala coverage reports, because coverage reporter is detecting coverage reports
                 # for other languages that are not valid and are used on tests
                 command: |
-                  bash <(curl -Ls https://coverage.codacy.com/get.sh) report -l Scala -r "**/cobertura*.xml"
+                  sbt "run report -l Scala -r \"**/cobertura*.xml\""
             - run:
                  name: Clean coverage.sbt from cache
                  command: rm coverage.sbt
