@@ -1,14 +1,12 @@
 package com.codacy.api.client
 
-import com.codacy.api.util.JsonOps
 import play.api.libs.json._
-import sttp.client3.{HttpURLConnectionBackend, SttpBackendOptions}
-import sttp.client3.quick._
+import com.codacy.api.util.JsonOps
+import scalaj.http.Http
 
 import java.net.URL
-import scala.concurrent.duration._
-import scala.util.control.NonFatal
 import scala.util.{Failure, Success, Try}
+import scala.util.control.NonFatal
 
 class CodacyClient(
     apiUrl: Option[String] = None,
@@ -40,24 +38,24 @@ class CodacyClient(
       sleepTime: Option[Int],
       numRetries: Option[Int]
   )(implicit reads: Reads[T]): RequestResponse[T] = {
+    val url = s"$remoteUrl/${request.endpoint}"
     try {
-      var req = quickRequest
-        .post(uri"$remoteUrl/${request.endpoint}".withParams(request.queryParameters))
-        .headers(tokens ++ Map("Content-Type" -> "application/json"))
-        .body(value)
+      val headers = tokens ++ Map("Content-Type" -> "application/json")
 
-      var options = SttpBackendOptions.Default
-
-      timeoutOpt.foreach { timeout =>
-        options = options.connectionTimeout(timeout.connTimeoutMs.millis)
-        req = req.readTimeout(timeout.readTimeoutMs.millis)
+      val httpRequest = timeoutOpt match {
+        case Some(timeout) =>
+          Http(url).timeout(connTimeoutMs = timeout.connTimeoutMs, readTimeoutMs = timeout.readTimeoutMs)
+        case None => Http(url)
       }
 
-      val client = simpleHttpClient.withBackend(HttpURLConnectionBackend(options = options))
+      val body = httpRequest
+        .params(request.queryParameters)
+        .headers(headers)
+        .postData(value)
+        .asString
+        .body
 
-      val response = client.send(req)
-
-      parseJsonAs[T](response.body) match {
+      parseJsonAs[T](body) match {
         case failure: FailedResponse =>
           retryPost(request, value, timeoutOpt, sleepTime, numRetries.map(x => x - 1), failure.message)
         case success => success
