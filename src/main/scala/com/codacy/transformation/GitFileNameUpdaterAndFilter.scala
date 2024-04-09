@@ -1,8 +1,11 @@
 package com.codacy.transformation
 import com.codacy.api.CoverageReport
+import com.codacy.transformation.FileNameMatcher.getFilenameFromPath
 import wvlet.log.LogSupport
 
-class GitFileNameUpdaterAndFilter(acceptableFileNames: Seq[String]) extends Transformation with LogSupport {
+class GitFileNameUpdaterAndFilter(acceptableFileNamesMap: Map[String, Seq[String]])
+    extends Transformation
+    with LogSupport {
   override def execute(report: CoverageReport): CoverageReport = {
     val fileReports = for {
       fileReport <- report.fileReports
@@ -15,7 +18,7 @@ class GitFileNameUpdaterAndFilter(acceptableFileNames: Seq[String]) extends Tran
 
   private def matchAndReturnName(filename: String): Option[String] = {
     val maybeFilename = FileNameMatcher
-      .matchAndReturnName(filename, acceptableFileNames)
+      .matchAndReturnName(filename, acceptableFileNamesMap.getOrElse(getFilenameFromPath(filename), Seq.empty))
 
     if (maybeFilename.isEmpty)
       logger

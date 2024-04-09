@@ -9,6 +9,7 @@ import com.codacy.parsers.CoverageParser
 import com.codacy.plugins.api.languages.Languages
 import com.codacy.rules.commituuid.CommitUUIDProvider
 import com.codacy.rules.file.GitFileFetcher
+import com.codacy.transformation.FileNameMatcher.getFilenameFromPath
 import com.codacy.transformation.{GitFileNameUpdaterAndFilter, PathPrefixer, Transformation}
 import wvlet.log.LogSupport
 
@@ -33,6 +34,7 @@ class ReportRules(coverageServices: => CoverageServices, gitFileFetcher: GitFile
       commitUUID: String
   ): Either[String, String] = {
     val finalConfig = config.copy(partial = partial)
+    val acceptableFileNames = gitFileFetcher.forCommit(commitUUID)
 
     files
       .map { file =>
@@ -42,7 +44,7 @@ class ReportRules(coverageServices: => CoverageServices, gitFileFetcher: GitFile
           report <- CoverageParser.parse(rootProjectDir, file, forceParser = config.forceCoverageParser).map {
             coverageResult =>
               logger.info(s"Coverage parser used is ${coverageResult.parser}")
-              transform(coverageResult.report)(finalConfig, commitUUID)
+              transform(coverageResult.report)(finalConfig, commitUUID, acceptableFileNames)
           }
           _ <- storeReport(report, file)
           language <- guessReportLanguage(finalConfig.languageOpt, report, file.getAbsolutePath)
@@ -323,15 +325,21 @@ class ReportRules(coverageServices: => CoverageServices, gitFileFetcher: GitFile
     }
   }
 
-  private def transform(report: CoverageReport)(config: ReportConfig, commitUUID: String): CoverageReport = {
-
-    val acceptableFileNames = gitFileFetcher.forCommit(commitUUID)
-
+  private def transform(
+      report: CoverageReport
+  )(config: ReportConfig, commitUUID: String, acceptableFileNames: Either[String, Seq[String]]): CoverageReport = {
     val transformations: Seq[Transformation] = acceptableFileNames
-      .fold(error => {
-        logger.warn(s"Report files will not be matched against git files, reason: $error")
-        Seq(new PathPrefixer(config.prefix))
-      }, filenames => Seq(new PathPrefixer(config.prefix), new GitFileNameUpdaterAndFilter(filenames)))
+      .fold(
+        error => {
+          logger.warn(s"Report files will not be matched against git files, reason: $error")
+          Seq(new PathPrefixer(config.prefix))
+        },
+        filenames =>
+          Seq(new PathPrefixer(config.prefix), {
+            val acceptableFileNamesMap = filenames.groupBy(getFilenameFromPath).view.toMap
+            new GitFileNameUpdaterAndFilter(acceptableFileNamesMap)
+          })
+      )
 
     transformations.foldLeft(report) { (report, transformation) =>
       transformation.execute(report)

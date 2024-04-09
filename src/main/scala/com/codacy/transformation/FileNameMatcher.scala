@@ -6,14 +6,13 @@ import scala.util.Try
 object FileNameMatcher {
 
   def matchAndReturnName(filename: String, fileNames: Seq[String]): Option[String] = {
-
     fileNames
       .filter(name => isTheSameFile(filename, name))
       .sortBy(name => Math.abs(filename.length - name.length))
       .headOption
   }
 
-  private def getFilenameFromPath(filename: String): String = {
+  def getFilenameFromPath(filename: String): String = {
     Try(Paths.get(filename).getFileName.toString).getOrElse(filename)
   }
 
