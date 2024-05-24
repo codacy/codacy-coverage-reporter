@@ -17,10 +17,10 @@ object FileNameMatcher {
   }
 
   private def haveSameName(file: String, covFile: String): Boolean =
-    getFilenameFromPath(file) == getFilenameFromPath(covFile)
+    getFilenameFromPath(file).equalsIgnoreCase(getFilenameFromPath(covFile))
 
   private def haveSamePath(file: String, covFile: String): Boolean =
-    file == covFile
+    file.equalsIgnoreCase(covFile)
 
   private def fileEndsWithReportPath(file: String, covFile: String): Boolean =
     file.endsWith(covFile)
