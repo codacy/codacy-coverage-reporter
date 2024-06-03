@@ -7,7 +7,7 @@ object FileNameMatcher {
 
   def matchAndReturnName(filename: String, fileNames: Seq[String]): Option[String] = {
     fileNames
-      .filter(name => isTheSameFile(filename, name))
+      .filter(name => isTheSameFile(filename.toLowerCase, name.toLowerCase))
       .sortBy(name => Math.abs(filename.length - name.length))
       .headOption
   }
@@ -17,16 +17,16 @@ object FileNameMatcher {
   }
 
   private def haveSameName(file: String, covFile: String): Boolean =
-    getFilenameFromPath(file).equalsIgnoreCase(getFilenameFromPath(covFile))
+    getFilenameFromPath(file) == getFilenameFromPath(covFile)
 
   private def haveSamePath(file: String, covFile: String): Boolean =
-    file.toLowerCase.equalsIgnoreCase(covFile.toLowerCase)
+    file == covFile
 
   private def fileEndsWithReportPath(file: String, covFile: String): Boolean =
-    file.toLowerCase.endsWith(covFile.toLowerCase)
+    file.endsWith(covFile)
 
   private def reportEndsWithFilePath(file: String, covFile: String): Boolean =
-    covFile.toLowerCase.endsWith(file.toLowerCase)
+    covFile.endsWith(file)
 
   private def isTheSameFile(file: String, covFile: String): Boolean = {
 
