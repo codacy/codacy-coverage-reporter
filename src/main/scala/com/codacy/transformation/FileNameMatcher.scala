@@ -13,7 +13,7 @@ object FileNameMatcher {
   }
 
   def getFilenameFromPath(filename: String): String = {
-    Try(Paths.get(filename).getFileName.toString).getOrElse(filename)
+    Try(Paths.get(filename).getFileName.toString.toLowerCase).getOrElse(filename.toLowerCase)
   }
 
   private def haveSameName(file: String, covFile: String): Boolean =
