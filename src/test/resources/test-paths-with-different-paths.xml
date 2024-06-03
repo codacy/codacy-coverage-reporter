@@ -11,13 +11,6 @@
                         <line number="6" hits="2"/>
                     </lines>
                 </class>
-                <class line-rate="0.87" name="TestSourceFile" filename="coverage-parser\src\test\resources\TeStSOuRcEfIle.scala">
-                    <methods/>
-                    <lines>
-                        <line number="9" hits="1"/>
-                        <line number="10" hits="1"/>
-                    </lines>
-                </class>
                 <class line-rate="0.87" name="TestSourceFile2" filename="coverage-parser\src\test\resources\TeStSOuRcEfIle2.scala">
                     <methods/>
                     <lines>
