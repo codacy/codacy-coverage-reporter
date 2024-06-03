@@ -7,20 +7,20 @@ object FileNameMatcher {
 
   def matchAndReturnName(filename: String, fileNames: Seq[String]): Option[String] = {
     fileNames
-      .filter(name => isTheSameFile(filename, name))
+      .filter(name => isTheSameFile(filename.toLowerCase, name.toLowerCase))
       .sortBy(name => Math.abs(filename.length - name.length))
       .headOption
   }
 
   def getFilenameFromPath(filename: String): String = {
-    Try(Paths.get(filename).getFileName.toString).getOrElse(filename)
+    Try(Paths.get(filename).getFileName.toString.toLowerCase).getOrElse(filename.toLowerCase)
   }
 
   private def haveSameName(file: String, covFile: String): Boolean =
-    getFilenameFromPath(file).equalsIgnoreCase(getFilenameFromPath(covFile))
+    getFilenameFromPath(file) == getFilenameFromPath(covFile)
 
   private def haveSamePath(file: String, covFile: String): Boolean =
-    file.equalsIgnoreCase(covFile)
+    file == covFile
 
   private def fileEndsWithReportPath(file: String, covFile: String): Boolean =
     file.endsWith(covFile)

@@ -165,6 +165,30 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
       )
     }
 
+    "succeed even if the provider paths and the report paths have different cases" in {
+      val coverageServices = mock[CoverageServices]
+      val gitFileFetcher = mock[GitFileFetcher]
+
+      gitFileFetcher.forCommit(any[String]).shouldReturn(Left("The report has files with different cases"))
+
+      coverageServices.sendReport(
+        any[String],
+        any[String],
+        any[CoverageReport],
+        anyBoolean,
+        Some(RequestTimeout(1000, 10000)),
+        Some(10000),
+        Some(3)
+      ) returns SuccessfulResponse(RequestSuccess("Success"))
+
+      assertCodacyCoverage(
+        coverageServices,
+        gitFileFetcher,
+        List("src/test/resources/test-paths-with-different-paths.xml"),
+        success = true
+      )
+    }
+
     "succeed even if one of the parsed reports ends up empty" in {
       val coverageServices = mock[CoverageServices]
       val gitFileFetcher = mock[GitFileFetcher]
