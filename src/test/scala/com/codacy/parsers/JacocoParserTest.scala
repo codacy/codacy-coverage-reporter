@@ -14,20 +14,20 @@ class JacocoParserTest extends AnyWordSpec with BeforeAndAfterAll with Matchers 
 
     "identify if report is invalid" in {
       val reader =
-        JacocoParser.parse(new File("."), new File("coverage-parser/src/test/resources/test_cobertura.xml"))
+        JacocoParser.parse(new File("."), new File("src/test/resources/test_cobertura.xml"))
       reader.isLeft shouldBe true
     }
 
     "identify if report is valid" in {
       val reader =
-        JacocoParser.parse(new File("."), new File("coverage-parser/src/test/resources/test_jacoco.xml"))
+        JacocoParser.parse(new File("."), new File("src/test/resources/test_jacoco.xml"))
       reader.isRight shouldBe true
     }
 
     "return a valid report" in {
 
       val reader = JacocoParser
-        .parse(new File("."), new File("coverage-parser/src/test/resources/test_jacoco.xml"))
+        .parse(new File("."), new File("src/test/resources/test_jacoco.xml"))
 
       val testReport = CoverageReport(
         List(

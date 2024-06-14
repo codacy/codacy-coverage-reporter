@@ -17,7 +17,7 @@ class GoParserTest extends AnyWordSpec with Matchers with EitherValues {
 
       "the report file does not exist" in {
         // Arrange
-        val nonExistentReportPath = "coverage-parser/src/test/resources/non-existent.xml"
+        val nonExistentReportPath = "src/test/resources/non-existent.xml"
 
         // Act
         val parseResult = GoParser.parse(new File("."), new File(nonExistentReportPath))
@@ -28,7 +28,7 @@ class GoParserTest extends AnyWordSpec with Matchers with EitherValues {
     }
 
     "return a valid report" in {
-      val reader = GoParser.parse(new File("."), new File("coverage-parser/src/test/resources/test_go.out"))
+      val reader = GoParser.parse(new File("."), new File("src/test/resources/test_go.out"))
 
       val testReport = CoverageReport(
         List(
@@ -44,9 +44,9 @@ class GoParserTest extends AnyWordSpec with Matchers with EitherValues {
 
     "return consistent values" in {
       //given two reports where the package names were only changed, should return the same results COV-207
-      val reader = GoParser.parse(new File("."), new File("coverage-parser/src/test/resources/go/original_package.out"))
+      val reader = GoParser.parse(new File("."), new File("src/test/resources/go/original_package.out"))
       val reader1 =
-        GoParser.parse(new File("."), new File("coverage-parser/src/test/resources/go/changed_package_name.out"))
+        GoParser.parse(new File("."), new File("src/test/resources/go/changed_package_name.out"))
 
       reader.value.fileReports(0).coverage should equal(reader1.value.fileReports(0).coverage)
     }
