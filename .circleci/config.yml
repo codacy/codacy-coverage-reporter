@@ -11,7 +11,7 @@ references:
 
 commands:
   run_coverage_reporting:
-    description: "Runs the coverage reporting using the stub-server as API"
+    description: "Runs the coverage reporting using the mock-server as API"
     parameters:
       executor:
         type: string
@@ -125,8 +125,8 @@ jobs:
           name: wait for mockserver
           command: wget --retry-connrefused --method=PUT http://localhost:1080/mockserver/status
       - run:
-          name: configure stub server
-          command: wget --method=PUT --body-data="$(cat integration-tests/stub-server-config.json)" http://localhost:1080/mockserver/expectation
+          name: configure mock server
+          command: wget --method=PUT --body-data="$(cat integration-tests/mock-server-config.json)" http://localhost:1080/mockserver/expectation
       - run_coverage_reporting:
           executor: sh
           error_code: 0
@@ -148,7 +148,7 @@ jobs:
           name: wait for mockserver
           command: timeout 60 bash -c 'while [[ "$(curl -X PUT -o /dev/null -w ''%{http_code}'' localhost:1080/mockserver/status)" != "200" ]]; do sleep 2; done' || false
       - run:
-          name: configure stub server
+          name: configure mock server
           command: curl -v -X PUT localhost:1080/mockserver/expectation -d "$(cat << parameters.config_path >>)"
       - run_coverage_reporting:
           executor: bash
@@ -174,7 +174,7 @@ jobs:
             echo "Start and provision the mockserver"
             nohup mockserver -logLevel INFO -serverPort 1080 &
             gtimeout 60 bash -c 'while [[ "$(curl -X PUT -o /dev/null -w ''%{http_code}'' localhost:1080/mockserver/status)" != "200" ]]; do sleep 2; done' || false
-            curl -X PUT -d "$(cat integration-tests/stub-server-config.json)" http://localhost:1080/mockserver/expectation
+            curl -X PUT -d "$(cat integration-tests/mock-server-config.json)" http://localhost:1080/mockserver/expectation
 
             echo "Run the test"
             set +e
@@ -288,13 +288,13 @@ workflows:
       - it_coverage_script_ubuntu:
           name: it_coverage_script_ubuntu_success
           error_code: 0
-          config_path: integration-tests/stub-server-config.json
+          config_path: integration-tests/mock-server-config.json
           requires:
             - package_artifacts
       - it_coverage_script_ubuntu:
           name: it_coverage_script_ubuntu_failure
           error_code: 1
-          config_path: integration-tests/stub-server-error-config.json
+          config_path: integration-tests/mock-server-error-config.json
           requires:
             - package_artifacts
       - codacy/shell:
