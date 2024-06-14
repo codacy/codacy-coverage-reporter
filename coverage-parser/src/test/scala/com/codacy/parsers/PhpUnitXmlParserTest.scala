@@ -3,9 +3,11 @@ package com.codacy.parsers
 import java.io.File
 
 import com.codacy.parsers.implementation.PhpUnitXmlParser
-import org.scalatest.{BeforeAndAfterAll, EitherValues, Matchers, WordSpec}
+import org.scalatest.{BeforeAndAfterAll, EitherValues}
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.matchers.should.Matchers
 
-class PhpUnitXmlParserTest extends WordSpec with BeforeAndAfterAll with Matchers with EitherValues {
+class PhpUnitXmlParserTest extends AnyWordSpec with BeforeAndAfterAll with Matchers with EitherValues {
   private val rootPath = "/home/codacy-php/"
   private val validReport = "coverage-parser/src/test/resources/phpunitxml/index.xml"
   private val incorrectReport = "coverage-parser/src/test/resources/phpunitxml/incorrect_index.xml"
@@ -18,14 +20,14 @@ class PhpUnitXmlParserTest extends WordSpec with BeforeAndAfterAll with Matchers
       "report file does not exist" in {
         val reader = PhpUnitXmlParser.parse(new File("."), new File(nonExistentReport))
 
-        reader shouldBe 'left
+        reader shouldBe Symbol("left")
       }
 
       "report file has a different format" in {
         // use some coverage file that does not follow the PHPUnit xml format
         val reader = PhpUnitXmlParser.parse(new File("."), new File(coberturaReport))
 
-        reader shouldBe 'left
+        reader shouldBe Symbol("left")
       }
 
       "report refers to non-existent file coverage report" in {
@@ -41,13 +43,12 @@ class PhpUnitXmlParserTest extends WordSpec with BeforeAndAfterAll with Matchers
       val reader = PhpUnitXmlParser
         .parse(new File(rootPath), new File(validReport))
 
-      reader shouldBe 'right
+      reader shouldBe Symbol("right")
     }
 
     "return a report with the expected number of files" in {
       val report = PhpUnitXmlParser
         .parse(new File(rootPath), new File(validReport))
-        .right
         .value
 
       report.fileReports.length shouldBe 10
@@ -56,7 +57,6 @@ class PhpUnitXmlParserTest extends WordSpec with BeforeAndAfterAll with Matchers
     "return a report with the expected file names" in {
       val report = PhpUnitXmlParser
         .parse(new File(rootPath), new File(validReport))
-        .right
         .value
 
       report.fileReports.map(_.filename).sorted shouldBe Seq(
@@ -76,7 +76,6 @@ class PhpUnitXmlParserTest extends WordSpec with BeforeAndAfterAll with Matchers
     "return a report with the expected line coverage" in {
       val report = PhpUnitXmlParser
         .parse(new File(rootPath), new File(validReport))
-        .right
         .value
 
       report.fileReports.find(_.filename.endsWith(configPhpFile)) match {

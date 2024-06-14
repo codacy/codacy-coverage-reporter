@@ -9,10 +9,12 @@ import com.codacy.di.Components
 import com.codacy.model.configuration.{BaseConfig, ProjectTokenAuthenticationConfig, ReportConfig}
 import com.codacy.plugins.api.languages.Languages
 import com.codacy.rules.file.GitFileFetcher
-import org.mockito.scalatest.IdiomaticMockito
 import org.scalatest._
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalamock.scalatest.MockFactory
 
-class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester with EitherValues with IdiomaticMockito {
+class ReportRulesSpec extends AnyWordSpec with Matchers with PrivateMethodTester with EitherValues with MockFactory {
   val projToken = "1234adasdsdw333"
   val coverageFiles = List(new File("coverage.xml"))
   val apiBaseUrl = "https://api.codacy.com"
@@ -26,7 +28,7 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
   val noLanguageReport = CoverageReport(Seq.empty[CoverageFileReport])
 
   val configRules = new ConfigurationRules(conf, sys.env)
-  val validatedConfig = configRules.validatedConfig.right.value
+  val validatedConfig = configRules.validatedConfig.value
 
   val components = new Components(validatedConfig)
 
@@ -67,22 +69,22 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
           reportRules.codacyCoverage(reportConfig)
       }
 
-      result should be(if (success) 'right else 'left)
+      result should be(if (success) Symbol("right") else Symbol("left"))
     }
 
     "fail" when {
       "it finds no report file" in {
-        val coverageServices = mock[CoverageServices]
-        val gitFileFetcher = mock[GitFileFetcher]
+        val coverageServices = stub[CoverageServices]
+        val gitFileFetcher = stub[GitFileFetcher]
 
         assertCodacyCoverage(coverageServices, gitFileFetcher, List(), success = false, projectFiles = Some(List.empty))
       }
 
       "it is not able to parse report file" in {
-        val coverageServices = mock[CoverageServices]
-        val gitFileFetcher = mock[GitFileFetcher]
+        val coverageServices = stub[CoverageServices]
+        val gitFileFetcher = stub[GitFileFetcher]
 
-        gitFileFetcher.forCommit(any[String]).shouldReturn(Right(Seq.empty))
+        (gitFileFetcher.forCommit _).when(*).returns(Right(Seq.empty))
 
         assertCodacyCoverage(
           coverageServices,
@@ -93,20 +95,14 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
       }
 
       "cannot send report" in {
-        val coverageServices = mock[CoverageServices]
-        val gitFileFetcher = mock[GitFileFetcher]
+        val coverageServices = stub[CoverageServices]
+        val gitFileFetcher = stub[GitFileFetcher]
 
-        gitFileFetcher.forCommit(any[String]).shouldReturn(Right(Seq("src/Coverage/FooBar.cs")))
+        (gitFileFetcher.forCommit _).when(*).returns(Right(Seq("src/Coverage/FooBar.cs")))
 
-        coverageServices.sendReport(
-          any[String],
-          any[String],
-          any[CoverageReport],
-          anyBoolean,
-          Some(RequestTimeout(1000, 10000)),
-          Some(10000),
-          Some(3)
-        ) returns FailedResponse("Failed to send report")
+        (coverageServices.sendReport _)
+          .when(*, *, *, *, Some(RequestTimeout(1000, 10000)), Some(10000), Some(3))
+          .returns(FailedResponse("Failed to send report"))
 
         assertCodacyCoverage(
           coverageServices,
@@ -118,20 +114,14 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
     }
 
     "succeed if it can parse and send the report, able to get git files" in {
-      val coverageServices = mock[CoverageServices]
-      val gitFileFetcher = mock[GitFileFetcher]
+      val coverageServices = stub[CoverageServices]
+      val gitFileFetcher = stub[GitFileFetcher]
 
-      gitFileFetcher.forCommit(any[String]).shouldReturn(Right(Seq("src/Coverage/FooBar.cs")))
+      (gitFileFetcher.forCommit _).when(*).returns(Right(Seq("src/Coverage/FooBar.cs")))
 
-      coverageServices.sendReport(
-        any[String],
-        any[String],
-        any[CoverageReport],
-        anyBoolean,
-        Some(RequestTimeout(1000, 10000)),
-        Some(10000),
-        Some(3)
-      ) returns SuccessfulResponse(RequestSuccess("Success"))
+      (coverageServices.sendReport _)
+        .when(*, *, *, *, Some(RequestTimeout(1000, 10000)), Some(10000), Some(3))
+        .returns(SuccessfulResponse(RequestSuccess("Success")))
 
       assertCodacyCoverage(
         coverageServices,
@@ -142,20 +132,14 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
     }
 
     "succeed if it can parse and send the report, unable to get git files" in {
-      val coverageServices = mock[CoverageServices]
-      val gitFileFetcher = mock[GitFileFetcher]
+      val coverageServices = stub[CoverageServices]
+      val gitFileFetcher = stub[GitFileFetcher]
 
-      gitFileFetcher.forCommit(any[String]).shouldReturn(Left("Unable to fetch Git Files"))
+      (gitFileFetcher.forCommit _).when(*).returns(Left("Unable to fetch Git Files"))
 
-      coverageServices.sendReport(
-        any[String],
-        any[String],
-        any[CoverageReport],
-        anyBoolean,
-        Some(RequestTimeout(1000, 10000)),
-        Some(10000),
-        Some(3)
-      ) returns SuccessfulResponse(RequestSuccess("Success"))
+      (coverageServices.sendReport _)
+        .when(*, *, *, *, Some(RequestTimeout(1000, 10000)), Some(10000), Some(3))
+        .returns(SuccessfulResponse(RequestSuccess("Success")))
 
       assertCodacyCoverage(
         coverageServices,
@@ -166,20 +150,16 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
     }
 
     "succeed even if the provider paths and the report paths have different cases" in {
-      val coverageServices = mock[CoverageServices]
-      val gitFileFetcher = mock[GitFileFetcher]
+      val coverageServices = stub[CoverageServices]
+      val gitFileFetcher = stub[GitFileFetcher]
 
-      gitFileFetcher.forCommit(any[String]).shouldReturn(Left("The report has files with different cases"))
+      (gitFileFetcher.forCommit _)
+        .when(*)
+        .returns(Left("The report has files with different cases"))
 
-      coverageServices.sendReport(
-        any[String],
-        any[String],
-        any[CoverageReport],
-        anyBoolean,
-        Some(RequestTimeout(1000, 10000)),
-        Some(10000),
-        Some(3)
-      ) returns SuccessfulResponse(RequestSuccess("Success"))
+      (coverageServices.sendReport _)
+        .when(*, *, *, *, Some(RequestTimeout(1000, 10000)), Some(10000), Some(3))
+        .returns(SuccessfulResponse(RequestSuccess("Success")))
 
       assertCodacyCoverage(
         coverageServices,
@@ -190,25 +170,18 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
     }
 
     "succeed even if one of the parsed reports ends up empty" in {
-      val coverageServices = mock[CoverageServices]
-      val gitFileFetcher = mock[GitFileFetcher]
+      val coverageServices = stub[CoverageServices]
+      val gitFileFetcher = stub[GitFileFetcher]
 
-      gitFileFetcher.forCommit(any[String]).shouldReturn(Right(Seq("src/Coverage/FooBar.cs")))
+      (gitFileFetcher.forCommit _).when(*).returns(Right(Seq("src/Coverage/FooBar.cs")))
 
-      coverageServices.sendReport(
-        any[String],
-        any[String],
-        any[CoverageReport],
-        anyBoolean,
-        Some(RequestTimeout(1000, 10000)),
-        Some(10000),
-        Some(3)
-      ) returns SuccessfulResponse(RequestSuccess("Success"))
+      (coverageServices.sendReport _)
+        .when(*, *, *, *, Some(RequestTimeout(1000, 10000)), Some(10000), Some(3))
+        .returns(SuccessfulResponse(RequestSuccess("Success")))
 
-      coverageServices
-        .sendFinalNotification(any[String], Some(RequestTimeout(1000, 10000)), Some(10000), Some(3)) returns SuccessfulResponse(
-        RequestSuccess("Success")
-      )
+      (coverageServices.sendFinalNotification _)
+        .when(*, Some(RequestTimeout(1000, 10000)), Some(10000), Some(3))
+        .returns(SuccessfulResponse(RequestSuccess("Success")))
 
       assertCodacyCoverage(
         coverageServices,
@@ -239,16 +212,16 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
         reportFilePath = "I/am/a/file.extension"
       )
 
-      langEither should be('right)
-      langEither.right.value should be(conf.language.get)
+      langEither should be(Symbol("right"))
+      langEither.value should be(conf.language.get)
     }
 
     "provide the Scala language from report" in {
       val langEither = components.reportRules
         .guessReportLanguage(languageOpt = None, report = coverageReport, reportFilePath = "I/am/a/file.extension")
 
-      langEither should be('right)
-      langEither.right.value should be(Languages.Scala.name)
+      langEither should be(Symbol("right"))
+      langEither.value should be(Languages.Scala.name)
     }
 
     "not provide the language from an empty report" in {
@@ -256,7 +229,7 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
         languageOpt = None,
         report = noLanguageReport,
         reportFilePath = "I/am/a/file.extension"
-      ) should be('left)
+      ) should be(Symbol("left"))
     }
   }
 
@@ -265,15 +238,15 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
       val projectFiles = List(new File("jacoco-coverage.xml"), new File("foobar.txt"))
       val reportEither = components.reportRules.guessReportFiles(List.empty[File], projectFiles)
 
-      reportEither should be('right)
-      reportEither.right.value.map(_.toString) should be(List("jacoco-coverage.xml"))
+      reportEither should be(Symbol("right"))
+      reportEither.value.map(_.toString) should be(List("jacoco-coverage.xml"))
     }
 
     "not provide a report file" in {
       val projectFiles = List(new File("foobar.txt"))
       val reportEither = components.reportRules.guessReportFiles(List.empty[File], projectFiles)
 
-      reportEither should be('left)
+      reportEither should be(Symbol("left"))
     }
 
     "provide the available report file" in {
@@ -281,16 +254,16 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
       val projectFiles = new File("coverage.xml") :: new File("other.xml") :: Nil
       val reportEither = components.reportRules.guessReportFiles(files = files, projectFiles = projectFiles)
 
-      reportEither should be('right)
-      reportEither.right.value should be(files)
+      reportEither should be(Symbol("right"))
+      reportEither.value should be(files)
     }
 
     "only provide phpunit report file inside coverage-xml" in {
       val projectFiles = List(new File("index.xml"), new File("coverage-xml", "index.xml"))
       val reportEither = components.reportRules.guessReportFiles(List.empty, projectFiles)
 
-      reportEither should be('right)
-      reportEither.right.value should be(List(new File("coverage-xml", "index.xml")))
+      reportEither should be(Symbol("right"))
+      reportEither.value should be(List(new File("coverage-xml", "index.xml")))
     }
 
     "find an lcov report" in {
@@ -298,8 +271,8 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
         List(new File("lcov.info"), new File("lcov.dat"), new File("foo.lcov"), new File("foobar.txt"))
       val reportEither = components.reportRules.guessReportFiles(List.empty[File], projectFiles)
 
-      reportEither should be('right)
-      reportEither.right.value.map(_.toString) should be(List("lcov.info", "lcov.dat", "foo.lcov"))
+      reportEither should be(Symbol("right"))
+      reportEither.value.map(_.toString) should be(List("lcov.info", "lcov.dat", "foo.lcov"))
     }
 
     "support file globs" in {
@@ -307,15 +280,15 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
         List(new File("foo.lcov"), new File("lcov.info"), new File("bar.lcov"), new File("foobar.txt"))
       val reportEither = components.reportRules.guessReportFiles(new File("*.lcov") :: Nil, projectFiles)
 
-      reportEither should be('right)
-      reportEither.right.value.map(_.toString) should be(List("foo.lcov", "bar.lcov"))
+      reportEither should be(Symbol("right"))
+      reportEither.value.map(_.toString) should be(List("foo.lcov", "bar.lcov"))
     }
 
     "return files untouched when glob doesn't find anything" in {
       val reportEither = components.reportRules.guessReportFiles(new File("unexisting.xml") :: Nil, projectFiles = Nil)
 
-      reportEither should be('right)
-      reportEither.right.value.map(_.toString) should be(List("unexisting.xml"))
+      reportEither should be(Symbol("right"))
+      reportEither.value.map(_.toString) should be(List("unexisting.xml"))
     }
 
     "support file globs with directories" in {
@@ -328,8 +301,8 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
         )
       val reportEither = components.reportRules.guessReportFiles(new File("**/*.xml") :: Nil, projectFiles)
 
-      reportEither should be('right)
-      reportEither.right.value.map(_.toString) should be(List("target/dir1/coverage.xml", "dir2/other.xml"))
+      reportEither should be(Symbol("right"))
+      reportEither.value.map(_.toString) should be(List("target/dir1/coverage.xml", "dir2/other.xml"))
     }
 
     "remove duplicates when using file globs" in {
@@ -337,8 +310,8 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
       val reportEither =
         components.reportRules.guessReportFiles(new File("*.xml") :: new File("coverage.xml") :: Nil, projectFiles)
 
-      reportEither should be('right)
-      reportEither.right.value.map(_.toString) should be(List("coverage.xml"))
+      reportEither should be(Symbol("right"))
+      reportEither.value.map(_.toString) should be(List("coverage.xml"))
     }
   }
 
@@ -348,7 +321,7 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
         val file = new File("not-exist.xml")
         val result = components.reportRules.validateFileAccess(file)
 
-        result should be('left)
+        result should be(Symbol("left"))
       }
 
       "file does not have read access" in {
@@ -358,7 +331,7 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
         file.deleteOnExit()
 
         val result = components.reportRules.validateFileAccess(file)
-        result should be('left)
+        result should be(Symbol("left"))
       }
     }
 
@@ -368,7 +341,7 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
       file.deleteOnExit()
 
       val result = components.reportRules.validateFileAccess(file)
-      result should be('right)
+      result should be(Symbol("right"))
     }
   }
 
@@ -378,7 +351,7 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
       val tempFile = File.createTempFile("storeReport", "not-store")
       val result = components.reportRules.storeReport(emptyReport, tempFile)
 
-      result should be('left)
+      result should be(Symbol("left"))
     }
 
     "successfully store report" when {
@@ -390,13 +363,13 @@ class ReportRulesSpec extends WordSpec with Matchers with PrivateMethodTester wi
 
       "store is successful" in {
         val result = storeValidReport()
-        result should be('right)
+        result should be(Symbol("right"))
       }
 
       "store report exists" in {
         val result = storeValidReport()
-        val resultFile = new File(result.right.value)
-        resultFile should be('exists)
+        val resultFile = new File(result.value)
+        resultFile should be(Symbol("exists"))
       }
     }
   }

@@ -2,9 +2,10 @@ package com.codacy.transformation
 
 import com.codacy.api.{CoverageFileReport, CoverageReport}
 import com.codacy.transformation.FileNameMatcher.getFilenameFromPath
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.matchers.should.Matchers
 
-class GitFileNameUpdaterAndFilterSpec extends WordSpec with Matchers {
+class GitFileNameUpdaterAndFilterSpec extends AnyWordSpec with Matchers {
 
   private val acceptableFilenames =
     Seq("src/folder/file1.txt", "src/another-folder/file1.txt", "src/folder/file2.txt", "src/folder/file3.txt")

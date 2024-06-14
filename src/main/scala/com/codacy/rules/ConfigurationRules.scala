@@ -146,7 +146,8 @@ class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, S
 
       val help = if (!config.codacyApiBaseUrl.startsWith("http")) {
         "Maybe you forgot the http:// or https:// ?"
-      }
+      } else ""
+
       Left(s"""|$error
                |$help""".stripMargin)
 

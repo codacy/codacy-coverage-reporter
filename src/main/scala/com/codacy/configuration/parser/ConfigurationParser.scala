@@ -67,18 +67,18 @@ case class Report(
     @Recurse
     baseConfig: BaseCommandConfig,
     @Name("l") @ValueDescription("language associated with your coverage report")
-    language: Option[String],
+    language: Option[String] = None,
     @Hidden @Name("f")
     forceLanguage: Int @@ Counter = Tag.of(0),
     @Name("r") @ValueDescription("your project coverage file name (supports globs)")
-    coverageReports: Option[List[File]],
+    coverageReports: Option[List[File]] = None,
     @ValueDescription("if the report is partial")
     partial: Int @@ Counter = Tag.of(0),
     @ValueDescription("the project path prefix")
-    prefix: Option[String],
+    prefix: Option[String] = None,
     @ValueDescription("your coverage parser")
     @HelpMessage(s"Available parsers are: ${ConfigArgumentParsers.parsersMap.keys.mkString(",")}")
-    forceCoverageParser: Option[CoverageParser]
+    forceCoverageParser: Option[CoverageParser] = None
 ) extends CommandConfiguration {
   val partialValue: Boolean = partial.## > 0
   val forceLanguageValue: Boolean = forceLanguage.## > 0
@@ -86,19 +86,19 @@ case class Report(
 
 case class BaseCommandConfig(
     @Name("t") @ValueDescription("your project API token")
-    projectToken: Option[String],
+    projectToken: Option[String] = None,
     @Name("a") @ValueDescription("your account api token")
-    apiToken: Option[String],
+    apiToken: Option[String] = None,
     @ValueDescription("organization provider")
-    organizationProvider: Option[OrganizationProvider.Value],
+    organizationProvider: Option[OrganizationProvider.Value] = None,
     @Name("u") @ValueDescription("your username")
-    username: Option[String],
+    username: Option[String] = None,
     @Name("p") @ValueDescription("project name")
-    projectName: Option[String],
+    projectName: Option[String] = None,
     @ValueDescription("the base URL for the Codacy API")
-    codacyApiBaseUrl: Option[String],
+    codacyApiBaseUrl: Option[String] = None,
     @ValueDescription("your commit SHA-1 hash")
-    commitUUID: Option[String],
+    commitUUID: Option[String] = None,
     @ValueDescription(
       "Sets a specified read timeout value, in milliseconds, to be used when interacting with Codacy API. By default, the value is 10 seconds"
     )

@@ -3,9 +3,11 @@ package com.codacy.parsers
 import java.io.File
 
 import com.codacy.api.{CoverageFileReport, CoverageReport}
-import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpec}
+import org.scalatest.{BeforeAndAfterAll}
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.matchers.should.Matchers
 
-class CoverageParserFactoryTest extends WordSpec with BeforeAndAfterAll with Matchers {
+class CoverageParserFactoryTest extends AnyWordSpec with BeforeAndAfterAll with Matchers {
 
   "CoverageParserFactory" should {
 

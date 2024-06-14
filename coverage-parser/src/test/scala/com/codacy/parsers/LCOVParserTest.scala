@@ -4,9 +4,11 @@ import java.io.File
 
 import com.codacy.api._
 import com.codacy.parsers.implementation.LCOVParser
-import org.scalatest.{BeforeAndAfterAll, EitherValues, Matchers, WordSpec}
+import org.scalatest.{BeforeAndAfterAll, EitherValues}
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.matchers.should.Matchers
 
-class LCOVParserTest extends WordSpec with BeforeAndAfterAll with Matchers with EitherValues {
+class LCOVParserTest extends AnyWordSpec with BeforeAndAfterAll with Matchers with EitherValues {
 
   "LCOVParser" should {
 
@@ -43,7 +45,7 @@ class LCOVParserTest extends WordSpec with BeforeAndAfterAll with Matchers with 
         )
       )
 
-      reader.right.value should equal(testReport)
+      reader.value should equal(testReport)
     }
 
   }

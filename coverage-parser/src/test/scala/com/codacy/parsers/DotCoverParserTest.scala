@@ -4,9 +4,11 @@ import java.io.File
 
 import com.codacy.api.{CoverageFileReport, CoverageReport}
 import com.codacy.parsers.implementation.DotcoverParser
-import org.scalatest.{BeforeAndAfterAll, EitherValues, Matchers, WordSpec}
+import org.scalatest.{BeforeAndAfterAll, EitherValues}
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.matchers.should.Matchers
 
-class DotCoverParserTest extends WordSpec with BeforeAndAfterAll with Matchers with EitherValues {
+class DotCoverParserTest extends AnyWordSpec with BeforeAndAfterAll with Matchers with EitherValues {
   private val nonExistentFile = "coverage-parser/src/test/resources/non-existent.xml"
   private val dotCoverReport = "coverage-parser/src/test/resources/test_dotcover.xml"
   private val differentFormatReport = "coverage-parser/src/test/resources/test_cobertura.xml"
@@ -15,25 +17,25 @@ class DotCoverParserTest extends WordSpec with BeforeAndAfterAll with Matchers w
       "report file does not exist" in {
         val reader = DotcoverParser.parse(new File("."), new File(nonExistentFile))
 
-        reader shouldBe 'left
+        reader shouldBe Symbol("left")
       }
 
       "report file has a different format" in {
         val reader = DotcoverParser.parse(new File("."), new File(differentFormatReport))
 
-        reader shouldBe 'left
+        reader shouldBe Symbol("left")
       }
     }
 
     "return a valid report" in {
       val reader = DotcoverParser.parse(new File("."), new File(dotCoverReport))
 
-      reader shouldBe 'right
+      reader shouldBe Symbol("right")
     }
 
     "return the expected files" in {
       val reader = DotcoverParser.parse(new File("."), new File(dotCoverReport))
-      reader.right.value.fileReports.map(_.filename).sorted shouldBe Seq(
+      reader.value.fileReports.map(_.filename).sorted shouldBe Seq(
         "src/Coverage/FooBar.cs",
         "src/Tests/FooBarTests.cs",
         "src/Coverage/Program.cs",
@@ -45,7 +47,7 @@ class DotCoverParserTest extends WordSpec with BeforeAndAfterAll with Matchers w
     "return the expected coverage report" in {
       val reader = DotcoverParser.parse(new File("."), new File(dotCoverReport))
 
-      reader.right.value shouldBe CoverageReport(
+      reader.value shouldBe CoverageReport(
         List(
           CoverageFileReport(
             "src/Coverage/FooBar.cs",

@@ -3,9 +3,11 @@ package com.codacy.parsers
 import java.io.File
 
 import com.codacy.parsers.implementation.CloverParser
-import org.scalatest.{EitherValues, Matchers, WordSpec}
+import org.scalatest.EitherValues
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class CloverParserTest extends WordSpec with Matchers with EitherValues {
+class CloverParserTest extends AnyWordSpec with Matchers with EitherValues {
 
   "parse" should {
 
@@ -46,7 +48,7 @@ class CloverParserTest extends WordSpec with Matchers with EitherValues {
         val parseResult = CloverParser.parse(new File("."), new File(cloverReportPath))
 
         // Assert
-        parseResult shouldBe 'right
+        parseResult shouldBe Symbol("right")
       }
 
       "the report does not have packages" in {
@@ -55,7 +57,7 @@ class CloverParserTest extends WordSpec with Matchers with EitherValues {
           .parse(new File("/home/codacy-php/"), new File(cloverWithoutPackagesFilePath))
 
         // Assert
-        parseResult shouldBe 'right
+        parseResult shouldBe Symbol("right")
       }
 
     }
@@ -70,7 +72,6 @@ class CloverParserTest extends WordSpec with Matchers with EitherValues {
         val parsedReportFilePaths =
           CloverParser
             .parse(new File("/Users/username/workspace/repository"), cloverWithPaths)
-            .right
             .value
             .fileReports
             .map(_.filename)
@@ -98,7 +99,7 @@ class CloverParserTest extends WordSpec with Matchers with EitherValues {
 
       // Act
       val fileReports =
-        CloverParser.parse(new File("/home/codacy-php/"), new File(cloverReportPath)).right.value.fileReports
+        CloverParser.parse(new File("/home/codacy-php/"), new File(cloverReportPath)).value.fileReports
 
       // Assert
       fileReports should have length expectedNumberOfFiles
@@ -118,7 +119,6 @@ class CloverParserTest extends WordSpec with Matchers with EitherValues {
       val parsedReportFilePaths =
         CloverParser
           .parse(new File("/home/codacy-php/"), new File(cloverReportPath))
-          .right
           .value
           .fileReports
           .map(_.filename)
@@ -135,7 +135,6 @@ class CloverParserTest extends WordSpec with Matchers with EitherValues {
       val fileLineCoverage =
         CloverParser
           .parse(new File("/home/codacy-php/"), new File(cloverReportPath))
-          .right
           .value
           .fileReports
           .find(_.filename == filePath)

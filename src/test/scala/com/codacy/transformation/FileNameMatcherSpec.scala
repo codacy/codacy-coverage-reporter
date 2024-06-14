@@ -1,8 +1,10 @@
 package com.codacy.transformation
 
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.OptionValues
 
-class FileNameMatcherSpec extends WordSpec with Matchers {
+class FileNameMatcherSpec extends AnyWordSpec with Matchers with OptionValues {
 
   "matchAndReturnName" should {
     "return name from closest match" in {
@@ -15,7 +17,7 @@ class FileNameMatcherSpec extends WordSpec with Matchers {
 
       // ASSERT
       newFilename.isDefined shouldBe true
-      newFilename.leftSideValue shouldBe Some("src/folder/package/file.txt")
+      newFilename.value shouldBe "src/folder/package/file.txt"
     }
 
     "return empty when name doesn't match any filenames" in {
