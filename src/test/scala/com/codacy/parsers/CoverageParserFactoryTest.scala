@@ -23,9 +23,7 @@ class CoverageParserFactoryTest extends AnyWordSpec with BeforeAndAfterAll with 
       )
 
       CoverageParser
-        .parse(new File("."), new File("src/test/resources/test_cobertura.xml")) shouldEqual Right(
-        expectedReport
-      )
+        .parse(new File("."), new File("src/test/resources/test_cobertura.xml")) shouldEqual Right(expectedReport)
     }
 
     "get report with jacoco parser" in {
@@ -40,9 +38,7 @@ class CoverageParserFactoryTest extends AnyWordSpec with BeforeAndAfterAll with 
       )
 
       CoverageParser
-        .parse(new File("."), new File("src/test/resources/test_jacoco.xml")) shouldEqual Right(
-        expectedReport
-      )
+        .parse(new File("."), new File("src/test/resources/test_jacoco.xml")) shouldEqual Right(expectedReport)
     }
 
     "fail to get invalid report" in {
