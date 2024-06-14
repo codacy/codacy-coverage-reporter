@@ -15,7 +15,7 @@ import wvlet.log.LogSupport
 
 import java.io.File
 import java.nio.file.{FileSystems, Files}
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 class ReportRules(coverageServices: => CoverageServices, gitFileFetcher: GitFileFetcher) extends LogSupport {
 

@@ -7,7 +7,7 @@ case class CoverageFileReport(filename: String, coverage: Map[Int, Int])
 case class CoverageReport(fileReports: Seq[CoverageFileReport])
 
 object CoverageReport {
-  implicit val mapWrites: Writes[Map[Int, Int]] = Writes[Map[Int, Int]] { map: Map[Int, Int] =>
+  implicit val mapWrites: Writes[Map[Int, Int]] = Writes[Map[Int, Int]] { (map: Map[Int, Int]) =>
     JsObject(map.map {
       case (key, value) => (key.toString, JsNumber(value))
     })

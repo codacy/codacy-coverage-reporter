@@ -32,7 +32,7 @@ object CloverParser extends CoverageParser with XmlReportParser {
     val coverageFiles = (report \\ "file").foldLeft[Either[String, Seq[CoverageFileReport]]](Right(List())) {
       case (Right(accumulatedFileReports), fileTag) =>
         val fileReport = getCoverageFileReport(rootPath, fileTag)
-        fileReport.right.map(_ +: accumulatedFileReports)
+        fileReport.map(_ +: accumulatedFileReports)
 
       case (Left(errorMessage), _) => Left(errorMessage)
     }
@@ -76,7 +76,7 @@ object CloverParser extends CoverageParser with XmlReportParser {
           lineNumber <- getFirstNonEmptyValueAsInt(Seq(line), "num")
           countOfExecutions <- getFirstNonEmptyValueAsInt(Seq(line), "count")
         } yield (lineNumber, countOfExecutions)
-        lineCoverage.right.map(lines + _)
+        lineCoverage.map(lines + _)
 
       case (accumulated, _) => accumulated
     }

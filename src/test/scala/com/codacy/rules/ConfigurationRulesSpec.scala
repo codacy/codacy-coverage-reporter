@@ -7,10 +7,12 @@ import com.codacy.model.configuration.ReportConfig
 import com.codacy.plugins.api.languages.Languages
 import org.scalatest.Inside._
 import org.scalatest._
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.matchers.should.Matchers
 
 import java.io.File
 
-class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues with EitherValues {
+class ConfigurationRulesSpec extends AnyWordSpec with Matchers with OptionValues with EitherValues {
 
   val projToken = "1234adasdsdw333"
   val coverageFiles = List(new File("coverage.xml"))
@@ -22,7 +24,7 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
     Report(baseConf, Some("Scala"), coverageReports = Some(coverageFiles), prefix = None, forceCoverageParser = None)
 
   val configRules = new ConfigurationRules(conf, Map.empty)
-  val validatedConfig = configRules.validatedConfig.right.value
+  val validatedConfig = configRules.validatedConfig.value
 
   val components = new Components(validatedConfig)
 
@@ -46,15 +48,15 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
 
     "validate report files" in {
       val filesNoneOption = configRules.validateReportFiles(None)
-      filesNoneOption should be('right)
-      filesNoneOption.right.value should be(List.empty[File])
+      filesNoneOption should be(Symbol("right"))
+      filesNoneOption.value should be(List.empty[File])
 
       val filesSomeInvalid = configRules.validateReportFiles(Some(List.empty[File]))
-      filesSomeInvalid should be('left)
+      filesSomeInvalid should be(Symbol("left"))
 
       val filesSomeValid = configRules.validateReportFiles(Some(coverageFiles))
-      filesSomeValid should be('right)
-      filesSomeValid.right.value should be(coverageFiles)
+      filesSomeValid should be(Symbol("right"))
+      filesSomeValid.value should be(coverageFiles)
     }
 
     "get an api base url" in {
@@ -72,7 +74,7 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
     "fail" when {
       def assertFailure(baseCommandConfig: BaseCommandConfig) = {
         val result = configRules.validateBaseConfig(baseCommandConfig)
-        result should be('left)
+        result should be(Symbol("left"))
         result
       }
 
@@ -181,7 +183,7 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
             Some("ad7ce1b9973d31a2794565f892b6ae4cab575d7c")
           )
         val result = configRules.validateBaseConfig(baseConfig)
-        result should be('right)
+        result should be(Symbol("right"))
       }
 
       "api token and required fields are used" in {
@@ -196,7 +198,7 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
             Some("ad7ce1b9973d31a2794565f892b6ae4cab575d7c")
           )
         val result = configRules.validateBaseConfig(baseConfig)
-        result should be('right)
+        result should be(Symbol("right"))
       }
 
       // it should use the project token only
@@ -212,7 +214,7 @@ class ConfigurationRulesSpec extends WordSpec with Matchers with OptionValues wi
             Some("ad7ce1b9973d31a2794565f892b6ae4cab575d7c")
           )
         val result = configRules.validateBaseConfig(baseConfig)
-        result should be('right)
+        result should be(Symbol("right"))
       }
     }
   }

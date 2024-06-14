@@ -1,23 +1,21 @@
-inThisBuild(
-  Seq(
-    scalaVersion := "2.13.13",
-    scalacOptions := Seq("-deprecation", "-feature", "-unchecked", "-Xlint", "-Xfatal-warnings")
-  )
-)
+inThisBuild(Seq(scalaVersion := "3.3.3"))
+
+def commonSettings =
+  Seq(scalacOptions := {
+    val toFilter = Set("-deprecation:false")
+    scalacOptions.value.filterNot(toFilter) ++ Seq("-deprecation")
+  })
 
 name := "codacy-coverage-reporter"
 
 // Runtime dependencies
 libraryDependencies ++= Seq(
-  "com.github.alexarchambault" %% "case-app" % "2.1.0-M26",
-  "org.wvlet.airframe" %% "airframe-log" % "22.3.0"
+  "com.github.alexarchambault" %% "case-app" % "2.1.0-M28",
+  "org.wvlet.airframe" %% "airframe-log" % "24.6.0"
 )
 
 // Test dependencies
-libraryDependencies ++= Seq(
-  "org.scalatest" %% "scalatest" % "3.0.8" % "it,test",
-  "org.mockito" %% "mockito-scala-scalatest" % "1.7.1" % Test
-)
+libraryDependencies ++= Seq(scalatest % "it,test", "org.scalamock" %% "scalamock" % "6.0.0" % Test)
 
 assembly / mainClass := Some("com.codacy.CodacyCoverageReporter")
 assembly / assemblyMergeStrategy := {
@@ -72,24 +70,30 @@ nativeImageOptions := Seq(
 
 dependsOn(coverageParser)
 
+commonSettings
+
+val scalatest = "org.scalatest" %% "scalatest" % "3.2.18"
+
 lazy val apiScala = project
   .in(file("api-scala"))
   .settings(
+    commonSettings,
     libraryDependencies ++= Seq(
-      "com.typesafe.play" %% "play-json" % "2.8.2",
-      "org.scalaj" %% "scalaj-http" % "2.4.2",
+      "com.typesafe.play" %% "play-json" % "2.10.5",
+      ("org.scalaj" %% "scalaj-http" % "2.4.2").cross(CrossVersion.for3Use2_13),
       "org.eclipse.jgit" % "org.eclipse.jgit" % "4.11.9.201909030838-r",
-      "org.scalatest" %% "scalatest" % "3.0.8" % Test
+      scalatest % Test
     )
   )
 
 lazy val coverageParser = project
   .in(file("coverage-parser"))
   .settings(
+    commonSettings,
     libraryDependencies ++= Seq(
-      "com.codacy" %% "codacy-plugins-api" % "5.2.0",
-      "org.scala-lang.modules" %% "scala-xml" % "1.2.0",
-      "org.scalatest" %% "scalatest" % "3.0.8" % Test
+      "com.codacy" %% "codacy-plugins-api" % "8.1.4",
+      "org.scala-lang.modules" %% "scala-xml" % "2.3.0",
+      scalatest % Test
     )
   )
   .dependsOn(apiScala)
@@ -102,6 +106,3 @@ ThisBuild / assemblyMergeStrategy := {
     val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
     oldStrategy(x)
 }
-
-// required to upgrade org.scoverage.sbt-scoverage.2.0.6
-ThisBuild / libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always

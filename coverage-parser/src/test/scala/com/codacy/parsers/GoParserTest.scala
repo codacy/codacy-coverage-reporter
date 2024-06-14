@@ -5,9 +5,11 @@ import java.io.File
 import com.codacy.api._
 
 import com.codacy.parsers.implementation.GoParser
-import org.scalatest.{EitherValues, Matchers, WordSpec}
+import org.scalatest.{EitherValues}
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.matchers.should.Matchers
 
-class GoParserTest extends WordSpec with Matchers with EitherValues {
+class GoParserTest extends AnyWordSpec with Matchers with EitherValues {
 
   "parse" should {
 
@@ -37,7 +39,7 @@ class GoParserTest extends WordSpec with Matchers with EitherValues {
         )
       )
 
-      reader.right.value should equal(testReport)
+      reader.value should equal(testReport)
     }
 
     "return consistent values" in {
@@ -46,7 +48,7 @@ class GoParserTest extends WordSpec with Matchers with EitherValues {
       val reader1 =
         GoParser.parse(new File("."), new File("coverage-parser/src/test/resources/go/changed_package_name.out"))
 
-      reader.right.value.fileReports(0).coverage should equal(reader1.right.value.fileReports(0).coverage)
+      reader.value.fileReports(0).coverage should equal(reader1.value.fileReports(0).coverage)
     }
   }
 }

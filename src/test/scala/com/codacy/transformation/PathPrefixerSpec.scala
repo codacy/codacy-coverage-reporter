@@ -2,8 +2,10 @@ package com.codacy.transformation
 
 import com.codacy.api.{CoverageFileReport, CoverageReport}
 import org.scalatest._
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.matchers.should.Matchers
 
-class PathPrefixerSpec extends WordSpec with Matchers {
+class PathPrefixerSpec extends AnyWordSpec with Matchers {
 
   val report = CoverageReport(
     Seq(CoverageFileReport("Filename.scala", Map.empty), CoverageFileReport("OtherFile.scala", Map.empty))

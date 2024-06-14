@@ -2,10 +2,11 @@ package com.codacy.api
 
 import com.codacy.api.helpers.vcs.GitClient
 import java.nio.file.Paths
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.OptionValues._
 
-class GitClientTest extends FlatSpec with Matchers {
+class GitClientTest extends AnyFlatSpec with Matchers {
 
   "GitClient" should "latestCommitUuid" in {
 
@@ -15,7 +16,7 @@ class GitClientTest extends FlatSpec with Matchers {
 
     latest shouldNot be(None)
 
-    latest.value shouldNot be('empty)
+    latest.value shouldNot be(Symbol("empty"))
   }
 
 }

@@ -4,9 +4,11 @@ import java.io.File
 
 import com.codacy.api.{CoverageFileReport, CoverageReport}
 import com.codacy.parsers.implementation.CoberturaParser
-import org.scalatest.{BeforeAndAfterAll, EitherValues, Matchers, WordSpec}
+import org.scalatest.{BeforeAndAfterAll, EitherValues}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class CoberturaParserTest extends WordSpec with BeforeAndAfterAll with Matchers with EitherValues {
+class CoberturaParserTest extends AnyWordSpec with BeforeAndAfterAll with Matchers with EitherValues {
 
   "CoberturaParser" should {
 
@@ -35,7 +37,7 @@ class CoberturaParserTest extends WordSpec with BeforeAndAfterAll with Matchers 
         )
       )
 
-      reader.right.value should equal(testReport)
+      reader.value should equal(testReport)
     }
 
     "not crash on thousands separators" in {
@@ -52,7 +54,7 @@ class CoberturaParserTest extends WordSpec with BeforeAndAfterAll with Matchers 
         )
       )
 
-      reader.right.value should equal(testReport)
+      reader.value should equal(testReport)
     }
 
     "return a valid report with windows file path separator" in {
@@ -69,7 +71,7 @@ class CoberturaParserTest extends WordSpec with BeforeAndAfterAll with Matchers 
         )
       )
 
-      reader.right.value should equal(testReport)
+      reader.value should equal(testReport)
     }
 
   }
