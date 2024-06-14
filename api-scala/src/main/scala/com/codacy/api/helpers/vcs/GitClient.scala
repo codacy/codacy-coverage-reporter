@@ -53,10 +53,9 @@ class GitClient(workDirectory: File) {
 
       val result: Seq[String] =
         if (treeWalk.next) {
-          Iterator
+          LazyList
             .continually(treeWalk.getPathString)
             .takeWhile(_ => treeWalk.next)
-            .toSeq
         } else Seq.empty
 
       result
