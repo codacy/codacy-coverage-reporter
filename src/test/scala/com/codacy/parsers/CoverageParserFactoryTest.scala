@@ -15,15 +15,15 @@ class CoverageParserFactoryTest extends AnyWordSpec with BeforeAndAfterAll with 
       val expectedReport = CoverageReport(
         List(
           CoverageFileReport(
-            "coverage-parser/src/test/resources/TestSourceFile.scala",
+            "src/test/resources/TestSourceFile.scala",
             Map(5 -> 1, 10 -> 1, 6 -> 2, 9 -> 1, 3 -> 0, 4 -> 1, 7 -> 1, 8 -> 3, 9 -> Int.MaxValue)
           ),
-          CoverageFileReport("coverage-parser/src/test/resources/TestSourceFile2.scala", Map(1 -> 1, 2 -> 1, 3 -> 1))
+          CoverageFileReport("src/test/resources/TestSourceFile2.scala", Map(1 -> 1, 2 -> 1, 3 -> 1))
         )
       )
 
       CoverageParser
-        .parse(new File("."), new File("coverage-parser/src/test/resources/test_cobertura.xml")) shouldEqual Right(
+        .parse(new File("."), new File("src/test/resources/test_cobertura.xml")) shouldEqual Right(
         expectedReport
       )
     }
@@ -40,7 +40,7 @@ class CoverageParserFactoryTest extends AnyWordSpec with BeforeAndAfterAll with 
       )
 
       CoverageParser
-        .parse(new File("."), new File("coverage-parser/src/test/resources/test_jacoco.xml")) shouldEqual Right(
+        .parse(new File("."), new File("src/test/resources/test_jacoco.xml")) shouldEqual Right(
         expectedReport
       )
     }

@@ -9,10 +9,10 @@ import org.scalatest.matchers.should.Matchers
 
 class PhpUnitXmlParserTest extends AnyWordSpec with BeforeAndAfterAll with Matchers with EitherValues {
   private val rootPath = "/home/codacy-php/"
-  private val validReport = "coverage-parser/src/test/resources/phpunitxml/index.xml"
-  private val incorrectReport = "coverage-parser/src/test/resources/phpunitxml/incorrect_index.xml"
-  private val coberturaReport = "coverage-parser/src/test/resources/test_cobertura.xml"
-  private val nonExistentReport = "coverage-parser/src/test/resources/non_existent_file.xml"
+  private val validReport = "src/test/resources/phpunitxml/index.xml"
+  private val incorrectReport = "src/test/resources/phpunitxml/incorrect_index.xml"
+  private val coberturaReport = "src/test/resources/test_cobertura.xml"
+  private val nonExistentReport = "src/test/resources/non_existent_file.xml"
   private val configPhpFile = "Config.php"
 
   "parse" should {

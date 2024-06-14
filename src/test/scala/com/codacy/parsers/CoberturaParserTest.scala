@@ -13,27 +13,27 @@ class CoberturaParserTest extends AnyWordSpec with BeforeAndAfterAll with Matche
   "CoberturaParser" should {
 
     "identify if report is invalid" in {
-      val reader = CoberturaParser.parse(new File("."), new File("coverage-parser/src/test/resources/test_jacoco.xml"))
+      val reader = CoberturaParser.parse(new File("."), new File("src/test/resources/test_jacoco.xml"))
       reader.isLeft shouldBe true
     }
 
     "identify if report is valid" in {
       val reader =
-        CoberturaParser.parse(new File("."), new File("coverage-parser/src/test/resources/test_cobertura.xml"))
+        CoberturaParser.parse(new File("."), new File("src/test/resources/test_cobertura.xml"))
       reader.isRight shouldBe true
     }
 
     "return a valid report" in {
       val reader =
-        CoberturaParser.parse(new File("."), new File("coverage-parser/src/test/resources/test_cobertura.xml"))
+        CoberturaParser.parse(new File("."), new File("src/test/resources/test_cobertura.xml"))
 
       val testReport = CoverageReport(
         List(
           CoverageFileReport(
-            "coverage-parser/src/test/resources/TestSourceFile.scala",
+            "src/test/resources/TestSourceFile.scala",
             Map(5 -> 1, 10 -> 1, 6 -> 2, 9 -> Int.MaxValue, 3 -> 0, 4 -> 1, 7 -> 1, 8 -> 3)
           ),
-          CoverageFileReport("coverage-parser/src/test/resources/TestSourceFile2.scala", Map(1 -> 1, 2 -> 1, 3 -> 1)),
+          CoverageFileReport("src/test/resources/TestSourceFile2.scala", Map(1 -> 1, 2 -> 1, 3 -> 1)),
         )
       )
 
@@ -42,15 +42,15 @@ class CoberturaParserTest extends AnyWordSpec with BeforeAndAfterAll with Matche
 
     "not crash on thousands separators" in {
       val reader =
-        CoberturaParser.parse(new File("."), new File("coverage-parser/src/test/resources/thousand_sep_cobertura.xml"))
+        CoberturaParser.parse(new File("."), new File("src/test/resources/thousand_sep_cobertura.xml"))
 
       val testReport = CoverageReport(
         List(
           CoverageFileReport(
-            "coverage-parser/src/test/resources/TestSourceFile.scala",
+            "src/test/resources/TestSourceFile.scala",
             Map(5 -> 1, 10 -> 1, 6 -> 2, 9 -> 1, 9 -> 0, 8 -> 1, 4 -> 1)
           ),
-          CoverageFileReport("coverage-parser/src/test/resources/TestSourceFile2.scala", Map(1 -> 1, 2 -> 1, 3 -> 1)),
+          CoverageFileReport("src/test/resources/TestSourceFile2.scala", Map(1 -> 1, 2 -> 1, 3 -> 1)),
         )
       )
 
@@ -59,15 +59,15 @@ class CoberturaParserTest extends AnyWordSpec with BeforeAndAfterAll with Matche
 
     "return a valid report with windows file path separator" in {
       val reader =
-        CoberturaParser.parse(new File("."), new File("coverage-parser/src/test/resources/windows_paths_cobertura.xml"))
+        CoberturaParser.parse(new File("."), new File("src/test/resources/windows_paths_cobertura.xml"))
 
       val testReport = CoverageReport(
         List(
           CoverageFileReport(
-            "coverage-parser/src/test/resources/TestSourceFile.scala",
+            "src/test/resources/TestSourceFile.scala",
             Map(5 -> 1, 10 -> 1, 6 -> 2, 9 -> 1, 3 -> 0, 4 -> 1)
           ),
-          CoverageFileReport("coverage-parser/src/test/resources/TestSourceFile2.scala", Map(1 -> 1, 2 -> 1, 3 -> 1)),
+          CoverageFileReport("src/test/resources/TestSourceFile2.scala", Map(1 -> 1, 2 -> 1, 3 -> 1)),
         )
       )
 

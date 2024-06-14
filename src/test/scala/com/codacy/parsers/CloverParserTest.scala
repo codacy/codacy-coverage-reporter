@@ -15,7 +15,7 @@ class CloverParserTest extends AnyWordSpec with Matchers with EitherValues {
 
       "the report file does not exist" in {
         // Arrange
-        val nonExistentReportPath = "coverage-parser/src/test/resources/non-existent.xml"
+        val nonExistentReportPath = "src/test/resources/non-existent.xml"
 
         // Act
         val parseResult = CloverParser.parse(new File("."), new File(nonExistentReportPath))
@@ -23,12 +23,12 @@ class CloverParserTest extends AnyWordSpec with Matchers with EitherValues {
         // Assert
         val error = parseResult.left.value
         error should startWith("Unparseable report. ")
-        error should endWith("coverage-parser/src/test/resources/non-existent.xml (No such file or directory)")
+        error should endWith("src/test/resources/non-existent.xml (No such file or directory)")
       }
 
       "the report is not in the Clover format" in {
         // Arrange
-        val reportNotInCloverFormat = "coverage-parser/src/test/resources/test_cobertura.xml"
+        val reportNotInCloverFormat = "src/test/resources/test_cobertura.xml"
 
         // Act
         val parseResult = CloverParser.parse(new File("."), new File(reportNotInCloverFormat))
@@ -38,8 +38,8 @@ class CloverParserTest extends AnyWordSpec with Matchers with EitherValues {
       }
     }
 
-    val cloverReportPath = "coverage-parser/src/test/resources/test_clover.xml"
-    val cloverWithoutPackagesFilePath = "coverage-parser/src/test/resources/test_clover_without_packages.xml"
+    val cloverReportPath = "src/test/resources/test_clover.xml"
+    val cloverWithoutPackagesFilePath = "src/test/resources/test_clover_without_packages.xml"
 
     "succeed to parse a valid report" when {
 
@@ -66,7 +66,7 @@ class CloverParserTest extends AnyWordSpec with Matchers with EitherValues {
 
       "reports contain both name and path attributes in file tags" in {
         // Arrange
-        val cloverWithPaths = new File("coverage-parser/src/test/resources/test_clover_with_paths.xml")
+        val cloverWithPaths = new File("src/test/resources/test_clover_with_paths.xml")
 
         // Act
         val parsedReportFilePaths =
