@@ -71,7 +71,8 @@ object CloverParser extends CoverageParser with XmlReportParser {
     fileLineTags.foldLeft[Either[String, Map[Int, Int]]](Right(Map.empty[Int, Int])) {
       case (left: Left[_, _], _) => left
 
-      case (Right(lines), line) if (line \@ "type") == "stmt" || (line \@ "type") == "cond" =>
+      case (Right(lines), line)
+          if ((line \@ "type") == "stmt" || (line \@ "type") == "cond") && (line \@ "count").nonEmpty =>
         val lineCoverage = for {
           lineNumber <- getFirstNonEmptyValueAsInt(Seq(line), "num")
           countOfExecutions <- getFirstNonEmptyValueAsInt(Seq(line), "count")

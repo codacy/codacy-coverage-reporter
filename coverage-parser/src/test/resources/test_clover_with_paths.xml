@@ -6,7 +6,7 @@
             <metrics statements="1164" coveredstatements="0" conditionals="20" coveredconditionals="0" methods="20" coveredmethods="0"/>
             <file name="file.js" path="/Users/username/workspace/repository/src/app/file.js">
                 <metrics statements="9" coveredstatements="1" conditionals="1" coveredconditionals="0" methods="1" coveredmethods="0"/>
-                <line num="1" count="0" type="cond" truecount="0" falsecount="1"/>
+                <line num="1" type="cond" truecount="0" falsecount="1"/>
                 <line num="2" count="0" type="stmt"/>
                 <line num="3" count="0" type="stmt"/>
                 <line num="4" count="0" type="stmt"/>
