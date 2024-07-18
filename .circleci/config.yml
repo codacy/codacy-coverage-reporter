@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  codacy: codacy/base@10.10.1
+  codacy: codacy/base@12.1.1
 
 references:
   circleci_job: &circleci_job
@@ -95,7 +95,7 @@ jobs:
           at: ~/workdir
       - run: |
           mkdir -p ~/workdir/artifacts/
-          mv ~/workdir/tmp-artifacts/codacy-coverage-reporter-assembly.jar ~/workdir/artifacts/codacy-coverage-reporter-assembly.jar
+          mv ~/workdir/tmp-artifacts/codacy-coverage-reporter-assembly.jarvenstarde ~/workdir/artifacts/codacy-coverage-reporter-assembly.jar
           upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-linux ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux
           # upx binaries don't work on Mac OS Big Sur https://github.com/upx/upx/issues/424
           # use upx again once the bug is fixed
@@ -165,6 +165,7 @@ jobs:
           command: |
             brew install mockserver coreutils
             export CODACY_REPORTER_TMP_FOLDER=".codacy-coverage"
+            export CODACY_REPORTER_SKIP_CHECKSUM=true
             version=$(cat .version)
             mkdir -p $CODACY_REPORTER_TMP_FOLDER/$version
             cp $HOME/workdir/artifacts/codacy-coverage-reporter-darwin $CODACY_REPORTER_TMP_FOLDER/$version/codacy-coverage-reporter
@@ -249,12 +250,14 @@ workflows:
             sbt "assembly;nativeImage"
             mkdir -p ~/workdir/tmp-artifacts
             mv target/native-image/codacy-coverage-reporter ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux
-            mv target/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/tmp-artifacts/codacy-coverage-reporter-assembly.jar
+            mv target/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/tmp-artifacts/codacy-coverage-reporter-assembly.jarvenstarde
           persist_to_workspace: true
+          save_cache: true
           requires:
             - compile_and_test
       - codacy/sbt_osx:
           name: create_artifacts_for_osx
+          openjdk_version: '11'
           cmd: |
             sbt nativeImage
             mkdir -p  ~/workdir/tmp-artifacts
