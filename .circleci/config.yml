@@ -95,7 +95,7 @@ jobs:
           at: ~/workdir
       - run: |
           mkdir -p ~/workdir/artifacts/
-          mv ~/workdir/tmp-artifacts/codacy-coverage-reporter-assembly.jarvenstarde ~/workdir/artifacts/codacy-coverage-reporter-assembly.jar
+          mv ~/workdir/tmp-artifacts/codacy-coverage-reporter-assembly.jar ~/workdir/artifacts/codacy-coverage-reporter-assembly.jar
           upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-linux ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux
           # upx binaries don't work on Mac OS Big Sur https://github.com/upx/upx/issues/424
           # use upx again once the bug is fixed
@@ -250,7 +250,7 @@ workflows:
             sbt "assembly;nativeImage"
             mkdir -p ~/workdir/tmp-artifacts
             mv target/native-image/codacy-coverage-reporter ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux
-            mv target/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/tmp-artifacts/codacy-coverage-reporter-assembly.jarvenstarde
+            mv target/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/tmp-artifacts/codacy-coverage-reporter-assembly.jar
           persist_to_workspace: true
           save_cache: true
           requires:

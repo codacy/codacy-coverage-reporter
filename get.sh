@@ -99,7 +99,6 @@ checksum() {
   elif [ "$major_version" -ge 13 ]; then
     log "$i" "Checking checksum..."
     download_file "$checksum_url"
-    
     if command -v sha512sum > /dev/null 2>&1; then
         sha_check_command="sha512sum"
     elif command -v shasum > /dev/null 2>&1; then
