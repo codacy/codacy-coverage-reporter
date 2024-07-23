@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  codacy: codacy/base@10.10.1
+  codacy: codacy/base@12.1.2
 
 references:
   circleci_job: &circleci_job
@@ -251,10 +251,12 @@ workflows:
             mv target/native-image/codacy-coverage-reporter ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux
             mv target/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/tmp-artifacts/codacy-coverage-reporter-assembly.jar
           persist_to_workspace: true
+          save_cache: true
           requires:
             - compile_and_test
       - codacy/sbt_osx:
           name: create_artifacts_for_osx
+          openjdk_version: '11'
           cmd: |
             sbt nativeImage
             mkdir -p  ~/workdir/tmp-artifacts
