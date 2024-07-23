@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  codacy: codacy/base@12.1.1
+  codacy: codacy/base@12.1.2
 
 references:
   circleci_job: &circleci_job
@@ -165,7 +165,6 @@ jobs:
           command: |
             brew install mockserver coreutils
             export CODACY_REPORTER_TMP_FOLDER=".codacy-coverage"
-            export CODACY_REPORTER_SKIP_CHECKSUM=true
             version=$(cat .version)
             mkdir -p $CODACY_REPORTER_TMP_FOLDER/$version
             cp $HOME/workdir/artifacts/codacy-coverage-reporter-darwin $CODACY_REPORTER_TMP_FOLDER/$version/codacy-coverage-reporter
