@@ -17,12 +17,18 @@ class GitFileNameUpdaterAndFilter(acceptableFileNamesMap: Map[String, Seq[String
   }
 
   private def matchAndReturnName(filename: String): Option[String] = {
+    if (!acceptableFileNamesMap.isEmpty) {
+      val allFiles = acceptableFileNamesMap.values.flatten.toList
+      logger
+        .info(s"Files: $allFiles")
+    }
+
     val maybeFilename = FileNameMatcher
       .matchAndReturnName(filename, acceptableFileNamesMap.getOrElse(getFilenameFromPath(filename), Seq.empty))
 
     if (maybeFilename.isEmpty)
       logger
-        .warn(s"File {$maybeFilename}: Ignoring $filename for coverage calculation. No matching file found in the repository.")
+        .warn(s"File: Ignoring $filename for coverage calculation. No matching file found in the repository.")
 
     maybeFilename
   }
