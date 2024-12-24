@@ -10,8 +10,8 @@ name := "codacy-coverage-reporter"
 
 // Runtime dependencies
 libraryDependencies ++= Seq(
-  "com.github.alexarchambault" %% "case-app" % "2.1.0-M28",
-  "org.wvlet.airframe" %% "airframe-log" % "24.6.0"
+  "com.github.alexarchambault" %% "case-app" % "2.1.0-M29",
+  "org.wvlet.airframe" %% "airframe-log" % "24.12.2"
 )
 
 // Test dependencies
@@ -72,16 +72,16 @@ dependsOn(coverageParser)
 
 commonSettings
 
-val scalatest = "org.scalatest" %% "scalatest" % "3.2.18"
+val scalatest = "org.scalatest" %% "scalatest" % "3.2.19"
 
 lazy val apiScala = project
   .in(file("api-scala"))
   .settings(
     commonSettings,
     libraryDependencies ++= Seq(
-      "com.typesafe.play" %% "play-json" % "2.10.5",
+      "org.playframework" %% "play-json" % "3.0.4",
       ("org.scalaj" %% "scalaj-http" % "2.4.2").cross(CrossVersion.for3Use2_13),
-      "org.eclipse.jgit" % "org.eclipse.jgit" % "4.11.9.201909030838-r",
+      "org.eclipse.jgit" % "org.eclipse.jgit" % "v7.1.0.202411261347-r",
       scalatest % Test
     )
   )
@@ -91,7 +91,7 @@ lazy val coverageParser = project
   .settings(
     commonSettings,
     libraryDependencies ++= Seq(
-      "com.codacy" %% "codacy-plugins-api" % "8.1.4",
+      "com.codacy" %% "codacy-plugins-api" % "9.0.1",
       "org.scala-lang.modules" %% "scala-xml" % "2.3.0",
       scalatest % Test
     )
