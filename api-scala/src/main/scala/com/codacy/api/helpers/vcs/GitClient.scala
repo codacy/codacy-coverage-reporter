@@ -2,6 +2,7 @@ package com.codacy.api.helpers.vcs
 
 import java.io.File
 import java.util.Date
+import java.time.Instant
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.{Repository, RepositoryBuilder}
 import org.eclipse.jgit.revwalk.RevWalk
@@ -10,7 +11,7 @@ import org.eclipse.jgit.treewalk.TreeWalk
 import scala.jdk.CollectionConverters._
 import scala.util.Try
 
-case class CommitInfo(uuid: String, authorName: String, authorEmail: String, date: Date)
+case class CommitInfo(uuid: String, authorName: String, authorEmail: String, date: Instant)
 
 class GitClient(workDirectory: File) {
 
