@@ -175,7 +175,7 @@ class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, S
     * @return true for valid url, false if not
     */
   private[rules] def validUrl(baseUrl: String): Boolean = {
-    Try(new URI(baseUrl)).toOption.isDefined
+    Try(new URI(baseUrl).toURL()).toOption.isDefined    
   }
 
   /**
