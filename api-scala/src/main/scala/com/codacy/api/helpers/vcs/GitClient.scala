@@ -35,7 +35,7 @@ class GitClient(workDirectory: File) {
       val headRev = git.log().setMaxCount(1).call().asScala.head
       val authorIdent = headRev.getAuthorIdent
 
-      CommitInfo(headRev.getName, authorIdent.getName, authorIdent.getEmailAddress, authorIdent.getWhen)
+      CommitInfo(headRev.getName, authorIdent.getName, authorIdent.getEmailAddress, authorIdent.getWhenAsInstant)
     }
   }
 
