@@ -44,11 +44,11 @@ scmInfo := Some(
 Test / fork := true
 Global / cancelable := true
 
-javacOptions ++= Seq("-source", "11", "-target", "11")
+javacOptions ++= Seq("-source", "17", "-target", "17")
 
 enablePlugins(NativeImagePlugin)
 
-nativeImageVersion := "22.3.0"
+nativeImageVersion := "23.0.1"
 
 val osSpecificOptions =
   if (sys.props("os.name") == "Mac OS X") Seq.empty[String]

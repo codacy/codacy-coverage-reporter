@@ -1,7 +1,6 @@
 package com.codacy.api.helpers.vcs
 
 import java.io.File
-import java.util.Date
 import java.time.Instant
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.{Repository, RepositoryBuilder}
