@@ -6,6 +6,8 @@ import scala.util.Try
 object FileNameMatcher {
 
   def matchAndReturnName(filename: String, fileNames: Seq[String]): Option[String] = {
+    logger
+      .info(s"File: Matching $filename in the ${fileNames.size} files.")
     fileNames
       .filter(name => isTheSameFile(filename.toLowerCase, name.toLowerCase))
       .sortBy(name => Math.abs(filename.length - name.length))
