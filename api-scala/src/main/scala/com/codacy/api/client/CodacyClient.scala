@@ -26,7 +26,8 @@ class CodacyClient(
     apiToken.map(t => "api_token" -> t) ++
     projectToken.map(t => "project_token" -> t)
 
-    private val remoteUrl = (new URI((new URI(apiUrl.getOrElse("https://api.codacy.com")).toURL()), "/2.0").toURL()).toString()
+  private val remoteUrl =
+    (new URI((new URI(apiUrl.getOrElse("https://api.codacy.com")).toURL()), "/2.0").toURL()).toString()
 
   /*
    * Does an API post
