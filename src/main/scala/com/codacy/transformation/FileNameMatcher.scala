@@ -4,7 +4,7 @@ import java.nio.file.Paths
 import scala.util.Try
 import wvlet.log.LogSupport
 
-object FileNameMatcher extends LogSupport{
+object FileNameMatcher extends LogSupport {
 
   def matchAndReturnName(filename: String, fileNames: Seq[String]): Option[String] = {
     logger
