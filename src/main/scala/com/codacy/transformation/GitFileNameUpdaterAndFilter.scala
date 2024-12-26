@@ -7,9 +7,9 @@ class GitFileNameUpdaterAndFilter(acceptableFileNamesMap: Map[String, Seq[String
     extends Transformation
     with LogSupport {
   override def execute(report: CoverageReport): CoverageReport = {
-    val allFiles = acceptableFileNamesMap.values.flatten.toList
+    val allFiles = acceptableFileNamesMap
     logger
-      .info(s"Files: $allFiles")
+      .info(s"Files: $acceptableFileNamesMap")
     val fileReports = for {
       fileReport <- report.fileReports
       fileName <- matchAndReturnName(fileReport.filename)
