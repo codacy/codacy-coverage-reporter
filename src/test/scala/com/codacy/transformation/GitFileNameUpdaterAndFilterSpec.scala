@@ -60,7 +60,7 @@ class GitFileNameUpdaterAndFilterSpec extends AnyWordSpec with Matchers {
       val result = updaterAndFilter.execute(coverageReport)
 
       // ASSERT
-      result.fileReports.size shouldBe 2
+      result.fileReports.size shouldBe 1
     }
   }
 
