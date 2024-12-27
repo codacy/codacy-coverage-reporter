@@ -17,7 +17,7 @@ class GitFileNameUpdaterAndFilter(acceptableFileNamesMap: Map[String, Seq[String
   }
 
   private def matchAndReturnName(filename: String): Option[String] = {
-    val isAcceptable = acceptableFileNamesMap.getOrElse(getFilenameFromPath(filename), Seq.empty)
+    val isAcceptable = acceptableFileNamesMap.getOrElse(getFilenameFromPath(filename), Seq.empty).toList
     logger
       .warn(s"isAcceptable: $isAcceptable")
     val maybeFilename = FileNameMatcher
