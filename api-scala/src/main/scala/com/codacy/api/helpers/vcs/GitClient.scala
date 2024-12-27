@@ -45,20 +45,25 @@ class GitClient(workDirectory: File) {
       val repo = git.getRepository
       val commitId = repo.resolve(commitSha)
       val revWalk = new RevWalk(repo)
-      val commit = revWalk.parseCommit(commitId)
-      val tree = commit.getTree
       val treeWalk = new TreeWalk(repo)
-      treeWalk.addTree(tree)
-      treeWalk.setRecursive(true)
+      try {
+        val commit = revWalk.parseCommit(commitId)
+        val tree = commit.getTree
 
-      val result: Seq[String] =
-        if (treeWalk.next) {
-          LazyList
-            .continually(treeWalk.getPathString)
-            .takeWhile(_ => treeWalk.next)
-        } else Seq.empty
+        treeWalk.addTree(tree)
+        treeWalk.setRecursive(true)
 
-      result
+        val result = Iterator
+          .continually(treeWalk)
+          .takeWhile(_.next())
+          .map(_.getPathString)
+          .toSeq
+
+        result
+      } finally {
+        revWalk.close()
+        treeWalk.close()
+      }
     }
   }
 
