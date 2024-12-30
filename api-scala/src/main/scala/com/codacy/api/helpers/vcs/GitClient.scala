@@ -1,7 +1,7 @@
 package com.codacy.api.helpers.vcs
 
 import java.io.File
-import java.time.Instant
+import java.util.Date
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.{Repository, RepositoryBuilder}
 import org.eclipse.jgit.revwalk.RevWalk
@@ -10,7 +10,7 @@ import org.eclipse.jgit.treewalk.TreeWalk
 import scala.jdk.CollectionConverters._
 import scala.util.Try
 
-case class CommitInfo(uuid: String, authorName: String, authorEmail: String, date: Instant)
+case class CommitInfo(uuid: String, authorName: String, authorEmail: String, date: Date)
 
 class GitClient(workDirectory: File) {
 
@@ -35,7 +35,7 @@ class GitClient(workDirectory: File) {
       val headRev = git.log().setMaxCount(1).call().asScala.head
       val authorIdent = headRev.getAuthorIdent
 
-      CommitInfo(headRev.getName, authorIdent.getName, authorIdent.getEmailAddress, authorIdent.getWhenAsInstant)
+      CommitInfo(headRev.getName, authorIdent.getName, authorIdent.getEmailAddress, authorIdent.getWhen)
     }
   }
 
@@ -49,10 +49,8 @@ class GitClient(workDirectory: File) {
       try {
         val commit = revWalk.parseCommit(commitId)
         val tree = commit.getTree
-
         treeWalk.addTree(tree)
         treeWalk.setRecursive(true)
-
         val result = Iterator
           .continually(treeWalk)
           .takeWhile(_.next())
@@ -66,5 +64,4 @@ class GitClient(workDirectory: File) {
       }
     }
   }
-
 }

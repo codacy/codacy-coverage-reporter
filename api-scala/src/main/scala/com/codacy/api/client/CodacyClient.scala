@@ -4,7 +4,7 @@ import play.api.libs.json._
 import com.codacy.api.util.JsonOps
 import scalaj.http.Http
 
-import java.net.URI
+import java.net.URL
 import scala.util.{Failure, Success, Try}
 import scala.util.control.NonFatal
 
@@ -26,7 +26,7 @@ class CodacyClient(
     apiToken.map(t => "api_token" -> t) ++
     projectToken.map(t => "project_token" -> t)
 
-  private val remoteUrl = new URI(apiUrl.getOrElse("https://api.codacy.com")).resolve("/2.0").toString();
+  private val remoteUrl = new URL(new URL(apiUrl.getOrElse("https://api.codacy.com")), "/2.0").toString()
 
   /*
    * Does an API post

@@ -1,12 +1,12 @@
 version: 2.1
 
 orbs:
-  codacy: codacy/base@12.1.4
+  codacy: codacy/base@12.1.2
 
 references:
   circleci_job: &circleci_job
     docker:
-      - image: circleci/circleci-cli:0.1.31151
+      - image: circleci/circleci-cli:0.1.29041
     working_directory: ~/workdir
 
 commands:
@@ -39,7 +39,7 @@ commands:
 jobs:
   publish_circleci_artifacts:
     machine: 
-      image: ubuntu-2404:current
+      image: ubuntu-2004:current
     working_directory: ~/workdir
     steps:
       - attach_workspace:
@@ -87,7 +87,7 @@ jobs:
 
   package_artifacts:
     docker:
-      - image: alpine:3.21
+      - image: alpine:3.18
     working_directory: ~/workdir
     steps:
       - run: apk add upx
@@ -108,7 +108,7 @@ jobs:
 
   it_coverage_script_alpine:
     docker:
-      - image: alpine:3.21
+      - image: alpine:3.18
       - image: mockserver/mockserver
     working_directory: ~/workdir
     steps:
@@ -133,7 +133,7 @@ jobs:
 
   it_coverage_script_ubuntu:
     docker:
-      - image: cimg/base:2024.12 # ubuntu based image
+      - image: cimg/base:2023.10 # ubuntu based image
       - image: mockserver/mockserver
     working_directory: ~/workdir
     parameters:
