@@ -76,7 +76,6 @@ class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, S
         baseConfig.sleepTime,
         baseConfig.numRetries,
         baseConfig.skipSslVerificationValue
-        
       )
       validatedConfig <- validateBaseConfigUrl(baseConf)
     } yield {
