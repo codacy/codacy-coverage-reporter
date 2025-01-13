@@ -41,7 +41,8 @@ class ReportRulesSpec extends AnyWordSpec with Matchers with PrivateMethodTester
         debug = false,
         timeout = RequestTimeout(1000, 10000),
         sleepTime = 10000,
-        numRetries = 3
+        numRetries = 3,
+        skipSslVerification = false
       )
 
     def assertCodacyCoverage(

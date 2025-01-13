@@ -2,7 +2,7 @@ package com.codacy.api.client
 
 import play.api.libs.json._
 import com.codacy.api.util.JsonOps
-import scalaj.http.Http
+import scalaj.http.{Http, HttpOptions}
 
 import java.net.URL
 import scala.util.{Failure, Success, Try}
@@ -11,7 +11,8 @@ import scala.util.control.NonFatal
 class CodacyClient(
     apiUrl: Option[String] = None,
     apiToken: Option[String] = None,
-    projectToken: Option[String] = None
+    projectToken: Option[String] = None,
+    allowUnsafeSSL: Boolean = false
 ) {
 
   private case class ErrorJson(error: String)
@@ -27,6 +28,8 @@ class CodacyClient(
     projectToken.map(t => "project_token" -> t)
 
   private val remoteUrl = new URL(new URL(apiUrl.getOrElse("https://api.codacy.com")), "/2.0").toString()
+
+  private def httpOptions = if (allowUnsafeSSL) Seq(HttpOptions.allowUnsafeSSL) else Seq.empty
 
   /*
    * Does an API post
@@ -44,8 +47,10 @@ class CodacyClient(
 
       val httpRequest = timeoutOpt match {
         case Some(timeout) =>
-          Http(url).timeout(connTimeoutMs = timeout.connTimeoutMs, readTimeoutMs = timeout.readTimeoutMs)
-        case None => Http(url)
+          Http(url)
+            .timeout(connTimeoutMs = timeout.connTimeoutMs, readTimeoutMs = timeout.readTimeoutMs)
+            .options(httpOptions)
+        case None => Http(url).options(httpOptions)
       }
 
       val body = httpRequest
