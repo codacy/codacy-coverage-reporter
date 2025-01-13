@@ -74,7 +74,9 @@ class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, S
         baseConfig.debugValue,
         timeout = RequestTimeout(connTimeoutMs = 1000, readTimeoutMs = baseConfig.httpTimeout),
         baseConfig.sleepTime,
-        baseConfig.numRetries
+        baseConfig.numRetries,
+        baseConfig.skipSslVerificationValue
+        
       )
       validatedConfig <- validateBaseConfigUrl(baseConf)
     } yield {

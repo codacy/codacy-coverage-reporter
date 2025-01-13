@@ -112,10 +112,15 @@ case class BaseCommandConfig(
     @Name("s") @ValueDescription("skip if token isn't defined")
     skip: Int @@ Counter = Tag.of(0),
     @Hidden
-    debug: Int @@ Counter = Tag.of(0)
+    debug: Int @@ Counter = Tag.of(0),
+    @ExtraName("i") @ValueDescription(
+      "[default: false] - Skip the SSL certificate verification when communicating with the Codacy API"
+    )
+    skipSslVerification: Int @@ Counter = Tag.of(0)
 ) {
   val skipValue: Boolean = skip.## > 0
   val debugValue: Boolean = debug.## > 0
+  val skipSslVerificationValue: Boolean = skipSslVerification.## > 0
 }
 
 object ConfigArgumentParsers {

@@ -16,7 +16,12 @@ class Components(private val validatedConfig: Configuration) {
       (None, Some(apiToken))
   }
 
-  lazy val codacyClient = new CodacyClient(Some(validatedConfig.baseConfig.codacyApiBaseUrl), apiToken, projectToken)
+  lazy val codacyClient = new CodacyClient(
+    Some(validatedConfig.baseConfig.codacyApiBaseUrl),
+    apiToken,
+    projectToken,
+    validatedConfig.baseConfig.skipSslVerification
+  )
 
   lazy val coverageServices = new CoverageServices(codacyClient)
 

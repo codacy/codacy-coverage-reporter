@@ -44,7 +44,8 @@ case class BaseConfig(
     debug: Boolean,
     timeout: RequestTimeout,
     sleepTime: Int,
-    numRetries: Int
+    numRetries: Int,
+    skipSslVerification: Boolean
 )
 
 sealed trait CommitUUID extends Any {
