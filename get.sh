@@ -231,13 +231,22 @@ if [ -z "$run_command" ]
 then
     fatal "Codacy coverage reporter binary could not be found."
 fi
+if [ -z "$CODACY_REPORTER_OPTIONS" ] || [ -n "$CODACY_REPORTER_OPTIONS" ]; then
+    EXTRA_ARGUMENTS="$CODACY_REPORTER_OPTIONS"
+else
+    EXTRA_ARGUMENTS=""
+fi
+
 
 if [ "$#" -eq 1 ] && [ "$1" = "download" ];
 then
     log "$g" "Codacy reporter download succeeded";
 elif [ "$#" -gt 0 ];
 then
-    eval "$run_command $*"
+    log "Running command: $run_command $* $EXTRA_ARGUMENTS"
+    eval "$run_command $* $EXTRA_ARGUMENTS"
 else
-    eval "$run_command \"report\""
+    log "Running command: $run_command \"report\" $EXTRA_ARGUMENTS"
+    eval "$run_command \"report\" $EXTRA_ARGUMENTS"
 fi
+

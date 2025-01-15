@@ -43,12 +43,18 @@ Usage: codacy-coverage-reporter report
   --coverage-reports | -r  <your project coverage file name (supports globs)>
   --partial  <if the report is partial>
   --prefix  <the project path prefix>
-  --skip-ssl-verification` [default: false] - Skip the SSL certificate verification when communicating with the Codacy API
+  --skip-ssl-verification [default: false] - Skip the SSL certificate verification when communicating with the Codacy API
   --force-coverage-parser  <your coverage parser>
         Available parsers are: opencover,clover,lcov,phpunit,jacoco,dotcover,cobertura,go
 
 
  --> Succeeded!
+```
+
+Codacy Coverage Reporter can be run with the `CODACY_REPORTER_OPTIONS` environment variable. This is useful for passing options to the reporter without having to modify the script.
+
+```
+CODACY_REPORTER_OPTIONS="--skip-ssl-verification true"
 ```
 
 ## What is Codacy?
