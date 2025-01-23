@@ -256,8 +256,9 @@ workflows:
             - compile_and_test
       - codacy/sbt:
           name: create_artifacts_linux_arm
+          resource_class: arm.medium
           cmd: |
-            graalvm/build-deps.sh ARCH="arm"
+            ARCH="arm" graalvm/build-deps.sh
             export PATH=$HOME/.musl/arm-linux-musleabi-native/bin:$PATH
             sbt "assembly;nativeImage"
             mkdir -p ~/workdir/tmp-artifacts
