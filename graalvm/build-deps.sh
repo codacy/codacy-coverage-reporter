@@ -26,6 +26,8 @@ echo "curl https://zlib.net/fossils/\$zlibtargz --output \$zlibtargz"
 curl https://zlib.net/fossils/$zlibtargz --output $zlibtargz
 tar -xf $zlibtargz
 
+sudo apt-get install build-essential
+
 (
   cd $zlib
   if [ "$ARCH" == "arm" ];
