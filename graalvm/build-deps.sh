@@ -32,7 +32,7 @@ sudo apt-get install build-essential
   cd $zlib
   if [ "$ARCH" == "arm" ];
   then
-    ./configure --prefix=$TOOLCHAIN_DIR --static
+    CHOST=arm ./configure --prefix=$TOOLCHAIN_DIR --static
   else
     ./configure --prefix=$TOOLCHAIN_DIR --static
   fi

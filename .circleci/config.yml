@@ -188,6 +188,196 @@ jobs:
             if [ $ERROR_CODE -ne 0 ]; then echo "expected an error code 0 and got $ERROR_CODE instead"; exit 1; fi
             echo "test completed with the expected error code: 0"
 
+  build_binaries_linux_arm:
+    description: Default sbt job
+    environment:
+      AWS_DEFAULT_REGION: << parameters.region >>
+      AWS_PROFILE: << parameters.aws_profile >>
+    executor: machine
+    resource_class: arm.medium
+    parameters:
+      aws_profile:
+        default: default
+        description: The AWS profile to be used
+        type: string
+      cache_prefix:
+        default: sbt-cache-032020
+        description: The prefix of cache to be used
+        type: string
+      cmd:
+        default: ''
+        description: SBT command to run
+        type: string
+      credentials_file_content:
+        default: >
+          [default]
+
+          aws_access_key_id=$ACCESS_KEY_ID
+
+          aws_secret_access_key=$SECRET_ACCESS_KEY
+
+          [maven]
+
+          source_profile = default
+
+          role_arn =
+          arn:aws:iam::$AWS_ACCOUNT_ID_PRODUCTION:role/$MAVEN_PUBLISHER_ROLE
+        description: AWS credentials file contents to grant access for the step
+        type: string
+      docker_scout_version:
+        default: 0.13.1
+        description: Version of the docker scout plugin to use
+        type: string
+      install_sbt_version:
+        default: ''
+        description: >-
+          Version of SBT to install. Ensure compatibility with openjdk_version. If
+          empty, the system one will be used
+        type: string
+      no_output_timeout:
+        default: 15m
+        description: The time to wait for the command without output
+        type: string
+      openjdk_version:
+        default: ''
+        description: >-
+          OpenJDK major version to install. Ensure compatibility with
+          install_sbt_version. If empty, the system one will be used
+        type: string
+      persist_to_workspace:
+        default: false
+        description: Whether to persist the workspace or not at the end of the job
+        type: boolean
+      region:
+        default: eu-west-1
+        description: The AWS region for the deployment
+        type: string
+      save_cache:
+        default: true
+        description: Whether to save the cache or not at the end of the job
+        type: boolean
+      setup_docker_scout:
+        default: false
+        description: >-
+          Install and setup docker scout plugin to scan for docker image
+          vulnerabilities
+        type: boolean
+      steps:
+        default: [ ]
+        description: Steps to run
+        type: steps
+      steps_before_sbt:
+        default: [ ]
+        description: Steps to run before sbt starts
+        type: steps
+      store_test_results:
+        default: false
+        description: Whether to upload the test results back to CircleCI
+        type: boolean
+      use_sbt_native_client:
+        default: false
+        description: Use the sbt thin client
+        type: boolean
+    steps:
+      - attach_workspace:
+          at: ~/workdir
+      - when:
+          condition: << parameters.openjdk_version >>
+          steps:
+            - run:
+                command: >
+                  sudo apt update
+
+                  sudo apt install openjdk-${OJDK_VERSION}-jre
+
+                  sudo update-alternatives --set java
+                  /usr/lib/jvm/java-${OJDK_VERSION}-openjdk-amd64/bin/java
+                environment:
+                  OJDK_VERSION: << parameters.openjdk_version >>
+                name: Install openjdk << parameters.openjdk_version >>
+      - when:
+          condition: << parameters.install_sbt_version >>
+          steps:
+            - run:
+                command: >
+                  # remove pre-installed sbt
+
+                  sudo rm -rf /opt/sbt/
+
+                  wget https://repo.scala-sbt.org/scalasbt/debian/sbt-<<
+                  parameters.install_sbt_version >>.deb
+
+                  sudo dpkg -i sbt-<< parameters.install_sbt_version >>.deb
+
+                  rm -f sbt-<< parameters.install_sbt_version >>.deb
+                name: Install sbt << parameters.install_sbt_version >>
+      - when:
+          condition: << parameters.setup_docker_scout >>
+          steps:
+            - run:
+                command: >
+                  curl -L https://github.com/docker/scout-cli/releases/download/v<<
+                  parameters.docker_scout_version >>/docker-scout_<<
+                  parameters.docker_scout_version  >>_linux_amd64.tar.gz -o
+                  docker-scout.tar.gz
+
+                  mkdir -p $HOME/.docker/cli-plugins
+
+                  tar -xvzf docker-scout.tar.gz -C $HOME/.docker/cli-plugins
+
+                  chmod +x $HOME/.docker/cli-plugins/docker-scout
+                name: >-
+                  Download and install docker scout <<
+                  parameters.docker_scout_version >>
+      - run:
+          command: |
+            mkdir -p ~/.aws && touch ~/.aws/credentials
+            cat >> ~/.aws/credentials \<< EOF
+            << parameters.credentials_file_content >>
+            EOF
+          name: Setup AWS Credentials
+      - run:
+          command: |
+            if [[ -f "targets.tar.gz" ]]; then
+              echo "unpacking persisted workspace" && tar -xf targets.tar.gz
+            else
+              echo "no persisted workspace found"
+            fi
+          name: Uncompress local targets
+      - run:
+          command: |
+            ARCH="arm" graalvm/build-deps.sh
+            export PATH=$HOME/.musl/arm-linux-musleabi-native/bin:$PATH
+            sbt "assembly;nativeImage"
+            mkdir -p ~/workdir/tmp-artifacts
+            mv target/native-image/codacy-coverage-reporter ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux
+            mv target/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/tmp-artifacts/codacy-coverage-reporter-assembly.jar
+          name: Generate binaries for Linux ARM
+      - sbt_cached:
+          cache_prefix: << parameters.cache_prefix >>
+          cmd: << parameters.cmd >>
+          no_output_timeout: << parameters.no_output_timeout >>
+          save_cache: << parameters.save_cache >>
+          steps: << parameters.steps >>
+          steps_before_sbt: << parameters.steps_before_sbt >>
+          store_test_results: << parameters.store_test_results >>
+          use_sbt_native_client: << parameters.use_sbt_native_client >>
+      - when:
+          condition: << parameters.persist_to_workspace >>
+          steps:
+            - run:
+                command: >
+                  find -name target -type d -exec tar -zcf targets.tar.gz -H posix
+                  {} + | true
+
+                  find -name target -type d -exec rm -rf {} + | true
+                name: Compressing targets
+            - persist_to_workspace:
+                paths:
+                  - '*'
+                  - targets.tar.gz
+                root: ~/workdir
+
 workflows:
   compile_test_deploy:
     jobs:
@@ -254,7 +444,7 @@ workflows:
           save_cache: true
           requires:
             - compile_and_test
-      - codacy/sbt:
+      - build_binary_linux_arm:
           name: create_artifacts_linux_arm
           cmd: |
             ARCH="arm" graalvm/build-deps.sh
