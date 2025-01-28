@@ -193,7 +193,8 @@ jobs:
     environment:
       AWS_DEFAULT_REGION: << parameters.region >>
       AWS_PROFILE: << parameters.aws_profile >>
-    executor: machine
+    machine:
+      image: ubuntu-2204:current
     resource_class: arm.medium
     parameters:
       aws_profile:
