@@ -280,6 +280,7 @@ jobs:
         description: Use the sbt thin client
         type: boolean
     steps:
+      - checkout
       - attach_workspace:
           at: ~/workdir
       - when:
