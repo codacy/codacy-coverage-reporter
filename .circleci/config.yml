@@ -444,19 +444,6 @@ workflows:
           save_cache: true
           requires:
             - compile_and_test
-      - build_binary_linux_arm:
-          name: create_artifacts_linux_arm
-          cmd: |
-            ARCH="arm" graalvm/build-deps.sh
-            export PATH=$HOME/.musl/arm-linux-musleabi-native/bin:$PATH
-            sbt "assembly;nativeImage"
-            mkdir -p ~/workdir/tmp-artifacts
-            mv target/native-image/codacy-coverage-reporter ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux
-            mv target/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/tmp-artifacts/codacy-coverage-reporter-assembly.jar
-          persist_to_workspace: true
-          save_cache: true
-          requires:
-            - compile_and_test
       - codacy/sbt_osx:
           name: create_artifacts_for_osx
           openjdk_version: '11'
