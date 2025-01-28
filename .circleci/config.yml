@@ -472,6 +472,10 @@ workflows:
           requires:
             - create_artifacts
             - create_artifacts_for_osx
+      - build_binaries:
+          requires:
+            - compile_and_test
+            - build_binaries_linux_arm
       - codacy/shell:
           name: generate_checksums
           cmd: |
