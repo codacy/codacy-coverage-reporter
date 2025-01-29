@@ -195,7 +195,6 @@ jobs:
       AWS_PROFILE: << parameters.aws_profile >>
     machine:
       image: ubuntu-2204:current
-    resource_class: arm.medium
     parameters:
       aws_profile:
         default: default
