@@ -7,7 +7,8 @@ import org.eclipse.jgit.lib.{Repository, RepositoryBuilder}
 import org.eclipse.jgit.revwalk.RevWalk
 import org.eclipse.jgit.treewalk.TreeWalk
 
-import scala.jdk.CollectionConverters._
+import scala.collection.mutable.ListBuffer
+import scala.jdk.CollectionConverters.*
 import scala.util.Try
 
 case class CommitInfo(uuid: String, authorName: String, authorEmail: String, date: Date)
@@ -51,14 +52,12 @@ class GitClient(workDirectory: File) {
       treeWalk.addTree(tree)
       treeWalk.setRecursive(true)
 
-      val result: Seq[String] =
-        if (treeWalk.next) {
-          LazyList
-            .continually(treeWalk.getPathString)
-            .takeWhile(_ => treeWalk.next)
-        } else Seq.empty
+      val buffer = new ListBuffer[String]
 
-      result
+      while (treeWalk.next) {
+        buffer.addOne(treeWalk.getPathString)
+      }
+      buffer.toList
     }
   }
 
