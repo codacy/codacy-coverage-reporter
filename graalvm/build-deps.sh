@@ -4,6 +4,7 @@ set -e +o pipefail
 
 mkdir -p $HOME/.musl
 cd $HOME/.musl
+uname -a
 
 if [ "$ARCH" == "arm" ];
 then
