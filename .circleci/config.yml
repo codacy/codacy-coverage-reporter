@@ -247,6 +247,7 @@ workflows:
           cmd: |
             graalvm/build-deps.sh
             export PATH=$HOME/.musl/x86_64-linux-musl-native/bin:$PATH
+            sbt "assembly;nativeImage"
             mkdir -p ~/workdir/tmp-artifacts
             mv target/native-image/codacy-coverage-reporter ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux
             mv target/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/tmp-artifacts/codacy-coverage-reporter-assembly.jar
@@ -259,7 +260,6 @@ workflows:
           cmd: |
             ARCH="arm" graalvm/build-deps.sh
             export PATH=$HOME/.musl/arm-linux-musleabi-cross/bin:$PATH
-            sbt "assembly;nativeImage"
             mkdir -p ~/workdir/tmp-artifacts
             mv target/native-image/codacy-coverage-reporter ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux
             mv target/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/tmp-artifacts/codacy-coverage-reporter-assembly.jar
