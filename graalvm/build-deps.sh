@@ -10,9 +10,10 @@ uname
 if [ "$ARCH" == "arm" ];
 then
   echo "https://more.musl.cc/i686-linux-musl/aarch64-linux-musl-cross.tgz -output musl.tgz"
-  curl https://more.musl.cc/i686-linux-musl/aarch64-linux-musl-cross.tgz --output musl.tgz
+  curl https://musl.cc/arm-linux-musleabi-cross.tgz  --output musl.tgz
   tar -xf musl.tgz
-  TOOLCHAIN_DIR=$HOME/.musl/aarch64-linux-musl-cross/aarch64-linux-musl
+  TOOLCHAIN_DIR=$HOME/.musl/arm-linux-musleabi-cross/aarch64-linux-musl
+  mv $TOOLCHAIN_DIR/arm-linux-musleabi-gcc $TOOLCHAIN_DIR/gcc
 else
   echo "http://more.musl.cc/10/x86_64-linux-musl/x86_64-linux-musl-native.tgz --output musl.tgz"
   curl http://more.musl.cc/10/x86_64-linux-musl/x86_64-linux-musl-native.tgz --output musl.tgz
