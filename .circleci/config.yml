@@ -248,7 +248,7 @@ jobs:
           install_sbt_version. If empty, the system one will be used
         type: string
       persist_to_workspace:
-        default: false
+        default: true
         description: Whether to persist the workspace or not at the end of the job
         type: boolean
       region:
