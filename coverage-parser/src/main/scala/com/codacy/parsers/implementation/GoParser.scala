@@ -17,7 +17,7 @@ object GoParser extends CoverageParser {
 
   final val MODE = """mode: ([set|count|atomic]*)""".r
 
-  //filename.go:lineFrom.column,lineTo.column numberOfStatements countOfStatements
+  // filename.go:lineFrom.column,lineTo.column numberOfStatements countOfStatements
   final val regexpString = """([a-zA-Z\/\._\-\d]*):(\d+).*?,(\d+).* (\d+) (\d+)""".r
 
   override def parse(rootProject: File, reportFile: File): Either[String, CoverageReport] = {
@@ -40,24 +40,29 @@ object GoParser extends CoverageParser {
       coverageInfoGroupedByFilename.foldLeft[Seq[CoverageFileReport]](Seq.empty[CoverageFileReport])((accum, next) => {
         next match {
           case (filename, coverageInfosForFile) =>
-            //calculate hits for a file for given statement reports
+            // Only for Github - Process filename to remove "github.com/orgname/repositoryname/"
+            val processedFilename = if (filename.startsWith("github.com/")) {
+              filename.split("/", 4).lastOption.getOrElse(filename) // Get everything after repository name
+            } else {
+              filename
+            }
+
+            // Calculate hits for a file for given statement reports
             val coverage = coverageInfosForFile.foldLeft(Map[Int, Int]()) {
               case (hitMapAcc, coverageInfo) =>
-                //calculate the range of lines the statement has
+                // Calculate the range of lines the statement has
                 val lines = Range.inclusive(coverageInfo.lineFrom, coverageInfo.lineTo)
 
-                //for each line add the number of hits
+                // For each line, add the number of hits
                 hitMapAcc ++ lines.foldLeft(Map[Int, Int]()) {
                   case (statementHitMapAcc, line) =>
                     statementHitMapAcc ++
-                      //if the line is already present on the hit map, don't replace the value
+                      // If the line is already present on the hit map, don't replace the value
                       Map(line -> (hitMapAcc.getOrElse(line, 0) + coverageInfo.countOfStatements))
-
                 }
             }
 
-            accum :+ CoverageFileReport(filename, coverage)
-
+            accum :+ CoverageFileReport(processedFilename, coverage)
         }
       })
 
@@ -70,5 +75,4 @@ object GoParser extends CoverageParser {
         GoCoverageInfo(filename, lineFrom.toInt, lineTo.toInt, numberOfStatements.toInt, countOfStatements.toInt)
     }
   }
-
 }
