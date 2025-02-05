@@ -27,6 +27,21 @@ class GoParserTest extends AnyWordSpec with Matchers with EitherValues {
       }
     }
 
+    "return a valid report from github" in {
+      val reader = GoParser.parse(new File("."), new File("coverage-parser/src/test/resources/test_go_gh.out"))
+
+      val testReport = CoverageReport(
+        List(
+          CoverageFileReport(
+            "src/hello.go",
+            Map(5 -> 0, 14 -> 1, 6 -> 0, 13 -> 1, 17 -> 1, 12 -> 1, 7 -> 0, 18 -> 1, 11 -> 1, 19 -> 1)
+          )
+        )
+      )
+
+      reader.value should equal(testReport)
+    }
+
     "return a valid report" in {
       val reader = GoParser.parse(new File("."), new File("coverage-parser/src/test/resources/test_go.out"))
 
