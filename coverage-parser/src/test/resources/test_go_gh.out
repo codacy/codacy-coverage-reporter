@@ -1,0 +1,4 @@
+mode: set
+github.com/orgname/reponame/src/hello.go:5.13,7.2 1 0
+github.com/orgname/reponame/src/hello.go:11.30,14.2 2 1
+github.com/orgname/reponame/src/hello.go:17.35,19.2 1 1
