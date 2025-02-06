@@ -242,7 +242,7 @@ jobs:
         description: The time to wait for the command without output
         type: string
       openjdk_version:
-        default: ''
+        default: '11'
         description: >-
           OpenJDK major version to install. Ensure compatibility with
           install_sbt_version. If empty, the system one will be used
@@ -442,19 +442,6 @@ workflows:
             export PATH=$HOME/.musl/x86_64-linux-musl-native/bin:$PATH
             sbt "assembly;nativeImage"
             mkdir -p ~/workdir/tmp-artifacts
-            mv target/native-image/codacy-coverage-reporter ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux
-            mv target/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/tmp-artifacts/codacy-coverage-reporter-assembly.jar
-          persist_to_workspace: true
-          save_cache: true
-          requires:
-            - compile_and_test
-      - codacy/sbt:
-          name: create_artifacts_linux_arm
-          cmd: |
-            ARCH="arm" graalvm/build-deps.sh
-            export PATH=$HOME/.musl/arm-linux-musleabi-cross/bin:$PATH
-            mkdir -p ~/workdir/tmp-artifacts
-            ls -al target/
             mv target/native-image/codacy-coverage-reporter ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux
             mv target/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/tmp-artifacts/codacy-coverage-reporter-assembly.jar
           persist_to_workspace: true
