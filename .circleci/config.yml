@@ -295,7 +295,7 @@ jobs:
                   sudo apt install openjdk-${OJDK_VERSION}-jre
 
                   sudo update-alternatives --set java
-                  /usr/lib/jvm/java-${OJDK_VERSION}-openjdk-amd64/bin/java
+                  /usr/lib/jvm/java-${OJDK_VERSION}-openjdk-arm64/bin/java
                 environment:
                   OJDK_VERSION: << parameters.openjdk_version >>
                 name: Install openjdk << parameters.openjdk_version >>
