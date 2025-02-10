@@ -62,6 +62,7 @@ nativeImageOptions := Seq(
   "--enable-url-protocols=http,https,jar",
   "--enable-all-security-services",
   "-H:+JNI",
+  "-H:-CheckToolchain",
   "-H:IncludeResourceBundles=com.sun.org.apache.xerces.internal.impl.msg.XMLMessages",
   "-H:+ReportExceptionStackTraces",
   "--no-fallback",
