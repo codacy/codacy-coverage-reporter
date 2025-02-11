@@ -33,7 +33,7 @@ tar -xf $zlibtargz
   cd $zlib
   if [ "$ARCH" == "arm" ];
   then
-    ./configure --target=aarch64-linux-gnu --static
+    ./configure --target=aarch64-linux-gnu --prefix=$TOOLCHAIN_DIR
   else
     $CC --version
     ./configure --prefix=$TOOLCHAIN_DIR --static
