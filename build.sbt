@@ -50,10 +50,7 @@ enablePlugins(NativeImagePlugin)
 
 nativeImageVersion := "22.3.0"
 
-val osSpecificOptions =
-  if (sys.props("os.name") == "Mac OS X") Seq.empty[String]
-  else if (sys.props("os.name") == "Linux X86" || sys.props("os.name") == "Linux AMD64") Seq("--static", "--libc=musl")
-  else Seq.empty[String]
+val osSpecificOptions = Seq.empty[String]
 
 nativeImageOptions := Seq(
   "--verbose",
