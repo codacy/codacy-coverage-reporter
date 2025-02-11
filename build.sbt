@@ -50,7 +50,10 @@ enablePlugins(NativeImagePlugin)
 
 nativeImageVersion := "22.3.0"
 
-val osSpecificOptions = Seq.empty[String]
+val osSpecificOptions =
+  if (sys.props("os.name") == "Mac OS X") Seq.empty[String]
+  else if (sys.props("os.name") == "Linux X86" || sys.props("os.name") == "Linux AMD64") Seq("--static", "--libc=musl")
+  else Seq.empty[String]
 
 nativeImageOptions := Seq(
   "--verbose",
@@ -60,7 +63,6 @@ nativeImageOptions := Seq(
   "--enable-url-protocols=http,https,jar",
   "--enable-all-security-services",
   "-H:+JNI",
-  "-H:-CheckToolchain",
   "-H:IncludeResourceBundles=com.sun.org.apache.xerces.internal.impl.msg.XMLMessages",
   "-H:+ReportExceptionStackTraces",
   "--no-fallback",
