@@ -14,7 +14,6 @@ then
   curl https://ftp.gnu.org/gnu/gcc/gcc-11.2.0/gcc-11.2.0.tar.xz  --output gcc.tgz
   tar -xf gcc.tgz
   TOOLCHAIN_DIR=$HOME/.gcc/gcc-11.2.0
-  export CC=$TOOLCHAIN_DIR/gcc/gcc
 else
   echo "http://more.musl.cc/10/x86_64-linux-musl/x86_64-linux-musl-native.tgz --output musl.tgz"
   curl http://more.musl.cc/10/x86_64-linux-musl/x86_64-linux-musl-native.tgz --output musl.tgz
@@ -31,12 +30,12 @@ curl https://zlib.net/fossils/$zlibtargz --output $zlibtargz
 tar -xf $zlibtargz
 
 (
-  $CC --version
   cd $zlib
   if [ "$ARCH" == "arm" ];
   then
-    CHOST=arm ./configure --prefix=$TOOLCHAIN_DIR --static
+    ./configure --target=aarch64-linux-gnu --static
   else
+    $CC --version
     ./configure --prefix=$TOOLCHAIN_DIR --static
   fi
   make -j "$(nproc)"
