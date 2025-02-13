@@ -31,14 +31,7 @@ tar -xf $zlibtargz
 
 (
   cd $zlib
-  if [ "$ARCH" == "arm" ];
-  then
-    ./configure --help
-    ./configure --target=aarch64-linux-gnu --prefix=$TOOLCHAIN_DIR
-  else
-    $CC --version
-    ./configure --prefix=$TOOLCHAIN_DIR --static
-  fi
+  ./configure --prefix=$TOOLCHAIN_DIR --static
   make -j "$(nproc)"
   sudo make install
 )
