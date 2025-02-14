@@ -97,6 +97,8 @@ jobs:
           mkdir -p ~/workdir/artifacts/
           mv ~/workdir/tmp-artifacts/codacy-coverage-reporter-assembly.jar ~/workdir/artifacts/codacy-coverage-reporter-assembly.jar
           upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-linux ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux
+          mv ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux-arm-assembly.jar ~/workdir/artifacts/codacy-coverage-reporter-linux-arm-assembly.jar
+          upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-linux-arm ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux-arm
           # upx binaries don't work on Mac OS Big Sur https://github.com/upx/upx/issues/424
           # use upx again once the bug is fixed
           # upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-darwin ~/workdir/tmp-artifacts/codacy-coverage-reporter-darwin
@@ -190,7 +192,7 @@ jobs:
 
 
 
-  build_binaries_linux_arm:
+  create_artifacts_linux_arm:
     description: Default sbt job
     environment:
       AWS_DEFAULT_REGION: << parameters.region >>
@@ -354,9 +356,9 @@ jobs:
             export PATH=$HOME/.musl/arm-linux-musleabi-native/bin:$PATH
             sbt "assembly;nativeImage"
             mkdir -p ~/workdir/tmp-artifacts
-            mv target/native-image/codacy-coverage-reporter ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux
+            mv target/native-image/codacy-coverage-reporter ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux-arm
             ls -al target
-            mv target/codacy-coverage-reporter-assembly-0.1.0-SNAPSHOT.jar ~/workdir/tmp-artifacts/codacy-coverage-reporter-assembly.jar
+            mv target/codacy-coverage-reporter-assembly-0.1.0-SNAPSHOT.jar ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux-arm-assembly.jar
           name: Generate binaries for Linux ARM
       - when:
           condition: << parameters.persist_to_workspace >>
@@ -451,14 +453,14 @@ workflows:
           persist_to_workspace_path: "tmp-artifacts/codacy-coverage-reporter-darwin"
           requires:
             - compile_and_test
-      - build_binaries_linux_arm:
+      - create_artifacts_linux_arm:
           requires:
             - compile_and_test
       - package_artifacts:
           requires:
             - create_artifacts
             - create_artifacts_for_osx
-            - build_binaries_linux_arm
+            - create_artifacts_linux_arm
       - codacy/shell:
           name: generate_checksums
           cmd: |
