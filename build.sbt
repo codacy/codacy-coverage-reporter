@@ -50,11 +50,10 @@ enablePlugins(NativeImagePlugin)
 
 nativeImageVersion := "22.3.0"
 
-val osSpecificOptions =
-  (Platform.os, Platform.arch) match {
-    case (Platform.OS.Linux, Platform.Arch.Intel) => Seq("--static", "--libc=musl")
-    case _ => Seq.empty[String]
-  }
+val osSpecificOptions = (Platform.os, Platform.arch) match {
+  case (Platform.OS.Linux, Platform.Arch.Intel) => Seq("--static", "--libc=musl")
+  case _ => Seq.empty[String]
+}
 
 nativeImageOptions := Seq(
   "--verbose",
