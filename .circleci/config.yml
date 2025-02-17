@@ -136,7 +136,7 @@ jobs:
   it_coverage_script_ubuntu:
     docker:
       - image: cimg/base:2023.10 # ubuntu based image
-      - image: mockserver/mockserver
+      - image: mockserver/mockserver:5.15.0
     working_directory: ~/workdir
     parameters:
       error_code:
