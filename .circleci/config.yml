@@ -192,6 +192,15 @@ jobs:
 
 
 
+  it_coverage_script_ubuntu_linux_arm:
+    resource_class: arm.medium
+    docker:
+      - image: cimg/base:2023.10 # ubuntu based image
+      - image: mockserver/mockserver
+    working_directory: ~/workdir
+    steps:
+      - attach_workspace:
+          at: ~/workdir
   create_artifacts_linux_arm:
     description: Default sbt job
     environment:
@@ -474,6 +483,10 @@ workflows:
           requires:
             - package_artifacts
       - it_coverage_script_macosx:
+          requires:
+            - package_artifacts
+      - it_coverage_script_ubuntu_linux_arm:
+          name: it_coverage_script_ubuntu_linux_arm
           requires:
             - package_artifacts
       - it_coverage_script_alpine:
