@@ -374,7 +374,6 @@ jobs:
             - persist_to_workspace:
                 paths:
                   - 'tmp-artifacts'
-                  - targets.tar.gz
                 root: ~/workdir
 
 workflows:
