@@ -373,7 +373,7 @@ jobs:
                 name: Compressing targets
             - persist_to_workspace:
                 paths:
-                  - '*'
+                  - '~/workdir/tmp-artifacts'
                   - targets.tar.gz
                 root: ~/workdir
 
