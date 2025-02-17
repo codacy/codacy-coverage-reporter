@@ -166,6 +166,8 @@ jobs:
           name: prepare the environment
           command: |
             brew install mockserver coreutils
+            sudo rm -rf /Library/Developer/CommandLineTools
+            sudo xcode-select --install
             export CODACY_REPORTER_TMP_FOLDER=".codacy-coverage"
             version=$(cat .version)
             mkdir -p $CODACY_REPORTER_TMP_FOLDER/$version
