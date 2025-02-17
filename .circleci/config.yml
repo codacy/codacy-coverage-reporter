@@ -359,6 +359,7 @@ jobs:
             mv target/native-image/codacy-coverage-reporter ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux-arm
             ls -al target
             mv target/codacy-coverage-reporter-assembly-0.1.0-SNAPSHOT.jar ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux-arm-assembly.jar
+            ls -al ~/workdir/tmp-artifacts
           name: Generate binaries for Linux ARM
       - when:
           condition: << parameters.persist_to_workspace >>
