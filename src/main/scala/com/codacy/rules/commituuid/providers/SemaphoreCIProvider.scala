@@ -12,5 +12,5 @@ object SemaphoreCIProvider extends CommitUUIDProvider {
   }
 
   override def getValidCommitUUID(environment: Map[String, String]): Either[String, CommitUUID] =
-    parseEnvironmentVariable(environment.get("REVISION"))
+    parseEnvironmentVariable(environment.get("SEMAPHORE_GIT_SHA"))
 }
