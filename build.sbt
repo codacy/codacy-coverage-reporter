@@ -53,6 +53,7 @@ nativeImageVersion := "22.3.0"
 val osSpecificOptions =
   (Platform.os, Platform.arch) match {
     case (Platform.OS.Linux, Platform.Arch.Intel) => Seq("--static", "--libc=musl")
+    case (Platform.OS.Linux, Platform.Arch.Arm) => Seq("--static")
     case _ => Seq.empty[String]
   }
 
