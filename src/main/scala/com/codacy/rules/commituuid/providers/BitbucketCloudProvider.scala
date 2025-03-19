@@ -10,7 +10,7 @@ object BitbucketCloudProvider extends CommitUUIDProvider {
   override def validateEnvironment(environment: Map[String, String]): Boolean = {
     // CI is a bit generic and could be used by other CI Providers as well
     // Check on Bitbucket Build Number as well
-    environment.contains("CI") and environment.contains("BITBUCKET_BUILD_NUMBER")
+    environment.contains("CI") && environment.contains("BITBUCKET_BUILD_NUMBER")
   }
 
   override def getValidCommitUUID(environment: Map[String, String]): Either[String, CommitUUID] =
