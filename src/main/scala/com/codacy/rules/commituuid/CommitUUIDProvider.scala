@@ -65,6 +65,7 @@ object CommitUUIDProvider extends LogSupport {
     ArgoCDProvider,
     AWSCodeBuildProvider,
     AzurePipelinesProvider,
+    BitbucketCloudProvider,
     BitriseCIProvider,
     BuildkiteCIProvider,
     CircleCIProvider,
