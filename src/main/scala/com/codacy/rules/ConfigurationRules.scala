@@ -4,7 +4,7 @@ import com.codacy.api.OrganizationProvider
 import com.codacy.api.client.RequestTimeout
 
 import java.io.File
-import java.net.URL
+import java.net.{URI, URL}
 import scala.util.Try
 import wvlet.log.LogSupport
 import com.codacy.configuration.parser.{BaseCommandConfig, CommandConfiguration, Final, Report}
@@ -176,7 +176,13 @@ class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, S
     * @return true for valid url, false if not
     */
   private[rules] def validUrl(baseUrl: String): Boolean = {
-    Try(new URL(baseUrl)).toOption.isDefined
+    Try(new URI(baseUrl.trim)).toOption.exists { uri =>
+      val scheme = uri.getScheme
+      val host = uri.getHost
+      scheme != null &&
+      (scheme.equalsIgnoreCase("http") || scheme.equalsIgnoreCase("https")) &&
+      host != null && host.nonEmpty
+    }
   }
 
   /**

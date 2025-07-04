@@ -4,7 +4,7 @@ import play.api.libs.json._
 import com.codacy.api.util.JsonOps
 import scalaj.http.{Http, HttpOptions}
 
-import java.net.URL
+import java.net.{URI, URL}
 import scala.util.{Failure, Success, Try}
 import scala.util.control.NonFatal
 
@@ -23,11 +23,12 @@ class CodacyClient(
   private val tokens = Map.empty[String, String] ++
     apiToken.map(t => "api-token" -> t) ++
     projectToken.map(t => "project-token" -> t) ++
-    // This is deprecated and is kept for backward compatibility. It will removed in the context of CY-1272
+    // This is deprecated and is kept for backward compatibility. It will be removed in the context of CY-1272
     apiToken.map(t => "api_token" -> t) ++
     projectToken.map(t => "project_token" -> t)
 
-  private val remoteUrl = new URL(new URL(apiUrl.getOrElse("https://api.codacy.com")), "/2.0").toString()
+  private val baseUri = new URI(apiUrl.getOrElse("https://api.codacy.com"))
+  private val remoteUrl = baseUri.resolve("/2.0").toURL.toString
 
   private def httpOptions = if (allowUnsafeSSL) Seq(HttpOptions.allowUnsafeSSL) else Seq.empty
 
@@ -66,7 +67,8 @@ class CodacyClient(
         case success => success
       }
     } catch {
-      case NonFatal(ex) => retryPost(request, value, timeoutOpt, sleepTime, numRetries.map(x => x - 1), ex.getMessage)
+      case NonFatal(ex) =>
+        retryPost(request, value, timeoutOpt, sleepTime, numRetries.map(x => x - 1), ex.getMessage)
     }
   }
 

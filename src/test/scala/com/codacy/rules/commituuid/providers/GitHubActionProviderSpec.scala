@@ -27,7 +27,7 @@ class GitHubActionProviderSpec extends AnyWordSpec with Matchers with EitherValu
         val envVars = Map(
           "GITHUB_EVENT_NAME" -> "pull_request",
           "GITHUB_SHA" -> invalidPullRequestCommitUuid,
-          "GITHUB_EVENT_PATH" -> "src/test/resources/invalid-github-action-pull-request-event.json"
+          "GITHUB_EVENT_PATH" -> "src/test/resources/invalid-github-action-event.json"
         )
         val commitUuidEither = provider.getValidCommitUUID(envVars)
         commitUuidEither should be(Symbol("left"))
