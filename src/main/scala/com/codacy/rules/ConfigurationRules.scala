@@ -177,13 +177,14 @@ class ConfigurationRules(cmdConfig: CommandConfiguration, envVars: Map[String, S
     */
   private[rules] def validUrl(baseUrl: String): Boolean = {
     Try(new URI(baseUrl.trim)).toOption.exists { uri =>
-      val scheme = uri.getScheme 
-      val host = uri.getHost 
+      val scheme = uri.getScheme
+      val host = uri.getHost
       scheme != null &&
       (scheme.equalsIgnoreCase("http") || scheme.equalsIgnoreCase("https")) &&
       host != null && host.nonEmpty
     }
   }
+
   /**
     * Validate report files option
     *
