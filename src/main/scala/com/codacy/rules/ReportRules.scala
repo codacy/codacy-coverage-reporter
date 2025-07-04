@@ -329,19 +329,13 @@ class ReportRules(coverageServices: => CoverageServices, gitFileFetcher: GitFile
       report: CoverageReport
   )(config: ReportConfig, commitUUID: String, acceptableFileNames: Either[String, Seq[String]]): CoverageReport = {
     val transformations: Seq[Transformation] = acceptableFileNames
-      .fold(
-        error => {
-          logger.warn(s"Report files will not be matched against git files, reason: $error")
-          Seq(new PathPrefixer(config.prefix))
-        },
-        filenames => {
+      .fold(error => {
+        logger.warn(s"Report files will not be matched against git files, reason: $error")
+        Seq(new PathPrefixer(config.prefix))
+      }, filenames => {
         val acceptableFileNamesMap = filenames.groupBy(getFilenameFromPath).view.toMap
-        Seq(
-          new GitFileNameUpdaterAndFilter(acceptableFileNamesMap),
-          new PathPrefixer(config.prefix)
-        )
-      }
-      )
+        Seq(new GitFileNameUpdaterAndFilter(acceptableFileNamesMap), new PathPrefixer(config.prefix))
+      })
 
     transformations.foldLeft(report) { (report, transformation) =>
       transformation.execute(report)
