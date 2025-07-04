@@ -334,11 +334,13 @@ class ReportRules(coverageServices: => CoverageServices, gitFileFetcher: GitFile
           logger.warn(s"Report files will not be matched against git files, reason: $error")
           Seq(new PathPrefixer(config.prefix))
         },
-        filenames =>
-          Seq(new PathPrefixer(config.prefix), {
-            val acceptableFileNamesMap = filenames.groupBy(getFilenameFromPath).view.toMap
-            new GitFileNameUpdaterAndFilter(acceptableFileNamesMap)
-          })
+        filenames => {
+        val acceptableFileNamesMap = filenames.groupBy(getFilenameFromPath).view.toMap
+        Seq(
+          new GitFileNameUpdaterAndFilter(acceptableFileNamesMap),
+          new PathPrefixer(config.prefix)
+        )
+      }
       )
 
     transformations.foldLeft(report) { (report, transformation) =>

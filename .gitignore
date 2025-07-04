@@ -33,3 +33,6 @@ src/graal/bundle
 project/metals.sbt
 site
 .bsp
+
+#Ignore vscode AI rules
+.github/copilot-instructions.md
