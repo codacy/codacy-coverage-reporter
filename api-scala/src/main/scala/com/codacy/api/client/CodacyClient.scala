@@ -63,12 +63,12 @@ class CodacyClient(
 
       parseJsonAs[T](body) match {
         case failure: FailedResponse =>
-          retryPost(request, value, timeoutOpt, sleepTime, numRetries.map(_ - 1), failure.message)
+          retryPost(request, value, timeoutOpt, sleepTime, numRetries.map(x => x - 1), failure.message)
         case success => success
       }
     } catch {
       case NonFatal(ex) =>
-        retryPost(request, value, timeoutOpt, sleepTime, numRetries.map(_ - 1), ex.getMessage)
+        retryPost(request, value, timeoutOpt, sleepTime, numRetries.map(x => x - 1), ex.getMessage)
     }
   }
 
@@ -80,9 +80,9 @@ class CodacyClient(
       numRetries: Option[Int],
       failureMessage: String
   )(implicit reads: Reads[T]): RequestResponse[T] = {
-    if (numRetries.exists(_ > 0)) {
-      sleepTime.foreach(Thread.sleep)
-      post(request, value, timeoutOpt, sleepTime, numRetries.map(_ - 1))
+    if (numRetries.exists(x => x > 0)) {
+      sleepTime.map(x => Thread.sleep(x))
+      post(request, value, timeoutOpt, sleepTime, numRetries.map(x => x - 1))
     } else {
       RequestResponse.failure(
         s"Error doing a post to $remoteUrl/${request.endpoint}: exhausted retries due to $failureMessage"
