@@ -94,20 +94,21 @@ class CodacyClient(
     parseJson(input) match {
       case failure: FailedResponse => failure
       case SuccessfulResponse(json) =>
-        json.validate[T].fold(
-          errors => FailedResponse(JsonOps.handleConversionFailure(errors)),
-          converted => SuccessfulResponse(converted)
-        )
+        json
+          .validate[T]
+          .fold(
+            errors => FailedResponse(JsonOps.handleConversionFailure(errors)),
+            converted => SuccessfulResponse(converted)
+          )
     }
   }
 
   private def parseJson(input: String): RequestResponse[JsValue] = {
     Try(Json.parse(input)) match {
       case Success(json) =>
-        json.validate[ErrorJson].fold(
-          _ => SuccessfulResponse(json),
-          apiError => FailedResponse(s"API Error: ${apiError.error}")
-        )
+        json
+          .validate[ErrorJson]
+          .fold(_ => SuccessfulResponse(json), apiError => FailedResponse(s"API Error: ${apiError.error}"))
       case Failure(exception) =>
         FailedResponse(s"Failed to parse API response as JSON: $input\nUnderlying exception - ${exception.getMessage}")
     }
