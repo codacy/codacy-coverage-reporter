@@ -96,7 +96,7 @@ lazy val coverageParser = project
     commonSettings,
     libraryDependencies ++= Seq(
       "com.codacy" %% "codacy-plugins-api" % "8.1.4",
-      "org.scala-lang.modules" %% "scala-xml" % "2.3.0",
+      "org.scala-lang.modules" %% "scala-xml" % "2.4.0",
       scalatest % Test
     )
   )
