@@ -76,7 +76,7 @@ dependsOn(coverageParser)
 
 commonSettings
 
-val scalatest = "org.scalatest" %% "scalatest" % "3.2.18"
+val scalatest = "org.scalatest" %% "scalatest" % "3.2.19"
 
 lazy val apiScala = project
   .in(file("api-scala"))
