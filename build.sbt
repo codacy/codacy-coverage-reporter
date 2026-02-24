@@ -1,4 +1,4 @@
-inThisBuild(Seq(scalaVersion := "3.3.3"))
+inThisBuild(Seq(scalaVersion := "3.3.7"))
 
 def commonSettings =
   Seq(scalacOptions := {
@@ -76,7 +76,7 @@ dependsOn(coverageParser)
 
 commonSettings
 
-val scalatest = "org.scalatest" %% "scalatest" % "3.2.18"
+val scalatest = "org.scalatest" %% "scalatest" % "3.2.19"
 
 lazy val apiScala = project
   .in(file("api-scala"))
@@ -95,8 +95,8 @@ lazy val coverageParser = project
   .settings(
     commonSettings,
     libraryDependencies ++= Seq(
-      "com.codacy" %% "codacy-plugins-api" % "8.1.4",
-      "org.scala-lang.modules" %% "scala-xml" % "2.3.0",
+      "com.codacy" %% "codacy-plugins-api" % "12.0.0",
+      "org.scala-lang.modules" %% "scala-xml" % "2.4.0",
       scalatest % Test
     )
   )
