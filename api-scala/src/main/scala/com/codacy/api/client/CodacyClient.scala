@@ -22,10 +22,7 @@ class CodacyClient(
 
   private val tokens = Map.empty[String, String] ++
     apiToken.map(t => "api-token" -> t) ++
-    projectToken.map(t => "project-token" -> t) ++
-    // This is deprecated and is kept for backward compatibility. It will removed in the context of CY-1272
-    apiToken.map(t => "api_token" -> t) ++
-    projectToken.map(t => "project_token" -> t)
+    projectToken.map(t => "project-token" -> t)
 
   private val remoteUrl = new URL(new URL(apiUrl.getOrElse("https://api.codacy.com")), "/2.0").toString()
 
