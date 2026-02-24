@@ -1,4 +1,4 @@
-inThisBuild(Seq(scalaVersion := "3.3.3"))
+inThisBuild(Seq(scalaVersion := "3.3.7"))
 
 def commonSettings =
   Seq(scalacOptions := {
