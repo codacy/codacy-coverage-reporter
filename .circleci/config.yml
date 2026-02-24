@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  codacy: codacy/base@dev:13.0.1-updatemacosimage.2.sha.32f6f03
+  codacy: codacy/base@dev:13.0.1-updatemacosimage.3.sha.54c98fd
 
 references:
   circleci_job: &circleci_job
