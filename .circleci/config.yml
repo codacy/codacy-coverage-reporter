@@ -438,6 +438,7 @@ workflows:
             - run:
                  name: Clean coverage.sbt from cache
                  command: rm coverage.sbt
+          openjdk_version: '11'
           requires:
             - codacy/checkout_and_version
       - codacy/sbt:
@@ -451,6 +452,7 @@ workflows:
             mv target/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/tmp-artifacts/codacy-coverage-reporter-assembly.jar
           persist_to_workspace: true
           save_cache: true
+          openjdk_version: '11'
           requires:
             - compile_and_test
       - codacy/sbt_osx:
