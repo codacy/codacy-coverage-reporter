@@ -83,7 +83,7 @@ lazy val apiScala = project
   .settings(
     commonSettings,
     libraryDependencies ++= Seq(
-      "com.typesafe.play" %% "play-json" % "2.10.5",
+      "com.typesafe.play" %% "play-json" % "2.10.8",
       ("org.scalaj" %% "scalaj-http" % "2.4.2").cross(CrossVersion.for3Use2_13),
       "org.eclipse.jgit" % "org.eclipse.jgit" % "4.11.9.201909030838-r",
       scalatest % Test
