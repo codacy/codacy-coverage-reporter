@@ -15,7 +15,7 @@ libraryDependencies ++= Seq(
 )
 
 // Test dependencies
-libraryDependencies ++= Seq(scalatest % "it,test", "org.scalamock" %% "scalamock" % "6.0.0" % Test)
+libraryDependencies ++= Seq(scalatest % "it,test", "org.scalamock" %% "scalamock" % "6.2.0" % Test)
 
 assembly / mainClass := Some("com.codacy.CodacyCoverageReporter")
 assembly / assemblyMergeStrategy := {
