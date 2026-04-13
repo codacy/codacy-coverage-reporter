@@ -10,7 +10,7 @@ name := "codacy-coverage-reporter"
 
 // Runtime dependencies
 libraryDependencies ++= Seq(
-  "com.github.alexarchambault" %% "case-app" % "2.1.0-M28",
+  "com.github.alexarchambault" %% "case-app" % "2.1.0",
   "org.wvlet.airframe" %% "airframe-log" % "24.6.0"
 )
 
