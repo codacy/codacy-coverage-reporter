@@ -48,7 +48,9 @@ javacOptions ++= Seq("-source", "11", "-target", "11")
 
 enablePlugins(NativeImagePlugin)
 
-nativeImageVersion := "22.3.0"
+nativeImageJvm := "graalvm-java25"
+
+nativeImageVersion := "25.0.2"
 
 val osSpecificOptions =
   (Platform.os, Platform.arch) match {
@@ -56,6 +58,21 @@ val osSpecificOptions =
     case (Platform.OS.Linux, Platform.Arch.Arm) => Seq("--static")
     case _ => Seq.empty[String]
   }
+
+// native-image embeds the build JDK's cacerts. Until a GraalVM with JDK >= 25.0.5 is available,
+// remove the distrusted AAA Certificate Services root from it before building.
+val stripDistrustedCerts = taskKey[Unit]("Remove AAA Certificate Services from the GraalVM cacerts")
+
+stripDistrustedCerts := {
+  val cacerts = nativeImageGraalHome.value.resolve("lib/security/cacerts").toFile
+  val script = (ThisBuild / baseDirectory).value / "graalvm" / "strip-aaa-cacerts.sh"
+  val tmp = target.value / "trust" / "cacerts"
+  val exit = scala.sys.process.Process(Seq(script.getAbsolutePath, tmp.getAbsolutePath), None, "JAVA_HOME" -> nativeImageGraalHome.value.toString).!
+  if (exit != 0) sys.error("failed to strip distrusted certificates")
+  java.nio.file.Files.copy(tmp.toPath, cacerts.toPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+}
+
+nativeImage := nativeImage.dependsOn(stripDistrustedCerts).value
 
 nativeImageOptions := Seq(
   "--verbose",
